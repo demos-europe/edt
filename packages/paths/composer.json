@@ -1,0 +1,39 @@
+{
+    "name": "demos-europe/edt-paths",
+    "description": "Tools to create paths between entities and entity properties.",
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": ">=7.3,<8.2",
+        "nette/php-generator": "^3.5",
+        "phpdocumentor/reflection-docblock": "^5.1.0",
+        "demos-europe/edt-queries": "^0.6"
+    },
+    "authors": [
+        {
+            "name": "Christian Dressler",
+            "email": "dressler@demos-deutschland.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "EDT\\Parsing\\": "src/Parsing/",
+            "EDT\\PathBuilding\\": "src/PathBuilding/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.54",
+        "phpstan/phpstan-strict-rules": "^0.12.5",
+        "vimeo/psalm": "^4.1"
+    },
+    "conflict": {
+        "demos-europe/edt-extra": "<0.5.5",
+        "demos-europe/edt-access-definitions": "<0.5.5",
+        "demos-europe/edt-dql": "<0.5.5"
+    }
+}

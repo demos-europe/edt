@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Keep PHP Dependencies current
+  - package-ecosystem: composer
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "09:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 10
+#   labels:
+#   - dependencies

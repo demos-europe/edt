@@ -1,0 +1,31 @@
+{
+    "name": "demos-europe/edt-queries",
+    "description": "Eases querying entities via property paths.",
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": ">=7.3,<8.2"
+    },
+    "authors": [
+        {
+            "name": "Christian Dressler",
+            "email": "dressler@demos-deutschland.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "EDT\\Querying\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "conflict": {
+        "demos-europe/edt-extra": "<0.5.5",
+        "demos-europe/edt-access-definitions": "<0.5.5",
+        "demos-europe/edt-dql": "<0.5.5",
+        "demos-europe/edt-paths": "<0.5.5"
+    }
+}

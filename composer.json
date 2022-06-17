@@ -1,0 +1,62 @@
+{
+    "name": "demos-europe/edt",
+    "description": "This repository uses symplify/monorepo-builder to release several packages. Check the packages folder for more information.",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.3,<8.2",
+        "doctrine/orm": "^2.5",
+        "nette/php-generator": "^3.5",
+        "phpdocumentor/reflection-docblock": "^5.1.0"
+    },
+    "authors": [
+        {
+            "name": "Christian Dressler",
+            "email": "dressler@demos-deutschland.de"
+        }
+    ],
+    "require-dev": {
+        "doctrine/cache": "^1.11",
+        "phpstan/phpstan": "^0.12.54",
+        "phpstan/phpstan-strict-rules": "^0.12.5",
+        "phpunit/phpunit": "^9.5",
+        "repman-io/composer-plugin": "^1.1",
+        "symplify/monorepo-builder": "^10.1",
+        "vimeo/psalm": "^4.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "EDT\\Apization\\": "packages/extra/src/Apization/",
+            "EDT\\DqlQuerying\\": "packages/dql/src/",
+            "EDT\\Parsing\\": "packages/paths/src/Parsing/",
+            "EDT\\PathBuilding\\": "packages/paths/src/PathBuilding/",
+            "EDT\\Querying\\": "packages/queries/src/",
+            "EDT\\Querying\\ConditionParsers\\": "packages/extra/src/Querying/ConditionParsers/",
+            "EDT\\Querying\\ObjectProviders\\": "packages/access-definitions/src/Querying/ObjectProviders/",
+            "EDT\\Wrapping\\": "packages/access-definitions/src/Wrapping/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": [
+                "packages/access-definitions/tests/",
+                "packages/dql/tests/",
+                "packages/extra/tests/",
+                "packages/paths/tests/",
+                "packages/queries/tests/"
+            ]
+        }
+    },
+    "replace": {
+        "demos-europe/edt-access-definitions": "0.5.5",
+        "demos-europe/edt-dql": "0.5.5",
+        "demos-europe/edt-extra": "0.5.5",
+        "demos-europe/edt-paths": "0.5.5",
+        "demos-europe/edt-queries": "0.5.5"
+    },
+    "config": {
+        "bin-dir": "bin",
+        "allow-plugins": {
+            "repman-io/composer-plugin": true
+        }
+    }
+}

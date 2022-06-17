@@ -1,0 +1,157 @@
+EDT-Queries provides PHP classes to ease the access to a wanted list of entities for common use cases while
+being agnostic about the source of the entities.
+
+== Overview
+
+=== Property path based approach
+
+Two common requirements when fetching a list of entities are to 1) limit it to entities matching specific conditions
+and 2) sort it using specific sort methods.
+
+Different query languages handle these requirements in different scopes and manners. EDT-Queries allows the usage
+of paths when accessing entity properties. This eases the creation of queries, as no manual joins like in SQL need
+to be defined and allows to focus on the actual intention instead of the implementation details of the data source.
+On the other hand this adds some requirements regarding the relationship between entities: to fetch
+books by the name of their authors, the book entity must reference the author entity. Likewise, to fetch authors
+by the title of their books, the author entity must reference the book entity.
+
+While a bidirectional relationship between books and authors seems reasonable, this drawback becomes more apparent
+in cases where a unidirectional relationship would have been sufficient normally. Suppose you have a separate entity for E-mail
+addresses which is referenced by different entities like "organisation", "person" and "block list". Using EDT-Queries
+to simply get all e-mail addresses that are still in use would require the e-mail address entity to have a relationship
+to each of these three entities.
+
+=== Data source agnostic
+
+When creating a query using EDT-Queries the thought model is based on entities with properties and relationships
+to other entities. If that thought model can be converted to the model of the backing data source, then support
+for the backing data source is possible to implement.
+
+For example when fetching books by their author's name we may use a condition equivalent to
+`book.getAuthor().getName() === $authorName` (the actual syntax to create conditions is shown later).
+If `book` and `author` exist as tables in a relational database, then in principle this expression can be converted
+into a SQL query with a `JOIN` between `book` and `author` and a `WHERE` condition to compare the actual author's name to the
+given author's name.
+
+Implementations for specific data sources are mostly separated from this project. See
+<<provider-factory-setup>> for additional information.
+
+=== Usage examples
+
+In the following examples we get all books by authors born after the year 1800 whose last
+name start with 'A', primarily sorted by the name of their publishing company and secondarily sorted by
+their publication date.
+
+As this example focuses on the usage only, we use placeholders for the factories and the provider, instead of
+actually initializing them. A possible setup is shown in <<provider-factory-setup>>.
+
+[source,php]
+----
+use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\Querying\Contracts\ObjectProviderInterface;
+use EDT\Querying\Contracts\SortMethodFactoryInterface;
+
+// Placeholder setup: The actual factory and provider instances depend on the type of data source.
+/** @var ConditionFactoryInterface $conditionFactory */
+/** @var SortMethodFactoryInterface $sortMethodFactory */
+/** @var ObjectProviderInterface $bookProvider */
+
+// Query definition
+$nameCondition = $conditionFactory->propertyStartsWithCaseInsensitive('A', 'author', 'lastName');
+$birthDateCondition = $conditionFactory->valueGreaterThan(1800, 'author', 'birth', 'year');
+$primarySortMethod = $sortMethodFactory->propertyAscending('publisher', 'name');
+$secondarySortMethod = $sortMethodFactory->propertyDescending('publishDate');
+$conditions = [$nameCondition, $birthDateCondition];
+$sortMethods = [$primarySortMethod, $secondarySortMethod];
+
+// Executing the query
+$booksResultList = $bookProvider->getObjects($conditions, $sortMethods);
+----
+
+As an alternative the above can be written as fluent query as shown below.
+
+[source,php]
+----
+use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\Querying\Contracts\ObjectProviderInterface;
+use EDT\Querying\Contracts\SortMethodFactoryInterface;
+use EDT\Querying\FluentQueries\FluentQuery;
+use EDT\Querying\FluentQueries\ConditionDefinition;
+use EDT\Querying\FluentQueries\SortDefinition;
+use EDT\Querying\FluentQueries\SliceDefinition;
+
+// Query definition
+$query = create_book_query();
+$query->getConditionDefinition()
+    ->propertyStartsWithCaseInsensitive('A', 'author', 'lastName')
+    ->valueGreaterThan(1800, 'author', 'birth', 'year');
+$query->getSortDefinition()
+    ->propertyAscending('publisher', 'name')
+    ->propertyDescending('publishDate');
+
+// Executing the query
+$bookResultList = $query->getEntities();
+
+// Placeholder setup: The actual factory and provider instances depend on the type of data source.
+function create_book_query(): FluentQuery
+{
+    /** @var ConditionFactoryInterface $conditionFactory */
+    /** @var SortMethodFactoryInterface $sortMethodFactory */
+    /** @var ObjectProviderInterface $bookProvider */
+
+    return new FluentQuery(
+        $bookProvider,
+        new ConditionDefinition($conditionFactory),
+        new SortDefinition($sortMethodFactory),
+        new SliceDefinition()
+    );
+}
+----
+
+[#provider-factory-setup]
+=== Providers and factories setup
+
+Which implementations to use for the `ConditionFactoryInterface`, `SortMethodFactoryInterface` and
+`ObjectProviderInterface` depends on your actual data source.
+
+Please note that factories and object providers for different data sources can only be used in a mix and match manner
+under specific requirements. To be specific: to access a data source via an object provider not only the object provider
+must support the data source but the factories from which the conditions and sort methods were created too.
+
+To keep this projects dependencies small, EDT-Queries only supports a single data source, namely an already loaded PHP `array`
+providing the entity objects.
+
+An implementation for the https://www.doctrine-project.org/projects/orm.html[Doctrine ORM] has
+already been written and is available as https://github.com/demos-europe/EDT-DQL[EDT-DQL]. It
+provides factories for conditions and sort methods that are automatically converted into DQL, which in turn
+already supports a multitude of different data sources.
+
+
+==== PHP array data source
+
+Even though their real-world use cases are limited, the `array`-based approach can still be used on small data sets,
+that can be loaded into an array. To complete the example above you
+could instantiate a `PhpConditionFactory` and a `PhpSortMethodFactory` to create the corresponding
+instances. When creating the `PrefilledObjectProvider` you need to inject the `PropertyAccessorInterface`
+dependency, which determines how values are read from the entities when applying conditions and sort methods.
+This allows to adjust the behavior of the provider without the need to completely extend it and override its methods.
+
+[source,php]
+----
+// The books to be filtered, preloaded into an array
+/** @var array<int, object> $books */
+
+// Setting up the factories and provider
+$conditionFactory = new \EDT\Querying\ConditionFactories\PhpConditionFactory();
+$sortMethodFactory = new EDT\Querying\SortMethodFactories\PhpSortMethodFactory();
+$bookProvider = new \EDT\Querying\ObjectProviders\PrefilledObjectProvider(
+    new \EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor(),
+    $books
+);
+
+// Filtering books by the name of the auther's children and sorting them by their title
+$bookProvider->getObjects(
+    [$conditionFactory->propertyHasValue('Christopher Tolkien', 'author', 'children' 'name')],
+    [$sortMethodFactory->propertyAscending('title')]
+);
+----
