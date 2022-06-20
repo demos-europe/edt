@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- prepare for public release
+
 ## 0.5.5 - 2022-03-25
 
 - Fix release tagging
