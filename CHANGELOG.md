@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- fix: avoid possibly unwanted `TypeRetrievalAccessException` when reading or updating a relationship
+
 ## 0.6.0 - 2022-06-20
 
 - prepare for public release

@@ -38,8 +38,9 @@ interface TypeInterface
 
     /**
      * Determines if this type can be referenced by other types.
-     * This affects if instances of this type can be accessed (eg. read, if readable) through
-     * another type.
+     *
+     * This affects if instances of this type can be accessed (e.g. read, if readable) through
+     * a relationship referencing this type.
      *
      * Like {@link TypeInterface::isDirectlyAccessible()} this has **no** precedence over {@link TypeInterface::isAvailable()}. Even
      * if {@link TypeInterface::isReferencable()} returns `true`, the type can still not be accessed

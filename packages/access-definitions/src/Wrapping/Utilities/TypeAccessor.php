@@ -46,6 +46,11 @@ class TypeAccessor
     }
 
     /**
+     * Collects the properties of the given type that are updatable.
+     *
+     * If the given type itself is not an instance of {@link UpdatableTypeInterface} an empty array
+     * will be returned.
+     *
      * @template T
      *
      * @param TypeInterface<T> $type
@@ -58,9 +63,9 @@ class TypeAccessor
         if (!$type instanceof UpdatableTypeInterface) {
             return [];
         }
-        $readableProperties = $type->getUpdatableProperties($updateTarget);
-        array_walk($readableProperties, [$this, 'setTypeInstance']);
-        return array_filter($readableProperties, [$this, 'isUpdatableProperty']);
+        $updatableProperties = $type->getUpdatableProperties($updateTarget);
+        array_walk($updatableProperties, [$this, 'setTypeInstance']);
+        return array_filter($updatableProperties, [$this, 'isUpdatableProperty']);
     }
 
     /**
@@ -69,7 +74,7 @@ class TypeAccessor
     private function setTypeInstance(?string &$value): void
     {
         if (null !== $value) {
-            $value = $this->typeProvider->getType($value, ReadableTypeInterface::class);
+            $value = $this->typeProvider->getType($value);
         }
     }
 
