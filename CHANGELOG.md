@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- chore: Minor deployment changes related to splitting out the packages
 - fix: avoid possibly unwanted `TypeRetrievalAccessException` when reading or updating a relationship
 
 ## 0.6.0 - 2022-06-20
