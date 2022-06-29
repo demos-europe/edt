@@ -102,12 +102,17 @@ trait PropertyAutoPathTrait
 
     /**
      * @param PropertyAutoPathTrait&object $parent
+     *
+     * @internal
      */
     public function setParent($parent): void
     {
         $this->parent = $parent;
     }
 
+    /**
+     * @internal
+     */
     public function setParentPropertyName(string $parentPropertyName): void
     {
         $this->parentPropertyName = $parentPropertyName;
@@ -246,6 +251,9 @@ trait PropertyAutoPathTrait
         }
     }
 
+    /**
+     * @internal
+     */
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
