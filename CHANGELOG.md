@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.4 - 2022-07-04
 
 - fix: use correct table name after refactoring
 
