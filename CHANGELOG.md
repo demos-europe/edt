@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.2 - 2022-07-04
 
 - fix: handle associations when detecting DQL joins correctly
 - refactor: mark setter methods in `PropertyAutoPathTrait` as internal
