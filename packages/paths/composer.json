@@ -7,7 +7,7 @@
         "php": ">=7.3,<8.2",
         "nette/php-generator": "^3.5",
         "phpdocumentor/reflection-docblock": "^5.1.0",
-        "demos-europe/edt-queries": "^0.6.3"
+        "demos-europe/edt-queries": "^0.7"
     },
     "authors": [
         {
