@@ -4,6 +4,10 @@
 
 - fix: handle associations when detecting DQL joins correctly
 - refactor: mark setter methods in `PropertyAutoPathTrait` as internal
+
+## 0.6.1 - 2022-06-23
+
+- chore: Minor deployment changes related to splitting out the packages
 - fix: avoid possibly unwanted `TypeRetrievalAccessException` when reading or updating a relationship
 
 ## 0.6.0 - 2022-06-20
