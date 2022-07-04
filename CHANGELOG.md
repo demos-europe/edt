@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- fix: handle associations when detecting DQL joins correctly
 - refactor: mark setter methods in `PropertyAutoPathTrait` as internal
 - fix: avoid possibly unwanted `TypeRetrievalAccessException` when reading or updating a relationship
 
