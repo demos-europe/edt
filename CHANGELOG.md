@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- fix: use correct table name after refactoring
+
 ## 0.6.3 - 2022-07-04 
 
 - fix: set correct edt-queries version number
