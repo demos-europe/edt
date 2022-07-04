@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3 - 2022-07-04 
+
+- fix: set correct edt-queries version number
+
 ## 0.6.2 - 2022-07-04
 
 - fix: handle associations when detecting DQL joins correctly
