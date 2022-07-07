@@ -172,15 +172,18 @@ interface ConditionFactoryInterface
     public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$path): FunctionInterface;
 
     /**
-     * It is expected that the given property path contains a to many relationship and thus will
+     * It is expected that the given property path contains a to-many relationship and thus will
      * lead to multiple values. The returned condition will evaluate to true if the given values
      * can all be found in the set of values.
      *
-     * For example assume an Author with a to-many relationship to Books, with each book having
-     * exactly one title. Invoked with `(['A', 'B'], 'books', 'title')` this
-     * condition allows to get all authors that have written both the books with the titles 'A' and 'B'.
+     * For example: assume an author with a to-many relationship to books. Each book has
+     * exactly one title. If you want a condition to match only authors that have written
+     * both a book with the title `A` and another one with the title `B`, then you need to
+     * use this method with the parameters `['A', 'B']` (the required titles as array),
+     * and `'books'` and `'title'` (the path to the titles).
      *
      * @param array<int,mixed> $values Must not be empty.
+     *
      * @return FunctionInterface<bool>
      *
      * @throws PathException
