@@ -23,6 +23,8 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     private $properties;
     /**
      * @var int
+     *
+     * @see PropertyPathAccessInterface::getAccessDepth()
      */
     private $accessDepth;
     /**

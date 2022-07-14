@@ -69,7 +69,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
 
     /**
      * @param ClauseFunctionInterface<bool> $firstFunction
-     * @param ClauseFunctionInterface<bool>                                       ...$additionalFunctions
+     * @param ClauseFunctionInterface<bool> ...$additionalFunctions
      *
      * @return ClauseFunctionInterface<bool>
      */

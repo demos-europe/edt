@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- chore: improve condition factory method documentation
+- chore: improve documentation
 
 ## 0.6.4 - 2022-07-04
 

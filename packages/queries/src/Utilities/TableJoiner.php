@@ -34,7 +34,7 @@ class TableJoiner
      * the same length which is the length of the given $propertyPaths
      * array).
      *
-     * However the returned array containing the nested arrays will be created in the same manner
+     * However, the returned array containing the nested arrays will be created in the same manner
      * as an SQL left join. Meaning if $object is a blog article that has 5 comments and
      * a property path accesses the comment texts then the returned array will have
      * 3 items: [['text1'], ['text2'], ['text3']]
