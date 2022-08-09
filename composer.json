@@ -20,7 +20,7 @@
         "phpstan/phpstan-strict-rules": "^0.12.5",
         "phpunit/phpunit": "^9.5",
         "repman-io/composer-plugin": "^1.1",
-        "symplify/monorepo-builder": "^10.1",
+        "symplify/monorepo-builder": "^11.1",
         "vimeo/psalm": "^4.1"
     },
     "autoload": {
