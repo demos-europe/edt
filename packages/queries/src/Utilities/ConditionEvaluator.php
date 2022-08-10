@@ -6,6 +6,8 @@ namespace EDT\Querying\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
+use InvalidArgumentException;
+use function is_bool;
 
 /**
  * @internal
@@ -35,6 +37,8 @@ class ConditionEvaluator
     public function filterArray(array $arrayToFilter, FunctionInterface $condition, FunctionInterface ...$conditions): array
     {
         array_unshift($conditions, $condition);
+
+        // nested loop: for each item check all conditions
         return array_filter($arrayToFilter, function (object $value) use ($conditions): bool {
             foreach ($conditions as $condition) {
                 if (!$this->evaluateCondition($value, $condition)) {
@@ -55,16 +59,57 @@ class ConditionEvaluator
         if (null === $target) {
             return false;
         }
-        $propertyPaths = Iterables::asArray($condition->getPropertyPaths());
-        // accesses all values of the given path and creates the cartesian product,
-        $propertyValueRows = $this->tableJoiner->getValueRows($target, ...$propertyPaths);
+
+        $propertyValueRows = $this->getPropertyValueRows($target, $condition);
         foreach ($propertyValueRows as $propertyValues) {
             // $propertyValues is an array of values corresponding to $propertyPaths
             // meaning the first value is the value of the property denoted by the first path
-            if (true === $condition->apply($propertyValues)) {
+            if ($this->assertBoolean($condition->apply($propertyValues))) {
                 return true;
             }
         }
+
         return false;
+    }
+
+    /**
+     * @param FunctionInterface<bool> $condition
+     */
+    public function evaluateConditionInverted(?object $target, FunctionInterface $condition): bool
+    {
+        if (null === $target) {
+            return false;
+        }
+
+        $propertyValueRows = $this->getPropertyValueRows($target, $condition);
+        foreach ($propertyValueRows as $propertyValues) {
+            // $propertyValues is an array of values corresponding to $propertyPaths
+            // meaning the first value is the value of the property denoted by the first path
+            if ($this->assertBoolean($condition->apply($propertyValues))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return mixed[][]
+     */
+    private function getPropertyValueRows(object $target, FunctionInterface $condition): array
+    {
+        $propertyPaths = Iterables::asArray($condition->getPropertyPaths());
+
+        // accesses all values of the given path and creates the cartesian product,
+        return $this->tableJoiner->getValueRows($target, ...$propertyPaths);
+    }
+
+    private function assertBoolean($value): bool
+    {
+        if (!is_bool($value)) {
+            throw new InvalidArgumentException('Expected function to return bool, got \''.gettype($value).'\'');
+        }
+
+        return $value;
     }
 }
