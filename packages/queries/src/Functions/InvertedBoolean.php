@@ -10,6 +10,8 @@ use function is_bool;
 
 /**
  * @template-implements FunctionInterface<bool>
+ *
+ * @internal this implementation is not usable for to-many relationships
  */
 class InvertedBoolean implements FunctionInterface
 {
