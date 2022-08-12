@@ -13,7 +13,7 @@ use Tests\data\Paths\nestedNamespace\NestedOnlyResource as NonNestedOnlyResource
 use Tests\data\Paths\NonNestedOnlyResource as NestedOnlyResource;
 
 /**
- * @property-read \EDT\PathBuilding\End                           $id
+ * @property-read \EDT\PathBuilding\End                                      $id
  * @property-read End                                                        $title
  * @property-read BarResource                                                $bar
  * @property-read NonNestedResource                                          $aliasedNonNestedResource
