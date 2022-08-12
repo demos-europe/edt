@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\data\Model;
+namespace Tests\data\PathsModel;
+
+use Tests\data\Model\Person;
 
 class Book
 {
