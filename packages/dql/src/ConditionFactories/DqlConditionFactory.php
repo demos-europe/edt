@@ -79,13 +79,15 @@ class DqlConditionFactory implements ConditionFactoryInterface
     }
 
     /**
+     * @param class-string|null $rightEntityClass
+     *
      * @return ClauseFunctionInterface<bool>
      * @throws PathException
      */
-    public function propertiesEqual(array $leftPropertyPath, array $rightPropertyPath): FunctionInterface
+    public function propertiesEqual(array $leftPropertyPath, array $rightPropertyPath, string $rightEntityClass = null, string $salt = ''): FunctionInterface
     {
         $leftPropertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, ...$leftPropertyPath);
-        $rightPropertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, ...$rightPropertyPath);
+        $rightPropertyPathInstance = new PropertyPath($rightEntityClass, $salt, PropertyPathAccessInterface::UNPACK, ...$rightPropertyPath);
         return new AllEqual(
             new Property($leftPropertyPathInstance),
             new Property($rightPropertyPathInstance)
