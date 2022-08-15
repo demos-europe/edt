@@ -49,6 +49,9 @@ class QueryBuilderPreparer
     private $parameters = [];
 
     /**
+     * Provides all needed information to choose the correct entity type and mappings to translate
+     * the group into DQL data.
+     *
      * @var ClassMetadataInfo
      */
     private $classMetadata;
@@ -56,12 +59,12 @@ class QueryBuilderPreparer
     /**
      * @var array<int,ClauseInterface>
      */
-    private $conditions;
+    private $conditions = [];
 
     /**
      * @var OrderByInterface[]
      */
-    private $sortMethods;
+    private $sortMethods = [];
 
     /**
      * Transform the given group into raw DQL query data using the given entity definition.
@@ -71,15 +74,12 @@ class QueryBuilderPreparer
      * given group. The joins required to limit the result will be automatically generated
      * using the group and entity definition.
      *
-     * @param ClassMetadataInfo $classMetadata Provides all needed information to
-     *                                         choose the correct entity type and
-     *                                         mappings to translate the group
-     *                                         into DQL data.
+     * @param class-string $mainEntityClass the entity class to fetch instances of
      */
-    public function __construct(ClassMetadataInfo $classMetadata, ClassMetadataFactory $metadataFactory)
+    public function __construct(string $mainEntityClass, ClassMetadataFactory $metadataFactory)
     {
         $this->joinFinder = new JoinFinder($metadataFactory);
-        $this->classMetadata = $classMetadata;
+        $this->classMetadata = $metadataFactory->getMetadataFor($mainEntityClass);
     }
 
     /**
