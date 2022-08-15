@@ -125,18 +125,6 @@ class Iterables
     }
 
     /**
-     * @param Countable|iterable<mixed> $countable
-     */
-    public static function count($countable): int
-    {
-        if ($countable instanceof Countable || is_array($countable)) {
-            return count($countable);
-        }
-
-        return count(self::asArray($countable));
-    }
-
-    /**
      * @param iterable<mixed> $values
      * @throws InvalidArgumentException Thrown if the number of values in the iterable is not equal the given count value.
      */
