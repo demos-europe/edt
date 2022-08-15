@@ -61,11 +61,11 @@ namespace EDT\DoctrineQueryGenerator\Conditions;
 use EDT\DqlQuerying\Contracts\ClauseInterface;
 class AlwaysFalse implements ClauseInterface
 {
-    public function getClauseValues(): iterable
+    public function getClauseValues(): array
     {
         return [];
     }
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return [];
     }
@@ -95,11 +95,11 @@ class PropertyIsEmpty implements ClauseInterface
     public function __construct(array $propertyPath) {
         $this->paths = [new PropertyPath(null, '', PropertyPath::DIRECT, ...$propertyPath)];
     }
-    public function getClauseValues(): iterable
+    public function getClauseValues(): array
     {
         return [];
     }
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return $this->paths;
     }
@@ -174,11 +174,11 @@ class PropertyHasValue implements ClauseInterface
         $this->values = [$value];
         $this->paths = [new PropertyPath(null, '', PropertyPath::DIRECT, ...$propertyPath)];
     }
-    public function getClauseValues(): iterable
+    public function getClauseValues(): array
     {
         return $this->values;
     }
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return $this->paths;
     }
@@ -262,11 +262,11 @@ class PropertyAscending implements OrderByInterface
     {
         $this->paths = [new PropertyPath(null, '', PropertyPath::DIRECT, ...$propertyPath)];
     }
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return $this->paths;
     }
-    public function getClauseValues(): iterable
+    public function getClauseValues(): array
     {
         return [];
     }
@@ -319,11 +319,11 @@ class SizeMinusLengthAscending implements OrderByInterface
             new PropertyPath(null, '', PropertyPath::UNPACK, ...$lengthPath)
         ];
     }
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return $this->paths;
     }
-    public function getClauseValues(): iterable
+    public function getClauseValues(): array
     {
         return [];
     }
