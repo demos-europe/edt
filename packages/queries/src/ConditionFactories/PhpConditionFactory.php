@@ -53,8 +53,8 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertiesEqual(array $leftProperties, array $rightProperties): FunctionInterface
     {
-        $leftPropertyPath = new PropertyPath('', PropertyPath::UNPACK, ...$leftProperties);
-        $rightPropertyPath = new PropertyPath('', PropertyPath::UNPACK, ...$rightProperties);
+        $leftPropertyPath = new PropertyPath(null, '', PropertyPath::UNPACK, ...$leftProperties);
+        $rightPropertyPath = new PropertyPath(null, '', PropertyPath::UNPACK, ...$rightProperties);
         return new AllEqual(
             new Property($leftPropertyPath),
             new Property($rightPropertyPath)
@@ -63,7 +63,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$propertyPath): FunctionInterface
     {
-        $propertyPathObject = new PropertyPath('', PropertyPath::UNPACK, $property, ...$propertyPath);
+        $propertyPathObject = new PropertyPath(null, '', PropertyPath::UNPACK, $property, ...$propertyPath);
         return new BetweenInclusive(
             new Value($min),
             new Value($max),
@@ -73,7 +73,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPath::UNPACK, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPath::UNPACK, $property, ...$properties);
         return new OneOf(
             new Value($values),
             new Property($propertyPath)
@@ -82,7 +82,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyHasSize(int $size, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new AllEqual(
             new Size(new Property($propertyPath)),
             new Value($size)
@@ -91,7 +91,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::UNPACK, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::UNPACK, $property, ...$properties);
         $lowerCaseProperty = new LowerCase(new Property($propertyPathInstance));
         $lowerCaseValue = new LowerCase(new Value($value));
         return new StringContains($lowerCaseProperty, $lowerCaseValue);
@@ -99,7 +99,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyHasValue($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new AllEqual(
             new Property($propertyPath),
             new Value($value)
@@ -108,13 +108,13 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyIsNull(string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPath::UNPACK, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPath::UNPACK, $property, ...$properties);
         return new IsNull(new Property($propertyPath));
     }
 
     public function propertyHasStringAsMember(string $value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new OneOf(
             new Property($propertyPathInstance),
             new Value($value)
@@ -123,7 +123,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function valueGreaterThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new Greater(
             new Value($value),
             new Property($propertyPathInstance)
@@ -132,7 +132,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function valueGreaterEqualsThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new GreaterEquals(
             new Value($value),
             new Property($propertyPathInstance)
@@ -141,7 +141,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function valueSmallerThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new Smaller(
             new Value($value),
             new Property($propertyPathInstance)
@@ -150,7 +150,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function valueSmallerEqualsThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new SmallerEquals(
             new Value($value),
             new Property($propertyPathInstance)
@@ -159,7 +159,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyStartsWithCaseInsensitive($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new StringStartsWith(
             new Value($value),
             new Property($propertyPathInstance)
@@ -168,7 +168,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
 
     public function propertyEndsWithCaseInsensitive($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPath::DIRECT, $property, ...$properties);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPath::DIRECT, $property, ...$properties);
         return new StringEndsWith(
             new Value($value),
             new Property($propertyPathInstance)

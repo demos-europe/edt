@@ -192,8 +192,8 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testFunctionResultsEqualWithTwo(): void
     {
-        $pathA = new Property(new PropertyPath('', PropertyPath::UNPACK, 'birth', 'day'));
-        $pathB = new Property(new PropertyPath('', PropertyPath::UNPACK, 'birth', 'month'));
+        $pathA = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'birth', 'day'));
+        $pathB = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'birth', 'month'));
         $birthMonthAndDaySimilar = new AllEqual($pathA, $pathB);
         $expected = [$this->authors['salinger']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $birthMonthAndDaySimilar));
@@ -202,9 +202,9 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testFunctionResultsEqualWithThree(): void
     {
-        $pathA = new Property(new PropertyPath('', PropertyPath::UNPACK, 'birth', 'day'));
-        $pathB = new Property(new PropertyPath('', PropertyPath::UNPACK, 'birth', 'month'));
-        $pathC = new Property(new PropertyPath('', PropertyPath::UNPACK, 'birth', 'year'));
+        $pathA = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'birth', 'day'));
+        $pathB = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'birth', 'month'));
+        $pathC = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'birth', 'year'));
         $birthMonthAndDaySimilar = new AllEqual($pathA, $pathB, $pathC);
         $filteredAuthors = $this->conditionEvaluator->filterArray($this->authors, $birthMonthAndDaySimilar);
         self::assertEquals([], $filteredAuthors);
@@ -212,7 +212,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testFunctionResultHasValue(): void
     {
-        $country = new Property(new PropertyPath('', PropertyPath::UNPACK, 'author', 'birth', 'country'));
+        $country = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'author', 'birth', 'country'));
         $england = new Value('England');
         $propertyHasValue = new AllEqual($country, $england);
         $expectedBooks = [$this->books['pickwickPapers'], $this->books['philosopherStone'], $this->books['deathlyHallows']];
@@ -222,7 +222,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testFunctionResultHasSize(): void
     {
-        $size = new Size(new Property(new PropertyPath('', PropertyPath::DIRECT, 'books')));
+        $size = new Size(new Property(new PropertyPath(null, '', PropertyPath::DIRECT, 'books')));
         $two = new Value(2);
         $hasSize = new AllEqual($size, $two);
         $expectedAuthors = [$this->authors['rowling']];
@@ -232,7 +232,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testFunctionResultHasDoubleSizeWithSum(): void
     {
-        $size = new Size(new Property(new PropertyPath('', PropertyPath::DIRECT, 'books')));
+        $size = new Size(new Property(new PropertyPath(null, '', PropertyPath::DIRECT, 'books')));
         $doubleSize = new Sum($size, $size);
         $two = new Value(4);
         $hasSize = new AllEqual($doubleSize, $two);
@@ -244,7 +244,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testFunctionLowerCase(): void
     {
         $constant = new Value('phen');
-        $property = new Property(new PropertyPath('', PropertyPath::UNPACK, 'name'));
+        $property = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'name'));
         $lower = new LowerCase($property);
         $functionCondition = new StringContains($lower, $constant);
         $expectedAuthors = [$this->authors['king']];
@@ -255,7 +255,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testFunctionLowerCaseFalse(): void
     {
         $constant = new Value('PHEN');
-        $property = new Property(new PropertyPath('', PropertyPath::UNPACK, 'name'));
+        $property = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'name'));
         $lower = new LowerCase($property);
         $functionCondition = new StringContains($lower, $constant, true);
         $filteredAuthors = $this->conditionEvaluator->filterArray($this->authors, $functionCondition);
@@ -265,7 +265,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testFunctionUpperCase(): void
     {
         $constant = new Value('PHEN');
-        $property = new Property(new PropertyPath('', PropertyPath::UNPACK, 'name'));
+        $property = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'name'));
         $upper = new UpperCase($property);
         $functionCondition = new StringContains($upper, $constant);
         $expectedAuthors = [$this->authors['king']];
@@ -276,7 +276,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testFunctionUpperCaseFalse(): void
     {
         $constant = new Value('phen');
-        $property = new Property(new PropertyPath('', PropertyPath::UNPACK, 'name'));
+        $property = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'name'));
         $upper = new UpperCase($property);
         $functionCondition = new StringContains($upper, $constant, true);
         $filteredAuthors = $this->conditionEvaluator->filterArray($this->authors, $functionCondition);
@@ -285,7 +285,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testFunctionResultHasDoubleSizeWithProduct(): void
     {
-        $size = new Size(new Property(new PropertyPath('', PropertyPath::DIRECT, 'books')));
+        $size = new Size(new Property(new PropertyPath(null, '', PropertyPath::DIRECT, 'books')));
         $doubleSize = new Product(new Value(2), $size);
         $two = new Value(4);
         $hasSize = new AllEqual($doubleSize, $two);
@@ -296,7 +296,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testCustomMemberCondition(): void
     {
-        $propertyPath = new PropertyPath('', PropertyPath::DIRECT, 'books', 'title');
+        $propertyPath = new PropertyPath(null, '', PropertyPath::DIRECT, 'books', 'title');
         $condition = new AllTrue(
             new AllEqual(
                 new Property($propertyPath),
@@ -313,8 +313,8 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testCustomMemberConditionWithSalt(): void
     {
-        $propertyPathA = new PropertyPath('a', PropertyPath::DIRECT, 'books', 'title');
-        $propertyPathB = new PropertyPath('b', PropertyPath::DIRECT, 'books', 'title');
+        $propertyPathA = new PropertyPath(null, 'a', PropertyPath::DIRECT, 'books', 'title');
+        $propertyPathB = new PropertyPath(null, 'b', PropertyPath::DIRECT, 'books', 'title');
         $condition = new AllTrue(
             new AllEqual(
                 new Property($propertyPathA),

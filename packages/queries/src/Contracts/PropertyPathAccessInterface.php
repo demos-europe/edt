@@ -51,4 +51,9 @@ interface PropertyPathAccessInterface extends PropertyPathInterface
     public function getSalt(): string;
 
     public function __toString(): string;
+
+    /**
+     * @return class-string|null
+     */
+    public function getContext(): ?string;
 }

@@ -396,7 +396,7 @@ class QueryGeneratorTest extends TestCase
 
     public function testUpperCase(): void
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::UNPACK, 'title');
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, 'title');
         $sameUpperCase = new AllEqual(
             new UpperCase(new Property($propertyPath)),
             new Value('FOO'),
@@ -415,7 +415,7 @@ class QueryGeneratorTest extends TestCase
 
     public function testSum(): void
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPathAccessInterface::UNPACK, 'name');
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, 'name');
         $size = new Size(new Property($propertyPathInstance));
         $sum = new AllEqual(
             new Sum($size, $size),
@@ -435,7 +435,7 @@ class QueryGeneratorTest extends TestCase
 
     public function testSumAdditionalAddends(): void
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPathAccessInterface::UNPACK, 'name');
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, 'name');
         $size = new Size(new Property($propertyPathInstance));
         $sum = new AllEqual(
             new Sum($size, $size, $size, $size),
@@ -455,7 +455,7 @@ class QueryGeneratorTest extends TestCase
 
     public function testSumPowMixed(): void
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPathAccessInterface::UNPACK, 'name');
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, 'name');
         $size = new Size(new Property($propertyPathInstance));
         $sum = new AllEqual(
             new Product(
@@ -485,7 +485,7 @@ class QueryGeneratorTest extends TestCase
 
     public function testCustomMemberCondition(): void
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, 'books', 'title');
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, 'books', 'title');
         $condition = new AllTrue(
             new AllEqual(
                 new Value('Harry Potter and the Philosopher\'s Stone'),
@@ -511,8 +511,8 @@ class QueryGeneratorTest extends TestCase
 
     public function testCustomMemberConditionWithSalt(): void
     {
-        $propertyPathA = new PropertyPath('a', PropertyPathAccessInterface::DIRECT, 'books', 'title');
-        $propertyPathB = new PropertyPath('b', PropertyPathAccessInterface::DIRECT, 'books', 'title');
+        $propertyPathA = new PropertyPath(null, 'a', PropertyPathAccessInterface::DIRECT, 'books', 'title');
+        $propertyPathB = new PropertyPath(null, 'b', PropertyPathAccessInterface::DIRECT, 'books', 'title');
         $condition = new AllTrue(
             new AllEqual(
                 new Property($propertyPathA),

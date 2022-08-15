@@ -84,8 +84,8 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertiesEqual(array $leftPropertyPath, array $rightPropertyPath): FunctionInterface
     {
-        $leftPropertyPathInstance = new PropertyPath('', PropertyPathAccessInterface::UNPACK, ...$leftPropertyPath);
-        $rightPropertyPathInstance = new PropertyPath('', PropertyPathAccessInterface::UNPACK, ...$rightPropertyPath);
+        $leftPropertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, ...$leftPropertyPath);
+        $rightPropertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, ...$rightPropertyPath);
         return new AllEqual(
             new Property($leftPropertyPathInstance),
             new Property($rightPropertyPathInstance)
@@ -100,7 +100,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$propertyPath): FunctionInterface
     {
-        $propertyPathInstance = new PropertyPath('', PropertyPathAccessInterface::UNPACK, $property, ...$propertyPath);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$propertyPath);
         return new BetweenInclusive(
             new Value($min),
             new Value($max),
@@ -114,7 +114,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
         if ([] === $values) {
             return $this->false();
         }
@@ -128,7 +128,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyHasSize(int $size, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new AllEqual(
             new Size(new Property($propertyPath)),
             new Value($size)
@@ -141,7 +141,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
         return new StringContains(
             new LowerCase(new Property($propertyPath)),
             new LowerCase(new Value("$value"))
@@ -156,7 +156,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyHasValue($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
         return new AllEqual(
             new Property($propertyPath),
             new Value($value)
@@ -182,7 +182,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
          * current Doctrine implementation the join is still needed in case of a one-to-one
          * relationship with the right side being the owning side.
          */
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
         return new IsNull(new Property($propertyPath));
     }
 
@@ -192,7 +192,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyHasStringAsMember(string $value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new IsMemberOf(
             new Property($propertyPath),
             new Value($value)
@@ -207,7 +207,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function valueGreaterThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new Greater(
             new Property($propertyPath),
             new Value($value)
@@ -222,7 +222,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function valueGreaterEqualsThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new GreaterEquals(
             new Property($propertyPath),
             new Value($value)
@@ -236,7 +236,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function valueSmallerThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new Smaller(
             new Property($propertyPath),
             new Value($value)
@@ -251,7 +251,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function valueSmallerEqualsThan($value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new SmallerEquals(
             new Property($propertyPath),
             new Value($value)
@@ -264,7 +264,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new StringStartsWith(
             new LowerCase(new Property($propertyPath)),
             new LowerCase(new Value($value))
@@ -277,7 +277,7 @@ class DqlConditionFactory implements ConditionFactoryInterface
      */
     public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties): FunctionInterface
     {
-        $propertyPath = new PropertyPath('', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
         return new StringEndsWith(
             new LowerCase(new Property($propertyPath)),
             new LowerCase(new Value($value))
