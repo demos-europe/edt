@@ -27,13 +27,11 @@ trait FunctionBasedTrait
     /**
      * Returns all {@link PropertyPathAccessInterface} instances of all
      * {@link FunctionBasedTrait::$functions} as a flat iterable.
-     *
-     * @return iterable<PropertyPathAccessInterface>
      */
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return Iterables::flat(static function (PathsBasedInterface $function): array {
-            return Iterables::asArray($function->getPropertyPaths());
+            return $function->getPropertyPaths();
         }, $this->functions);
     }
 
@@ -95,7 +93,7 @@ trait FunctionBasedTrait
     private function unflatPropertyValues(array $propertyValues): array
     {
         $propertyAliasCountables = array_map(static function (PathsBasedInterface $pathsBased): int {
-            return Iterables::count($pathsBased->getPropertyPaths());
+            return count($pathsBased->getPropertyPaths());
         }, $this->functions);
         return Iterables::split($propertyValues, false, ...$propertyAliasCountables);
     }

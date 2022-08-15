@@ -206,7 +206,7 @@ class QueryBuilderPreparer
         $valueIndices = array_map([$this, 'addToParameters'], $clauseValues);
         $columnNames = array_map(function (PropertyPathAccessInterface $path): string {
             return $this->processPath($path->getSalt(), $path->getAccessDepth(), $path->getContext(), ...iterator_to_array($path));
-        }, Iterables::asArray($clause->getPropertyPaths()));
+        }, $clause->getPropertyPaths());
 
         return $clause->asDql($valueIndices, $columnNames);
     }

@@ -25,7 +25,7 @@ class Descending implements SortMethodInterface
         $this->target = $target;
     }
 
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return $this->target->getPropertyPaths();
     }

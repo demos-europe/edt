@@ -28,7 +28,7 @@ class Property implements FunctionInterface
         return Iterables::getOnlyValue($propertyValues);
     }
 
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return [$this->propertyPath];
     }

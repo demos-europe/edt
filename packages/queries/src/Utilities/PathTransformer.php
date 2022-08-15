@@ -33,7 +33,7 @@ class PathTransformer
     {
         $paths = $condition->getPropertyPaths();
         $paths = array_filter(
-            Iterables::asArray($paths),
+            $paths,
             static function (PropertyPathAccessInterface $path): bool {
                 return null === $path->getContext();
             }

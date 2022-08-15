@@ -11,6 +11,7 @@ use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
+use function count;
 
 trait ClauseBasedTrait
 {
@@ -88,7 +89,7 @@ trait ClauseBasedTrait
     private function unflatPropertyAliases(string ...$propertyAliases): array
     {
         $propertyAliasCountables = array_map(static function (PathsBasedInterface $pathsBased): int {
-            return Iterables::count($pathsBased->getPropertyPaths());
+            return count($pathsBased->getPropertyPaths());
         }, $this->clauses);
         return Iterables::split($propertyAliases, false, ...$propertyAliasCountables);
     }

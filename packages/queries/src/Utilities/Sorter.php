@@ -32,7 +32,7 @@ class Sorter
     {
         $success = usort($arrayToSort, function (object $valueA, object $valueB) use ($sortMethods): int {
             foreach ($sortMethods as $sortMethod) {
-                $propertyPaths = Iterables::asArray($sortMethod->getPropertyPaths());
+                $propertyPaths = $sortMethod->getPropertyPaths();
                 $propertyValuesRowsA = $this->tableJoiner->getValueRows($valueA, ...$propertyPaths);
                 $propertyValuesRowsB = $this->tableJoiner->getValueRows($valueB, ...$propertyPaths);
                 /**

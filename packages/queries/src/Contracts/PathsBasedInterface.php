@@ -10,7 +10,7 @@ interface PathsBasedInterface
      * Get all {@link PropertyPathInterface property paths} of the implementation of
      * this interface.
      *
-     * @return iterable<PropertyPathAccessInterface>
+     * @return array<int, PropertyPathAccessInterface>
      */
-    public function getPropertyPaths(): iterable;
+    public function getPropertyPaths(): array;
 }

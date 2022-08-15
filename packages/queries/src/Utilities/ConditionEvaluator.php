@@ -98,7 +98,7 @@ class ConditionEvaluator
      */
     private function getPropertyValueRows(object $target, FunctionInterface $condition): array
     {
-        $propertyPaths = Iterables::asArray($condition->getPropertyPaths());
+        $propertyPaths = $condition->getPropertyPaths();
 
         // accesses all values of the given path and creates the cartesian product,
         return $this->tableJoiner->getValueRows($target, ...$propertyPaths);
