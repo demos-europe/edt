@@ -37,8 +37,10 @@ interface ClauseInterface extends PathsBasedInterface
      * * empty if no values are needed (e.g. in case of a null comparison)
      * * contain a single value (e.g. in case of an equality comparison)
      * * may contain multiple values (e.g. in case of a between comparison)
+     *
+     * @return array<int, mixed>
      */
-    public function getClauseValues(): iterable;
+    public function getClauseValues(): array;
 
     /**
      * @param string[] $valueReferences The values returned by

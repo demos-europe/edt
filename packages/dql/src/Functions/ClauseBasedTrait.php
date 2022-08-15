@@ -20,10 +20,10 @@ trait ClauseBasedTrait
      */
     protected $clauses = [];
 
-    public function getClauseValues(): iterable
+    public function getClauseValues(): array
     {
         return Iterables::flat(static function (ClauseInterface $clause): array {
-            return Iterables::asArray($clause->getClauseValues());
+            return $clause->getClauseValues();
         }, $this->clauses);
     }
 
@@ -64,7 +64,7 @@ trait ClauseBasedTrait
     protected function unflatClauseReferences(string ...$valueReferences): array
     {
         $clauseValueCountables = array_map(static function (ClauseInterface $clause): int {
-            return Iterables::count($clause->getClauseValues());
+            return count($clause->getClauseValues());
         }, $this->clauses);
         return Iterables::split($valueReferences, false, ...$clauseValueCountables);
     }

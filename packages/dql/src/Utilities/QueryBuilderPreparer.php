@@ -202,8 +202,7 @@ class QueryBuilderPreparer
      */
     protected function processClause(ClauseInterface $clause)
     {
-        $clauseValues = Iterables::asArray($clause->getClauseValues());
-        $valueIndices = array_map([$this, 'addToParameters'], $clauseValues);
+        $valueIndices = array_map([$this, 'addToParameters'], $clause->getClauseValues());
         $columnNames = array_map(function (PropertyPathAccessInterface $path): string {
             return $this->processPath($path->getSalt(), $path->getAccessDepth(), $path->getContext(), ...iterator_to_array($path));
         }, $clause->getPropertyPaths());
