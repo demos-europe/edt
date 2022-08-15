@@ -17,4 +17,18 @@ class PathException extends Exception
         $pathString = implode('.', $fullPath);
         return new self("A path must not contain empty parts. Found in '$pathString'.");
     }
+
+    /**
+     * Prefixing of context-bound paths is not allowed, as they would become invalid in most
+     * use-cases.
+     *
+     * @param array<int, string> $prefix
+     *
+     * @throws PathException
+     */
+    public static function contextBoundPrefixing(PropertyPathAccessInterface $path, array $prefix): self
+    {
+        $prefixString = implode('.', $prefix);
+        return new self("Attempted to add prefix '$prefixString' to path '{$path->getAsNamesInDotNotation()}' with context '{$path->getContext()}'");
+    }
 }
