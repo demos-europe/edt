@@ -11,20 +11,20 @@ class PropertyPathTest extends TestCase
 {
     public function testPositiveAccessDepth(): void
     {
-        $instance = new PropertyPath('', 1, 'ab', 'cd', 'e');
+        $instance = new PropertyPath(null, '', 1, 'ab', 'cd', 'e');
         self::assertSame('ab.cd.e(1)', (string)$instance);
     }
 
     public function testNegativeAccessDepth(): void
     {
-        $instance = new PropertyPath('', -21, 'f', 'gh', 'i');
+        $instance = new PropertyPath(null, '', -21, 'f', 'gh', 'i');
         self::assertSame('f.gh.i(-21)', (string)$instance);
     }
 
     public function testComparison(): void
     {
-        $instanceA = new PropertyPath('', 1, 'ab', 'cd', 'e');
-        $instanceB = new PropertyPath('', 1, 'ab', 'cd', 'e');
+        $instanceA = new PropertyPath(null, '', 1, 'ab', 'cd', 'e');
+        $instanceB = new PropertyPath(null, '', 1, 'ab', 'cd', 'e');
         self::assertEquals($instanceA, $instanceB);
     }
 }

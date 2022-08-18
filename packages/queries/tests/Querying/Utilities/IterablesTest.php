@@ -146,8 +146,8 @@ class IterablesTest extends ModelBasedTest
     public function testRestructureIterableWithIterable1(): void
     {
         $input = [
-            new PropertyPath('', 0, 'a', 'b', 'c'),
-            new PropertyPath('', 0, 'd', 'e', 'f'),
+            new PropertyPath(null, '', 0, 'a', 'b', 'c'),
+            new PropertyPath(null, '', 0, 'd', 'e', 'f'),
         ];
 
         $expected = $input;
@@ -160,8 +160,8 @@ class IterablesTest extends ModelBasedTest
     public function testRestructureIterableWithIterable2(): void
     {
         $input = [
-            new PropertyPath('', 0, 'a', 'b', 'c'),
-            new PropertyPath('', 0, 'd', 'e', 'f'),
+            new PropertyPath(null, '', 0, 'a', 'b', 'c'),
+            new PropertyPath(null, '', 0, 'd', 'e', 'f'),
         ];
 
         $expected = ['a', 'b', 'c', 'd', 'e', 'f'];

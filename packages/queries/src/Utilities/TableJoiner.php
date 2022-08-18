@@ -80,6 +80,10 @@ class TableJoiner
             }
 
             if ($propertyPath instanceof PropertyPathAccessInterface) {
+                if (null !== $propertyPath->getContext()) {
+                    throw new InvalidArgumentException("Custom path contexts are not supported in PHP evaluation yet.");
+                }
+
                 return $this->propertyAccessor->getValuesByPropertyPath(
                     $target,
                     $propertyPath->getAccessDepth(),
@@ -244,7 +248,8 @@ class TableJoiner
     {
         return Iterables::asArray($pathA) == Iterables::asArray($pathB)
             && $pathA->getAccessDepth() === $pathB->getAccessDepth()
-            && $pathA->getSalt() === $pathB->getSalt();
+            && $pathA->getSalt() === $pathB->getSalt()
+            && $pathA->getContext() === $pathB->getContext();
     }
 
     /**
