@@ -45,7 +45,7 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
         return FluentQuery::createWithDefaultDefinitions($this->conditionFactory, $this->sortMethodFactory, $this->authorProvider);
     }
 
-    public function testRootAnd()
+    public function testRootAnd(): void
     {
         $fetch = $this->createFetchRequest();
         $fetch->getSortDefinition()
