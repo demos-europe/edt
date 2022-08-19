@@ -39,12 +39,12 @@ class PathTransformerTest extends TestCase
 
         $this->pathTransformer->prefixConditionPaths([$conditionA, $conditionB, $conditionC], 'foo', 'bar');
 
-        $pathA = $conditionA->getPropertyPaths()[0]->getAsNames();
+        $pathA = $conditionA->getPropertyPaths()[0]->getPath()->getAsNames();
         self::assertEquals(['foo', 'bar', 'x'], $pathA);
-        $pathB = $conditionB->getPropertyPaths()[0]->getAsNames();
+        $pathB = $conditionB->getPropertyPaths()[0]->getPath()->getAsNames();
         self::assertEquals(['foo', 'bar', 'x', 'y'], $pathB);
         [$pathC1, $pathC2] = $conditionC->getPropertyPaths();
-        self::assertEquals(['foo', 'bar', 'x', 'y', 'z'], $pathC1->getAsNames());
-        self::assertEquals(['foo', 'bar', 'y', 'x'], $pathC2->getAsNames());
+        self::assertEquals(['foo', 'bar', 'x', 'y', 'z'], $pathC1->getPath()->getAsNames());
+        self::assertEquals(['foo', 'bar', 'y', 'x'], $pathC2->getPath()->getAsNames());
     }
 }

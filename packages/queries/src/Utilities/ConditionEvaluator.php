@@ -6,6 +6,7 @@ namespace EDT\Querying\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Querying\PropertyPaths\PathInfo;
 use InvalidArgumentException;
 use function is_bool;
 
@@ -98,7 +99,7 @@ class ConditionEvaluator
      */
     private function getPropertyValueRows(object $target, FunctionInterface $condition): array
     {
-        $propertyPaths = Iterables::asArray($condition->getPropertyPaths());
+        $propertyPaths = PathInfo::getPropertyPaths($condition);
 
         // accesses all values of the given path and creates the cartesian product,
         return $this->tableJoiner->getValueRows($target, ...$propertyPaths);

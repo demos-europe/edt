@@ -6,6 +6,7 @@ namespace EDT\Querying\Functions;
 
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
+use EDT\Querying\PropertyPaths\PathInfo;
 use EDT\Querying\Utilities\Iterables;
 
 /**
@@ -28,14 +29,14 @@ class Property implements FunctionInterface
         return Iterables::getOnlyValue($propertyValues);
     }
 
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
-        return [$this->propertyPath];
+        return [new PathInfo($this->propertyPath, true)];
     }
 
     public function __toString(): string
     {
         $class = static::class;
-        return "{$class}($this->propertyPath)";
+        return "$class($this->propertyPath)";
     }
 }

@@ -6,6 +6,7 @@ namespace EDT\Querying\Functions;
 
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Utilities\Iterables;
+use function count;
 
 /**
  * This trait is to be used when an implementation of {@link FunctionInterface} invokes
@@ -20,7 +21,7 @@ use EDT\Querying\Utilities\Iterables;
  *
  * The counts are expected to match, meaning if two child function exist and the first one
  * expects 2 parameters and the second one 3 parameters, then 5 parameters must be passed
- * into the the parent function. Otherwise the behavior is undefined.
+ * into the parent function. Otherwise, the behavior is undefined.
  *
  * @template T
  */
@@ -37,7 +38,7 @@ trait MultiFunctionTrait
      */
     public function apply(array $propertyValues)
     {
-        $functionCount = Iterables::count($this->functions);
+        $functionCount = count($this->functions);
         $nestedPropertyValues = $this->unflatPropertyValues($propertyValues);
         Iterables::assertCount($functionCount, $nestedPropertyValues);
         $functionResults = array_map(static function (FunctionInterface $function, array $functionParams) {

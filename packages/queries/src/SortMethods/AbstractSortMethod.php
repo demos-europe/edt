@@ -4,13 +4,45 @@ declare(strict_types=1);
 
 namespace EDT\Querying\SortMethods;
 
+use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\SortException;
+use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\PropertyPaths\PathInfo;
 use function is_string;
-use function strcmp;
-use function is_numeric;
 
-trait SortMethodTrait
+abstract class AbstractSortMethod implements SortMethodInterface
 {
+    /**
+     * @var FunctionInterface<mixed>
+     */
+    protected $target;
+
+    /**
+     * @param FunctionInterface<mixed> $target
+     */
+    public function __construct(FunctionInterface $target)
+    {
+        $this->target = $target;
+    }
+
+    public function getPropertyPaths(): array
+    {
+        return array_map(static function (PathInfo $pathInfo): PathInfo {
+            // forbid to-many paths because this doesn't work with sorting logically
+            return PathInfo::maybeCopy($pathInfo, false);
+        }, $this->target->getPropertyPaths());
+    }
+
+    /**
+     * @throws SortException
+     */
+    public function evaluate(array $propertyValuesA, array $propertyValuesB): int
+    {
+        $valueA = $this->target->apply($propertyValuesA);
+        $valueB = $this->target->apply($propertyValuesB);
+        return $this->evaluateSinglePath($valueA, $valueB);
+    }
+
     /**
      * @param numeric|string|null $propertyValueA
      * @param numeric|string|null $propertyValueB

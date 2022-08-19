@@ -61,7 +61,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         // for each item (or the target) we follow the remaining paths to the values to return
         $currentPart = array_shift($properties);
 
-        return Iterables::flat(function ($newTarget) use ($currentPart, $properties, $depth): array {
+        return Iterables::mapFlat(function ($newTarget) use ($currentPart, $properties, $depth): array {
             $newTarget = $this->getValueByPropertyPath($newTarget, $currentPart);
             return [] === $properties
                 ? Iterables::restructureNesting($newTarget, $depth)

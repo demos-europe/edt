@@ -21,21 +21,24 @@ class Iterables
     private function __construct() {}
 
     /**
+     * Maps each given value to an array using a given callable. All arrays will be merged
+     * (flatted) into a single one and returned.
+     *
      * @template V
      * @template R
      *
-     * @param callable(V): array<int,R> $callable
-     * @param iterable<V>      $values
+     * @param callable(V): array<int,R> $callable how to map each given value to an array
+     * @param array<int, V>             $values   the values to be mapped to an array
      *
      * @return array<int,R>
      */
-    public static function flat(callable $callable, iterable $values): array
+    public static function mapFlat(callable $callable, array $values): array
     {
         // Do not remove this check: there was a problem when passing no arguments
         // to array_merge, which could not be reproduced with tests.
-        $mappedArray = array_map($callable, self::asArray($values));
+        $mappedArray = array_map($callable, $values);
         if ([] === $mappedArray) {
-            return $mappedArray;
+            return [];
         }
 
         return array_merge(...$mappedArray);
@@ -44,7 +47,7 @@ class Iterables
     /**
      * Split the given iterable into multiple arrays.
      *
-     * Can be used to revert a {@link Iterables::flat} operation.
+     * Can be used to revert a {@link Iterables::mapFlat} operation.
      *
      * @template V
      *
@@ -109,7 +112,7 @@ class Iterables
             return [$target];
         }
 
-        return self::flat(function ($newTarget) use ($depth): array {
+        return self::mapFlat(function ($newTarget) use ($depth): array {
             return self::restructureNesting($newTarget, $depth - 1);
         }, self::asArray($target));
     }
@@ -122,18 +125,6 @@ class Iterables
     public static function asArray(iterable $iterable): array
     {
         return is_array($iterable) ? $iterable : iterator_to_array($iterable);
-    }
-
-    /**
-     * @param Countable|iterable<mixed> $countable
-     */
-    public static function count($countable): int
-    {
-        if ($countable instanceof Countable || is_array($countable)) {
-            return count($countable);
-        }
-
-        return count(self::asArray($countable));
     }
 
     /**

@@ -7,6 +7,7 @@ namespace EDT\Querying\Utilities;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\PropertyPaths\PathInfo;
 use function count;
 
 /**
@@ -32,7 +33,7 @@ class Sorter
     {
         $success = usort($arrayToSort, function (object $valueA, object $valueB) use ($sortMethods): int {
             foreach ($sortMethods as $sortMethod) {
-                $propertyPaths = Iterables::asArray($sortMethod->getPropertyPaths());
+                $propertyPaths = PathInfo::getPropertyPaths($sortMethod);
                 $propertyValuesRowsA = $this->tableJoiner->getValueRows($valueA, ...$propertyPaths);
                 $propertyValuesRowsB = $this->tableJoiner->getValueRows($valueB, ...$propertyPaths);
                 /**

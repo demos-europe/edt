@@ -17,7 +17,7 @@ use Doctrine\ORM\QueryBuilder;
 use EDT\DqlQuerying\Contracts\MappingException;
 use EDT\DqlQuerying\Contracts\OrderByInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
-use EDT\Querying\Utilities\Iterables;
+use EDT\Querying\PropertyPaths\PathInfo;
 use ReflectionException;
 use function array_key_exists;
 use function array_slice;
@@ -202,11 +202,11 @@ class QueryBuilderPreparer
      */
     protected function processClause(ClauseInterface $clause)
     {
-        $clauseValues = Iterables::asArray($clause->getClauseValues());
-        $valueIndices = array_map([$this, 'addToParameters'], $clauseValues);
-        $columnNames = array_map(function (PropertyPathAccessInterface $path): string {
-            return $this->processPath($path->getSalt(), $path->getAccessDepth(), $path->getContext(), ...iterator_to_array($path));
-        }, Iterables::asArray($clause->getPropertyPaths()));
+        $valueIndices = array_map([$this, 'addToParameters'], $clause->getClauseValues());
+        $columnNames = array_map(function (PathInfo $pathInfo): string {
+            $path = $pathInfo->getPath();
+            return $this->processPath($pathInfo->isToManyAllowed(), $path->getSalt(), $path->getAccessDepth(), $path->getContext(), ...iterator_to_array($path));
+        }, $clause->getPropertyPaths());
 
         return $clause->asDql($valueIndices, $columnNames);
     }
@@ -233,7 +233,7 @@ class QueryBuilderPreparer
      * @throws \Doctrine\Persistence\Mapping\MappingException
      * @throws ReflectionException
      */
-    protected function processPath(string $salt, int $accessDepth, ?string $context, string $property, string ...$properties): string
+    protected function processPath(bool $isToManyAllowed, string $salt, int $accessDepth, ?string $context, string $property, string ...$properties): string
     {
         array_unshift($properties, $property);
         $originalPathLength = count($properties);
@@ -269,6 +269,7 @@ class QueryBuilderPreparer
             : $this->joinFinder->createTableAlias($salt, $classMetadata);
 
         $neededJoins = $this->joinFinder->findNecessaryJoins(
+            $isToManyAllowed,
             $salt,
             $classMetadata,
             $properties,
@@ -301,7 +302,7 @@ class QueryBuilderPreparer
              *
              * Example: IS NULL needs a join to a target relationship and accesses
              * the target relationships entity alias. But in case of a non-relationship as last
-             * property in the path no such join is executed and we still need to access the
+             * property in the path no such join is executed, and we still need to access the
              * property on the entity.
              */
             return $entityAlias;

@@ -7,6 +7,7 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
+use EDT\Querying\PropertyPaths\PathInfo;
 use EDT\Querying\Utilities\Iterables;
 use function count;
 
@@ -20,6 +21,11 @@ use function count;
 trait FunctionBasedTrait
 {
     /**
+     * @var bool
+     */
+    private $toManyAllowed = true;
+
+    /**
      * @var array<int,FunctionInterface<mixed>>
      */
     private $functions = [];
@@ -27,13 +33,11 @@ trait FunctionBasedTrait
     /**
      * Returns all {@link PropertyPathAccessInterface} instances of all
      * {@link FunctionBasedTrait::$functions} as a flat iterable.
-     *
-     * @return iterable<PropertyPathAccessInterface>
      */
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
-        return Iterables::flat(static function (PathsBasedInterface $function): array {
-            return Iterables::asArray($function->getPropertyPaths());
+        return Iterables::mapFlat(function (PathsBasedInterface $function): array {
+            return array_map([$this, 'setToManyAllowed'], $function->getPropertyPaths());
         }, $this->functions);
     }
 
@@ -50,6 +54,11 @@ trait FunctionBasedTrait
             )
         );
         return "$class($functionList)";
+    }
+
+    private function setToManyAllowed(PathInfo $pathInfo): PathInfo
+    {
+        return PathInfo::maybeCopy($pathInfo, $this->toManyAllowed);
     }
 
     /**
@@ -95,7 +104,7 @@ trait FunctionBasedTrait
     private function unflatPropertyValues(array $propertyValues): array
     {
         $propertyAliasCountables = array_map(static function (PathsBasedInterface $pathsBased): int {
-            return Iterables::count($pathsBased->getPropertyPaths());
+            return count($pathsBased->getPropertyPaths());
         }, $this->functions);
         return Iterables::split($propertyValues, false, ...$propertyAliasCountables);
     }

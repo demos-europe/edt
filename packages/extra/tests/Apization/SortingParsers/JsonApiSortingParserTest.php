@@ -92,7 +92,7 @@ class JsonApiSortingParserTest extends TestCase
     {
         $propertyPaths = $sortMethod->getPropertyPaths();
         self::assertCount(1, $propertyPaths);
-        $propertyPathA = $propertyPaths[0];
+        $propertyPathA = $propertyPaths[0]->getPath();
         self::assertSame($path, iterator_to_array($propertyPathA));
         self::assertSame('', $propertyPathA->getSalt());
         self::assertSame(PHP_INT_MAX, $propertyPathA->getAccessDepth());

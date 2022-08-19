@@ -24,6 +24,7 @@ use EDT\DqlQuerying\Utilities\QueryGenerator;
 use EDT\DqlQuerying\SortMethodFactories\SortMethodFactory;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\PropertyPaths\PropertyPath;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Tests\data\DqlModel\Book;
 use Tests\data\DqlModel\Person;
@@ -177,6 +178,19 @@ class QueryGeneratorTest extends TestCase
         $parameters = $queryBuilder->getParameters();
         self::assertCount(1, $parameters);
         self::assertSame('Example Street', $parameters->first()->getValue());
+    }
+
+    public function testEqualsWithAscendingToManySorting(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $propertyHasValue = $this->conditionFactory->propertyHasValue('Example Street', 'author', 'birth', 'street');
+        $ascending = $this->sortingFactory->propertyAscending('books', 'title');
+        $this->queryGenerator->generateQueryBuilder(
+            Person::class,
+            [$propertyHasValue],
+            [$ascending]
+        );
     }
 
     public function testEqualsWithDescendingFirstSorting(): void

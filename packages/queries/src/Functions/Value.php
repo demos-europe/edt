@@ -32,7 +32,7 @@ class Value implements FunctionInterface
         return $this->value;
     }
 
-    public function getPropertyPaths(): iterable
+    public function getPropertyPaths(): array
     {
         return [];
     }

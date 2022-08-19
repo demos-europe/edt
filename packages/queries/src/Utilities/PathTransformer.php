@@ -7,6 +7,7 @@ namespace EDT\Querying\Utilities;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
+use EDT\Querying\PropertyPaths\PathInfo;
 
 class PathTransformer
 {
@@ -31,9 +32,8 @@ class PathTransformer
      */
     public function prefixConditionPath(FunctionInterface $condition, int $key, array $prefix): void
     {
-        $paths = $condition->getPropertyPaths();
         $paths = array_filter(
-            Iterables::asArray($paths),
+            PathInfo::getPropertyPaths($condition),
             static function (PropertyPathAccessInterface $path): bool {
                 return null === $path->getContext();
             }
