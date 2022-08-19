@@ -97,7 +97,7 @@ class TraitEvaluator
         if (0 === count($traits)) {
             return [$trait];
         }
-        $traits = Iterables::flat([$this, 'getAllNestedTraits'], $traits);
+        $traits = Iterables::mapFlat([$this, 'getAllNestedTraits'], $traits);
         $traits[] = $trait;
 
         return $traits;
@@ -116,7 +116,7 @@ class TraitEvaluator
             return false;
         }
 
-        $traits = Iterables::flat([$this, 'getAllNestedTraits'], $traits);
+        $traits = Iterables::mapFlat([$this, 'getAllNestedTraits'], $traits);
         $traits = array_unique($traits);
 
         return in_array($trait, $traits, true);

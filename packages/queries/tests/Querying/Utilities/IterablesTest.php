@@ -19,7 +19,7 @@ class IterablesTest extends ModelBasedTest
             [4, 5, 6],
         ];
 
-        $output = Iterables::flat(static function (array $arrayElement): array {
+        $output = Iterables::mapFlat(static function (array $arrayElement): array {
             return $arrayElement;
         }, $input);
 
@@ -30,7 +30,7 @@ class IterablesTest extends ModelBasedTest
     {
         $input = [];
 
-        $output = Iterables::flat(static function (array $arrayElement): array {
+        $output = Iterables::mapFlat(static function (array $arrayElement): array {
             self::assertFalse(true);
             return [];
         }, $input);
@@ -40,7 +40,7 @@ class IterablesTest extends ModelBasedTest
 
     public function testFlatWithObjects(): void
     {
-        $output = Iterables::flat(static function (Person $author): array {
+        $output = Iterables::mapFlat(static function (Person $author): array {
             return Iterables::asArray($author->getBooks());
         }, array_values($this->authors));
 

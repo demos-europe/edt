@@ -28,7 +28,7 @@ interface ClauseInterface extends PathsBasedInterface
      * * {@link PropertyPathAccessInterface::UNPACK 1}: A join to the target column will be
      * executed (e.g. `Book.authors` to the `Person` entity in case of the path `book.authors`) The
      * aliases given to {@link ClauseInterface::asDql} will look something like
-     * `t_8f2d7d21_Person`.
+     * `t_58fb870d_Person`.
      */
     public function getPropertyPaths(): array;
 

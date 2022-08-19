@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- feature: disallow to-many relationships usage for sort methods in DQL
+- feature: add DQL support for custom selects
+- feature: add basic right join support for DQL building
 - chore: improve documentation
 
 ## 0.6.4 - 2022-07-04

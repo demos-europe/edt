@@ -22,7 +22,7 @@ trait ClauseBasedTrait
 
     public function getClauseValues(): array
     {
-        return Iterables::flat(static function (ClauseInterface $clause): array {
+        return Iterables::mapFlat(static function (ClauseInterface $clause): array {
             return $clause->getClauseValues();
         }, $this->clauses);
     }

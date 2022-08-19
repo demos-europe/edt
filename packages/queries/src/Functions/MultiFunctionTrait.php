@@ -21,7 +21,7 @@ use function count;
  *
  * The counts are expected to match, meaning if two child function exist and the first one
  * expects 2 parameters and the second one 3 parameters, then 5 parameters must be passed
- * into the the parent function. Otherwise the behavior is undefined.
+ * into the parent function. Otherwise, the behavior is undefined.
  *
  * @template T
  */

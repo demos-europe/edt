@@ -7,6 +7,7 @@ namespace EDT\Wrapping\Utilities;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
+use EDT\Querying\PropertyPaths\PathInfo;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
@@ -62,7 +63,7 @@ class PropertyPathProcessor
                 throw PropertyAccessException::pathDenied($type, $exception, ...$path);
             }
             $propertyPath->setPath(...$path);
-        }, $pathsBased->getPropertyPaths());
+        }, PathInfo::getPropertyPaths($pathsBased));
     }
 
     /**
