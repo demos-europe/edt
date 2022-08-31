@@ -118,7 +118,7 @@ class TableJoiner
         $rightColumn = array_pop($columns);
         $product = $this->cartesianProductRecursive($rightColumn, ...$columns);
 
-        return $this->reAddEmptyColumnsAsNull($product, $emptyColumns);
+        return $this->reAddEmptyColumnsAsNull($product, array_keys($emptyColumns));
     }
 
     /**
@@ -251,14 +251,15 @@ class TableJoiner
      * Re-add the previously removed empty columns by adding null values into each row.
      *
      * @param array<int,array<int,mixed>|int> $array
-     * @param array<int,array<int|string, mixed|null>> $emptyColumns
+     * @param array<int, int> $emptyColumnIndices
+     *
      * @return array<int,array<int,mixed>|int>
      */
-    private function reAddEmptyColumnsAsNull(array $array, array $emptyColumns): array
+    private function reAddEmptyColumnsAsNull(array $array, array $emptyColumnIndices): array
     {
-        array_walk($emptyColumns, static function (array $v, int $index) use (&$array): void {
+        array_map(static function (int $index) use (&$array): void {
             Iterables::insertValue($array, $index, null);
-        });
+        }, $emptyColumnIndices);
 
         return $array;
     }
