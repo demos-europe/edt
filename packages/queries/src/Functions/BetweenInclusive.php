@@ -7,12 +7,10 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-implements FunctionInterface<bool>
+ * @template-extends MultiFunction<bool>
  */
-class BetweenInclusive implements FunctionInterface
+class BetweenInclusive extends MultiFunction
 {
-    use MultiFunctionTrait;
-
     /**
      * @param FunctionInterface<numeric|null> $min
      * @param FunctionInterface<numeric|null> $max
@@ -20,12 +18,16 @@ class BetweenInclusive implements FunctionInterface
      */
     public function __construct(FunctionInterface $min, FunctionInterface $max, FunctionInterface $value)
     {
-        $this->setFunctions($min, $max, $value);
-        $this->callback = static function ($min, $max, $value): bool {
-            if (null === $min || null === $max || null === $value) {
-                return false;
-            }
-            return $value >= $min && $value <= $max;
-        };
+        parent::__construct(
+            static function ($min, $max, $value): bool {
+                if (null === $min || null === $max || null === $value) {
+                    return false;
+                }
+                return $value >= $min && $value <= $max;
+            },
+            $min,
+            $max,
+            $value
+        );
     }
 }

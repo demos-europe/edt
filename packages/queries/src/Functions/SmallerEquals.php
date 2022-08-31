@@ -7,21 +7,22 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-implements FunctionInterface<bool>
+ * @template-extends MultiFunction<bool>
  */
-class SmallerEquals implements FunctionInterface
+class SmallerEquals extends MultiFunction
 {
-    use MultiFunctionTrait;
-
     /**
      * @param FunctionInterface<mixed> $left
      * @param FunctionInterface<mixed> $right
      */
     public function __construct(FunctionInterface $left, FunctionInterface $right)
     {
-        $this->setFunctions($left, $right);
-        $this->callback = static function ($leftValue, $rightValue): bool {
-            return $leftValue <= $rightValue;
-        };
+        parent::__construct(
+            static function ($leftValue, $rightValue): bool {
+                return $leftValue <= $rightValue;
+            },
+            $left,
+            $right
+        );
     }
 }

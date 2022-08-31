@@ -9,13 +9,10 @@ use EDT\Querying\Utilities\Iterables;
 use function count;
 
 /**
- * This trait is to be used when an implementation of {@link FunctionInterface} invokes
+ * This class is to be used when an implementation of {@link FunctionInterface} invokes
  * multiple other {@link FunctionInterface}s.
  *
- * **Make sure to invoke the {@link FunctionBasedTrait::setFunctions()} method before using
- * any methods provided by the trait.**
- *
- * This trait provides a {@link FunctionInterface::apply} implementation that takes a flat list of
+ * This class provides a {@link FunctionInterface::apply} implementation that takes a flat list of
  * parameters intended for the "parent" function and splits this list up so that
  * the right ones are passed into the "child" functions.
  *
@@ -25,13 +22,25 @@ use function count;
  *
  * @template T
  */
-trait MultiFunctionTrait
+class MultiFunction implements FunctionInterface
 {
     use FunctionBasedTrait;
+
     /**
-     * @var callable(...mixed): T
+     * @var callable(mixed...): T
      */
     private $callback;
+
+    /**
+     * @param callable(mixed...): T
+     * @param FunctionInterface<mixed> $function
+     * @param FunctionInterface<mixed> ...$functions
+     */
+    public function __construct(callable $callback, FunctionInterface $function, FunctionInterface... $functions)
+    {
+        $this->setFunctions($function, ...$functions);
+        $this->callback = $callback;
+    }
 
     /**
      * @return T

@@ -8,12 +8,10 @@ use EDT\Querying\Contracts\FunctionInterface;
 use function in_array;
 
 /**
- * @template-implements FunctionInterface<bool>
+ * @template-extends MultiFunction<bool>
  */
-class OneOf implements FunctionInterface
+class OneOf extends MultiFunction
 {
-    use MultiFunctionTrait;
-
     /**
      * @template V
      * @param FunctionInterface<array<V>> $contains
@@ -21,9 +19,12 @@ class OneOf implements FunctionInterface
      */
     public function __construct(FunctionInterface $contains, FunctionInterface $contained)
     {
-        $this->setFunctions($contains, $contained);
-        $this->callback = static function (array $contains, $contained): bool {
-            return in_array($contained, $contains, true);
-        };
+        parent::__construct(
+            static function (array $contains, $contained): bool {
+                return in_array($contained, $contains, true);
+            },
+            $contains,
+            $contained
+        );
     }
 }

@@ -7,12 +7,10 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-implements FunctionInterface<numeric>
+ * @template-extends MultiFunction<numeric>
  */
-class Product implements FunctionInterface
+class Product extends MultiFunction
 {
-    use MultiFunctionTrait;
-
     /**
      * @param FunctionInterface<numeric> $firstFactor
      * @param FunctionInterface<numeric> $secondFactor
@@ -20,9 +18,13 @@ class Product implements FunctionInterface
      */
     public function __construct(FunctionInterface $firstFactor, FunctionInterface $secondFactor, FunctionInterface ...$additionalFactors)
     {
-        $this->setFunctions($firstFactor, $secondFactor, ...$additionalFactors);
-        $this->callback = static function (...$factors) {
-            return array_product($factors);
-        };
+        parent::__construct(
+            static function (...$factors) {
+                return array_product($factors);
+            },
+            $firstFactor,
+            $secondFactor,
+            ...$additionalFactors
+        );
     }
 }

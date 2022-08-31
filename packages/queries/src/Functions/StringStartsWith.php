@@ -7,26 +7,27 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-implements FunctionInterface<bool>
+ * @template-extends MultiFunction<bool>
  */
-class StringStartsWith implements FunctionInterface
+class StringStartsWith extends MultiFunction
 {
-    use MultiFunctionTrait;
-
     /**
      * @param FunctionInterface<string> $contains
      * @param FunctionInterface<string> $contained
      */
     public function __construct(FunctionInterface $contains, FunctionInterface $contained, bool $caseSensitive = false)
     {
-        $this->setFunctions($contains, $contained);
-        $this->callback = static function (?string $contains, ?string $contained) use ($caseSensitive): bool {
-            if (null === $contained || null === $contains) {
-                return false;
-            }
-            return $caseSensitive
-                ? 0 === mb_strpos($contains, $contained)
-                : 0 === mb_stripos($contains, $contained);
-        };
+        parent::__construct(
+            static function (?string $contains, ?string $contained) use ($caseSensitive): bool {
+                if (null === $contained || null === $contains) {
+                    return false;
+                }
+                return $caseSensitive
+                    ? 0 === mb_strpos($contains, $contained)
+                    : 0 === mb_stripos($contains, $contained);
+            },
+            $contains,
+            $contained
+        );
     }
 }

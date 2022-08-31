@@ -7,12 +7,10 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-implements FunctionInterface<numeric>
+ * @template-extends MultiFunction<numeric>
  */
-class Sum implements FunctionInterface
+class Sum extends MultiFunction
 {
-    use MultiFunctionTrait;
-
     /**
      * @param FunctionInterface<numeric> $firstAddend
      * @param FunctionInterface<numeric> $secondAddend
@@ -20,9 +18,13 @@ class Sum implements FunctionInterface
      */
     public function __construct(FunctionInterface $firstAddend, FunctionInterface $secondAddend, FunctionInterface ...$additionalAddends)
     {
-        $this->setFunctions($firstAddend, $secondAddend, ...$additionalAddends);
-        $this->callback = static function (...$addends) {
-            return array_sum($addends);
-        };
+        parent::__construct(
+            static function (...$addends) {
+                return array_sum($addends);
+            },
+            $firstAddend,
+            $secondAddend,
+            ...$additionalAddends
+        );
     }
 }
