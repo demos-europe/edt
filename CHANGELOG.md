@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.1 - 2022-08-31
 
 - chore: remove temporary `phpstan-baseline.neon`, its content is covered in `phpstan.neon`
 

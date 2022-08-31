@@ -7,7 +7,7 @@
         "php": ">=7.3,<8.2",
         "nette/php-generator": "^3.5",
         "phpdocumentor/reflection-docblock": "^5.1.0",
-        "demos-europe/edt-queries": "^0.8"
+        "demos-europe/edt-queries": "^0.7.1"
     },
     "authors": [
         {
@@ -32,8 +32,8 @@
         "vimeo/psalm": "^4.1"
     },
     "conflict": {
-        "demos-europe/edt-extra": "<0.7.0",
-        "demos-europe/edt-access-definitions": "<0.7.0",
-        "demos-europe/edt-dql": "<0.7.0"
+        "demos-europe/edt-extra": "<0.7.1",
+        "demos-europe/edt-access-definitions": "<0.7.1",
+        "demos-europe/edt-dql": "<0.7.1"
     }
 }
