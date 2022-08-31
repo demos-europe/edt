@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Contracts;
 
+/**
+ * @template T of FunctionInterface<bool>
+ */
 interface ConditionFactoryInterface
 {
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -19,7 +22,7 @@ interface ConditionFactoryInterface
      * array of values.
      *
      * @param array<int,mixed> $values
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -27,33 +30,33 @@ interface ConditionFactoryInterface
 
     /**
      * @param array<int,mixed> $values
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      */
     public function true(): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertyHasSize(int $size, string $property, string ...$properties): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertyHasNotSize(int $size, string $property, string ...$properties): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      */
     public function false(): FunctionInterface;
 
@@ -61,30 +64,30 @@ interface ConditionFactoryInterface
      * @param string[] $leftProperties
      * @param string[] $rightProperties
      *
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertiesEqual(array $leftProperties, array $rightProperties): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): FunctionInterface;
 
     /**
-     * @param FunctionInterface<bool> $firstFunction
-     * @param FunctionInterface<bool> ...$additionalFunctions
+     * @param T $firstFunction
+     * @param T ...$additionalFunctions
      *
-     * @return FunctionInterface<bool>
+     * @return T
      */
     public function allConditionsApply(FunctionInterface $firstFunction, FunctionInterface ...$additionalFunctions): FunctionInterface;
 
     /**
      * @param mixed $value
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -94,7 +97,7 @@ interface ConditionFactoryInterface
      * @param mixed $min
      * @param mixed $max
      *
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -104,22 +107,22 @@ interface ConditionFactoryInterface
      * @param mixed $min
      * @param mixed $max
      *
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$propertyPath): FunctionInterface;
 
     /**
-     * @param FunctionInterface<bool> $firstFunction
-     * @param FunctionInterface<bool> ...$additionalFunctions
+     * @param T $firstFunction
+     * @param T ...$additionalFunctions
      *
-     * @return FunctionInterface<bool>
+     * @return T
      */
     public function anyConditionApplies(FunctionInterface $firstFunction, FunctionInterface ...$additionalFunctions): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -127,7 +130,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param mixed $value
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -135,7 +138,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param mixed $value
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -143,7 +146,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param mixed $value
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -151,21 +154,21 @@ interface ConditionFactoryInterface
 
     /**
      * @param mixed $value
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function valueSmallerEqualsThan($value, string $property, string ...$path): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$path): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -184,7 +187,7 @@ interface ConditionFactoryInterface
      *
      * @param array<int,mixed> $values Must not be empty.
      *
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -192,14 +195,14 @@ interface ConditionFactoryInterface
 
     /**
      * @param mixed $value
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
     public function propertyHasNotValue($value, string $property, string ...$properties): FunctionInterface;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */
@@ -209,7 +212,7 @@ interface ConditionFactoryInterface
      * The returned condition will match if the property the given path denotes
      * does not contain the given string value as an entry.
      *
-     * @return FunctionInterface<bool>
+     * @return T
      *
      * @throws PathException
      */

@@ -32,6 +32,9 @@ use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\PropertyPaths\PropertyPath;
 use function count;
 
+/**
+ * @template-implements ConditionFactoryInterface<ClauseFunctionInterface<bool>>
+ */
 class DqlConditionFactory implements ConditionFactoryInterface
 {
     /**
