@@ -21,7 +21,7 @@ class JsonApiSortingParser
 
     /**
      * Create an array of {@link SortMethodInterface} objects from the sort query parameter given if not null.
-     * Otherwise returns an empty array.
+     * Otherwise, returns an empty array.
      *
      * @return array<int,SortMethodInterface>
      */

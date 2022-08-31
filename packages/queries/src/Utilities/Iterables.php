@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Utilities;
 
-use Closure;
-use Countable;
 use InvalidArgumentException;
 use function array_key_exists;
 use function is_array;
@@ -53,7 +51,7 @@ class Iterables
      *
      * @param iterable<V> $toSplit The array to split. Length must be equal to the sum of $sizes, otherwise the behavior is undefined.
      * @param bool $preserveKeys   If the given iterable has usable keys setting this parameter to `true` will
-     *                             preserve them. Otherwise each resulting nested array will be re-indexed
+     *                             preserve them. Otherwise, each resulting nested array will be re-indexed
      *                             with integer keys (starting with `0`).
      * @param int ...$sizes        The intended array size of each item in the result array.
      *
@@ -110,7 +108,7 @@ class Iterables
             return [$target];
         }
 
-        return self::mapFlat(function ($newTarget) use ($depth): array {
+        return self::mapFlat(static function ($newTarget) use ($depth): array {
             return self::restructureNesting($newTarget, $depth - 1);
         }, self::asArray($target));
     }
@@ -223,7 +221,7 @@ class Iterables
     }
 
     /**
-     * This method is **not** intended as a general replacement for empty checks but intended to be used as callback, eg.
+     * This method is **not** intended as a general replacement for empty checks but intended to be used as callback, e.g.
      * ```
      * array_filter($array, [Iterables::class, 'isEmpty']);
      * ```

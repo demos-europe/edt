@@ -54,7 +54,7 @@ class JoinFinder
      * @return array<string, Join> The needed joins. The key will be the alias of
      *                       {@link Join::getAlias()} to ensure uniqueness of the joins returned.
      *                       The count indicates if the last property was a relationship or an attribute.
-     *                       In case of an non-relationship the number of returned joins is exactly one less
+     *                       In case of a non-relationship the number of returned joins is exactly one less
      *                       than the length of the provided path. In case of a relationship the number
      *                       of returned joins is equal to the length of the provided path.
      * @throws MappingException

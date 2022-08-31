@@ -117,7 +117,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      * Each null $value corresponding to the property given with the $propertyName will be replaced
      * with the value read using the property path corresponding to the $propertyName.
      *
-     * For each relationship the same will be done but additionally it will be recursively
+     * For each relationship the same will be done, but additionally it will be recursively
      * wrapped using this factory until $depth is reached. If access is not granted due to the
      * settings in the corresponding {@link TypeInterface::getAccessCondition()} it will be
      * replaced by `null`.

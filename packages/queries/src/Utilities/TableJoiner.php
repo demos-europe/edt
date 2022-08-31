@@ -48,7 +48,7 @@ class TableJoiner
      *  ['text2', 'nameB'],
      *  ['text3', 'nameB']]
      *
-     * If one of the authors has for some reason 2 names (eg. real and a pseudonym)
+     * If one of the authors has for some reason 2 names (e.g. real and a pseudonym)
      * then 9 values will be returned
      * [['text1', 'nameA1'],
      *  ['text2', 'nameA1'],

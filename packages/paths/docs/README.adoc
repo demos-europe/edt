@@ -16,7 +16,7 @@ property changes.
 
 An alternative would be to define string constants in each class with the names of each
 property. In this case you could do something like this `[Comment::ARTICLE, Article::AUTHOR]`.
-This way you can change the value of the constant without adjusting each path manually. Also
+This way you can change the value of the constant without adjusting each path manually. Also,
 your IDE can help you find each usage of a property in your application.
 
 This component extends on these advantages and uses phpdoc `@property-read` tags instead
@@ -59,7 +59,7 @@ not be able to use the instances resulting from a path for anything else but fur
 building. So the above class will work for `$comment->article->authors->getAsNames()` but will
 fail for `$comment->article->getText()`.
 
-However if you pass a factory callback to the trait the path segments will be created
+However, if you pass a factory callback to the trait the path segments will be created
 using that callback, resulting in fully usable instances of your class. Such factory will depend
 on your system architecture. The following example can only give a rough idea, your solution may differ.
 

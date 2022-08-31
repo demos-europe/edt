@@ -63,9 +63,9 @@ class DrupalFilterParser
         // We use the indices as information source and work on the $conditions
         // array only.
 
-        // The buckets may be stored in a flat list but logically we're working with a
+        // The buckets may be stored in a flat list, but logically we're working with a
         // tree of buckets. (Except if the request contained a group circle. Then
-        // it is not a tree anymore and we can't parse it.) To merge the buckets we need
+        // it is not a tree anymore, and we can't parse it.) To merge the buckets we need
         // to process that tree from the leaves up. To do so we search for buckets that
         // are not needed as parent group by any other bucket. These buckets are merged
         // into a single condition, which is then added to its parent bucket. This is

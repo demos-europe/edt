@@ -17,7 +17,7 @@ use function is_string;
 abstract class DrupalConditionParser implements ConditionParserInterface
 {
     /**
-     * The key of the field determining which filter group a condition or a sub group is a member
+     * The key of the field determining which filter group a condition or a subgroup is a member
      * of.
      *
      * @var string
