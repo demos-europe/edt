@@ -58,7 +58,7 @@ class DrupalFilterObject
      * group definitions and all conditions are on the first level, each having
      * a unique name.
      *
-     * @param array<string,array<string,array<string,mixed>>> $groupsAndConditions
+     * @param array<string,array{condition: array{operator?: string, memberOf?: string, value?: mixed, path: string}}|array{group: array{memberOf?: string, conjunction: string}}> $groupsAndConditions
      * @throws DrupalFilterException
      */
     public function __construct(array $groupsAndConditions)
@@ -120,7 +120,7 @@ class DrupalFilterObject
     /**
      * Get the unique name of the parent group of the given group or condition.
      *
-     * @param array<string,mixed> $groupOrCondition
+     * @param array{memberOf?: string} $groupOrCondition
      * @throws DrupalFilterException
      */
     protected function determineMemberOf(array $groupOrCondition): string

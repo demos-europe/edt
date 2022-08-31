@@ -166,7 +166,7 @@ class TableJoiner
      *
      * we get a table with r * l rows and k + 1 columns.
      *
-     * However this is only done for a non-reference column. If the $rightColumn
+     * However, this is only done for a non-reference column. If the $rightColumn
      * references another column we simply de-reference the value and add it, meaning
      * the result is a table with r rows and k + 1 columns.
      *
@@ -251,7 +251,7 @@ class TableJoiner
      * Re-add the previously removed empty columns by adding null values into each row.
      *
      * @param array<int,array<int,mixed>|int> $array
-     * @param array<int,array> $emptyColumns
+     * @param array<int,array<int|string, mixed|null>> $emptyColumns
      * @return array<int,array<int,mixed>|int>
      */
     private function reAddEmptyColumnsAsNull(array $array, array $emptyColumns): array

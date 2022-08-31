@@ -192,7 +192,7 @@ class JoinFinder
         return $classMetadata->hasAssociation($property);
     }
 
-    private function isAttribute(ClassMetadataInfo $classMetadata, string $property)
+    private function isAttribute(ClassMetadataInfo $classMetadata, string $property): bool
     {
         return $classMetadata->hasField($property);
     }

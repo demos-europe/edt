@@ -213,6 +213,7 @@ class Iterables
      * (which are expected to be an array too).
      *
      * @param array<string|int,array<int,mixed>> $array
+     * @param mixed $value
      */
     public static function insertValue(array &$array, int $index, $value): void
     {

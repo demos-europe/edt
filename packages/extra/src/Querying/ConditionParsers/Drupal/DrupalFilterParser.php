@@ -43,7 +43,7 @@ class DrupalFilterParser
     }
 
     /**
-     * @param array<string,array<string,array<string,mixed>>> $groupsAndConditions
+     * @param array<string,array{condition: array{operator?: string, memberOf?: string, value?: mixed, path: string}}|array{group: array{memberOf?: string, conjunction: string}}> $groupsAndConditions
      * @return FunctionInterface<bool>
      * @throws DrupalFilterException
      */
