@@ -4,25 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\DqlQuerying\Functions;
 
-use Doctrine\ORM\Query\Expr;
-use Doctrine\ORM\Query\Expr\Comparison;
-use Doctrine\ORM\Query\Expr\Composite;
-use Doctrine\ORM\Query\Expr\Func;
-use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 
 /**
- * @template-implements ClauseFunctionInterface<numeric>
+ * @template-extends AbstractClauseFunction<numeric>
  */
-class Product extends \EDT\Querying\Functions\Product implements ClauseFunctionInterface
+class Product extends AbstractClauseFunction
 {
-    use ClauseBasedTrait;
-
-    /**
-     * @var Expr
-     */
-    private $expr;
-
     /**
      * @phpstan-param ClauseFunctionInterface<numeric> $firstFactor
      * @phpstan-param ClauseFunctionInterface<numeric> $secondFactor
@@ -30,9 +18,10 @@ class Product extends \EDT\Querying\Functions\Product implements ClauseFunctionI
      */
     public function __construct(ClauseFunctionInterface $firstFactor, ClauseFunctionInterface $secondFactor, ClauseFunctionInterface ...$additionalFactors)
     {
-        parent::__construct($firstFactor, $secondFactor, ...$additionalFactors);
-        $this->setClauses($firstFactor, $secondFactor, ...$additionalFactors);
-        $this->expr = new Expr();
+        parent::__construct(
+            new \EDT\Querying\Functions\Product($firstFactor, $secondFactor, ...$additionalFactors),
+            $firstFactor, $secondFactor, ...$additionalFactors
+        );
     }
 
     public function asDql(array $valueReferences, array $propertyAliases)
