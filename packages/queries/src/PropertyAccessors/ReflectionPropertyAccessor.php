@@ -14,7 +14,7 @@ use function array_slice;
 /**
  * Accesses properties of objects directly via reflection, circumventing any methods.
  *
- * @template-implements PropertyAccessorInterface<mixed>
+ * @template-implements PropertyAccessorInterface<object>
  */
 class ReflectionPropertyAccessor implements PropertyAccessorInterface
 {
@@ -77,9 +77,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
     }
 
     /**
-     * @template T
-     * @param T $target
-     * @return class-string<T>
+     * @return class-string
      */
     protected function getClass(object $target): string
     {

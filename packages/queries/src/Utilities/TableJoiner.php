@@ -60,7 +60,6 @@ class TableJoiner
      *  ['text2', 'nameA2'],
      *  ['text3', 'nameA2']]
      *
-     * @param mixed $target
      * @return mixed[][]
      */
     public function getValueRows(object $target, PropertyPathAccessInterface ...$propertyPaths): array
@@ -79,19 +78,15 @@ class TableJoiner
                 return $propertyPath;
             }
 
-            if ($propertyPath instanceof PropertyPathAccessInterface) {
-                if (null !== $propertyPath->getContext()) {
-                    throw new InvalidArgumentException("Custom path contexts are not supported in PHP evaluation yet.");
-                }
-
-                return $this->propertyAccessor->getValuesByPropertyPath(
-                    $target,
-                    $propertyPath->getAccessDepth(),
-                    ...iterator_to_array($propertyPath)
-                );
+            if (null !== $propertyPath->getContext()) {
+                throw new InvalidArgumentException("Custom path contexts are not supported in PHP evaluation yet.");
             }
 
-            throw new InvalidArgumentException($propertyPath);
+            return $this->propertyAccessor->getValuesByPropertyPath(
+                $target,
+                $propertyPath->getAccessDepth(),
+                ...iterator_to_array($propertyPath)
+            );
         }, $propertyPaths);
 
         return $this->cartesianProduct($valuesOfPropertyPaths);
@@ -206,7 +201,7 @@ class TableJoiner
      */
     private function addValueToRows(array $table, $value): array
     {
-        array_walk($table, static function (array &$row) use ($value) {
+        array_walk($table, static function (array &$row) use ($value): void {
             $row[] = $value;
         });
 
@@ -219,7 +214,7 @@ class TableJoiner
      */
     private function addReferenceToRows(array $table, int $reference): array
     {
-        array_walk($table, static function (array &$row) use ($reference) {
+        array_walk($table, static function (array &$row) use ($reference): void {
             $row[] = $row[$reference];
         });
 

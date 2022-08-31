@@ -48,7 +48,7 @@ class WrapperObject
      */
     private $object;
     /**
-     * @var TypeInterface<object>
+     * @var TypeInterface<T>
      */
     private $type;
     /**
@@ -116,13 +116,16 @@ class WrapperObject
         $argumentsCount = count($arguments);
 
         if ('get' === $match[1] && 0 === $argumentsCount) {
+            /** @phpstan-ignore-next-line */
             return $this->$propertyName;
         }
         if ('set' === $match[1] && 1 === $argumentsCount) {
+            /** @phpstan-ignore-next-line */
             $this->$propertyName = array_pop($arguments);
-        } else {
-            throw AccessException::unexpectedArguments($this->type, 0, $argumentsCount);
+            return;
         }
+
+        throw AccessException::unexpectedArguments($this->type, 0, $argumentsCount);
     }
 
     /**

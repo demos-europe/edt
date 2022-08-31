@@ -7,7 +7,7 @@ namespace EDT\Wrapping\Contracts\Types;
 /**
  * @template T of object
  *
- * @template-implements TypeInterface<T>
+ * @template-extends TypeInterface<T>
  */
 interface SortableTypeInterface extends TypeInterface
 {

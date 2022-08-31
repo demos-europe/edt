@@ -89,11 +89,14 @@ class TraitEvaluator
      * The given trait will be part of the result.
      *
      * @param string $trait
-     * @return string[]
+     * @return array<int, string>
      */
     public function getAllNestedTraits(string $trait): array
     {
         $traits = class_uses($trait);
+        if (false === $traits) {
+            throw new InvalidArgumentException("Failed to execute `class_uses('$trait')`.");
+        }
         if (0 === count($traits)) {
             return [$trait];
         }

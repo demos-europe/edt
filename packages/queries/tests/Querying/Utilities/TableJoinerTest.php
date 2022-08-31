@@ -94,7 +94,7 @@ class TableJoinerTest extends ModelBasedTest
     public function testCartesianWithFirstColumnReference(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectDeprecationMessage("Could not de-reference: 0 at index 0 referenced reference 0");
+        $this->expectDeprecationMessage("De-referencing '0' led to another reference '0'.");
         $input = [
             0,
             [false, true],
@@ -107,7 +107,7 @@ class TableJoinerTest extends ModelBasedTest
     public function testCartesianWithMissingReference(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectDeprecationMessage("Could not de-reference: missing index 3");
+        $this->expectDeprecationMessage("Could not de-reference: missing index '3'.");
         $input = [
             [false, true],
             ['abc'],

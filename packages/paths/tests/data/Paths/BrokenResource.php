@@ -8,6 +8,7 @@ use EDT\PathBuilding\End;
 use EDT\PathBuilding\PropertyAutoPathTrait;
 
 /**
+ * @phpstan-ignore-next-line
  * @property-read End id
  */
 class BrokenResource

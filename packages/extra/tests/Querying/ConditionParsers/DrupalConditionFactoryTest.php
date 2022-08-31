@@ -373,6 +373,7 @@ class DrupalConditionFactoryTest extends TestCase
     {
         $this->expectException(DrupalFilterException::class);
         $this->filterFactory->createRootFromArray(
+            // passing an invalid paramater on purpose
             /** @phpstan-ignore-next-line */
             [
                 'group_a' => [
@@ -388,6 +389,7 @@ class DrupalConditionFactoryTest extends TestCase
         $this->expectException(DrupalFilterException::class);
 
         $this->filterFactory->createRootFromArray(
+            // passing an invalid paramater on purpose
             /** @phpstan-ignore-next-line */
             [
                 'condition_a' => [

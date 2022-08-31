@@ -97,6 +97,8 @@ class FluentQuery
             if (null !== $first) {
                 throw FluentQueryException::createNonUnique();
             }
+            // minimal safeguard against invalid object provider implementation
+            // @phpstan-ignore-next-line
             if (null === $object) {
                 throw FluentQueryException::null();
             }

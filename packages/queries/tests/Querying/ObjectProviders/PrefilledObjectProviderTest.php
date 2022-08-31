@@ -11,7 +11,7 @@ use Tests\ModelBasedTest;
 class PrefilledObjectProviderTest extends ModelBasedTest
 {
     /**
-     * @var PrefilledObjectProvider<Person>
+     * @var PrefilledObjectProvider<Person, int>
      */
     private $authorProvider;
 

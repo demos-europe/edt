@@ -30,10 +30,11 @@ class ConditionEvaluator
 
     /**
      * @template T of object
-     * @param T[] $arrayToFilter must not contain `null` values
+     * @template K of int|string
+     * @param array<K,T> $arrayToFilter must not contain `null` values
      * @param FunctionInterface<bool> $condition
      * @param FunctionInterface<bool> ...$conditions
-     * @return T[] Will not contain `null` values.
+     * @return array<K, T> Will not contain `null` values.
      */
     public function filterArray(array $arrayToFilter, FunctionInterface $condition, FunctionInterface ...$conditions): array
     {

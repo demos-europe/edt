@@ -28,7 +28,7 @@ class Iterables
      * @template R
      *
      * @param callable(V): array<int,R> $callable how to map each given value to an array
-     * @param array<int, V>             $values   the values to be mapped to an array
+     * @param array<int|string, V>      $values   the values to be mapped to an array
      *
      * @return array<int,R>
      */
@@ -98,12 +98,10 @@ class Iterables
      * @return array<int,mixed>
      * @throws InvalidArgumentException If a negative value is passed as $depth
      */
-    public static function restructureNesting($target, int $depth, Closure $isIterable = null): array
+    public static function restructureNesting($target, int $depth, callable $isIterable = null): array
     {
         if (null === $isIterable) {
-            $isIterable = static function ($target): bool {
-                return is_iterable($target);
-            };
+            $isIterable = 'is_iterable';
         }
         if (0 > $depth) {
             throw new InvalidArgumentException("depth must be 0 or positive, is $depth instead");
@@ -120,7 +118,7 @@ class Iterables
     /**
      * @template T
      * @param iterable<T> $iterable
-     * @return T[]
+     * @return array<int|string, T>
      */
     public static function asArray(iterable $iterable): array
     {
@@ -224,7 +222,7 @@ class Iterables
      * @param array<int,T> $values
      * @return array<int,T|int>
      */
-    public static function setReferences(Closure $equalityComparison, array $values): array
+    public static function setReferences(callable $equalityComparison, array $values): array
     {
         $count = count($values);
         for ($i = 0; $i < $count; $i++) {
@@ -253,21 +251,22 @@ class Iterables
      */
     public static function setDeReferencing(array $values): array
     {
-        $count = count($values);
-        for ($i = 0; $i < $count; $i++) {
-            $value = $values[$i];
-            if (is_int($value)) {
-                if (!array_key_exists($value, $values)) {
-                    throw new InvalidArgumentException("Could not de-reference: missing index $value");
-                }
-                $newValue = $values[$value];
-                if (is_int($newValue)) {
-                    throw new InvalidArgumentException("Could not de-reference: $value at index $i referenced reference $newValue");
-                }
-                $values[$i] = $newValue;
+        return array_map(static function ($value) use ($values) {
+            if (!is_int($value)) {
+                return $value;
             }
-        }
-        return $values;
+
+            if (!array_key_exists($value, $values)) {
+                throw new InvalidArgumentException("Could not de-reference: missing index '$value'.");
+            }
+
+            $newValue = $values[$value];
+            if (is_int($newValue)) {
+                throw new InvalidArgumentException("De-referencing '$value' led to another reference '$newValue'.");
+            }
+
+            return $newValue;
+        }, $values);
     }
 
     /**

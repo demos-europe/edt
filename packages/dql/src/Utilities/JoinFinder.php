@@ -13,6 +13,7 @@ use EDT\DqlQuerying\Contracts\MappingException;
 use InvalidArgumentException;
 use ReflectionException;
 use function array_key_exists;
+use function get_class;
 
 /**
  * @internal
@@ -134,6 +135,7 @@ class JoinFinder
             throw new InvalidArgumentException("Current property '$pathPart' was not found in entity '{$classMetadata->getName()}'");
         }
 
+        // attributes must not be followed by additional paths
         if ([] !== $morePathParts) {
             $properties = implode(',', $morePathParts);
             throw new InvalidArgumentException("Current property '$pathPart' is not an association but the path continues with the following properties: $properties");

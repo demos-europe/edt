@@ -7,9 +7,6 @@ namespace EDT\Querying\Contracts;
 use Traversable;
 use const PHP_INT_MAX;
 
-/**
- * @template-extends Traversable<int,string>
- */
 interface PropertyPathAccessInterface extends PropertyPathInterface
 {
     /**

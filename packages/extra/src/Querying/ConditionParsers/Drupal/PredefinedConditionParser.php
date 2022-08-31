@@ -11,7 +11,7 @@ class PredefinedConditionParser extends DrupalConditionParser
 {
     /**
      * @param mixed $conditionValue
-     * @return array<string,Closure>
+     * @return array<string,callable():FunctionInterface<bool>>
      */
     protected function getConditionFactories($conditionValue, string ...$path): array
     {

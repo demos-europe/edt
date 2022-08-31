@@ -16,6 +16,7 @@ use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Types\Object_;
 use function count;
+use function is_string;
 
 /**
  * Provides parsing capabilities for tags, especially for such with an associated type.
@@ -39,7 +40,10 @@ class DocblockTagParser
     {
         try {
             $this->reflectionClass = new ExtendedReflectionClass($class);
-            $docBlock = $this->reflectionClass->getDocComment() ?: ' ';
+            $docBlock = $this->reflectionClass->getDocComment();
+            if (!is_string($docBlock) || '' === $docBlock) {
+                $docBlock = ' ';
+            }
             $this->docBlock = DocBlockFactory::createInstance()->create($docBlock);
         } catch (Exception $e) {
             throw ParseException::docblockParsingFailed($class, $e);
@@ -99,7 +103,7 @@ class DocblockTagParser
 
         $typeDeclaration = (string)$tagType->getFqsen();
         $fqsenParts = explode('\\', $typeDeclaration);
-        if (false === $fqsenParts || 2 > count($fqsenParts)) {
+        if (2 > count($fqsenParts)) {
             throw TagTypeParseException::createForTagType($tag, (string)$tagType, $this->reflectionClass->getName());
         }
 

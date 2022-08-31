@@ -81,7 +81,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      * Assuming the `title` property was not readable then it would not be present in the
      * returned array at all.
      *
-     * If `$depth` would have been `1` then the value for `author` would be an array with all
+     * If `$depth` have been `1` then the value for `author` would be an array with all
      * accessible properties of the `author` type as keys. However the recursion
      * would stop at the author and the values to relationships from the `author` property
      * to other types would be set to `null`.

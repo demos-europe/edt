@@ -57,6 +57,7 @@ class ConditionDefinition
 
     /**
      * @param FunctionInterface<bool> $condition
+     * @return $this
      */
     protected function add(FunctionInterface $condition): self
     {
