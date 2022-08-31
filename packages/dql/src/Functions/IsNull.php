@@ -26,6 +26,6 @@ class IsNull extends \EDT\Querying\Functions\IsNull implements ClauseFunctionInt
     public function asDql(array $valueReferences, array $propertyAliases)
     {
         $maybeNull = $this->getOnlyClause()->asDql($valueReferences, $propertyAliases);
-        return (new Expr())->isNull((string) $maybeNull);
+        return (new Expr())->isNull($maybeNull);
     }
 }

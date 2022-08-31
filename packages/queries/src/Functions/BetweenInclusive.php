@@ -4,30 +4,17 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Functions;
 
-use EDT\Querying\Contracts\FunctionInterface;
-
 /**
- * @template-extends MultiFunction<bool>
+ * @template-extends AbstractMultiFunction<bool, mixed|null, array{0: mixed|null, 1: mixed|null, 2: mixed|null}>
  */
-class BetweenInclusive extends MultiFunction
+class BetweenInclusive extends AbstractMultiFunction
 {
-    /**
-     * @param FunctionInterface<numeric|null> $min
-     * @param FunctionInterface<numeric|null> $max
-     * @param FunctionInterface<numeric|null> $value
-     */
-    public function __construct(FunctionInterface $min, FunctionInterface $max, FunctionInterface $value)
+    protected function reduce(array $functionResults): bool
     {
-        parent::__construct(
-            static function ($min, $max, $value): bool {
-                if (null === $min || null === $max || null === $value) {
-                    return false;
-                }
-                return $value >= $min && $value <= $max;
-            },
-            $min,
-            $max,
-            $value
-        );
+        [$min, $max, $value] = $functionResults;
+        if (null === $min || null === $max || null === $value) {
+            return false;
+        }
+        return $value >= $min && $value <= $max;
     }
 }

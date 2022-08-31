@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use EDT\Querying\Utilities\Iterables;
-use InvalidArgumentException;
 use function count;
 use function in_array;
+use function Safe\class_uses;
+use function Safe\class_parents;
 
 class TraitEvaluator
 {
@@ -16,6 +17,8 @@ class TraitEvaluator
      *
      * Only traits directly used in the given class or directly used in one of the parents
      * are returned. Traits within traits will **not** be returned.
+     *
+     * @param class-string $class
      *
      * @return array<int,string>
      */
@@ -53,14 +56,7 @@ class TraitEvaluator
     public function getAllParents(string $class): array
     {
         $parents = $this->getAllParentClasses($class);
-        $nestedInterfaces = array_map(static function (string $class): array {
-            $interfaces = class_implements($class);
-            if (false === $interfaces) {
-                throw new InvalidArgumentException("Could not determine the parent interfaces of $class");
-            }
-
-            return $interfaces;
-        }, array_reverse($parents));
+        $nestedInterfaces = array_map('Safe\class_implements', array_reverse($parents));
 
         $interfaces = [] === $nestedInterfaces ? [] : array_merge(...$nestedInterfaces);
 
@@ -74,12 +70,7 @@ class TraitEvaluator
      */
     private function getAllParentClasses(string $class): array
     {
-        $parents = class_parents($class);
-        if (false === $parents) {
-            throw new InvalidArgumentException("Could not determine the parent classes of $class");
-        }
-
-        return array_values($parents);
+        return array_values(class_parents($class));
     }
 
     /**
@@ -94,9 +85,6 @@ class TraitEvaluator
     public function getAllNestedTraits(string $trait): array
     {
         $traits = class_uses($trait);
-        if (false === $traits) {
-            throw new InvalidArgumentException("Failed to execute `class_uses('$trait')`.");
-        }
         if (0 === count($traits)) {
             return [$trait];
         }

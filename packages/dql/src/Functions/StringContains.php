@@ -16,12 +16,12 @@ class StringContains extends \EDT\Querying\Functions\StringContains implements C
     use ClauseBasedTrait;
 
     /**
-     * @param ClauseFunctionInterface<string> $contains
-     * @param ClauseFunctionInterface<string> $contained
+     * @param ClauseFunctionInterface<string|null> $contains
+     * @param ClauseFunctionInterface<string|null> $contained
      */
     public function __construct(ClauseFunctionInterface $contains, ClauseFunctionInterface $contained)
     {
-        parent::__construct($contains, $contained);
+        parent::__construct($contains, $contained, false);
         $this->setClauses($contains, $contained);
     }
 

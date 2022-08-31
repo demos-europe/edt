@@ -33,11 +33,12 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     private $salt;
 
     /**
-     * @var string|null
+     * @var class-string|null
      */
     private $context;
 
     /**
+     * @param class-string|null $context
      * @throws PathException
      */
     public function __construct(?string $context, string $salt, int $accessDepth, string $property, string ...$properties)
@@ -81,6 +82,10 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
         return "$pathString({$this->accessDepth})";
     }
 
+    /**
+     * @return array<int, PropertyPathAccessInterface>
+     * @throws PathException
+     */
     public static function createIndexSaltedPaths(int $count, int $depth, string $property, string ...$properties): array
     {
         return array_map(static function (int $pathIndex) use ($depth, $property, $properties): PropertyPathAccessInterface {
@@ -90,7 +95,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     public function getAsNames(): array
     {
-        return Iterables::asArray($this);
+        return array_values(Iterables::asArray($this));
     }
 
     public function getAsNamesInDotNotation(): string

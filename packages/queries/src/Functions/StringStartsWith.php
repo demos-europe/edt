@@ -7,27 +7,34 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-extends MultiFunction<bool>
+ * @template-extends AbstractMultiFunction<bool, string|null, array{0: string|null, 1: string|null}>
  */
-class StringStartsWith extends MultiFunction
+class StringStartsWith extends AbstractMultiFunction
 {
     /**
-     * @param FunctionInterface<string> $contains
-     * @param FunctionInterface<string> $contained
+     * @var bool
      */
-    public function __construct(FunctionInterface $contains, FunctionInterface $contained, bool $caseSensitive = false)
+    private $caseSensitive;
+
+    /**
+     * @param FunctionInterface<string|null> $contains
+     * @param FunctionInterface<string|null> $contained
+     */
+    public function __construct(FunctionInterface $contains, FunctionInterface $contained, bool $caseSensitive)
     {
-        parent::__construct(
-            static function (?string $contains, ?string $contained) use ($caseSensitive): bool {
-                if (null === $contained || null === $contains) {
-                    return false;
-                }
-                return $caseSensitive
-                    ? 0 === mb_strpos($contains, $contained)
-                    : 0 === mb_stripos($contains, $contained);
-            },
-            $contains,
-            $contained
-        );
+        parent::__construct($contains, $contained);
+        $this->caseSensitive = $caseSensitive;
+    }
+
+    protected function reduce(array $functionResults): bool
+    {
+        [$contains, $contained] = $functionResults;
+
+        if (null === $contained || null === $contains) {
+            return false;
+        }
+        return $this->caseSensitive
+            ? 0 === mb_strpos($contains, $contained)
+            : 0 === mb_stripos($contains, $contained);
     }
 }

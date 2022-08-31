@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Querying\Evaluators;
 
-use EDT\Querying\Functions\AllTrue;
 use EDT\Querying\Functions\InvertedBoolean;
 use EDT\Querying\Functions\StringContains;
 use EDT\Querying\Functions\AllEqual;
@@ -246,7 +245,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
         $constant = new Value('phen');
         $property = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'name'));
         $lower = new LowerCase($property);
-        $functionCondition = new StringContains($lower, $constant);
+        $functionCondition = new StringContains($lower, $constant, false);
         $expectedAuthors = [$this->authors['king']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $functionCondition));
         self::assertEquals($expectedAuthors, $filteredAuthors);
@@ -267,7 +266,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
         $constant = new Value('PHEN');
         $property = new Property(new PropertyPath(null, '', PropertyPath::UNPACK, 'name'));
         $upper = new UpperCase($property);
-        $functionCondition = new StringContains($upper, $constant);
+        $functionCondition = new StringContains($upper, $constant, false);
         $expectedAuthors = [$this->authors['king']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $functionCondition));
         self::assertEquals($expectedAuthors, $filteredAuthors);
@@ -297,7 +296,8 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testCustomMemberCondition(): void
     {
         $propertyPath = new PropertyPath(null, '', PropertyPath::DIRECT, 'books', 'title');
-        $condition = new AllTrue(
+        $condition = new AllEqual(
+            new Value(true),
             new AllEqual(
                 new Property($propertyPath),
                 new Value('Harry Potter and the Philosopher\'s Stone')
@@ -315,7 +315,8 @@ class ConditionEvaluatorTest extends ModelBasedTest
     {
         $propertyPathA = new PropertyPath(null, 'a', PropertyPath::DIRECT, 'books', 'title');
         $propertyPathB = new PropertyPath(null, 'b', PropertyPath::DIRECT, 'books', 'title');
-        $condition = new AllTrue(
+        $condition = new AllEqual(
+            new Value(true),
             new AllEqual(
                 new Property($propertyPathA),
                 new Value('Harry Potter and the Philosopher\'s Stone')

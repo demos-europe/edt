@@ -51,8 +51,7 @@ interface PropertyAccessorInterface
     /**
      * Sets a property values of the given target.
      *
-     * @param mixed $target
      * @param mixed|null $value
      */
-    public function setValue($target, $value, string $property): void;
+    public function setValue(object $target, $value, string $property): void;
 }

@@ -15,7 +15,7 @@ class Size extends \EDT\Querying\Functions\Size implements ClauseFunctionInterfa
     use ClauseBasedTrait;
 
     /**
-     * @param ClauseFunctionInterface<Countable|array<mixed>> $baseFunction
+     * @param ClauseFunctionInterface<Countable|array<int|string, mixed>> $baseFunction
      */
     public function __construct(ClauseFunctionInterface $baseFunction)
     {

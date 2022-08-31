@@ -9,7 +9,7 @@ use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\SortMethodFactories\PhpSortMethodFactory;
 use EDT\Querying\SortMethods\Ascending;
 use EDT\Querying\SortMethods\Descending;
-use PHPStan\Testing\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class JsonApiSortingParserTest extends TestCase
 {

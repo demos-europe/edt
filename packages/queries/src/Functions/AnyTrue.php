@@ -4,28 +4,27 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Functions;
 
-use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Utilities\Iterables;
+use function count;
 
 /**
- * @template-implements FunctionInterface<bool>
+ * @template-extends AbstractFunction<bool, bool>
  */
-class AnyTrue implements FunctionInterface
+class AnyTrue extends AbstractFunction
 {
-    use FunctionBasedTrait;
-
-    /**
-     * @param FunctionInterface<bool> $firstFunction
-     * @param FunctionInterface<bool> ...$additionalFunctions
-     */
-    public function __construct(FunctionInterface $firstFunction, FunctionInterface ...$additionalFunctions)
-    {
-        $this->setFunctions($firstFunction, ...$additionalFunctions);
-    }
-
     public function apply(array $propertyValues): bool
     {
-        return $this->evaluateAll(static function (bool $evaluationResult): bool {
-            return $evaluationResult;
-        }, $propertyValues);
+        $nestedPropertyValues = $this->unflatPropertyValues($propertyValues);
+        $count = count($nestedPropertyValues);
+        Iterables::assertCount($count, $this->functions);
+        for ($i = 0; $i < $count; $i++) {
+            $condition = $this->functions[$i];
+            $propertyValues = $nestedPropertyValues[$i];
+            if ($condition->apply($propertyValues)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

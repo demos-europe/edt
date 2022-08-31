@@ -150,67 +150,6 @@ class Iterables
     }
 
     /**
-     * @param callable(bool): bool $stopEvaluation
-     * @param callable(): bool     ...$evaluateCalls
-     */
-    public static function earlyBreakEvaluate(callable $stopEvaluation, callable ...$evaluateCalls): bool
-    {
-        foreach ($evaluateCalls as $evaluateCall) {
-            $previousEvaluation = $evaluateCall();
-            if ($stopEvaluation($previousEvaluation)) {
-                return $previousEvaluation;
-            }
-        }
-
-        // We end the function with the return value of the function call.
-        // In case of an `OR` conjunction no condition evaluated to true and we return false here.
-        // In case of an `AND` conjunction all conditions evaluated to true and we return true here.
-        return $stopEvaluation(false);
-    }
-
-    public static function earlyBreakAnd(callable $abortFunction, callable $firstValueCallback, callable $secondValueCallback, callable ...$additionalValueCallbacks): bool
-    {
-        $previous = $firstValueCallback();
-        array_unshift($additionalValueCallbacks, $secondValueCallback);
-        foreach ($additionalValueCallbacks as $evaluateCall) {
-            $current = $evaluateCall();
-            if ($abortFunction($current, $previous)) {
-                return false;
-            }
-            $previous = $current;
-        }
-
-        return true;
-    }
-
-    /**
-     * Compares the values returned by a given list of callables. The function will abort the
-     * processing when a return value is found that strictly equals another return value.
-     *
-     * @param callable $abortFunction     Takes the return value of one given callable as first
-     *                                    parameter and the return value of another given callable
-     *                                    as second parameter and must return a boolean indicating
-     *                                    if the function should abort and return `true`.
-     * @param callable ...$valueCallbacks A callback may be invoked multiple times or not at all.
-     *
-     * @return bool `true` if any given callable returns the same value as any other given callable.
-     *              `false` otherwise.
-     */
-    public static function earlyBreakOr(callable $abortFunction, callable ...$valueCallbacks): bool
-    {
-        while (null !== ($currentCallback = array_pop($valueCallbacks))) {
-            $previousValue = $currentCallback();
-            foreach ($valueCallbacks as $valueCallback) {
-                if ($abortFunction($previousValue, $valueCallback())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Compares all values with each other using the given $equalityComparison
      * callback. If equal values are found, the one with the higher index will be
      * replaced with the index of the first occurrence in the array.

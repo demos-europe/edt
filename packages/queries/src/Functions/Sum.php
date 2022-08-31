@@ -4,27 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Functions;
 
-use EDT\Querying\Contracts\FunctionInterface;
-
 /**
- * @template-extends MultiFunction<numeric>
+ * @template-extends AbstractMultiFunction<numeric, numeric, array<int, numeric>>
  */
-class Sum extends MultiFunction
+class Sum extends AbstractMultiFunction
 {
-    /**
-     * @param FunctionInterface<numeric> $firstAddend
-     * @param FunctionInterface<numeric> $secondAddend
-     * @param FunctionInterface<numeric> ...$additionalAddends
-     */
-    public function __construct(FunctionInterface $firstAddend, FunctionInterface $secondAddend, FunctionInterface ...$additionalAddends)
+    protected function reduce(array $functionResults)
     {
-        parent::__construct(
-            static function (...$addends) {
-                return array_sum($addends);
-            },
-            $firstAddend,
-            $secondAddend,
-            ...$additionalAddends
-        );
+        return array_sum($functionResults);
     }
 }

@@ -11,6 +11,7 @@ use function array_filter;
 use function array_map;
 use function get_declared_classes;
 use function in_array;
+use function Safe\class_implements;
 
 class GuessingConditionParser extends DrupalConditionParser
 {
@@ -43,7 +44,8 @@ class GuessingConditionParser extends DrupalConditionParser
         }
 
         $availableClasses = array_filter(get_declared_classes(), function (string $className): bool {
-            return in_array(FunctionInterface::class, class_implements($className), true)
+            $implementations = class_implements($className);
+            return in_array(FunctionInterface::class, $implementations, true)
                 && str_ends_with($className, $this->classSuffix);
         });
         $availableOperators = array_map(static function (string $className): string {

@@ -50,6 +50,9 @@ class PathInfo
         return $this->toManyAllowed;
     }
 
+    /**
+     * @return array<int, PropertyPathAccessInterface>
+     */
     public static function getPropertyPaths(PathsBasedInterface $pathsBased): array
     {
         return array_map(static function (PathInfo $pathInfo): PropertyPathAccessInterface {

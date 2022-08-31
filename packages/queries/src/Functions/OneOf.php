@@ -4,27 +4,17 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Functions;
 
-use EDT\Querying\Contracts\FunctionInterface;
 use function in_array;
 
 /**
- * @template-extends MultiFunction<bool>
+ * @template V
+ * @template-extends AbstractMultiFunction<bool, array<int, V>|V, array{0: array<int, V>, 1: V}>
  */
-class OneOf extends MultiFunction
+class OneOf extends AbstractMultiFunction
 {
-    /**
-     * @template V
-     * @param FunctionInterface<array<V>> $contains
-     * @param FunctionInterface<V> $contained
-     */
-    public function __construct(FunctionInterface $contains, FunctionInterface $contained)
+    protected function reduce(array $functionResults): bool
     {
-        parent::__construct(
-            static function (array $contains, $contained): bool {
-                return in_array($contained, $contains, true);
-            },
-            $contains,
-            $contained
-        );
+        [$contains, $contained] = $functionResults;
+        return in_array($contained, $contains, true);
     }
 }

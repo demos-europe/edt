@@ -39,16 +39,7 @@ class Product extends \EDT\Querying\Functions\Product implements ClauseFunctionI
     {
         $dqlClauses = $this->getDqls($valueReferences, $propertyAliases);
         $initial = array_shift($dqlClauses);
-        return array_reduce($dqlClauses, [$this, 'prodReduce'], $initial);
-    }
-
-    /**
-     * @param Composite|Math|Func|Comparison|string $carry
-     * @param Composite|Math|Func|Comparison|string $dqlClause
-     */
-    // do not typehint the function parameters as strings, as we must not implicitly invoke __toString
-    private function prodReduce($carry, $dqlClause): Math
-    {
-        return $this->expr->prod($carry, $dqlClause);
+        // do not typehint the callback parameters as strings, as we must not implicitly invoke __toString
+        return array_reduce($dqlClauses, [$this->expr, 'prod'], $initial);
     }
 }

@@ -22,6 +22,7 @@ use EDT\Wrapping\Utilities\PropertyReader;
 use EDT\Wrapping\Utilities\TypeAccessor;
 use function array_key_exists;
 use function count;
+use function Safe\preg_match;
 
 /**
  * @template T of object
@@ -190,7 +191,7 @@ class WrapperObject
 
         $relationship = $updatableProperties[$propertyName];
         $propertyPath = $this->mapProperty($propertyName);
-        $deAliasedPropertyName = $propertyPath[0];
+        $deAliasedPropertyName = array_pop($propertyPath);
         $target = [] === $propertyPath
             ? $this->object
             : $this->propertyAccessor->getValueByPropertyPath($this->object, ...$propertyPath);
@@ -230,10 +231,9 @@ class WrapperObject
     /**
      * Set the value into the given object
      *
-     * @param array<string,mixed|null>|object $target
      * @param mixed|null $value
      */
-    protected function setUnrestricted(string $propertyName, $target, $value): void
+    protected function setUnrestricted(string $propertyName, object $target, $value): void
     {
         $this->propertyAccessor->setValue($target, $value, $propertyName);
     }

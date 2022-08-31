@@ -39,7 +39,11 @@ class Sum extends \EDT\Querying\Functions\Sum implements ClauseFunctionInterface
     {
         $dqlClauses = $this->getDqls($valueReferences, $propertyAliases);
         $initial = array_shift($dqlClauses);
-        return array_reduce($dqlClauses, [$this, 'sumReduce'], $initial);
+        $sumDql = array_reduce($dqlClauses, [$this, 'sumReduce'], $initial);
+        if (null === $sumDql) {
+            throw new \InvalidArgumentException('Not enough DQL clauses to create SUM expression.');
+        }
+        return $sumDql;
     }
 
     /**

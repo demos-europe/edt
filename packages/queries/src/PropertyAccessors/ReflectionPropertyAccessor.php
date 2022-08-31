@@ -69,7 +69,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         }, $target);
     }
 
-    public function setValue($target, $value, string $propertyName): void
+    public function setValue(object $target, $value, string $propertyName): void
     {
         $reflectionProperty = new ReflectionProperty($this->getClass($target), $propertyName);
         $reflectionProperty->setAccessible(true);

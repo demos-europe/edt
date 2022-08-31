@@ -7,27 +7,34 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-extends MultiFunction<bool>
+ * @template-extends AbstractMultiFunction<bool, string|null, array{0: string|null, 1: string|null}>
  */
-class StringContains extends MultiFunction
+class StringContains extends AbstractMultiFunction
 {
+    /**
+     * @var bool
+     */
+    private $caseSensitive;
+
     /**
      * @param FunctionInterface<string|null> $contains
      * @param FunctionInterface<string|null> $contained
      */
-    public function __construct(FunctionInterface $contains, FunctionInterface $contained, bool $caseSensitive = false)
+    public function __construct(FunctionInterface $contains, FunctionInterface $contained, bool $caseSensitive)
     {
-        parent::__construct(
-            static function (?string $containsResult, ?string $containedResult) use ($caseSensitive): bool {
-                if (null === $containedResult || null === $containsResult) {
-                    return false;
-                }
-                return $caseSensitive
-                    ? false !== mb_strpos($containsResult, $containedResult)
-                    : false !== mb_stripos($containsResult, $containedResult);
-            },
-            $contains,
-            $contained
-        );
+        parent::__construct($contains, $contained);
+        $this->caseSensitive = $caseSensitive;
+    }
+
+    protected function reduce(array $functionResults): bool
+    {
+        [$containsResult, $containedResult] = $functionResults;
+
+        if (null === $containedResult || null === $containsResult) {
+            return false;
+        }
+        return $this->caseSensitive
+            ? false !== mb_strpos($containsResult, $containedResult)
+            : false !== mb_stripos($containsResult, $containedResult);
     }
 }

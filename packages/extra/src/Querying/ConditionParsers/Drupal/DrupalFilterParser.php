@@ -145,7 +145,7 @@ class DrupalFilterParser
     }
 
     /**
-     * @param array<string,array<int,array<string,mixed>>> $groupedConditions
+     * @param array<string,array<int,array{operator?: string, memberOf?: string, value?: mixed, path: string}>> $groupedConditions
      * @return array<string,array<int,FunctionInterface<bool>>>
      */
     private function parseConditions(array $groupedConditions): array

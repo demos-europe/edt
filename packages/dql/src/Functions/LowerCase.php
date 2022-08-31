@@ -8,14 +8,14 @@ use Doctrine\ORM\Query\Expr;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 
 /**
- * @template-implements ClauseFunctionInterface<string>
+ * @template-implements ClauseFunctionInterface<string|null>
  */
 class LowerCase extends \EDT\Querying\Functions\LowerCase implements ClauseFunctionInterface
 {
     use ClauseBasedTrait;
 
     /**
-     * @param ClauseFunctionInterface<string> $baseFunction
+     * @param ClauseFunctionInterface<string|null> $baseFunction
      */
     public function __construct(ClauseFunctionInterface $baseFunction)
     {

@@ -21,30 +21,14 @@ use function count;
  * into the parent function. Otherwise, the behavior is undefined.
  *
  * @template T
+ * @template I
+ * @template-extends AbstractFunction<T, I>
+ * @template X of array
+ *
+ * @internal
  */
-class MultiFunction implements FunctionInterface
+abstract class AbstractMultiFunction extends AbstractFunction
 {
-    use FunctionBasedTrait;
-
-    /**
-     * @var callable(mixed...): T
-     */
-    private $callback;
-
-    /**
-     * @param callable(mixed...): T
-     * @param FunctionInterface<mixed> $function
-     * @param FunctionInterface<mixed> ...$functions
-     */
-    public function __construct(callable $callback, FunctionInterface $function, FunctionInterface... $functions)
-    {
-        $this->setFunctions($function, ...$functions);
-        $this->callback = $callback;
-    }
-
-    /**
-     * @return T
-     */
     public function apply(array $propertyValues)
     {
         $functionCount = count($this->functions);
@@ -53,6 +37,14 @@ class MultiFunction implements FunctionInterface
         $functionResults = array_map(static function (FunctionInterface $function, array $functionParams) {
             return $function->apply($functionParams);
         }, $this->functions, $nestedPropertyValues);
-        return ($this->callback)(...$functionResults);
+
+        return $this->reduce($functionResults);
     }
+
+    /**
+     * @param X $functionResults
+     *
+     * @return T
+     */
+    protected abstract function reduce(array $functionResults);
 }

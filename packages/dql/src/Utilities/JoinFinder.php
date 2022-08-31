@@ -70,6 +70,9 @@ class JoinFinder
         $keyIndexedJoins = [];
         foreach ($joins as $join) {
             $alias = $join->getAlias();
+            if (null === $alias) {
+                throw new InvalidArgumentException('Alias must not be null');
+            }
             if (array_key_exists($alias, $keyIndexedJoins)) {
                 throw MappingException::duplicatedAlias($alias, $path, $salt);
             }

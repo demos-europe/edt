@@ -62,6 +62,9 @@ class JsonApiSortingParser
         return 0 === strncmp($sortMethodRaw, '-', 1);
     }
 
+    /**
+     * @return array<int, string>
+     */
     private function toPathArray(string $pathString): array
     {
         return explode('.', $pathString);

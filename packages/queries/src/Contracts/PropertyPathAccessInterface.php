@@ -34,7 +34,7 @@ interface PropertyPathAccessInterface extends PropertyPathInterface
      * Conditions that require a non-relationship as last property in the path should simply set
      * {@link PropertyPathAccessInterface::DIRECT}.
      *
-     * @var int The value determining how often a join should be executed.
+     * @return int the value determining how often a join should be executed
      */
     public function getAccessDepth(): int;
 

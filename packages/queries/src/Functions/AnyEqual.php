@@ -4,34 +4,34 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Functions;
 
-use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Utilities\Iterables;
+use function count;
 
 /**
- * @template-implements FunctionInterface<bool>
+ * @template-extends AbstractFunction<bool, mixed>
  */
-class AnyEqual implements FunctionInterface
+class AnyEqual extends AbstractFunction
 {
-    use FunctionBasedTrait;
-
-    /**
-     * @param FunctionInterface<mixed> ...$functions
-     */
-    public function __construct(FunctionInterface ...$functions)
-    {
-        $this->setFunctions(...$functions);
-    }
-
     public function apply(array $propertyValues): bool
     {
         $nestedPropertyValues = $this->unflatPropertyValues($propertyValues);
-        $evaluateCalls = array_map(static function (FunctionInterface $function, array $propertyValues): callable {
-            return static function () use ($function, $propertyValues) {
-                return $function->apply($propertyValues);
-            };
-        }, $this->functions, $nestedPropertyValues);
-        return Iterables::earlyBreakOr(static function ($previous, $current): bool {
-            return null !== $previous && $previous === $current;
-        }, ...$evaluateCalls);
+        $count = count($this->functions);
+        Iterables::assertCount($count, $nestedPropertyValues);
+        $evaluations = [];
+        for ($i = 0; $i < $count; $i++) {
+            $function = $this->functions[$i];
+            $propertyValues = $nestedPropertyValues[$i];
+            $newEvaluation = $function->apply($propertyValues);
+            if (null !== $newEvaluation) {
+                foreach ($evaluations as $evaluation) {
+                    if ($evaluation === $newEvaluation) {
+                        return true;
+                    }
+                    $evaluations[] = $newEvaluation;
+                }
+            }
+        }
+
+        return false;
     }
 }

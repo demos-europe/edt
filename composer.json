@@ -6,7 +6,9 @@
         "php": ">=7.3,<8.2",
         "doctrine/orm": "^2.5",
         "nette/php-generator": "^3.5",
-        "phpdocumentor/reflection-docblock": "^5.1.0"
+        "phpdocumentor/reflection-docblock": "^5.1.0",
+        "thecodingmachine/safe": "^2.2",
+        "nikic/php-parser": "^4.14"
     },
     "authors": [
         {
@@ -16,12 +18,14 @@
     ],
     "require-dev": {
         "doctrine/cache": "^1.11",
-        "phpstan/phpstan": "^0.12.54",
-        "phpstan/phpstan-strict-rules": "^0.12.5",
+        "phpstan/phpstan": "^1.8.2",
+        "phpstan/phpstan-strict-rules": "^1.4.2",
         "phpunit/phpunit": "^9.5",
         "repman-io/composer-plugin": "^1.1",
         "symplify/monorepo-builder": "^10.1",
-        "vimeo/psalm": "^4.1"
+        "vimeo/psalm": "^4.1",
+        "thecodingmachine/phpstan-safe-rule": "^1.2",
+        "doctrine/annotations": "^1.13"
     },
     "autoload": {
         "psr-4": {

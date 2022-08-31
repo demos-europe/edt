@@ -10,7 +10,7 @@ use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 /**
  * @template-implements ClauseFunctionInterface<bool>
  */
-class AllTrue extends \EDT\Querying\Functions\AllTrue implements ClauseFunctionInterface
+class AllTrue extends \EDT\Querying\Functions\AllEqual implements ClauseFunctionInterface
 {
     use ClauseBasedTrait;
 
@@ -20,7 +20,7 @@ class AllTrue extends \EDT\Querying\Functions\AllTrue implements ClauseFunctionI
      */
     public function __construct(ClauseFunctionInterface $firstFunction, ClauseFunctionInterface ...$additionalFunctions)
     {
-        parent::__construct($firstFunction, ...$additionalFunctions);
+        parent::__construct(new \EDT\Querying\Functions\Value(true), $firstFunction, ...$additionalFunctions);
         $this->setClauses($firstFunction, ...$additionalFunctions);
     }
 
