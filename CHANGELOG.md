@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- refactor: improve code and documentation based on tool concerns and add remaining phpstan (level 8) concerns as baseline to be worked on
+- refactor: use safe functions from `thecodingmachine/safe` instead of PHP build-ins
+- refactor: always return int-indexed list by `ObjectProvider`
+- refactor: remove `AllTrue` PHP class, it can be constructed using `AllEqual` instead
+- refactor: replace `ExtendedReflectionClass` with `nikic/php-parser` and thus fix edt-path tests
+- refactor: replace trait usage in clauses with inheritance and composition
+- refactor: replace trait usage in functions and clauses with inheritance and composition
+- chore: remove currently unused tooling configs
 - feature: disallow to-many relationships usage for sort methods in DQL
 - feature: add DQL support for custom selects
 - feature: add basic right join support for DQL building
