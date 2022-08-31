@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.0 - 2022-08-31
 
 - refactor: improve code and documentation based on tool concerns and add remaining phpstan (level 8) concerns as baseline to be worked on
 - refactor: use safe functions from `thecodingmachine/safe` instead of PHP build-ins
