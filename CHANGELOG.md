@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- chore: remove temporary `phpstan-baseline.neon`, its content is covered in `phpstan.neon`
+
 ## 0.7.0 - 2022-08-31
 
 - refactor: improve code and documentation based on tool concerns and add remaining phpstan (level 8) concerns as baseline to be worked on
