@@ -73,6 +73,8 @@ class TypeAccessor
     }
 
     /**
+     * @return TypeInterface<object>|null
+     *
      * @throws TypeRetrievalAccessException
      */
     private function getTypeInstance(?string $value): ?TypeInterface

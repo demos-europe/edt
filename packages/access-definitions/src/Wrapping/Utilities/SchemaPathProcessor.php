@@ -117,6 +117,8 @@ class SchemaPathProcessor
     }
 
     /**
+     * @return array<int, SortMethodInterface>
+     *
      * @throws PathException
      */
     protected function processDefaultSortMethods(TypeInterface $type): array

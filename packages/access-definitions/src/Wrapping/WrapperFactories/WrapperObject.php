@@ -44,7 +44,7 @@ class WrapperObject
      */
     private const METHOD_PATTERN = '/(get|set)([A-Z_]\w*)/';
     /**
-     * @var object
+     * @var T
      */
     private $object;
     /**
@@ -104,6 +104,7 @@ class WrapperObject
     }
 
     /**
+     * @param array<int|string, mixed> $arguments
      * @return mixed|null|void If no parameters given:<ul>
      *   <li>In case of a relationship: an array, {@link WrapperObject} or <code>null</code>.
      *   <li>Otherwise a primitive type.</ul> If parameters given: `void`.
@@ -189,7 +190,7 @@ class WrapperObject
 
         $relationship = $updatableProperties[$propertyName];
         $propertyPath = $this->mapProperty($propertyName);
-        $deAliasedPropertyName = array_pop($propertyPath);
+        $deAliasedPropertyName = $propertyPath[0];
         $target = [] === $propertyPath
             ? $this->object
             : $this->propertyAccessor->getValueByPropertyPath($this->object, ...$propertyPath);
@@ -229,8 +230,8 @@ class WrapperObject
     /**
      * Set the value into the given object
      *
-     * @param array|object $target
-     * @param mixed $value
+     * @param array<string,mixed|null>|object $target
+     * @param mixed|null $value
      */
     protected function setUnrestricted(string $propertyName, $target, $value): void
     {

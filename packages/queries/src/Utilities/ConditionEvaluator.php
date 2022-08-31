@@ -106,6 +106,9 @@ class ConditionEvaluator
         return $this->tableJoiner->getValueRows($target, ...$propertyPaths);
     }
 
+    /**
+     * @param mixed $value
+     */
     private function assertBoolean($value): bool
     {
         if (!is_bool($value)) {

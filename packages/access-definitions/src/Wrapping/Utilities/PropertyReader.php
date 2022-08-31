@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Utilities;
 
+use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SliceException;
@@ -122,6 +123,7 @@ class PropertyReader
     {
         // filter out restricted items
         $objectProvider = new PrefilledObjectProvider($this->propertyAccessor, $items);
+        /** @var ObjectProviderInterface<V> $objectProvider */
         $objectProvider = new TypeRestrictedEntityProvider($objectProvider, $relationship, $this->schemaPathProcessor);
 
         $objects = $objectProvider->getObjects([]);
