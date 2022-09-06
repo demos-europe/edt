@@ -4,7 +4,7 @@
     "license": "MIT",
     "require": {
         "doctrine/orm": "^2.5",
-        "nette/php-generator": "^3.5",
+        "nette/php-generator": "^4.0",
         "nikic/php-parser": "^4.14",
         "php": ">=7.3,<8.2",
         "phpdocumentor/reflection-docblock": "^5.1.0",
