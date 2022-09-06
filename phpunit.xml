@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         defaultTestSuite="access-definitions,paths,dql,extra,queries"
+         bootstrap="bootstrap.php"
+         colors="true"
+         verbose="true"
+>
+    <coverage cacheDirectory=".phpunit.cache/code-coverage"
+              processUncoveredFiles="true"
+              includeUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./packages/access-definitions/src</directory>
+            <directory suffix=".php">./packages/dql/src</directory>
+            <directory suffix=".php">./packages/extra/src</directory>
+            <directory suffix=".php">./packages/paths/src</directory>
+            <directory suffix=".php">./packages/queries/src</directory>
+        </include>
+    </coverage>
+    <testsuites>
+        <testsuite name="paths">
+            <directory>packages/paths/tests</directory>
+        </testsuite>
+        <testsuite name="dql">
+            <directory>packages/dql/tests</directory>
+        </testsuite>
+        <testsuite name="access-definitions">
+            <directory>packages/access-definitions/tests</directory>
+        </testsuite>
+        <testsuite name="extra">
+            <directory>packages/extra/tests</directory>
+        </testsuite>
+        <testsuite name="queries">
+            <directory>packages/queries/tests</directory>
+        </testsuite>
+    </testsuites>
+    <!--<filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory>./src</directory>
+            <directory>./tests</directory>
+        </whitelist>
+    </filter>-->
+    <php>
+        <ini name="display_errors" value="On"/>
+        <ini name="display_startup_errors" value="On"/>
+    </php>
+</phpunit>
