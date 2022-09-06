@@ -3,12 +3,12 @@
     "description": "This repository uses symplify/monorepo-builder to release several packages. Check the packages folder for more information.",
     "license": "MIT",
     "require": {
-        "php": ">=7.3,<8.2",
         "doctrine/orm": "^2.5",
         "nette/php-generator": "^3.5",
+        "nikic/php-parser": "^4.14",
+        "php": ">=7.3,<8.2",
         "phpdocumentor/reflection-docblock": "^5.1.0",
-        "thecodingmachine/safe": "^2.2",
-        "nikic/php-parser": "^4.14"
+        "thecodingmachine/safe": "^2.2"
     },
     "authors": [
         {
@@ -17,15 +17,16 @@
         }
     ],
     "require-dev": {
+        "doctrine/annotations": "^1.13",
         "doctrine/cache": "^1.11",
         "phpstan/phpstan": "^1.8.2",
         "phpstan/phpstan-strict-rules": "^1.4.2",
         "phpunit/phpunit": "^9.5",
         "repman-io/composer-plugin": "^1.1",
+        "roave/security-advisories": "dev-latest",
         "symplify/monorepo-builder": "^10.1",
-        "vimeo/psalm": "^4.1",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
-        "doctrine/annotations": "^1.13"
+        "vimeo/psalm": "^4.1"
     },
     "autoload": {
         "psr-4": {
