@@ -1,0 +1,43 @@
+name: Tests (PHP)
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    paths:
+      - '**.php'
+      - 'phpunit.xml'
+
+jobs:
+  phpunit7_4:
+    name: PHPUnit @ PHP 7.4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - uses: php-actions/composer@v5
+        with:
+          php_version: latest
+
+      - uses: php-actions/phpunit@v2
+        with:
+          php_version: 7.4
+
+  phpunit_latest:
+    name: PHPUnit @ PHP latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - uses: php-actions/composer@v5
+        with:
+          php_version: latest
+
+      - uses: php-actions/phpunit@v2
+        with:
+          php_version: latest
