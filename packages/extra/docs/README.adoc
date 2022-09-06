@@ -1,1 +1,5 @@
 Extension for https://github.com/demos-europe/edt-queries[edt-queries] containing various convenience and use-case specific functionality.
+
+== Credits and acknowledgements
+
+Conception and implementation by Christian Dressler with many thanks to https://github.com/eFrane[eFrane].

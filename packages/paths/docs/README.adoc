@@ -166,3 +166,7 @@ Supported tags are:
 * `property-write`
 * `param`
 * `var`
+
+== Credits and acknowledgements
+
+Conception and implementation by Christian Dressler with many thanks to https://github.com/eFrane[eFrane].

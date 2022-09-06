@@ -155,3 +155,7 @@ $bookProvider->getObjects(
     [$sortMethodFactory->propertyAscending('title')]
 );
 ----
+
+== Credits and acknowledgements
+
+Conception and implementation by Christian Dressler with many thanks to https://github.com/eFrane[eFrane].
