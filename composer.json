@@ -3,20 +3,21 @@
     "description": "This repository uses symplify/monorepo-builder to release several packages. Check the packages folder for more information.",
     "license": "MIT",
     "require": {
+        "cebe/php-openapi": "^1.7",
         "doctrine/collections": "^1.7",
         "doctrine/orm": "^2.5",
-        "illuminate/collections": "^9.27",
+        "illuminate/collections": "^8.83.23",
         "league/fractal": "^0.20.1",
         "nette/php-generator": "^3.5",
         "nikic/php-parser": "^4.14",
         "pagerfanta/pagerfanta": "^3.6",
         "php": ">=7.3,<8",
         "phpdocumentor/reflection-docblock": "^5.1.0",
-        "psr/log": "^3.0",
-        "symfony/http-foundation": "^6.1",
-        "symfony/routing": "^6.1",
-        "symfony/validator": "^6.1",
-        "thecodingmachine/safe": "^2.2"
+        "psr/log": "^1.1.4",
+        "symfony/http-foundation": "^5.4.12",
+        "symfony/routing": "^5.4.11",
+        "symfony/validator": "^5.4.12",
+        "thecodingmachine/safe": "^1.3.3"
     },
     "authors": [
         {
