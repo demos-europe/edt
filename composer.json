@@ -10,7 +10,7 @@
         "nette/php-generator": "^3.5",
         "nikic/php-parser": "^4.14",
         "pagerfanta/pagerfanta": "^3.6",
-        "php": ">=7.3,<8.2",
+        "php": ">=7.3,<8",
         "phpdocumentor/reflection-docblock": "^5.1.0",
         "psr/log": "^3.0",
         "symfony/http-foundation": "^6.1",

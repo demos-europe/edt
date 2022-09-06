@@ -4,7 +4,7 @@
     "license": "MIT",
     "type": "library",
     "require": {
-        "php": ">=7.3,<8.2",
+        "php": ">=7.3,<8",
         "demos-europe/edt-queries": "^0.7.1",
         "league/fractal": "^0.20.1",
         "psr/log": "^3.0",
@@ -15,7 +15,8 @@
         "symfony/validator": "^6.1",
         "pagerfanta/pagerfanta": "^3.6",
         "symfony/routing": "^6.1",
-        "illuminate/collections": "^9.27"
+        "illuminate/collections": "^9.27",
+        "cebe/php-openapi": "^1.7"
     },
     "authors": [
         {
