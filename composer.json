@@ -22,7 +22,6 @@
         "phpstan/phpstan": "^1.8.2",
         "phpstan/phpstan-strict-rules": "^1.4.2",
         "phpunit/phpunit": "^9.5",
-        "repman-io/composer-plugin": "^1.1",
         "roave/security-advisories": "dev-latest",
         "symplify/monorepo-builder": "^10.1",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
