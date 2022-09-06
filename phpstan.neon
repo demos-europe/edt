@@ -430,3 +430,123 @@ parameters:
             message: "#^Parameter \\#2 \\$wipTable of method EDT\\\\Querying\\\\Utilities\\\\TableJoiner\\:\\:rebuildTable\\(\\) expects array\\<int, array\\<int, mixed\\>\\>, array\\<int, array\\<int, mixed\\>\\|int\\> given\\.$#"
             count: 1
             path: packages/queries/src/Utilities/TableJoiner.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObjectFactory\\:\\:createWrapper\\(\\) should return EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\<O of object\\> but returns EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\<object\\>\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObjectFactory.php
+
+        -
+            message: "#^Return type \\(mixed\\) of method EDT\\\\JsonApi\\\\OutputTransformation\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) should be covariant with return type \\(array\\|false\\) of method League\\\\Fractal\\\\TransformerAbstract\\:\\:processIncludedResources\\(\\)$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
+            message: "#^Call to an undefined method EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\|EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\UpdatableTypeInterface\\:\\:getTransformer\\(\\)\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Call to an undefined method EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\CreatableTypeInterface\\|EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface\\:\\:getTransformer\\(\\)\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Call to an undefined static method EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\|EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\UpdatableTypeInterface\\:\\:getName\\(\\)\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Call to an undefined static method EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\CreatableTypeInterface\\|EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface\\:\\:getName\\(\\)\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Offset 'attributes' on array\\{\\} on left side of \\?\\? does not exist\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Offset 'relationships' on array\\{\\} on left side of \\?\\? does not exist\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Parameter \\#1 \\$type of method EDT\\\\JsonApi\\\\RequestHandling\\\\AbstractApiService\\:\\:createObject\\(\\) expects EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<object\\>, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\CreatableTypeInterface\\|EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Parameter \\#1 \\$type of method EDT\\\\JsonApi\\\\RequestHandling\\\\AbstractApiService\\:\\:deleteObject\\(\\) expects EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Parameter \\#1 \\$type of method EDT\\\\JsonApi\\\\RequestHandling\\\\AbstractApiService\\:\\:updateObject\\(\\) expects EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<object\\>, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\|EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\UpdatableTypeInterface given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Unable to resolve the template type O in call to method EDT\\\\JsonApi\\\\RequestHandling\\\\AbstractApiService\\:\\:createObject\\(\\)$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getAliases\\(\\) should return array\\<string, array\\<int, string\\>\\> but returns array\\<string, array\\<int, string\\>\\|null\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^PHPDoc tag @param for parameter \\$callable with type \\(callable\\)\\|iterable\\<R of object\\>\\|null is not subtype of native type callable\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^PHPDoc tag @return with type array\\<int, EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\<R of object\\>\\>\\|\\(callable\\)\\|null is not subtype of native type callable\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Parameter \\#2 \\$relationshipType of method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\<T of object\\>\\:\\:wrapCallable\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<object\\>, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\|null given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Parameter \\#2 \\$targetType of class EDT\\\\JsonApi\\\\OutputTransformation\\\\IncludeDefinition constructor expects EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<T of object\\>, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\|null given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Parameter \\#4 \\$wrapperFactory of class EDT\\\\JsonApi\\\\OutputTransformation\\\\PropertyDefinition constructor expects EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<object, EDT\\\\Wrapping\\\\Contracts\\\\WrapperInterface\\>, EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<object, EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\<object\\>\\> given\\.$#"
+            count: 2
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Template type W of method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getWrapperFactory\\(\\) is not referenced in a parameter\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Property EDT\\\\JsonApi\\\\ResourceTypes\\\\Property\\:\\:\\$name \\(string\\) does not accept string\\|null\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/Property.php
+
+        -
+            message: "#^Call to function is_array\\(\\) with array\\<'id'\\|'type'\\|int, array\\{type\\: string, id\\: string\\}\\|string\\> will always evaluate to true\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Schema/RelationshipObject.php
+
+        -
+            message: "#^Parameter \\#1 \\$resourceIdentifierObject of static method EDT\\\\JsonApi\\\\Schema\\\\ToOneResourceLinkage\\:\\:createFromArray\\(\\) expects array\\{type\\: string, id\\: string\\}\\|null, array\\<'id'\\|'type'\\|int, array\\{type\\: string, id\\: string\\}\\|string\\>\\|null given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Schema/RelationshipObject.php
+
+        -
+            message: "#^Parameter \\#1 \\$resourceLinkage of static method EDT\\\\JsonApi\\\\Schema\\\\ToManyResourceLinkage\\:\\:createFromArray\\(\\) expects array\\<int, array\\{type\\: string, id\\: string\\}\\>, array\\<'id'\\|'type'\\|int, array\\{type\\: string, id\\: string\\}\\|string\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Schema/RelationshipObject.php
+
+        -
+            message: "#^Call to function is_array\\(\\) with array\\{type\\: string, id\\: string\\} will always evaluate to true\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Schema/ToManyResourceLinkage.php

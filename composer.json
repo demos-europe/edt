@@ -3,17 +3,29 @@
     "description": "This repository uses symplify/monorepo-builder to release several packages. Check the packages folder for more information.",
     "license": "MIT",
     "require": {
+        "doctrine/collections": "^1.7",
         "doctrine/orm": "^2.5",
+        "illuminate/collections": "^9.27",
+        "league/fractal": "^0.20.1",
         "nette/php-generator": "^3.5",
         "nikic/php-parser": "^4.14",
+        "pagerfanta/pagerfanta": "^3.6",
         "php": ">=7.3,<8.2",
         "phpdocumentor/reflection-docblock": "^5.1.0",
+        "psr/log": "^3.0",
+        "symfony/http-foundation": "^6.1",
+        "symfony/routing": "^6.1",
+        "symfony/validator": "^6.1",
         "thecodingmachine/safe": "^2.2"
     },
     "authors": [
         {
             "name": "Christian Dressler",
             "email": "dressler@demos-deutschland.de"
+        },
+        {
+            "name": "Stefan Graupner",
+            "email": "efrane@meanderingsoul.com"
         }
     ],
     "require-dev": {
@@ -31,6 +43,7 @@
         "psr-4": {
             "EDT\\Apization\\": "packages/extra/src/Apization/",
             "EDT\\DqlQuerying\\": "packages/dql/src/",
+            "EDT\\JsonApi\\": "packages/jsonapi/src/",
             "EDT\\Parsing\\": "packages/paths/src/Parsing/",
             "EDT\\PathBuilding\\": "packages/paths/src/PathBuilding/",
             "EDT\\Querying\\": "packages/queries/src/",
@@ -45,6 +58,7 @@
                 "packages/access-definitions/tests/",
                 "packages/dql/tests/",
                 "packages/extra/tests/",
+                "packages/jsonapi/tests/",
                 "packages/paths/tests/",
                 "packages/queries/tests/"
             ]
@@ -54,6 +68,7 @@
         "demos-europe/edt-access-definitions": "0.7.1",
         "demos-europe/edt-dql": "0.7.1",
         "demos-europe/edt-extra": "0.7.1",
+        "demos-europe/edt-jsonapi": "0.7.1",
         "demos-europe/edt-paths": "0.7.1",
         "demos-europe/edt-queries": "0.7.1"
     },
