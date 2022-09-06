@@ -20,24 +20,8 @@ jobs:
 
       - uses: php-actions/composer@v5
         with:
-          php_version: latest
+          php_version: 7.4
 
       - uses: php-actions/phpunit@v2
         with:
           php_version: 7.4
-
-  phpunit_latest:
-    name: PHPUnit @ PHP latest
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-
-      - uses: php-actions/composer@v5
-        with:
-          php_version: latest
-
-      - uses: php-actions/phpunit@v2
-        with:
-          php_version: latest
