@@ -76,7 +76,6 @@ class DocblockTagParser
      */
     public static function createDocblock(Reflector $commented): ?DocBlock
     {
-        /** @var ReflectionProperty $docBlock */
         $docBlock = $commented->getDocComment();
         if (!is_string($docBlock) || '' === $docBlock) {
             return null;

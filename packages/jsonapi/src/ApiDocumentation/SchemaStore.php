@@ -5,17 +5,12 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ApiDocumentation;
 
 use function array_key_exists;
-use ArrayAccess;
 use cebe\openapi\spec\Schema;
-use function get_class;
-use function is_object;
-use RuntimeException;
-use UnexpectedValueException;
 
 /**
  * Store OpenAPI Schema Definitions for reuse.
  */
-class SchemaStore implements ArrayAccess
+class SchemaStore
 {
     /**
      * Schema definitions keyed by type name.
@@ -26,16 +21,22 @@ class SchemaStore implements ArrayAccess
 
     public function has(string $schemaName): bool
     {
-        return $this->offsetExists($schemaName);
+        return array_key_exists($schemaName, $this->schemas);
     }
 
+    /**
+     * @param callable(): Schema $schemaBuilder
+     */
     public function findOrCreate(string $schemaName, callable $schemaBuilder): Schema
     {
         if (!$this->has($schemaName)) {
-            $this->offsetSet($schemaName, $schemaBuilder());
+            $value = $schemaBuilder();
+            $this->set($schemaName, $value);
+
+            return $value;
         }
 
-        return $this->offsetGet($schemaName);
+        return $this->get($schemaName);
     }
 
     public function getSchemaReference(string $schemaName): string
@@ -43,36 +44,19 @@ class SchemaStore implements ArrayAccess
         return sprintf('#/components/schemas/%s', $schemaName);
     }
 
-    public function offsetExists($offset): bool
+    public function get(string $schemaName): Schema
     {
-        return array_key_exists($offset, $this->schemas);
+        return $this->schemas[$schemaName];
     }
 
-    public function offsetGet($offset): Schema
+    public function set(string $offset, Schema $value): void
     {
-        return $this->schemas[$offset];
+        $this->schemas[$offset] = $value;
     }
 
-    public function offsetSet($offset, $value): void
-    {
-        if (!is_object($value)) {
-            throw new UnexpectedValueException('$value must be an object');
-        }
-
-        if ($value instanceof Schema) {
-            $this->schemas[$offset] = $value;
-
-            return;
-        }
-
-        throw new RuntimeException('Unexpected schema type: '.get_class($value));
-    }
-
-    public function offsetUnset($offset): void
-    {
-        throw new RuntimeException('Cannot remove schemas from the store');
-    }
-
+    /**
+     * @return array<string, Schema>
+     */
     public function all(): array
     {
         return $this->schemas;

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
+use Closure;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\GetableProperty;
 use EDT\Parsing\Utilities\DocblockTagParser;
+use ReflectionFunctionAbstract;
+use ReflectionMethod;
 use ReflectionProperty;
 use function array_key_exists;
 use function collect;
@@ -14,7 +17,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use function get_class;
-use phpDocumentor\Reflection\DocBlockFactory;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -23,6 +25,7 @@ use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
 use function is_array;
+use function is_callable;
 use function strlen;
 
 /**
@@ -67,8 +70,9 @@ class AttributeTypeResolver
         if (array_key_exists($propertyName, $resourceProperties)) {
             $property = $resourceProperties[$propertyName];
 
-            if (null !== $property->getCustomReadCallback()) {
-                return $this->resolveTypeFromCallable($property, $resourceClass, $propertyName);
+            $customReadCallback = $property->getCustomReadCallback();
+            if (null !== $customReadCallback) {
+                return $this->resolveTypeFromCallable($customReadCallback, $resourceClass, $propertyName);
             }
         }
 
@@ -148,6 +152,9 @@ class AttributeTypeResolver
         return $type;
     }
 
+    /**
+     * @return array{type: string, format?: string}
+     */
     private function mapDqlType(string $dqlType): array
     {
         $format = null;
@@ -185,26 +192,19 @@ class AttributeTypeResolver
     }
 
     /**
-     * @return string[]
+     * @param array{0: object, 1: string}|callable|Closure $customReadCallback
+     *
+     * @return array{type: string}
      *
      * @throws ReflectionException
      */
     private function resolveTypeFromCallable(
-        GetableProperty $property,
+        $customReadCallback,
         string $resourceClass,
         string $propertyName
     ): array {
-        $customReadCallback = $property->getCustomReadCallback();
-
         try {
-            if (is_array($customReadCallback)) {
-                $callbackClassReflection = new ReflectionClass($customReadCallback[0]);
-                $functionReflection = $callbackClassReflection->getMethod(
-                    $customReadCallback[1]
-                );
-            } else {
-                $functionReflection = new ReflectionFunction($customReadCallback);
-            }
+            $functionReflection = $this->reflectCustomReadCallback($customReadCallback);
         } catch (Throwable $e) {
             // This catch purely exists to have a convenient breakpoint if an unhandled variant of callables appears
             throw $e;
@@ -217,7 +217,7 @@ class AttributeTypeResolver
         }
 
         $returnType = $functionReflection->getReturnType();
-        if (!$returnType->isBuiltin()) {
+        if (!$returnType instanceof ReflectionNamedType || !$returnType->isBuiltin()) {
             // OpenAPI and JSON do not support compound types on attributes
             // see: https://spec.openapis.org/oas/v3.1.0.html#data-types
 
@@ -225,6 +225,28 @@ class AttributeTypeResolver
         }
 
         return ['type' => $this->mapNativeType($returnType)];
+    }
+
+    /**
+     * @param array{0: object, 1: string}|callable|Closure $customReadCallback
+     *
+     * @return ReflectionMethod|ReflectionFunction
+     *
+     * @throws ReflectionException
+     */
+    private function reflectCustomReadCallback($customReadCallback): ReflectionFunctionAbstract
+    {
+        if (is_array($customReadCallback)) {
+            return (new ReflectionClass($customReadCallback[0]))->getMethod(
+                $customReadCallback[1]
+            );
+        }
+
+        if (is_callable($customReadCallback)) {
+            $customReadCallback = Closure::fromCallable($customReadCallback);
+        }
+
+        return new ReflectionFunction($customReadCallback);
     }
 
     /**

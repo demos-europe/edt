@@ -197,11 +197,6 @@ parameters:
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
 
         -
-            message: "#^Property class@anonymous/paths/src/Parsing/Utilities/DocblockTagParser\\.php\\:202\\:\\:\\$useStatements \\(array\\<string, class\\-string\\>\\) does not accept array\\<string, string\\>\\.$#"
-            count: 1
-            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
-
-        -
             message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(phpDocumentor\\\\Reflection\\\\DocBlock\\\\Tag\\)\\: mixed\\)\\|null, array\\{EDT\\\\Parsing\\\\Utilities\\\\DocblockTagParser, 'getTagType'\\} given\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/DocblockPropertyByTraitEvaluator.php
@@ -362,11 +357,6 @@ parameters:
             path: packages/queries/src/Contracts/SortException.php
 
         -
-            message: "#^Parameter \\#1 \\$values of method EDT\\\\Querying\\\\Contracts\\\\ConditionFactoryInterface\\<EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>\\>\\:\\:allValuesPresentInMemberListProperties\\(\\) expects array\\<int, mixed\\>, array\\<int\\|string, mixed\\> given\\.$#"
-            count: 1
-            path: packages/queries/src/FluentQueries/ConditionDefinition.php
-
-        -
             message: "#^Parameter \\#1 \\$values of method EDT\\\\Querying\\\\Contracts\\\\ConditionFactoryInterface\\<EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>\\>\\:\\:propertyHasAnyOfValues\\(\\) expects array\\<int, mixed\\>, array\\<int\\|string, mixed\\> given\\.$#"
             count: 1
             path: packages/queries/src/FluentQueries/ConditionDefinition.php
@@ -492,11 +482,6 @@ parameters:
             path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getAliases\\(\\) should return array\\<string, array\\<int, string\\>\\> but returns array\\<string, array\\<int, string\\>\\|null\\>\\.$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
             message: "#^PHPDoc tag @param for parameter \\$callable with type \\(callable\\)\\|iterable\\<R of object\\>\\|null is not subtype of native type callable\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
@@ -550,3 +535,38 @@ parameters:
             message: "#^Call to function is_array\\(\\) with array\\{type\\: string, id\\: string\\} will always evaluate to true\\.$#"
             count: 1
             path: packages/jsonapi/src/Schema/ToManyResourceLinkage.php
+            
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\PrefilledTypeProvider\\:\\:getAllAvailableTypes\\(\\) should return array\\<int, I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<object\\>\\> but returns array\\<string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\>\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/TypeProviders/PrefilledTypeProvider.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:wrapAsJsonApiResponseSchema\\(\\) has parameter \\$includedObjects with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Parameter \\#1 \\$callback of method Illuminate\\\\Support\\\\Collection\\<string,string\\|null\\>\\:\\:filter\\(\\) expects \\(callable\\(string\\|null, string\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Parameter \\#1 \\$callback of method Illuminate\\\\Support\\\\Collection\\<string,string\\|null\\>\\:\\:map\\(\\) expects callable\\(string\\|null, string\\)\\: array\\{\\$ref\\: string\\}, Closure\\(string\\)\\: array\\{\\$ref\\: string\\} given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getAliases\\(\\) should return array\\<string, non\\-empty\\-array\\<int, string\\>\\> but returns array\\<string, non\\-empty\\-array\\<int, string\\>\\|null\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Property class@anonymous/paths/src/Parsing/Utilities/DocblockTagParser\\.php\\:219\\:\\:\\$useStatements \\(array\\<string, class\\-string\\>\\) does not accept array\\<string, string\\>\\.$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+
+        -
+            message: "#^Parameter \\#1 \\$values of method EDT\\\\Querying\\\\Contracts\\\\ConditionFactoryInterface\\<EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>\\>\\:\\:allValuesPresentInMemberListProperties\\(\\) expects non\\-empty\\-array\\<int, mixed\\>, non\\-empty\\-array\\<int\\|string, mixed\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/FluentQueries/ConditionDefinition.php

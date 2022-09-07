@@ -15,10 +15,8 @@ use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Tag;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
 use Throwable;
-use function array_key_exists;
 use function collect;
 use function count;
 use Psr\Log\LoggerInterface;
@@ -68,7 +66,7 @@ final class OpenAPISchemaGenerator
     public function __construct(
         AttributeTypeResolver $entityParser,
         LoggerInterface $logger,
-        TypeProviderInterface $resourceTypeProvider,
+        PrefilledTypeProvider $resourceTypeProvider,
         RouterInterface $router,
         SchemaStore $schemaStore,
         TranslatorInterface $translator,
@@ -104,7 +102,12 @@ final class OpenAPISchemaGenerator
         $tags = collect($this->resourceTypeProvider->getAllAvailableTypes(ResourceTypeInterface::class))
             ->map(function (ResourceTypeInterface $type): ResourceTypeInterface {
                 // create schema information for all resource types
-                $this->createSchema($type);
+
+                $typeName = $type::getName();
+                if (!$this->schemaStore->has($typeName)) {
+                    $schema = $this->createSchema($type);
+                    $this->schemaStore->set($typeName, $schema);
+                }
 
                 return $type;
             })
@@ -130,7 +133,8 @@ final class OpenAPISchemaGenerator
                 $openApi->paths[$baseUrl.'/{resourceId}/'] = $entityMethodsPathItem;
 
                 return $tag;
-            });
+            })
+            ->all();
 
         $openApi->components = new Components(['schemas' => $this->schemaStore->all()]);
         $openApi->tags = $tags;
@@ -280,45 +284,38 @@ final class OpenAPISchemaGenerator
      */
     private function createSchema(ResourceTypeInterface $resource): Schema
     {
-        $typeName = $resource::getName();
+        $attributes = collect($resource->getReadableProperties())
+            ->filter('is_null')
+            ->map(function (?string $null, string $propertyName) use ($resource): array {
+                // TODO: this is probably incorrect for all aliases with a path longer than 1 element
+                $propertyName = $resource->getAliases()[$propertyName][0] ?? $propertyName;
 
-        if (!$this->schemaStore->has($typeName)) {
-            $attributes = collect($resource->getReadableProperties())
-                ->intersect([null])
-                ->map(function (?string $null, string $propertyName) use ($resource): array {
-                    $propertyAliases = $resource->getAliases();
-                    $propertyName = array_key_exists($propertyName, $propertyAliases)
-                        // TODO: this is probably incorrect for all aliases with a path longer than 1 element
-                        ? array_shift($propertyAliases[$propertyName])
-                        : $propertyName;
+                return $this->resolveAttributeType($resource, $propertyName);
+            });
 
-                    return $this->resolveAttributeType($resource, $propertyName);
-                });
+        $relationships = collect($resource->getReadableProperties())
+            ->diff([null])
+            ->filter(
+                function (string $propertyType): bool {
+                    return $this->resourceTypeProvider->isTypeAvailable($propertyType)
+                        && $this->resourceTypeProvider->getAvailableType(
+                            $propertyType
+                        )->isReferencable();
+                }
+            )->map(
+                function (string $propertyType): array {
+                    return ['$ref' => $this->schemaStore->getSchemaReference($propertyType)];
+                }
+            );
 
-            $relationships = collect($resource->getReadableProperties())
-                ->diff([null])
-                ->filter(
-                    function (string $propertyType): bool {
-                        return $this->resourceTypeProvider->isTypeAvailable($propertyType)
-                            && $this->resourceTypeProvider->getAvailableType(
-                                $propertyType
-                            )->isReferencable();
-                    }
-                )->map(
-                    function (string $propertyType): array {
-                        return ['$ref' => $this->schemaStore->getSchemaReference($propertyType)];
-                    }
-                );
+        $properties = $attributes->merge($relationships)->all();
 
-            $properties = $attributes->merge($relationships)->all();
-
-            $this->schemaStore[$typeName] = new Schema(['type' => 'object', 'properties' => $properties]);
-        }
-
-        return $this->schemaStore[$typeName];
+        return new Schema(['type' => 'object', 'properties' => $properties]);
     }
 
     /**
+     * @param array<string, mixed> $dataObjects
+     *
      * @throws TypeErrorException
      */
     private function wrapAsJsonApiResponseSchema(
@@ -515,7 +512,7 @@ final class OpenAPISchemaGenerator
     {
         $this->schemaStore->findOrCreate(
             'parameter:filter',
-            static function () {
+            static function (): Schema {
                 return new Schema([
                     'type'        => 'array',
                 ]);

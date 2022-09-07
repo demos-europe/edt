@@ -33,7 +33,7 @@ class Property implements SetableProperty, GetableProperty
     /**
      * @var array<int,string>|null
      */
-    private $aliasedPath = null;
+    private $aliasedPath;
 
     /**
      * @var bool

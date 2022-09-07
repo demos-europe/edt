@@ -8,7 +8,6 @@ use Closure;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use function collect;
-use DateTime;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\JsonApi\OutputTransformation\IncludeDefinition;
 use EDT\JsonApi\OutputTransformation\PropertyDefinition;
