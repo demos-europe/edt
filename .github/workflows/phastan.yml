@@ -26,3 +26,5 @@ jobs:
         with:
           php_version: 7.4
           path: packages/*/src
+          level: 8
+          configuration: 'phpstan.neon'
