@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.8.0 - 2022-09-07
 
 - feature: add initial `jsonapi` package implementation
 - fix: restore accidentally removed PHP 7.4 support
