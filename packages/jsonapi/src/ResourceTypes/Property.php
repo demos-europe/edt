@@ -31,7 +31,7 @@ class Property implements SetableProperty, GetableProperty
     private $sortable = false;
 
     /**
-     * @var array<int,string>|null
+     * @var non-empty-array<int,string>|null
      */
     private $aliasedPath;
 
@@ -91,7 +91,12 @@ class Property implements SetableProperty, GetableProperty
 
     public function aliasedPath(PropertyPathInterface $aliasedPath): SetableProperty
     {
-        $this->aliasedPath = $aliasedPath->getAsNames();
+        $aliasedPath = $aliasedPath->getAsNames();
+        if ([] === $aliasedPath) {
+            throw new InvalidArgumentException('The path must not be empty.');
+        }
+
+        $this->aliasedPath = $aliasedPath;
 
         return $this;
     }

@@ -185,7 +185,7 @@ interface ConditionFactoryInterface
      * use this method with the parameters `['A', 'B']` (the required titles as array),
      * and `'books'` and `'title'` (the path to the titles).
      *
-     * @param array<int,mixed> $values Must not be empty.
+     * @param non-empty-array<int,mixed> $values
      *
      * @return T
      *
