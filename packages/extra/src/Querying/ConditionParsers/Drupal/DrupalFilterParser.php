@@ -12,9 +12,21 @@ use function count;
 use function in_array;
 
 /**
- * Provides functions to convert data from HTTP requests into {@link FilterGroup} instances.
+ * Provides functions to convert data from HTTP requests into {@link FunctionInterface} instances.
  *
  * The data is expected to be in the format defined by the Drupal JSON:API filter specification.
+ *
+ * @psalm-type DrupalFilterGroup = array{
+ *            conjunction: DrupalFilterObject::AND|DrupalFilterObject::OR,
+ *            memberOf?: string
+ *          }
+ * @psalm-type DrupalFilterCondition = array{
+ *            path: string,
+ *            value?: mixed,
+ *            operator?: string,
+ *            memberOf?: string
+ *          }
+ * @template F of FunctionInterface<bool>
  */
 class DrupalFilterParser
 {
@@ -28,14 +40,18 @@ class DrupalFilterParser
      */
     private const MAX_ITERATIONS = 5000;
     /**
-     * @var ConditionFactoryInterface
+     * @var ConditionFactoryInterface<F>
      */
     protected $conditionFactory;
     /**
-     * @var ConditionParserInterface
+     * @var ConditionParserInterface<DrupalFilterCondition, F>
      */
     private $conditionParser;
 
+    /**
+     * @param ConditionFactoryInterface<F>                $conditionFactory
+     * @param ConditionParserInterface<DrupalFilterCondition, F> $conditionParser
+     */
     public function __construct(ConditionFactoryInterface $conditionFactory, ConditionParserInterface $conditionParser)
     {
         $this->conditionFactory = $conditionFactory;
@@ -43,8 +59,8 @@ class DrupalFilterParser
     }
 
     /**
-     * @param array<string,array{condition: array{operator?: string, memberOf?: string, value?: mixed, path: string}}|array{group: array{memberOf?: string, conjunction: string}}> $groupsAndConditions
-     * @return FunctionInterface<bool>
+     * @param array<string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
+     * @return F
      * @throws DrupalFilterException
      */
     public function createRootFromArray(array $groupsAndConditions): FunctionInterface
@@ -76,7 +92,7 @@ class DrupalFilterParser
                 throw DrupalFilterException::emergencyAbort(self::MAX_ITERATIONS);
             }
             foreach ($conditions as $bucketName => $bucket) {
-                if (DrupalFilterObject::ROOT_KEY === $bucketName) {
+                if (DrupalFilterObject::ROOT === $bucketName) {
                     continue;
                 }
 
@@ -94,19 +110,20 @@ class DrupalFilterParser
                 $usedAsParentGroup = in_array($bucketName, $groupNameToMemberOf, true);
                 if (!$usedAsParentGroup) {
                     $conjunction = $groupNameToConjunction[$bucketName];
-                    $parentGroupKey = $groupNameToMemberOf[$bucketName] ?? DrupalFilterObject::ROOT_KEY;
+                    $parentGroupKey = $groupNameToMemberOf[$bucketName] ?? DrupalFilterObject::ROOT;
                     $conditionsToMerge = $conditions[$bucketName];
-                    $conditions[$parentGroupKey][] = 1 === count($conditionsToMerge)
+                    $additionalCondition = 1 === count($conditionsToMerge)
                         ? array_pop($conditionsToMerge)
                         : $this->createGroup($conjunction, ...$conditionsToMerge);
+                    $conditions[$parentGroupKey][] = $additionalCondition;
                     unset($conditions[$bucketName], $groupNameToMemberOf[$bucketName]);
                 }
             }
         }
 
-        // After having merged merged and added all buckets to the root bucket we
+        // After having merged and added all buckets to the root bucket we
         // can merge it too and return the resulting root condition.
-        $rootConditions = $conditions[DrupalFilterObject::ROOT_KEY] ?? [];
+        $rootConditions = $conditions[DrupalFilterObject::ROOT] ?? [];
         switch (count($rootConditions)) {
             case 0:
                 return $this->conditionFactory->true();
@@ -118,9 +135,9 @@ class DrupalFilterParser
     }
 
     /**
-     * @param FunctionInterface<bool> $condition
-     * @param FunctionInterface<bool> ...$conditions
-     * @return FunctionInterface<bool>
+     * @param F $condition
+     * @param F ...$conditions
+     * @return F
      * @throws DrupalFilterException
      */
     protected function createGroup(string $conjunction, FunctionInterface $condition, FunctionInterface ...$conditions): FunctionInterface
@@ -141,12 +158,12 @@ class DrupalFilterParser
      */
     private function reachedRootGroup(array $conditions): bool
     {
-        return 1 === count($conditions) && DrupalFilterObject::ROOT_KEY === array_key_first($conditions);
+        return 1 === count($conditions) && DrupalFilterObject::ROOT === array_key_first($conditions);
     }
 
     /**
-     * @param array<string,array<int,array{operator?: string, memberOf?: string, value?: mixed, path: string}>> $groupedConditions
-     * @return array<string,array<int,FunctionInterface<bool>>>
+     * @param array<string,array<int,DrupalFilterCondition>> $groupedConditions
+     * @return array<string,array<int,F>>
      */
     private function parseConditions(array $groupedConditions): array
     {

@@ -11,6 +11,7 @@ use EDT\Querying\ConditionParsers\Drupal\PredefinedConditionParser;
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\PathException;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 class DrupalConditionFactoryTest extends TestCase
 {
@@ -371,7 +372,7 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testGroupNoArray(): void
     {
-        $this->expectException(DrupalFilterException::class);
+        $this->expectException(TypeError::class);
         $this->filterFactory->createRootFromArray(
             // passing an invalid paramater on purpose
             /** @phpstan-ignore-next-line */
@@ -492,22 +493,11 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testInvalidConjunctionTypeInt(): void
     {
-        $this->expectException(DrupalFilterException::class);
+        $this->expectException(TypeError::class);
         $this->filterFactory->createRootFromArray([
             'group_a' => [
                 'group' => [
                     'conjunction' => 1,
-                ],
-            ],
-        ]);
-    }
-
-    public function testInvalidNoConjunction(): void
-    {
-        $this->expectException(DrupalFilterException::class);
-        $this->filterFactory->createRootFromArray([
-            'group_a' => [
-                'group' => [
                 ],
             ],
         ]);
@@ -527,7 +517,8 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testNoPath(): void
     {
-        $this->expectException(DrupalFilterException::class);
+        $this->expectError();
+        $this->expectErrorMessage('Undefined array key "path"');
         $this->filterFactory->createRootFromArray([
             'condition_a' => [
                 'condition' => [
@@ -655,7 +646,8 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testConjunctionMissing(): void
     {
-        $this->expectException(DrupalFilterException::class);
+        $this->expectError();
+        $this->expectErrorMessage('Undefined array key "conjunction"');
 
         $this->filterFactory->createRootFromArray([
             'group_a' => [
@@ -667,7 +659,7 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testInvalidConjunctionTypeNull(): void
     {
-        $this->expectException(DrupalFilterException::class);
+        $this->expectException(TypeError::class);
         $this->filterFactory->createRootFromArray([
             'group_a' => [
                 'group' => [

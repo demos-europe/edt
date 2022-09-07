@@ -9,6 +9,9 @@ use Exception;
 use function array_key_exists;
 use function is_array;
 
+/**
+ * @psalm-type JsonApiRelationship = array{type: string, id: string}
+ */
 class RelationshipObject
 {
     /**
@@ -35,7 +38,7 @@ class RelationshipObject
      * * an array containing more arrays with the fields 'id' and 'type' to create a non-empty
      * to-many relationship
      *
-     * @param array{data: array<int, array{type: string, id: string}>|array{type: string, id: string}|null} $relationshipObject
+     * @param array{data: array<int, JsonApiRelationship>|JsonApiRelationship|null} $relationshipObject
      *
      * @throws Exception
      *

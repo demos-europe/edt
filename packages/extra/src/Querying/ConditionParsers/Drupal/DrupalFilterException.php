@@ -11,14 +11,14 @@ use function is_object;
 
 class DrupalFilterException extends Exception
 {
-    public static function neitherConditionNorGroup(): self
+    public static function neitherConditionNorGroup(string $name): self
     {
-        return new self("Elements in filter MUST be either 'group' or 'condition'.");
+        return new self("Invalid filter element '$name'. MUST contain either 'group' or 'condition' as key.");
     }
 
     public static function memberOfType(string $type): self
     {
-        return new self("The 'memberOf' field value MUST be of type string, found: {$type}.");
+        return new self("The 'memberOf' field value MUST be of type string, found: $type.");
     }
 
     public static function memberOfRoot(): self
@@ -41,21 +41,6 @@ class DrupalFilterException extends Exception
         return new self("The 'condition' field MUST NOT contain fields other than 'path', 'value', 'operator' and 'memberOf', found: {$fieldName}");
     }
 
-    public static function noConjunction(): self
-    {
-        return new self("The 'group' field MUST contain the 'conjunction' field.");
-    }
-
-    public static function conjunctionType(string $type): self
-    {
-        return new self("The 'conjunction' value MUST be of type 'string', was {$type}.");
-    }
-
-    public static function noPath(): self
-    {
-        return new self("The 'path' field must always exist.");
-    }
-
     public static function pathType(string $type): self
     {
         return new self("The 'path' field value must be a string, got {$type}.");
@@ -75,15 +60,6 @@ class DrupalFilterException extends Exception
     public static function conjunctionUnavailable(string $name): self
     {
         return new self("The conjunction is not available: {$name}");
-    }
-
-    /**
-     * @param mixed $group
-     */
-    public static function groupNonArray($group): self
-    {
-        $type = is_object($group) ? get_class($group) : gettype($group);
-        return new self("Expected group to be an array, got '$type' instead.");
     }
 
     /**

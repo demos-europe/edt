@@ -14,7 +14,6 @@ use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
-use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
 use Exception;
 use InvalidArgumentException;
@@ -27,6 +26,11 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function array_key_exists;
 
+/**
+ * @template F of FunctionInterface<bool>;
+ * @psalm-type JsonApiRelationship = array{type: string, id: string}
+ * @psalm-type JsonApiRelationships = array<string,array{data: array<int, JsonApiRelationship>|JsonApiRelationship|null}>
+ */
 abstract class AbstractApiService
 {
     /**
@@ -40,7 +44,7 @@ abstract class AbstractApiService
     protected $typeProvider;
 
     /**
-     * @var DrupalFilterParser
+     * @var DrupalFilterParser<F>
      */
     private $filterParser;
 
@@ -64,6 +68,9 @@ abstract class AbstractApiService
      */
     private $paginatorFactory;
 
+    /**
+     * @param DrupalFilterParser<F> $filterParser
+     */
     public function __construct(
         DrupalFilterParser $filterParser,
         JsonApiSortingParser $sortingParser,
@@ -119,7 +126,7 @@ abstract class AbstractApiService
     }
 
     /**
-     * @param array{data: array{type: string, id: string, attributes?: array<string,mixed>, relationships?: array<string,array{data: array<int, array{type: string, id: string}>|array{type: string, id: string}|null}>}} $requestBody
+     * @param array{data: array{type: string, id: string, attributes?: array<string,mixed>, relationships?: JsonApiRelationships}} $requestBody
      *
      * @throws Exception
      */
@@ -145,6 +152,7 @@ abstract class AbstractApiService
         $relationships = $data[ContentField::RELATIONSHIPS] ?? [];
         $properties = $this->propertyValuesGenerator->generatePropertyValues($attributes, $relationships);
 
+        /** @var ResourceTypeInterface&UpdatableTypeInterface $type */
         $type = $this->typeProvider->getAvailableType(
             $urlTypeName,
             ResourceTypeInterface::class,
@@ -163,8 +171,7 @@ abstract class AbstractApiService
     {
         $type = $this->typeProvider->getAvailableType(
             $urlTypeName,
-            ResourceTypeInterface::class,
-            IdentifiableTypeInterface::class
+            ResourceTypeInterface::class
         );
 
         $this->deleteObject($type, $urlId);
@@ -173,7 +180,7 @@ abstract class AbstractApiService
     // TODO: add proper format validation
 
     /**
-     * @param array{data: array{type: string, id: string, attributes?: array<string,mixed>, relationships?: array<string,array{data: array<int, array{type: string, id: string}>|array{type: string, id: string}|null}>}} $requestBody
+     * @param array{data: array{type: string, id: string, attributes?: array<string,mixed>, relationships?: JsonApiRelationships}} $requestBody
      *
      * @throws Exception
      */
@@ -195,11 +202,11 @@ abstract class AbstractApiService
         $relationships = $data[ContentField::RELATIONSHIPS] ?? [];
         $properties = $this->propertyValuesGenerator->generatePropertyValues($attributes, $relationships);
 
+        /** @var ResourceTypeInterface&CreatableTypeInterface $type */
         $type = $this->typeProvider->getAvailableType(
             $urlTypeName,
             ResourceTypeInterface::class,
-            CreatableTypeInterface::class,
-            IdentifiableTypeInterface::class
+            CreatableTypeInterface::class
         );
 
         $createdEntity = $this->createObject($type, $properties);
@@ -238,7 +245,7 @@ abstract class AbstractApiService
      * @template O of object
      *
      * @param ResourceTypeInterface<O>        $type
-     * @param FunctionInterface<bool>         $filter
+     * @param F                               $filter
      * @param array<int, SortMethodInterface> $sortMethods
      *
      * @return ApiListResultInterface<O>
@@ -272,7 +279,7 @@ abstract class AbstractApiService
     abstract protected function deleteObject(ResourceTypeInterface $type, string $id): void;
 
     /**
-     * @return FunctionInterface<bool>
+     * @return F
      *
      * @throws DrupalFilterException
      */

@@ -62,6 +62,9 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
         return $this->accessDepth;
     }
 
+    /**
+     * @internal
+     */
     public function setPath(string $property, string ...$properties): void
     {
         array_unshift($properties, $property);
@@ -79,7 +82,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     public function __toString(): string
     {
         $pathString = implode('.', $this->properties->getArrayCopy());
-        return "$pathString({$this->accessDepth})";
+        return "$pathString($this->accessDepth)";
     }
 
     /**

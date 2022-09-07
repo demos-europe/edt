@@ -13,6 +13,10 @@ use EDT\JsonApi\Schema\ToOneResourceLinkage;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use InvalidArgumentException;
 
+/**
+ * @psalm-type JsonApiRelationship = array{type: string, id: string}
+ * @psalm-type JsonApiRelationships = array<string,array{data: array<int, JsonApiRelationship>|JsonApiRelationship|null}>
+ */
 class PropertyValuesGenerator
 {
     /**
@@ -35,8 +39,8 @@ class PropertyValuesGenerator
      * Converts the attributes and relationships from the JSON:API request format into
      * a single list, mapping the property names to the actual values to set.
      *
-     * @param array<string,mixed>                    $attributes
-     * @param array<string,array{data: array<int, array{type: string, id: string}>|array{type: string, id: string}|null}> $relationships
+     * @param array<string, mixed|null> $attributes
+     * @param JsonApiRelationships      $relationships
      *
      * @return array<string,mixed>
      */
