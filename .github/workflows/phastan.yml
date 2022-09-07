@@ -9,12 +9,20 @@ on:
       - '**.php'
       - 'phpstan.neon'
 jobs:
-  build-test:
+  phpstan7_4:
+    name: phpstan @ PHP 7.4
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
       - uses: php-actions/composer@v5
+        with:
+          php_version: 7.4
+
       - uses: php-actions/phpstan@v3
         with:
+          php_version: 7.4
           path: packages/*/src

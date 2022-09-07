@@ -13,6 +13,7 @@ jobs:
   phpunit7_4:
     name: PHPUnit @ PHP 7.4
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
         with:
