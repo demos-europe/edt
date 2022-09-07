@@ -25,6 +25,6 @@ jobs:
       - uses: php-actions/phpstan@v3
         with:
           php_version: 7.4
-          path: packages/*/src
           level: 8
           configuration: 'phpstan.neon'
+          version: '1.8.2'
