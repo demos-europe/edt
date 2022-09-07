@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2 - 2022-09-07
+
+- build composer package from `jsonapi` implementation
+
 ## 0.11.0 - 2022-09-07
 
 - feature: add initial `jsonapi` package implementation
