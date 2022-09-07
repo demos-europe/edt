@@ -439,7 +439,7 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testInvalidMemberOfType(): void
     {
-        $this->expectException(DrupalFilterException::class);
+        $this->expectException(TypeError::class);
         $this->filterFactory->createRootFromArray([
             'condition_a' => [
                 'condition' => [
