@@ -6,6 +6,7 @@ namespace EDT\JsonApi\ApiDocumentation;
 
 use function array_key_exists;
 use cebe\openapi\spec\Schema;
+use function Safe\sprintf;
 
 /**
  * Store OpenAPI Schema Definitions for reuse.

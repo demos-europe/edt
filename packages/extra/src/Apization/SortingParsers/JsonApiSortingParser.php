@@ -6,6 +6,7 @@ namespace EDT\Apization\SortingParsers;
 
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
+use function Safe\substr;
 
 class JsonApiSortingParser
 {
