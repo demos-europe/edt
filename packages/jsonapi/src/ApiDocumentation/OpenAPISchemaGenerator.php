@@ -17,6 +17,7 @@ use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
+use Throwable;
 use function array_key_exists;
 use function collect;
 use function count;
@@ -82,6 +83,9 @@ final class OpenAPISchemaGenerator
         $this->defaultPageSize = $defaultPageSize;
     }
 
+    /**
+     * @throws TypeErrorException
+     */
     public function getOpenAPISpecification(): OpenApi
     {
         $openApi = new OpenApi(
@@ -134,6 +138,9 @@ final class OpenAPISchemaGenerator
         return $openApi;
     }
 
+    /**
+     * @throws TypeErrorException
+     */
     private function createTag(ResourceTypeInterface $type): Tag
     {
         return new Tag(
@@ -146,6 +153,9 @@ final class OpenAPISchemaGenerator
         );
     }
 
+    /**
+     * @throws TypeErrorException
+     */
     private function addListOperation(
         Tag $tag,
         ResourceTypeInterface $resource,
@@ -227,6 +237,9 @@ final class OpenAPISchemaGenerator
         );
     }
 
+    /**
+     * @throws TypeErrorException
+     */
     private function createEntityMethodsPathItem(Tag $tag, ResourceTypeInterface $resource): PathItem
     {
         $entityMethodsPathItem = new PathItem(
@@ -305,6 +318,9 @@ final class OpenAPISchemaGenerator
         return $this->schemaStore[$typeName];
     }
 
+    /**
+     * @throws TypeErrorException
+     */
     private function wrapAsJsonApiResponseSchema(
         ResourceTypeInterface $resource,
         array $dataObjects,
@@ -372,6 +388,7 @@ final class OpenAPISchemaGenerator
      * @return array<string,string>
      *
      * @throws ReflectionException
+     * @throws Throwable
      */
     private function resolveAttributeType(
         ResourceTypeInterface $resource,
@@ -395,6 +412,8 @@ final class OpenAPISchemaGenerator
 
     /**
      * @return array<int, Parameter>
+     *
+     * @throws TypeErrorException
      */
     private function getDefaultQueryParameters(): array
     {
@@ -438,6 +457,8 @@ final class OpenAPISchemaGenerator
 
     /**
      * @return array<int, Parameter>
+     *
+     * @throws TypeErrorException
      */
     private function getPaginationParameters(): array
     {
@@ -487,6 +508,8 @@ final class OpenAPISchemaGenerator
 
     /**
      * @return array<int, Parameter>
+     *
+     * @throws TypeErrorException
      */
     private function getFilterParameter(): array
     {
