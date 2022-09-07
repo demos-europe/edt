@@ -11,7 +11,7 @@ use function array_key_exists;
 use function count;
 use function in_array;
 use InvalidArgumentException;
-use function is_array;
+use function Safe\substr;
 use function is_object;
 use League\Fractal\ParamBag;
 use League\Fractal\Resource\Collection;

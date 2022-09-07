@@ -18,7 +18,8 @@ jobs:
           'dql',
           'extra',
           'paths',
-          'queries'
+          'queries',
+          'jsonapi'
         ]
 
     steps:

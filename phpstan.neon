@@ -4,6 +4,13 @@ includes:
 parameters:
     treatPhpDocTypesAsCertain: false
     checkGenericClassInNonGenericObjectType: false
+    paths:
+        - packages/access-definitions/src
+        - packages/dql/src
+        - packages/extra/src
+        - packages/jsonapi/src
+        - packages/paths/src
+        - packages/queries/src
     ignoreErrors:
         -
             message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\:\\:getType\\(\\) should return I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<object\\> but returns EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\.$#"
