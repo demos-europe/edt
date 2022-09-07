@@ -5,7 +5,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
     checkGenericClassInNonGenericObjectType: false
     paths:
-        - packages/access-definition/src
+        - packages/access-definitions/src
         - packages/dql/src
         - packages/extra/src
         - packages/jsonapi/src
