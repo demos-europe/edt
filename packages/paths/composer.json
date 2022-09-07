@@ -4,12 +4,12 @@
     "license": "MIT",
     "type": "library",
     "require": {
-        "php": ">=7.3,<8.2",
+        "php": ">=7.3,<8",
         "nette/php-generator": "^3.5",
         "phpdocumentor/reflection-docblock": "^5.1.0",
-        "demos-europe/edt-queries": "^0.8",
+        "demos-europe/edt-queries": "^0.7.1",
         "nikic/php-parser": "^4.14",
-        "thecodingmachine/safe": "^2.2"
+        "thecodingmachine/safe": "^1.3.3"
     },
     "authors": [
         {

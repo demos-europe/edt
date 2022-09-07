@@ -1,0 +1,3 @@
+== Credits and acknowledgements
+
+Conception and implementation by Christian Dressler and https://github.com/eFrane[eFrane].

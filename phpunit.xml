@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         defaultTestSuite="access-definitions,paths,dql,extra,queries"
+         defaultTestSuite="access-definitions,paths,dql,extra,queries,jsonapi"
          bootstrap="bootstrap.php"
          colors="true"
          verbose="true"
@@ -11,6 +11,7 @@
               includeUncoveredFiles="true">
         <include>
             <directory suffix=".php">./packages/access-definitions/src</directory>
+            <directory suffix=".php">./packages/jsonapi/src</directory>
             <directory suffix=".php">./packages/dql/src</directory>
             <directory suffix=".php">./packages/extra/src</directory>
             <directory suffix=".php">./packages/paths/src</directory>
@@ -20,6 +21,9 @@
     <testsuites>
         <testsuite name="paths">
             <directory>packages/paths/tests</directory>
+        </testsuite>
+        <testsuite name="jsonapi">
+            <directory>packages/jsonapi/tests</directory>
         </testsuite>
         <testsuite name="dql">
             <directory>packages/dql/tests</directory>

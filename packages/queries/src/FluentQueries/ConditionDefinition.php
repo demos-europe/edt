@@ -229,7 +229,7 @@ class ConditionDefinition
     }
 
     /**
-     * @param array<int|string, mixed> $values
+     * @param non-empty-array<int|string, mixed> $values
      *
      * @return $this
      */

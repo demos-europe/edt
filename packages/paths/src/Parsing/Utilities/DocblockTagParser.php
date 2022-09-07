@@ -21,6 +21,8 @@ use PhpParser\NodeVisitorAbstract;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use ReflectionClass;
+use ReflectionProperty;
+use Reflector;
 use Safe\Exceptions\FilesystemException;
 use function count;
 use function is_string;
@@ -29,6 +31,8 @@ use function Safe\fclose;
 
 /**
  * Provides parsing capabilities for tags, especially for such with an associated type.
+ *
+ * @internal
  */
 class DocblockTagParser
 {
@@ -37,7 +41,7 @@ class DocblockTagParser
      */
     private $reflectionClass;
     /**
-     * @var DocBlock
+     * @var DocBlock|null
      */
     private $docBlock;
 
@@ -60,11 +64,7 @@ class DocblockTagParser
         try {
             $this->phpParser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
             $this->reflectionClass = new ReflectionClass($class);
-            $docBlock = $this->reflectionClass->getDocComment();
-            if (!is_string($docBlock) || '' === $docBlock) {
-                $docBlock = ' ';
-            }
-            $this->docBlock = DocBlockFactory::createInstance()->create($docBlock);
+            $this->docBlock = self::createDocblock($this->reflectionClass);
             $this->useStatements = $this->getUseStatements();
         } catch (Exception $e) {
             throw ParseException::docblockParsingFailed($class, $e);
@@ -72,10 +72,27 @@ class DocblockTagParser
     }
 
     /**
+     * @param ReflectionClass|ReflectionProperty $commented must provide a `getDocComment` method
+     */
+    public static function createDocblock(Reflector $commented): ?DocBlock
+    {
+        $docBlock = $commented->getDocComment();
+        if (!is_string($docBlock) || '' === $docBlock) {
+            return null;
+        }
+
+        return DocBlockFactory::createInstance()->create($docBlock);
+    }
+
+    /**
      * @return array<int,Tag>
      */
     public function getTags(string $tagName): array
     {
+        if (null === $this->docBlock) {
+            return [];
+        }
+
         return $this->docBlock->getTagsByName($tagName);
     }
 

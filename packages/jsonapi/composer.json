@@ -1,0 +1,43 @@
+{
+    "name": "demos-europe/edt-jsonapi",
+    "description": "Expose Doctrine entities as JSON:API resources.",
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": ">=7.3,<8",
+        "demos-europe/edt-queries": "^0.7.1",
+        "league/fractal": "^0.20.1",
+        "psr/log": "^1.1.4",
+        "doctrine/collections": "^1.7",
+        "demos-europe/edt-extra": "^0.7.1",
+        "demos-europe/edt-access-definitions": "^0.7.1",
+        "symfony/http-foundation": "^5.4.12",
+        "symfony/validator": "^5.4.12",
+        "pagerfanta/pagerfanta": "^3.6",
+        "symfony/routing": "^5.4.11",
+        "cebe/php-openapi": "^1.7"
+    },
+    "authors": [
+        {
+            "name": "Christian Dressler",
+            "email": "dressler@demos-deutschland.de"
+        },
+        {
+            "name": "Stefan Graupner",
+            "email": "efrane@meanderingsoul.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "EDT\\JsonApi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "conflict": {
+        "demos-europe/edt-paths": "<0.7.1"
+    }
+}
