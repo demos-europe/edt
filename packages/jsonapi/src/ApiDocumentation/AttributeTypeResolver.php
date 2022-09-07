@@ -57,13 +57,15 @@ class AttributeTypeResolver
             $this->propertiesCache[$resourceClass] = collect(
                 $resourceType->getValidatedProperties()
             )
-                ->flatMap(static function (GetableProperty $property): array {
+                ->mapWithKeys(static function (GetableProperty $property): array {
                     return [$property->getName() => $property];
-                });
+                })
+                ->all();
         }
 
-        if ($this->propertiesCache[$resourceClass]->has($propertyName)) {
-            $property = $this->propertiesCache[$resourceClass]->get($propertyName);
+        $resourceProperties = $this->propertiesCache[$resourceClass];
+        if (array_key_exists($propertyName, $resourceProperties)) {
+            $property = $resourceProperties[$propertyName];
 
             if (null !== $property->getCustomReadCallback()) {
                 return $this->resolveTypeFromCallable($property, $resourceClass, $propertyName);
