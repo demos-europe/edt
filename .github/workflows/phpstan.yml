@@ -28,3 +28,4 @@ jobs:
           level: 8
           configuration: 'phpstan.neon'
           version: '1.8.2'
+          memory_limit: 256M
