@@ -9,7 +9,6 @@ use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use League\Fractal\ParamBag;
 use League\Fractal\TransformerAbstract;
-use function gettype;
 
 /**
  * Implementation of {@link IncludeDefinitionInterface} providing mostly hardcoded
