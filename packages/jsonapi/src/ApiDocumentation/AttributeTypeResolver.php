@@ -21,7 +21,6 @@ use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
 use function is_array;
-use function is_string;
 use function strlen;
 
 /**
@@ -183,6 +182,11 @@ class AttributeTypeResolver
         return $result;
     }
 
+    /**
+     * @return string[]
+     *
+     * @throws ReflectionException
+     */
     private function resolveTypeFromCallable(
         GetableProperty $property,
         string $resourceClass,
@@ -228,14 +232,14 @@ class AttributeTypeResolver
      * any annotations) from a docblock into a CommonMark string which can
      * be used to fuel schema descriptions.
      */
-    private function formatDescriptionFromDocblock($docBlock): string
+    private function formatDescriptionFromDocblock(string $docBlock): string
     {
         $parsed = DocBlockFactory::createInstance()->create($docBlock);
 
         $result = $parsed->getSummary();
 
-        $description = $parsed->getDescription();
-        if (is_string($description) && 0 < strlen($description)) {
+        $description = (string) $parsed->getDescription();
+        if (0 < strlen($description)) {
             $result .= "\n\n$description";
         }
 
