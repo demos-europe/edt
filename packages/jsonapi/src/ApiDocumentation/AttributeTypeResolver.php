@@ -6,6 +6,8 @@ namespace EDT\JsonApi\ApiDocumentation;
 
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\GetableProperty;
+use EDT\Parsing\Utilities\DocblockTagParser;
+use ReflectionProperty;
 use function array_key_exists;
 use function collect;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -99,19 +101,17 @@ class AttributeTypeResolver
         $column = $reader->getPropertyAnnotation($propertyReflection, Column::class);
         $id = $reader->getPropertyAnnotation($propertyReflection, Id::class);
 
-        $docComment = $propertyReflection->getDocComment();
-
         if ($id instanceof Id) {
             return [
                 'type'        => 'string',
                 'format'      => 'uuid',
-                'description' => $this->formatDescriptionFromDocblock($docComment),
+                'description' => $this->formatDescriptionFromDocblock($propertyReflection),
             ];
         }
 
         if ($column instanceof Column) {
             $dqlTypeMapping = $this->mapDqlType($column->type);
-            $dqlTypeMapping['description'] = $this->formatDescriptionFromDocblock($docComment);
+            $dqlTypeMapping['description'] = $this->formatDescriptionFromDocblock($propertyReflection);
 
             return $dqlTypeMapping;
         }
@@ -232,13 +232,16 @@ class AttributeTypeResolver
      * any annotations) from a docblock into a CommonMark string which can
      * be used to fuel schema descriptions.
      */
-    private function formatDescriptionFromDocblock(string $docBlock): string
+    private function formatDescriptionFromDocblock(ReflectionProperty $reflectionProperty): string
     {
-        $parsed = DocBlockFactory::createInstance()->create($docBlock);
+        $docblock = DocblockTagParser::createDocblock($reflectionProperty);
+        if (null === $docblock) {
+            return '';
+        }
 
-        $result = $parsed->getSummary();
+        $result = $docblock->getSummary();
 
-        $description = (string) $parsed->getDescription();
+        $description = (string) $docblock->getDescription();
         if (0 < strlen($description)) {
             $result .= "\n\n$description";
         }
