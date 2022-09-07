@@ -12,7 +12,14 @@ use function gettype;
 use function is_string;
 
 /**
- * @template-implements ConditionParserInterface<array{operator?: string, memberOf?: string, value?: mixed, path: string}>
+ * @psalm-type DrupalFilterCondition = array{
+ *            path: string,
+ *            value?: mixed,
+ *            operator?: string,
+ *            memberOf?: string
+ *          }
+ * @template F of FunctionInterface<bool>
+ * @template-implements ConditionParserInterface<DrupalFilterCondition, F>
  */
 abstract class DrupalConditionParser implements ConditionParserInterface
 {
@@ -22,28 +29,31 @@ abstract class DrupalConditionParser implements ConditionParserInterface
      *
      * @var string
      */
-    protected const MEMBER_OF_KEY = 'memberOf';
+    protected const MEMBER_OF = 'memberOf';
     /**
      * @var string
      */
-    protected const VALUE_KEY = 'value';
+    protected const VALUE = 'value';
     /**
      * @var string
      */
-    protected const PATH_KEY = 'path';
+    protected const PATH = 'path';
     /**
      * @var string
      */
-    protected const OPERATOR_KEY = 'operator';
+    protected const OPERATOR = 'operator';
     /**
      * @var string
      */
     protected $defaultOperator;
     /**
-     * @var ConditionFactoryInterface
+     * @var ConditionFactoryInterface<F>
      */
     protected $conditionFactory;
 
+    /**
+     * @param ConditionFactoryInterface<F> $conditionFactory
+     */
     public function __construct(ConditionFactoryInterface $conditionFactory, string $defaultOperator = '=')
     {
         $this->conditionFactory = $conditionFactory;
@@ -51,48 +61,40 @@ abstract class DrupalConditionParser implements ConditionParserInterface
     }
 
     /**
-     * @return FunctionInterface<bool>
      * @throws DrupalFilterException
      */
     public function parseCondition($condition): FunctionInterface
     {
         foreach ($condition as $key => $value) {
             switch ($key) {
-                case self::PATH_KEY:
-                case self::VALUE_KEY:
-                case self::MEMBER_OF_KEY:
-                case self::OPERATOR_KEY:
+                case self::PATH:
+                case self::VALUE:
+                case self::MEMBER_OF:
+                case self::OPERATOR:
                     break;
                 default:
                     throw DrupalFilterException::unknownConditionField($key);
             }
         }
-        if (!array_key_exists(self::PATH_KEY, $condition)) {
-            throw DrupalFilterException::noPath();
-        }
-        $path = $condition[self::PATH_KEY];
-        if (!is_string($path)) {
-            throw DrupalFilterException::pathType(gettype($path));
-        }
 
-        $operatorString = array_key_exists(self::OPERATOR_KEY, $condition)
-            ? $condition[self::OPERATOR_KEY]
+        $operatorString = array_key_exists(self::OPERATOR, $condition)
+            ? $condition[self::OPERATOR]
             : $this->defaultOperator;
 
-        if (array_key_exists(self::VALUE_KEY, $condition) && null === $condition[self::VALUE_KEY]) {
+        if (array_key_exists(self::VALUE, $condition) && null === $condition[self::VALUE]) {
             throw DrupalFilterException::nullValue();
         }
 
         return $this->createCondition(
             $operatorString,
-            $condition[self::VALUE_KEY] ?? null,
-            ...explode('.', $path)
+            $condition[self::VALUE] ?? null,
+            ...explode('.', $condition[self::PATH])
         );
     }
 
     /**
-     * @param mixed $conditionValue
-     * @return FunctionInterface<bool>
+     * @param mixed|null $conditionValue
+     * @return F
      * @throws DrupalFilterException
      */
     abstract protected function createCondition(string $conditionName, $conditionValue, string $pathPart, string ...$pathParts): FunctionInterface;
