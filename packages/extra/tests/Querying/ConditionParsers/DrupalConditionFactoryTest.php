@@ -517,7 +517,7 @@ class DrupalConditionFactoryTest extends TestCase
     public function testNoPath(): void
     {
         $this->expectError();
-        $this->expectErrorMessageMatches('/Undefined (array key|index:) "path"/');
+        $this->expectErrorMessageMatches('/Undefined (array key|index:) "?path"?/');
         $this->filterFactory->createRootFromArray([
             'condition_a' => [
                 'condition' => [
@@ -646,7 +646,7 @@ class DrupalConditionFactoryTest extends TestCase
     public function testConjunctionMissing(): void
     {
         $this->expectError();
-        $this->expectErrorMessageMatches('/Undefined (array key|index:) "conjunction"/');
+        $this->expectErrorMessageMatches('/Undefined (array key|index:) "?conjunction"?/');
 
         $this->filterFactory->createRootFromArray([
             'group_a' => [
