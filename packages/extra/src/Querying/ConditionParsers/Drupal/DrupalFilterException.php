@@ -16,11 +16,6 @@ class DrupalFilterException extends Exception
         return new self("Invalid filter element '$name'. MUST contain either 'group' or 'condition' as key.");
     }
 
-    public static function memberOfType(string $type): self
-    {
-        return new self("The 'memberOf' field value MUST be of type string, found: $type.");
-    }
-
     public static function memberOfRoot(): self
     {
         return new self("The 'memberOf' field value MUST NOT be '@root', this value is internally reserved. To assign a condition or group to the implicit root group just omit the 'memberOf' field completely.");
@@ -41,11 +36,6 @@ class DrupalFilterException extends Exception
         return new self("The 'condition' field MUST NOT contain fields other than 'path', 'value', 'operator' and 'memberOf', found: {$fieldName}");
     }
 
-    public static function pathType(string $type): self
-    {
-        return new self("The 'path' field value must be a string, got {$type}.");
-    }
-
     public static function nullValue(): self
     {
         return new self("The 'condition' must not contain a 'value' field with a null value.");
@@ -60,15 +50,6 @@ class DrupalFilterException extends Exception
     public static function conjunctionUnavailable(string $name): self
     {
         return new self("The conjunction is not available: {$name}");
-    }
-
-    /**
-     * @param mixed $condition
-     */
-    public static function conditionNonArray($condition): self
-    {
-        $type = is_object($condition) ? get_class($condition) : gettype($condition);
-        return new self("Expected condition to be an array, got '$type' instead.");
     }
 
     public static function emergencyAbort(int $iterations): self

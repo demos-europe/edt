@@ -46,16 +46,11 @@ class RelationshipObject
      */
     public static function createWithDataRequired(array $relationshipObject): self
     {
-        if (!array_key_exists(ContentField::DATA, $relationshipObject)) {
-            throw new InvalidArgumentException("'data' resource linkage is missing while required");
-        }
         $relationshipResourceLinkage = $relationshipObject[ContentField::DATA];
         if (null === $relationshipResourceLinkage || array_key_exists(ContentField::ID, $relationshipResourceLinkage)) {
             $resourceLinkage = ToOneResourceLinkage::createFromArray($relationshipResourceLinkage);
-        } elseif (is_array($relationshipResourceLinkage)) {
-            $resourceLinkage = ToManyResourceLinkage::createFromArray($relationshipResourceLinkage);
         } else {
-            throw new InvalidArgumentException('invalid data given, no valid resource linkage');
+            $resourceLinkage = ToManyResourceLinkage::createFromArray($relationshipResourceLinkage);
         }
 
         return new self($resourceLinkage);

@@ -387,8 +387,7 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testConditionNoArray(): void
     {
-        $this->expectException(DrupalFilterException::class);
-
+        $this->expectException(TypeError::class);
         $this->filterFactory->createRootFromArray(
             // passing an invalid paramater on purpose
             /** @phpstan-ignore-next-line */
@@ -529,7 +528,7 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testInvalidPathType(): void
     {
-        $this->expectException(DrupalFilterException::class);
+        $this->expectException(TypeError::class);
         $this->filterFactory->createRootFromArray([
             'condition_a' => [
                 'condition' => [

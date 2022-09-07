@@ -76,10 +76,6 @@ abstract class DrupalConditionParser implements ConditionParserInterface
                     throw DrupalFilterException::unknownConditionField($key);
             }
         }
-        $path = $condition[self::PATH];
-        if (!is_string($path)) {
-            throw DrupalFilterException::pathType(gettype($path));
-        }
 
         $operatorString = array_key_exists(self::OPERATOR, $condition)
             ? $condition[self::OPERATOR]
@@ -92,7 +88,7 @@ abstract class DrupalConditionParser implements ConditionParserInterface
         return $this->createCondition(
             $operatorString,
             $condition[self::VALUE] ?? null,
-            ...explode('.', $path)
+            ...explode('.', $condition[self::PATH])
         );
     }
 

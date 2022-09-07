@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace EDT\Querying\ConditionParsers\Drupal;
 
 use function array_key_exists;
-use function is_array;
-use function gettype;
-use function is_string;
 
 /**
  * Separates the conditions from the group definitions and builds two
@@ -102,9 +99,6 @@ class DrupalFilterObject
                 // group. The buckets are added to the $conditions array with the unique
                 // name of the corresponding group as key.
                 $conditionArray = $groupOrCondition[self::CONDITION];
-                if (!is_array($conditionArray)) {
-                    throw DrupalFilterException::conditionNonArray($conditionArray);
-                }
                 $memberOf = $this->determineMemberOf($conditionArray);
                 $this->groupedConditions[$memberOf][] = $conditionArray;
             } else {
@@ -147,9 +141,6 @@ class DrupalFilterObject
     {
         if (array_key_exists(self::MEMBER_OF, $groupOrCondition)) {
             $memberOf = $groupOrCondition[self::MEMBER_OF];
-            if (!is_string($memberOf)) {
-                throw DrupalFilterException::memberOfType(gettype($memberOf));
-            }
             if (self::ROOT === $memberOf) {
                 throw DrupalFilterException::memberOfRoot();
             }

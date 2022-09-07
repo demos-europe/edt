@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace EDT\JsonApi\Schema;
 
 use Exception;
-use InvalidArgumentException;
-use function is_array;
 
 /**
  * A JSON API Resource Linkage with a to-many cardinality.
@@ -28,12 +26,7 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
     private function __construct(array $content)
     {
         $this->resourceIdentifierObjects = array_map(
-            static function ($resourceIdentifierObject) {
-                // TODO: validate request via json-schema/symfony-validation/... to avoid manual code checks with unclear exception messages
-                if (!is_array($resourceIdentifierObject)) {
-                    throw new InvalidArgumentException('resourceIdentifierObjects must be provided as array');
-                }
-
+            static function (array $resourceIdentifierObject) {
                 return new ResourceIdentifierObject($resourceIdentifierObject);
             },
             $content
