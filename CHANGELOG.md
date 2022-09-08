@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- fix: increase pagerfanta requirement to ^2.7
+
 ## 0.12.2 - 2022-09-08
 
 - feature: use less strict dependency requirements
