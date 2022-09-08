@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
@@ -152,7 +153,7 @@ interface SetableProperty
     /**
      * Mark the property as initializable when creating a resource.
      *
-     * Please note that {@link CreatableDqlResourceTypeInterface::isCreatable()} must return `true`
+     * Please note that {@link CreatableTypeInterface::isCreatable()} must return `true`
      * to allow the creation of resources of that type.
      *
      * By default, properties marked as initializable are required to be present in a request when
