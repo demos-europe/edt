@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.2 - 2022-09-08
 
 - feature: use less strict dependency requirements
 - feature: add interface method to check for type creatability

@@ -31,6 +31,7 @@ use function strlen;
 /**
  * Map Doctrine or native types to OpenAPI types.
  */
+// TODO: determine if this class can be abstracted away from doctrine. If not, decide if it should remain in the jsonapi package
 class AttributeTypeResolver
 {
     /**
