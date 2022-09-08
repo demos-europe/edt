@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.4 - 2022-09-08
 
 - fix: use matching parameter naming
 
