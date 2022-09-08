@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- feature: use less strict dependency requirements
+- feature: add interface method to check for type creatability
+
 ## 0.11.2 - 2022-09-07
 
 - build composer package from `jsonapi` implementation
