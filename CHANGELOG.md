@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- fix: use matching parameter naming
+
 ## 0.12.3 - 2022-09-08
 
 - fix: increase pagerfanta requirement to ^2.7

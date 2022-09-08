@@ -64,7 +64,7 @@ final class OpenAPISchemaGenerator
     private $defaultPageSize;
 
     public function __construct(
-        AttributeTypeResolver $entityParser,
+        AttributeTypeResolver $typeResolver,
         LoggerInterface $logger,
         PrefilledTypeProvider $resourceTypeProvider,
         RouterInterface $router,
@@ -72,7 +72,7 @@ final class OpenAPISchemaGenerator
         TranslatorInterface $translator,
         int $defaultPageSize
     ) {
-        $this->typeResolver = $entityParser;
+        $this->typeResolver = $typeResolver;
         $this->resourceTypeProvider = $resourceTypeProvider;
         $this->router = $router;
         $this->translator = $translator;
