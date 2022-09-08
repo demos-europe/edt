@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- fix: ignore unavailable source code when parsing property-read tags
+
 ## 0.12.4 - 2022-09-08
 
 - fix: use matching parameter naming

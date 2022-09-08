@@ -213,7 +213,16 @@ class DocblockTagParser
      */
     private function getUseStatements(): array
     {
-        $sourceCode = $this->readSourceCode($this->reflectionClass->getFileName());
+        $fileName = $this->reflectionClass->getFileName();
+        if (!is_string($fileName)) {
+            /**
+             * In some cases no source code can be retrieved for the given type (e.g.
+             * {@link IteratorAggregate}). For now we will assume it does not happen for with
+             * "normal" types and ignore it until it becomes a problem in an actual use case.
+             */
+            return [];
+        }
+        $sourceCode = $this->readSourceCode($fileName);
         $ast = $this->phpParser->parse($sourceCode);
         $traverser = new NodeTraverser();
         $useCollector = new class extends NodeVisitorAbstract {

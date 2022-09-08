@@ -258,17 +258,12 @@ parameters:
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
 
         -
-            message: "#^Parameter \\#1 \\$fileName of method EDT\\\\Parsing\\\\Utilities\\\\DocblockTagParser\\:\\:readSourceCode\\(\\) expects string, string\\|false given\\.$#"
-            count: 1
-            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
-
-        -
             message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
             count: 1
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
 
         -
-            message: "#^Property class@anonymous/paths/src/Parsing/Utilities/DocblockTagParser\\.php\\:219\\:\\:\\$useStatements \\(array\\<string, class\\-string\\>\\) does not accept array\\<string, string\\>\\.$#"
+            message: "#^Property class@anonymous/paths/src/Parsing/Utilities/DocblockTagParser\\.php\\:228\\:\\:\\$useStatements \\(array\\<string, class\\-string\\>\\) does not accept array\\<string, string\\>\\.$#"
             count: 1
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
 

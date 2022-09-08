@@ -27,6 +27,8 @@ class DocblockPropertyByTraitEvaluator
     private $traitEvaluator;
 
     /**
+     * Cache of already parsed classes
+     *
      * @var array<class-string, array<string, class-string>>
      */
     private $parsedClasses = [];
