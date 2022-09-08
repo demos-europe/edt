@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.5 - 2022-09-08
 
 - fix: ignore unavailable source code when parsing property-read tags
 
