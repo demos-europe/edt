@@ -16,7 +16,6 @@
     ],
     "autoload": {
         "psr-4": {
-            "EDT\\Apization\\": "src/Apization/",
             "EDT\\Querying\\ConditionParsers\\": "src/Querying/ConditionParsers/"
         }
     },
