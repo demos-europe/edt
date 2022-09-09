@@ -12,7 +12,7 @@ use function array_key_exists;
  * memberOf value.
  *
  * @psalm-type DrupalFilterGroup = array{
- *            conjunction: DrupalFilterObject::AND|DrupalFilterObject::OR,
+ *            conjunction: DrupalFilterParser::AND|DrupalFilterParser::OR,
  *            memberOf?: string
  *          }
  * @psalm-type DrupalFilterCondition = array{
@@ -22,47 +22,14 @@ use function array_key_exists;
  *            memberOf?: string
  *          }
  */
-class DrupalFilterObject
+class DrupalFilter
 {
-    /**
-     * This group/condition key is reserved and can not be used in a request.
-     *
-     * The value is not specified by Drupal's JSON:API filter documentation. However,
-     * it is used by Drupal's implementation and was thus adopted here and preferred over
-     * alternatives like 'root' or '' (empty string).
-     */
-    public const ROOT = '@root';
-    /**
-     * All conditions in the group must apply.
-     */
-    public const AND = 'AND';
-    /**
-     * Any condition in the group must apply.
-     */
-    public const OR = 'OR';
-    /**
-     * The key of the field determining which filter group a condition or a subgroup is a member
-     * of.
-     */
-    private const MEMBER_OF = 'memberOf';
-    /**
-     * The key for the field in which "AND" or "OR" is stored.
-     */
-    private const CONJUNCTION = 'conjunction';
-    /**
-     * The key identifying a field as data for a filter group.
-     */
-    private const GROUP = 'group';
-    /**
-     * The key identifying a field as data for a filter condition.
-     */
-    private const CONDITION = 'condition';
     /**
      * @var array<string,array<int,DrupalFilterCondition>>
      */
     private $groupedConditions = [];
     /**
-     * @var array<string, DrupalFilterObject::AND|DrupalFilterObject::OR>
+     * @var array<string, DrupalFilterParser::AND|DrupalFilterParser::OR>
      */
     private $groupNameToConjunction = [];
     /**
@@ -81,24 +48,24 @@ class DrupalFilterObject
     public function __construct(array $groupsAndConditions)
     {
         // One special name is reserved for internal usage by the drupal filter specification.
-        if (array_key_exists(self::ROOT, $groupsAndConditions)) {
+        if (array_key_exists(DrupalFilterParser::ROOT, $groupsAndConditions)) {
             throw DrupalFilterException::rootKeyUsed();
         }
 
         foreach ($groupsAndConditions as $filterName => $groupOrCondition) {
-            if (array_key_exists(self::GROUP, $groupOrCondition)) {
+            if (array_key_exists(DrupalFilterParser::GROUP, $groupOrCondition)) {
                 // If an item defines a group its structure will be simplified,
                 // and it is added to the groups with its unique name as key.
-                $group = $this->validateGroup($groupOrCondition[self::GROUP]);
-                $this->groupNameToConjunction[$filterName] = $group[self::CONJUNCTION];
+                $group = $this->validateGroup($groupOrCondition[DrupalFilterParser::GROUP]);
+                $this->groupNameToConjunction[$filterName] = $group[DrupalFilterParser::CONJUNCTION];
                 $this->groupNameToMemberOf[$filterName] = $this->determineMemberOf($group);
-            } elseif (array_key_exists(self::CONDITION, $groupOrCondition)) {
+            } elseif (array_key_exists(DrupalFilterParser::CONDITION, $groupOrCondition)) {
                 // If an item is a condition then a condition object will be created from it.
                 // That object is then added not directly to the conditions but to a bucket
                 // instead. Each bucket contains all conditions that belong into the same
                 // group. The buckets are added to the $conditions array with the unique
                 // name of the corresponding group as key.
-                $conditionArray = $groupOrCondition[self::CONDITION];
+                $conditionArray = $groupOrCondition[DrupalFilterParser::CONDITION];
                 $memberOf = $this->determineMemberOf($conditionArray);
                 $this->groupedConditions[$memberOf][] = $conditionArray;
             } else {
@@ -116,11 +83,16 @@ class DrupalFilterObject
     }
 
     /**
-     * @return array<string,DrupalFilterObject::AND|DrupalFilterObject::OR>
+     * @return DrupalFilterParser::AND|DrupalFilterParser::OR
      */
-    public function getGroupNameToConjunction(): array
+    public function getGroupConjunction(string $groupName): string
     {
-        return $this->groupNameToConjunction;
+        return $this->groupNameToConjunction[$groupName];
+    }
+
+    public function hasGroup(string $groupName): bool
+    {
+        return array_key_exists($groupName, $this->groupNameToConjunction);
     }
 
     /**
@@ -131,6 +103,11 @@ class DrupalFilterObject
         return $this->groupNameToMemberOf;
     }
 
+    public function getFilterGroupParent(string $groupName): string
+    {
+        return $this->groupNameToMemberOf[$groupName] ?? DrupalFilterParser::ROOT;
+    }
+
     /**
      * Get the unique name of the parent group of the given group or condition.
      *
@@ -139,16 +116,16 @@ class DrupalFilterObject
      */
     protected function determineMemberOf(array $groupOrCondition): string
     {
-        if (array_key_exists(self::MEMBER_OF, $groupOrCondition)) {
-            $memberOf = $groupOrCondition[self::MEMBER_OF];
-            if (self::ROOT === $memberOf) {
+        if (array_key_exists(DrupalFilterParser::MEMBER_OF, $groupOrCondition)) {
+            $memberOf = $groupOrCondition[DrupalFilterParser::MEMBER_OF];
+            if (DrupalFilterParser::ROOT === $memberOf) {
                 throw DrupalFilterException::memberOfRoot();
             }
 
             return $memberOf;
         }
 
-        return self::ROOT;
+        return DrupalFilterParser::ROOT;
     }
 
     /**
@@ -159,14 +136,14 @@ class DrupalFilterObject
     private function validateGroup(array $group): array
     {
         foreach ($group as $key => $value) {
-            if (self::CONJUNCTION !== $key && self::MEMBER_OF !== $key) {
+            if (DrupalFilterParser::CONJUNCTION !== $key && DrupalFilterParser::MEMBER_OF !== $key) {
                 throw DrupalFilterException::unknownGroupField($key);
             }
         }
-        $conjunctionString = $group[self::CONJUNCTION];
+        $conjunctionString = $group[DrupalFilterParser::CONJUNCTION];
         switch ($conjunctionString) {
-            case self::AND:
-            case self::OR:
+            case DrupalFilterParser::AND:
+            case DrupalFilterParser::OR:
                 return $group;
             default:
                 throw DrupalFilterException::conjunctionUnavailable($conjunctionString);

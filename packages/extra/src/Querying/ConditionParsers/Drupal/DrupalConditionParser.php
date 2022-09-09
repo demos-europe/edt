@@ -8,10 +8,10 @@ use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ConditionParserInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use function array_key_exists;
-use function gettype;
-use function is_string;
 
 /**
+ * Parses specific conditions inside a Drupal filter format.
+ *
  * @psalm-type DrupalFilterCondition = array{
  *            path: string,
  *            value?: mixed,
@@ -23,25 +23,6 @@ use function is_string;
  */
 abstract class DrupalConditionParser implements ConditionParserInterface
 {
-    /**
-     * The key of the field determining which filter group a condition or a subgroup is a member
-     * of.
-     *
-     * @var string
-     */
-    protected const MEMBER_OF = 'memberOf';
-    /**
-     * @var string
-     */
-    protected const VALUE = 'value';
-    /**
-     * @var string
-     */
-    protected const PATH = 'path';
-    /**
-     * @var string
-     */
-    protected const OPERATOR = 'operator';
     /**
      * @var string
      */
@@ -67,28 +48,29 @@ abstract class DrupalConditionParser implements ConditionParserInterface
     {
         foreach ($condition as $key => $value) {
             switch ($key) {
-                case self::PATH:
-                case self::VALUE:
-                case self::MEMBER_OF:
-                case self::OPERATOR:
+                case DrupalFilterParser::PATH:
+                case DrupalFilterParser::VALUE:
+                case DrupalFilterParser::MEMBER_OF:
+                case DrupalFilterParser::OPERATOR:
                     break;
                 default:
                     throw DrupalFilterException::unknownConditionField($key);
             }
         }
 
-        $operatorString = array_key_exists(self::OPERATOR, $condition)
-            ? $condition[self::OPERATOR]
+        $operatorString = array_key_exists(DrupalFilterParser::OPERATOR, $condition)
+            ? $condition[DrupalFilterParser::OPERATOR]
             : $this->defaultOperator;
 
-        if (array_key_exists(self::VALUE, $condition) && null === $condition[self::VALUE]) {
+        if (array_key_exists(
+                DrupalFilterParser::VALUE, $condition) && null === $condition[DrupalFilterParser::VALUE]) {
             throw DrupalFilterException::nullValue();
         }
 
         return $this->createCondition(
             $operatorString,
-            $condition[self::VALUE] ?? null,
-            ...explode('.', $condition[self::PATH])
+            $condition[DrupalFilterParser::VALUE] ?? null,
+            ...explode('.', $condition[DrupalFilterParser::PATH])
         );
     }
 
