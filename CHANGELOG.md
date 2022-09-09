@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.7 - 2022-09-09
 
 - refactor: decouple `jsonapi` package from `extra` package
 - refactor: prefer to handle Drupal root conditions as array
