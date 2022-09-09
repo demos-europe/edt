@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EDT\Apization\SortingParsers;
+namespace EDT\JsonApi\RequestHandling;
 
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;

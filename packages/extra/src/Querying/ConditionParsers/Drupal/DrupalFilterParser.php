@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
+use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ConditionParserInterface;
 use EDT\Querying\Contracts\FunctionInterface;
@@ -16,18 +17,19 @@ use function in_array;
  * The data is expected to be in the format defined by the Drupal JSON:API filter specification.
  *
  * @psalm-type DrupalFilterGroup = array{
- *            conjunction: DrupalFilterParser::AND|DrupalFilterParser::OR,
- *            memberOf?: string
+ *            conjunction: non-empty-string,
+ *            memberOf?: non-empty-string
  *          }
  * @psalm-type DrupalFilterCondition = array{
- *            path: string,
+ *            path: non-empty-string,
  *            value?: mixed,
- *            operator?: string,
- *            memberOf?: string
+ *            operator?: non-empty-string,
+ *            memberOf?: non-empty-string
  *          }
  * @template F of FunctionInterface<bool>
+ * @template-implements FilterParserInterface<array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, F>
  */
-class DrupalFilterParser
+class DrupalFilterParser implements FilterParserInterface
 {
     /**
      * The maximum number of steps we make inside the tree to be built from the given condition groups.
@@ -98,19 +100,29 @@ class DrupalFilterParser
      * @var ConditionFactoryInterface<F>
      */
     protected $conditionFactory;
+
     /**
      * @var ConditionParserInterface<DrupalFilterCondition, F>
      */
     private $conditionParser;
 
     /**
-     * @param ConditionFactoryInterface<F>                $conditionFactory
+     * @var DrupalFilterValidator
+     */
+    private $filterValidator;
+
+    /**
+     * @param ConditionFactoryInterface<F>                       $conditionFactory
      * @param ConditionParserInterface<DrupalFilterCondition, F> $conditionParser
      */
-    public function __construct(ConditionFactoryInterface $conditionFactory, ConditionParserInterface $conditionParser)
-    {
+    public function __construct(
+        ConditionFactoryInterface $conditionFactory,
+        ConditionParserInterface $conditionParser,
+        DrupalFilterValidator $filterValidator
+    ) {
         $this->conditionFactory = $conditionFactory;
         $this->conditionParser = $conditionParser;
+        $this->filterValidator = $filterValidator;
     }
 
     /**
@@ -118,14 +130,15 @@ class DrupalFilterParser
      * match for an entity to match the Drupal filter. An empty error being returned means that
      * all entities match, as there are no restrictions.
      *
-     * @param array<string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
+     * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
      *
      * @return array<int, F>
      *
      * @throws DrupalFilterException
      */
-    public function createRootFromArray(array $groupsAndConditions): array
+    public function parseFilter($groupsAndConditions): array
     {
+        $this->filterValidator->validateFilter($groupsAndConditions);
         $filter = new DrupalFilter($groupsAndConditions);
         $groupedConditions = $filter->getGroupedConditions();
         $conditions = $this->parseConditions($groupedConditions);
@@ -212,8 +225,8 @@ class DrupalFilterParser
     }
 
     /**
-     * @param array<string,array<int,DrupalFilterCondition>> $groupedConditions
-     * @return array<string,array<int,F>>
+     * @param array<non-empty-string, array<int,DrupalFilterCondition>> $groupedConditions
+     * @return array<non-empty-string, array<int, F>>
      */
     private function parseConditions(array $groupedConditions): array
     {
