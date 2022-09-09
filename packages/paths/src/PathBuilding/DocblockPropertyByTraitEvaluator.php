@@ -7,6 +7,7 @@ namespace EDT\PathBuilding;
 use EDT\Parsing\Utilities\DocblockTagParser;
 use EDT\Parsing\Utilities\ParseException;
 use function array_key_exists;
+use function Safe\array_combine;
 
 class DocblockPropertyByTraitEvaluator
 {

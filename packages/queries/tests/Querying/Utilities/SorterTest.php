@@ -116,7 +116,7 @@ class SorterTest extends ModelBasedTest
 
     public function testUnsupportedPath(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(SortException::class);
         $titleSorting = $this->sortMethodFactory->propertyAscending('books', 'title');
         $sortedAuthors = $this->authors;
         $this->sorter->sortArray($sortedAuthors, $titleSorting);

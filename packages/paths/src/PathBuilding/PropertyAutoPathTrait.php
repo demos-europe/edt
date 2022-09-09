@@ -13,6 +13,7 @@ use ReflectionClass;
 use Traversable;
 use function array_key_exists;
 use function get_class;
+use function Safe\array_combine;
 
 /**
  * Denotes a path usable in a condition that can be finalized to a string in dot-notation.
