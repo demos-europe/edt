@@ -9,7 +9,6 @@ use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
-use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
@@ -27,7 +26,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function array_key_exists;
 
 /**
- * @template F of FunctionInterface<bool>;
+ * @template F of \EDT\Querying\Contracts\FunctionInterface<bool>
  * @psalm-type JsonApiRelationship = array{type: string, id: string}
  * @psalm-type JsonApiRelationships = array<string,array{data: array<int, JsonApiRelationship>|JsonApiRelationship|null}>
  */
@@ -109,10 +108,10 @@ abstract class AbstractApiService
             ResourceTypeInterface::class
         );
 
-        $filter = $this->getFilter($urlParams);
+        $filters = $this->getFilters($urlParams);
         $sortMethods = $this->getSorting($urlParams);
 
-        $apiList = $this->getObjects($type, $filter, $sortMethods, $urlParams);
+        $apiList = $this->getObjects($type, $filters, $sortMethods, $urlParams);
 
         $transformer = $type->getTransformer();
         $collection = new Collection($apiList->getList(), $transformer, $type::getName());
@@ -245,14 +244,14 @@ abstract class AbstractApiService
      * @template O of object
      *
      * @param ResourceTypeInterface<O>        $type
-     * @param F                               $filter
+     * @param array<int, F>                   $filters
      * @param array<int, SortMethodInterface> $sortMethods
      *
      * @return ApiListResultInterface<O>
      */
     abstract protected function getObjects(
         ResourceTypeInterface $type,
-        FunctionInterface $filter,
+        array $filters,
         array $sortMethods,
         ParameterBag $urlParams
     ): ApiListResultInterface;
@@ -279,12 +278,16 @@ abstract class AbstractApiService
     abstract protected function deleteObject(ResourceTypeInterface $type, string $id): void;
 
     /**
-     * @return F
+     * @return array<int, F>
      *
      * @throws DrupalFilterException
      */
-    protected function getFilter(ParameterBag $query): FunctionInterface
+    protected function getFilters(ParameterBag $query): array
     {
+        if (!$query->has(UrlParameter::FILTER)) {
+            return [];
+        }
+
         $filterParam = $query->get(UrlParameter::FILTER);
         $filterViolations = $this->validator->validate($filterParam, $this->filterSchemaConstraints);
         if (0 !== $filterViolations->count()) {
@@ -318,15 +321,15 @@ abstract class AbstractApiService
     {
         $stringConstraint = new Assert\Type('string');
         $arrayConstraint = new Assert\Type('array');
-        $conjunctionConstraint = new Assert\Choice(['AND', 'OR']);
+        $conjunctionConstraint = new Assert\Choice([DrupalFilterParser::AND, DrupalFilterParser::OR]);
         $conditionConstraints = [
             $arrayConstraint,
             new Assert\Collection(
                 [
-                    'value'    => null,
-                    'memberOf' => $stringConstraint,
-                    'path'     => $stringConstraint,
-                    'operator' => new Assert\Choice([
+                    DrupalFilterParser::VALUE     => null,
+                    DrupalFilterParser::MEMBER_OF => $stringConstraint,
+                    DrupalFilterParser::PATH      => $stringConstraint,
+                    DrupalFilterParser::OPERATOR  => new Assert\Choice([
                         '=',
                         '<>',
                         'STRING_CONTAINS_CASE_INSENSITIVE',
@@ -352,7 +355,7 @@ abstract class AbstractApiService
             ),
             new Assert\Collection(
                 [
-                    'path' => $stringConstraint,
+                    DrupalFilterParser::PATH => $stringConstraint,
                 ],
                 null,
                 null,
@@ -364,8 +367,8 @@ abstract class AbstractApiService
             $arrayConstraint,
             new Assert\Collection(
                 [
-                    'memberOf'    => $stringConstraint,
-                    'conjunction' => $conjunctionConstraint,
+                    DrupalFilterParser::MEMBER_OF => $stringConstraint,
+                    DrupalFilterParser::CONDITION => $conjunctionConstraint,
                 ],
                 null,
                 null,
@@ -374,7 +377,7 @@ abstract class AbstractApiService
             ),
             new Assert\Collection(
                 [
-                    'conjunction' => $conjunctionConstraint,
+                    DrupalFilterParser::CONJUNCTION => $conjunctionConstraint,
                 ],
                 null,
                 null,
@@ -383,22 +386,25 @@ abstract class AbstractApiService
             ),
         ];
 
+        /** @var mixed $assertionsOnRootItems (avoid incorrect type concern) */
+        $assertionsOnRootItems = [
+            $arrayConstraint,
+            new Assert\Count(1),
+            new Assert\Collection(
+                [
+                    DrupalFilterParser::CONDITION => $conditionConstraints,
+                    DrupalFilterParser::GROUP     => $groupConstraints,
+                ],
+                null,
+                null,
+                false,
+                true
+            ),
+        ];
+
         return [
             $arrayConstraint,
-            new Assert\All([
-                $arrayConstraint,
-                new Assert\Count(1),
-                new Assert\Collection(
-                    [
-                        'condition' => $conditionConstraints,
-                        'group'     => $groupConstraints,
-                    ],
-                    null,
-                    null,
-                    false,
-                    true
-                ),
-            ]),
+            new Assert\All($assertionsOnRootItems),
         ];
     }
 }

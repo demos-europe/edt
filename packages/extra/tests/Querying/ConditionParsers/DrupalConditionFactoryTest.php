@@ -63,7 +63,8 @@ class DrupalConditionFactoryTest extends TestCase
             $this->conditionFactory->propertyHasValue('DEF', 'id')
         );
 
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertCount(1, $actual);
+        self::assertSame((string)$expected, (string)$actual[0]);
     }
 
     public function testTwoEqualsImplicitOneEqualsExplicitAndImplicit(): void
@@ -90,13 +91,16 @@ class DrupalConditionFactoryTest extends TestCase
             ],
         ]);
 
-        $expected = $this->conditionFactory->allConditionsApply(
+        $expected = [
             $this->conditionFactory->propertyHasValue('Stephen King', 'book', 'authorName'),
             $this->conditionFactory->propertyHasValue('Stephen King', 'book', 'editorName'),
-            $this->conditionFactory->propertyHasValue(123, 'id')
-        );
+            $this->conditionFactory->propertyHasValue(123, 'id'),
+        ];
 
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertSameSize($expected, $actual);
+        self::assertSame((string)$expected[0], (string)$actual[0]);
+        self::assertSame((string)$expected[1], (string)$actual[1]);
+        self::assertSame((string)$expected[2], (string)$actual[2]);
     }
 
     public function testTwoEqualsImplicitAndExplicit(): void
@@ -116,12 +120,14 @@ class DrupalConditionFactoryTest extends TestCase
             ],
         ]);
 
-        $expected = $this->conditionFactory->allConditionsApply(
+        $expected = [
             $this->conditionFactory->propertyHasValue(234, 'book', 'id'),
-            $this->conditionFactory->propertyHasValue(567, 'id')
-        );
+            $this->conditionFactory->propertyHasValue(567, 'id'),
+        ];
 
-        self::assertSame((string) $expected, (string) $actual);
+        self::assertSameSize($expected, $actual);
+        self::assertSame((string)$expected[0], (string)$actual[0]);
+        self::assertSame((string)$expected[1], (string)$actual[1]);
     }
 
     public function testOneEqualsImplicitOneEqualsImplicitAndImplicit(): void
@@ -141,12 +147,14 @@ class DrupalConditionFactoryTest extends TestCase
             ],
         ]);
 
-        $expected = $this->conditionFactory->allConditionsApply(
+        $expected = [
             $this->conditionFactory->propertyHasValue(987, 'book', 'author', 'id'),
-            $this->conditionFactory->propertyHasValue(654, 'id')
-        );
+            $this->conditionFactory->propertyHasValue(654, 'id'),
+        ];
 
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertSameSize($expected, $actual);
+        self::assertSame((string)$expected[0], (string)$actual[0]);
+        self::assertSame((string)$expected[1], (string)$actual[1]);
     }
 
     public function testOneEqualImplicit(): void
@@ -161,7 +169,9 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
 
         $expected = $this->conditionFactory->propertyHasValue(680, 'author', 'id');
-        self::assertSame((string)$expected, (string)$actual);
+
+        self::assertCount(1, $actual);
+        self::assertSame((string)$expected, (string)$actual[0]);
     }
 
     public function testEqualsImplicitRecursivePath(): void
@@ -176,7 +186,9 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
 
         $expected = $this->conditionFactory->propertyHasValue(123, 'author', 'books', 'author', 'books', 'author', 'books', 'author');
-        self::assertSame((string)$expected, (string)$actual);
+
+        self::assertCount(1, $actual);
+        self::assertSame((string)$expected, (string)$actual[0]);
     }
 
     public function testOneBetweenOneEqualsImplicitAndImplicit(): void
@@ -197,12 +209,14 @@ class DrupalConditionFactoryTest extends TestCase
             ],
         ]);
 
-        $expected = $this->conditionFactory->allConditionsApply(
+        $expected = [
             $this->conditionFactory->propertyBetweenValuesInclusive(-2, 7, 'author', 'booksWritten'),
-            $this->conditionFactory->propertyHasValue(531, 'id')
-        );
+            $this->conditionFactory->propertyHasValue(531, 'id'),
+        ];
 
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertSameSize($expected, $actual);
+        self::assertSame((string)$expected[0], (string)$actual[0]);
+        self::assertSame((string)$expected[1], (string)$actual[1]);
     }
 
     public function testNestedGroupLine(): void
@@ -244,7 +258,8 @@ class DrupalConditionFactoryTest extends TestCase
 
         $expected = $this->conditionFactory->propertyHasValue('Stephen King', 'book', 'author', 'name');
 
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertCount(1, $actual);
+        self::assertSame((string)$expected, (string)$actual[0]);
     }
 
     public function testNestedGroups(): void
@@ -302,7 +317,8 @@ class DrupalConditionFactoryTest extends TestCase
             )
         );
 
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertCount(1, $actual);
+        self::assertSame((string)$expected, (string)$actual[0]);
     }
 
     public function testNotEquals(): void
@@ -321,7 +337,8 @@ class DrupalConditionFactoryTest extends TestCase
 
         $expected = $this->conditionFactory->propertyHasNotValue(123, 'id');
 
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertCount(1, $actual);
+        self::assertSame((string)$expected, (string)$actual[0]);
     }
 
     public function testSkippedCondition(): void
@@ -339,9 +356,7 @@ class DrupalConditionFactoryTest extends TestCase
             ]
         );
 
-        $expected = $this->conditionFactory->true();
-
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertSame([], $actual);
     }
 
     public function testNeitherConditionNorGroup(): void
@@ -402,8 +417,7 @@ class DrupalConditionFactoryTest extends TestCase
     public function testNoCondition(): void
     {
         $actual = $this->filterFactory->createRootFromArray([]);
-        $expected = $this->conditionFactory->true();
-        self::assertSame((string)$expected, (string)$actual);
+        self::assertSame([], $actual);
     }
 
     public function testUnknownGroupFieldWithoutConditions(): void
@@ -595,7 +609,8 @@ class DrupalConditionFactoryTest extends TestCase
 
         $expected = $this->conditionFactory->propertyHasValue('someValue', 'some', 'path');
 
-        self::assertEquals($expected, $actual);
+        self::assertCount(1, $actual);
+        self::assertSame((string)$expected, (string)$actual[0]);
     }
 
     public function testLoop(): void

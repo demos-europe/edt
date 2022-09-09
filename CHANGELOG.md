@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- refactor: prefer to handle Drupal root conditions as array
+
 ## 0.12.6 - 2022-09-08
 
 - feature: add `WrapperObject::getPropertyValue`
