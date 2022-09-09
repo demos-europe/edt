@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 use Exception;
+use Throwable;
 use function gettype;
 use function implode;
 
@@ -13,10 +14,10 @@ use function implode;
  */
 class SortException extends Exception
 {
-    public static function forCountAndMethods(int $count, SortMethodInterface ...$sortMethods): self
+    public static function forCountAndMethods(Throwable $throwable, int $count, SortMethodInterface ...$sortMethods): self
     {
         $sortMethodsString = implode(', ', $sortMethods);
-        return new self("Sorting of $count items with the following methods failed: $sortMethodsString");
+        return new self("Sorting of $count items with the following methods failed: $sortMethodsString", 0, $throwable);
     }
 
     /**
