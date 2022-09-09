@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
-use EDT\Apization\SortingParsers\JsonApiSortingParser;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
-use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
@@ -19,10 +17,6 @@ use InvalidArgumentException;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function array_key_exists;
 
 /**
@@ -43,7 +37,7 @@ abstract class AbstractApiService
     protected $typeProvider;
 
     /**
-     * @var DrupalFilterParser<F>
+     * @var FilterParserInterface<mixed, F>
      */
     private $filterParser;
 
@@ -53,37 +47,24 @@ abstract class AbstractApiService
     private $sortingParser;
 
     /**
-     * @var array<int, Constraint>
-     */
-    private $filterSchemaConstraints;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
      * @var PaginatorFactory
      */
     private $paginatorFactory;
 
     /**
-     * @param DrupalFilterParser<F> $filterParser
+     * @param FilterParserInterface<mixed, F> $filterParser
      */
     public function __construct(
-        DrupalFilterParser $filterParser,
+        FilterParserInterface $filterParser,
         JsonApiSortingParser $sortingParser,
         PaginatorFactory $paginatorFactory,
         PropertyValuesGenerator $propertyValuesGenerator,
-        TypeProviderInterface $typeProvider,
-        ValidatorInterface $validator
+        TypeProviderInterface $typeProvider
     ) {
         $this->propertyValuesGenerator = $propertyValuesGenerator;
         $this->typeProvider = $typeProvider;
         $this->filterParser = $filterParser;
         $this->sortingParser = $sortingParser;
-        $this->filterSchemaConstraints = $this->getFilterConstraints();
-        $this->validator = $validator;
         $this->paginatorFactory = $paginatorFactory;
     }
 
@@ -289,18 +270,10 @@ abstract class AbstractApiService
         }
 
         $filterParam = $query->get(UrlParameter::FILTER);
-        $filterViolations = $this->validator->validate($filterParam, $this->filterSchemaConstraints);
-        if (0 !== $filterViolations->count()) {
-            throw new DrupalFilterException(
-                'Schema validation of filter data failed.',
-                0,
-                new ValidationFailedException($filterParam, $filterViolations)
-            );
-        }
-
+        $conditions = $this->filterParser->parseFilter($filterParam);
         $query->remove(UrlParameter::FILTER);
 
-        return $this->filterParser->createRootFromArray($filterParam);
+        return $conditions;
     }
 
     /**
@@ -312,99 +285,5 @@ abstract class AbstractApiService
         $query->remove(UrlParameter::SORT);
 
         return $this->sortingParser->createFromQueryParamValue($sort);
-    }
-
-    /**
-     * @return array<int, Constraint>
-     */
-    private function getFilterConstraints(): array
-    {
-        $stringConstraint = new Assert\Type('string');
-        $arrayConstraint = new Assert\Type('array');
-        $conjunctionConstraint = new Assert\Choice([DrupalFilterParser::AND, DrupalFilterParser::OR]);
-        $conditionConstraints = [
-            $arrayConstraint,
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::VALUE     => null,
-                    DrupalFilterParser::MEMBER_OF => $stringConstraint,
-                    DrupalFilterParser::PATH      => $stringConstraint,
-                    DrupalFilterParser::OPERATOR  => new Assert\Choice([
-                        '=',
-                        '<>',
-                        'STRING_CONTAINS_CASE_INSENSITIVE',
-                        'IN',
-                        'NOT_IN',
-                        'BETWEEN',
-                        'NOT_BETWEEN',
-                        'ARRAY_CONTAINS_VALUE',
-                        'IS NULL',
-                        'IS NOT NULL',
-                        '>',
-                        '>=',
-                        '<',
-                        '<=',
-                        'STARTS_WITH_CASE_INSENSITIVE',
-                        'ENDS_WITH_CASE_INSENSITIVE',
-                    ]),
-                ],
-                null,
-                null,
-                false,
-                true
-            ),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::PATH => $stringConstraint,
-                ],
-                null,
-                null,
-                true,
-                false
-            ),
-        ];
-        $groupConstraints = [
-            $arrayConstraint,
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::MEMBER_OF => $stringConstraint,
-                    DrupalFilterParser::CONDITION => $conjunctionConstraint,
-                ],
-                null,
-                null,
-                false,
-                true
-            ),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::CONJUNCTION => $conjunctionConstraint,
-                ],
-                null,
-                null,
-                true,
-                false
-            ),
-        ];
-
-        /** @var mixed $assertionsOnRootItems (avoid incorrect type concern) */
-        $assertionsOnRootItems = [
-            $arrayConstraint,
-            new Assert\Count(1),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::CONDITION => $conditionConstraints,
-                    DrupalFilterParser::GROUP     => $groupConstraints,
-                ],
-                null,
-                null,
-                false,
-                true
-            ),
-        ];
-
-        return [
-            $arrayConstraint,
-            new Assert\All($assertionsOnRootItems),
-        ];
     }
 }

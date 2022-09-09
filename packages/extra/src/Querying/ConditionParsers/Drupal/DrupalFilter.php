@@ -12,28 +12,28 @@ use function array_key_exists;
  * memberOf value.
  *
  * @psalm-type DrupalFilterGroup = array{
- *            conjunction: DrupalFilterParser::AND|DrupalFilterParser::OR,
- *            memberOf?: string
+ *            conjunction: non-empty-string,
+ *            memberOf?: non-empty-string
  *          }
  * @psalm-type DrupalFilterCondition = array{
- *            path: string,
+ *            path: non-empty-string,
  *            value?: mixed,
- *            operator?: string,
- *            memberOf?: string
+ *            operator?: non-empty-string,
+ *            memberOf?: non-empty-string
  *          }
  */
 class DrupalFilter
 {
     /**
-     * @var array<string,array<int,DrupalFilterCondition>>
+     * @var array<non-empty-string, array<int, DrupalFilterCondition>>
      */
     private $groupedConditions = [];
     /**
-     * @var array<string, DrupalFilterParser::AND|DrupalFilterParser::OR>
+     * @var array<non-empty-string, non-empty-string>
      */
     private $groupNameToConjunction = [];
     /**
-     * @var array<string,string>
+     * @var array<non-empty-string, non-empty-string>
      */
     private $groupNameToMemberOf = [];
 
@@ -42,7 +42,7 @@ class DrupalFilter
      * group definitions and all conditions are on the first level, each having
      * a unique name.
      *
-     * @param array<string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
+     * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
      * @throws DrupalFilterException
      */
     public function __construct(array $groupsAndConditions)
@@ -75,7 +75,7 @@ class DrupalFilter
     }
 
     /**
-     * @return array<string,array<int,DrupalFilterCondition>>
+     * @return array<non-empty-string, array<int, DrupalFilterCondition>>
      */
     public function getGroupedConditions(): array
     {
@@ -83,26 +83,35 @@ class DrupalFilter
     }
 
     /**
-     * @return DrupalFilterParser::AND|DrupalFilterParser::OR
+     * @param non-empty-string $groupName
+     * @return non-empty-string {@link DrupalFilterParser::AND} or {@link DrupalFilterParser::OR}
      */
     public function getGroupConjunction(string $groupName): string
     {
         return $this->groupNameToConjunction[$groupName];
     }
 
+    /**
+     * @param non-empty-string $groupName
+     */
     public function hasGroup(string $groupName): bool
     {
         return array_key_exists($groupName, $this->groupNameToConjunction);
     }
 
     /**
-     * @return array<string,string>
+     * @return array<non-empty-string, non-empty-string>
      */
     public function getGroupNameToMemberOf(): array
     {
         return $this->groupNameToMemberOf;
     }
 
+    /**
+     * @param non-empty-string $groupName
+     *
+     * @return non-empty-string
+     */
     public function getFilterGroupParent(string $groupName): string
     {
         return $this->groupNameToMemberOf[$groupName] ?? DrupalFilterParser::ROOT;
@@ -111,7 +120,10 @@ class DrupalFilter
     /**
      * Get the unique name of the parent group of the given group or condition.
      *
-     * @param array{memberOf?: string} $groupOrCondition
+     * @param array{memberOf?: non-empty-string} $groupOrCondition
+     *
+     * @return non-empty-string
+     *
      * @throws DrupalFilterException
      */
     protected function determineMemberOf(array $groupOrCondition): string

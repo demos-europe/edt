@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use Exception;
-use function get_class;
-use function gettype;
-use function is_object;
+use EDT\JsonApi\RequestHandling\FilterException;
 
-class DrupalFilterException extends Exception
+class DrupalFilterException extends FilterException
 {
     public static function neitherConditionNorGroup(string $name): self
     {
@@ -31,11 +28,6 @@ class DrupalFilterException extends Exception
         return new self("The 'group' field MUST NOT contain fields other than 'conjunction' and 'memberOf', found: {$fieldName}.");
     }
 
-    public static function unknownConditionField(string $fieldName): self
-    {
-        return new self("The 'condition' field MUST NOT contain fields other than 'path', 'value', 'operator' and 'memberOf', found: {$fieldName}");
-    }
-
     public static function nullValue(): self
     {
         return new self("The 'condition' must not contain a 'value' field with a null value.");
@@ -55,5 +47,14 @@ class DrupalFilterException extends Exception
     public static function emergencyAbort(int $iterations): self
     {
         return new self("Can't build tree. Does it contain a loop (ie. a condition group referencing itself, directly or indirectly)? Aborted after $iterations iterations");
+    }
+
+    /**
+     * @param non-empty-string $operatorName
+     * @param non-empty-string $pathString
+     */
+    public static function emptyPathSegment(string $operatorName, string $pathString): self
+    {
+        return new self("Path '$pathString' used in operator '$operatorName' contains an empty path segment.");
     }
 }

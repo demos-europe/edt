@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Apization\SortingParsers;
+namespace Tests\RequestHandling;
 
-use EDT\Apization\SortingParsers\JsonApiSortingParser;
+use EDT\JsonApi\RequestHandling\JsonApiSortingParser;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\SortMethodFactories\PhpSortMethodFactory;
 use EDT\Querying\SortMethods\Ascending;
