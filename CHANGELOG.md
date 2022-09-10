@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- fix: postpone request retrieval until needed
+
 ## 0.12.7 - 2022-09-09
 
 - refactor: decouple `jsonapi` package from `extra` package

@@ -15,9 +15,9 @@ use Symfony\Component\Routing\RouterInterface;
 class PaginatorFactory
 {
     /**
-     * @var Request
+     * @var RequestStack
      */
-    private $request;
+    private $requestStack;
 
     /**
      * @var RouterInterface
@@ -26,12 +26,7 @@ class PaginatorFactory
 
     public function __construct(RequestStack $requestStack, RouterInterface $router)
     {
-        $request = $requestStack->getCurrentRequest();
-        if (null === $request) {
-            throw new InvalidArgumentException('No request available in request stack.');
-        }
-
-        $this->request = $request;
+        $this->requestStack = $requestStack;
         $this->router = $router;
     }
 
@@ -40,9 +35,13 @@ class PaginatorFactory
         return new PagerfantaPaginatorAdapter(
             $paginator,
             function ($page) {
-                $route = $this->request->attributes->get('_route');
-                $inputParams = $this->request->attributes->get('_route_params');
-                $newParams = array_merge($inputParams, $this->request->query->all());
+                $request = $this->requestStack->getCurrentRequest();
+                if (null === $request) {
+                    throw new InvalidArgumentException('No request available in request stack.');
+                }
+                $route = $request->attributes->get('_route');
+                $inputParams = $request->attributes->get('_route_params');
+                $newParams = array_merge($inputParams, $request->query->all());
                 $newParams['page'] = $page;
 
                 return $this->router->generate($route, $newParams, 0);
