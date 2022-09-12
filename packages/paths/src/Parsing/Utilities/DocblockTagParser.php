@@ -230,23 +230,10 @@ class DocblockTagParser
         $sourceCode = $this->readSourceCode($fileName);
         $ast = $this->phpParser->parse($sourceCode);
         $traverser = new NodeTraverser();
-        $useCollector = new class extends NodeVisitorAbstract {
-            /** @var array<string, class-string> */
-            public $useStatements = [];
-            public function leaveNode(Node $node) {
-                if ($node instanceof Node\Stmt\Use_) {
-                    foreach ($node->uses as $use) {
-                        $key = null === $use->alias ? $use->name->getLast() : $use->alias->toString();
-                        $this->useStatements[$key] = $use->name->toString();
-                    }
-                }
-
-                return null;
-            }
-        };
+        $useCollector = new UseCollector();
         $traverser->addVisitor($useCollector);
         $traverser->traverse($ast);
 
-        return $useCollector->useStatements;
+        return $useCollector->getUseStatements();
     }
 }
