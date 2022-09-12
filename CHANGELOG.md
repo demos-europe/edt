@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.9 - 2022-09-12
 
 - fix: avoid parameter count error in `null` check
 
