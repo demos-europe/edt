@@ -285,7 +285,9 @@ final class OpenAPISchemaGenerator
     private function createSchema(ResourceTypeInterface $resource): Schema
     {
         $attributes = collect($resource->getReadableProperties())
-            ->filter('is_null')
+            ->filter(static function(?string $typeIdentifier, string $propertyName): bool {
+                return null === $typeIdentifier;
+            })
             ->map(function (?string $null, string $propertyName) use ($resource): array {
                 // TODO: this is probably incorrect for all aliases with a path longer than 1 element
                 $propertyName = $resource->getAliases()[$propertyName][0] ?? $propertyName;

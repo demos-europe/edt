@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- fix: avoid parameter count error in `null` check
+
 ## 0.12.8 - 2022-09-10
 
 - fix: postpone request retrieval until needed
