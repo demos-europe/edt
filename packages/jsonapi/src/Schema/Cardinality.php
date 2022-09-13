@@ -16,9 +16,14 @@ namespace EDT\JsonApi\Schema;
  */
 class Cardinality
 {
-    /** @var string */
+    /**
+     * @var non-empty-string
+     */
     private $type;
 
+    /**
+     * @param non-empty-string $cardinalityType
+     */
     private function __construct(string $cardinalityType)
     {
         $this->type = $cardinalityType;

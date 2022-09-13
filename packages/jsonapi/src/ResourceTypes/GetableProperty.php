@@ -26,6 +26,9 @@ interface GetableProperty
 
     public function isDefaultInclude(): bool;
 
+    /**
+     * @return non-empty-string|null
+     */
     public function getTypeName(): ?string;
 
     public function getCustomReadCallback(): ?callable;

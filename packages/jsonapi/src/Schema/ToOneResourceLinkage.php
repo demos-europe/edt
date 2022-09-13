@@ -25,7 +25,7 @@ class ToOneResourceLinkage implements ResourceLinkageInterface
      *
      * > A “resource identifier object” MUST contain type and id members.
      *
-     * @param array{type: string, id: string}|null $resourceIdentifierObject
+     * @param array{type: non-empty-string, id: non-empty-string}|null $resourceIdentifierObject
      *
      * @return ToOneResourceLinkage
      *

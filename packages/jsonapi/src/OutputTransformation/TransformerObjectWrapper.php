@@ -19,6 +19,7 @@ use League\Fractal\ParamBag;
  * included. But for a custom read callable we must do the wrapping manually with
  * the callable returned by this method.
  *
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
  */
 class TransformerObjectWrapper
@@ -29,19 +30,19 @@ class TransformerObjectWrapper
     private $callable;
 
     /**
-     * @var ReadableTypeInterface<O>
+     * @var ReadableTypeInterface<C, O>
      */
     private $relationshipType;
 
     /**
-     * @var WrapperFactoryInterface<O, WrapperObject<O>>
+     * @var WrapperFactoryInterface<C, O, WrapperObject<O>>
      */
     private $wrapperFactory;
 
     /**
-     * @param callable(O, ParamBag): (O|iterable<O>|null)  $callable
-     * @param ReadableTypeInterface<O>                     $relationshipType
-     * @param WrapperFactoryInterface<O, WrapperObject<O>> $wrapperFactory
+     * @param callable(O, ParamBag): (O|iterable<O>|null)      $callable
+     * @param ReadableTypeInterface<C, O>                      $relationshipType
+     * @param WrapperFactoryInterface<C, O, WrapperObject<O>>  $wrapperFactory
      */
     public function __construct(callable $callable, ReadableTypeInterface $relationshipType, WrapperFactoryInterface $wrapperFactory)
     {

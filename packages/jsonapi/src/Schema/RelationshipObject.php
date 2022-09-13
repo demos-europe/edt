@@ -10,7 +10,7 @@ use function array_key_exists;
 use function is_array;
 
 /**
- * @psalm-type JsonApiRelationship = array{type: string, id: string}
+ * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
  */
 class RelationshipObject
 {
@@ -38,7 +38,7 @@ class RelationshipObject
      * * an array containing more arrays with the fields 'id' and 'type' to create a non-empty
      * to-many relationship
      *
-     * @param array{data: array<int, JsonApiRelationship>|JsonApiRelationship|null} $relationshipObject
+     * @param array{data: list<JsonApiRelationship>|JsonApiRelationship|null} $relationshipObject
      *
      * @throws Exception
      *
@@ -47,7 +47,7 @@ class RelationshipObject
     public static function createWithDataRequired(array $relationshipObject): self
     {
         $relationshipResourceLinkage = $relationshipObject[ContentField::DATA];
-        if (null === $relationshipResourceLinkage || array_key_exists(ContentField::ID, $relationshipResourceLinkage)) {
+        if (null === $relationshipResourceLinkage || !array_is_list($relationshipResourceLinkage)) {
             $resourceLinkage = ToOneResourceLinkage::createFromArray($relationshipResourceLinkage);
         } else {
             $resourceLinkage = ToManyResourceLinkage::createFromArray($relationshipResourceLinkage);
@@ -56,6 +56,10 @@ class RelationshipObject
         return new self($resourceLinkage);
     }
 
+    /**
+     * @param non-empty-string $id
+     * @param non-empty-string $type
+     */
     public static function createToOne(string $id, string $type): self
     {
         return new self(ToOneResourceLinkage::createFromArray([
@@ -70,7 +74,7 @@ class RelationshipObject
     }
 
     /**
-     * @param array<int, array{type: string, id: string}> $relationships
+     * @param list<JsonApiRelationship> $relationships
      *
      * @throws Exception
      */

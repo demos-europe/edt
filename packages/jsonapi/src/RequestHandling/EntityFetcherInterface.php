@@ -9,12 +9,16 @@ use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use InvalidArgumentException;
 
+/**
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ */
 interface EntityFetcherInterface
 {
     /**
      * @template O of object
      *
-     * @param IdentifiableTypeInterface<O>&ReadableTypeInterface<O> $type
+     * @param IdentifiableTypeInterface<C, O>&ReadableTypeInterface<C, O> $type
+     * @param non-empty-string $id
      *
      * @return O
      *

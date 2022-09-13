@@ -37,7 +37,7 @@ class GenericEntityFetcher
      */
     private $conditionFactory;
     /**
-     * @var WrapperFactoryInterface<O,R>
+     * @var WrapperFactoryInterface<C, O, R>
      */
     private $wrapperFactory;
     /**
@@ -46,9 +46,9 @@ class GenericEntityFetcher
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<C, O>   $objectProvider
-     * @param ConditionFactoryInterface<C> $conditionFactory
-     * @param WrapperFactoryInterface<O,R> $wrapperFactory All returned instances are wrapped using the given instance.
+     * @param ObjectProviderInterface<C, O>    $objectProvider
+     * @param ConditionFactoryInterface<C>     $conditionFactory
+     * @param WrapperFactoryInterface<C, O, R> $wrapperFactory All returned instances are wrapped using the given instance.
      *                                                             To avoid any wrapping simply pass an instance that returns
      *                                                             its input without wrapping.
      */
@@ -74,7 +74,7 @@ class GenericEntityFetcher
      * * the property is available for {@link FilterableTypeInterface::getFilterableProperties() filtering} if conditions were given
      * * the property is available for {@link SortableTypeInterface::getSortableProperties() sorting} if sort methods were given
      *
-     * @param ReadableTypeInterface<O> $type
+     * @param ReadableTypeInterface<C, O> $type
      * @param array<int, C> $conditions
      * @return array<int,R>
      *
@@ -101,15 +101,15 @@ class GenericEntityFetcher
     }
 
     /**
-     * @param IdentifiableTypeInterface<O>&ReadableTypeInterface<O> $type
-     * @param mixed $identifier
+     * @param IdentifiableTypeInterface<C, O>&ReadableTypeInterface<C, O> $type
+     * @param non-empty-string $identifier
      * @return R
      * @throws SliceException
      * @throws SortException
      * @throws PathException
      * @throws AccessException
      */
-    public function getEntityByIdentifier(IdentifiableTypeInterface $type, $identifier)
+    public function getEntityByIdentifier(IdentifiableTypeInterface $type, string $identifier)
     {
         $identifierPath = $type->getIdentifierPropertyPath();
         $identifierCondition = $this->conditionFactory->propertyHasValue($identifier, ...$identifierPath);

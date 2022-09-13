@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use League\Fractal\Pagination\PagerfantaPaginatorAdapter;
 use League\Fractal\Pagination\PaginatorInterface;
 use Pagerfanta\Pagerfanta;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 

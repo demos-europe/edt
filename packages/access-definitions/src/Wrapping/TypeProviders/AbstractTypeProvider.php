@@ -60,7 +60,7 @@ abstract class AbstractTypeProvider implements TypeProviderInterface
     abstract protected function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface;
 
     /**
-     * @return array<int, string>
+     * @return array<int, non-empty-string>
      */
     abstract protected function getTypeIdentifiers(): array;
 }

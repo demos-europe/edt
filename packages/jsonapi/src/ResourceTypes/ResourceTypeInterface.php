@@ -11,16 +11,17 @@ use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use League\Fractal\TransformerAbstract;
 
 /**
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
- * @template-extends ReadableTypeInterface<T>
- * @template-extends IdentifiableTypeInterface<T>
- * @template-extends FilterableTypeInterface<T>
- * @template-extends SortableTypeInterface<T>
+ * @template-extends ReadableTypeInterface<C, T>
+ * @template-extends IdentifiableTypeInterface<C, T>
+ * @template-extends FilterableTypeInterface<C, T>
+ * @template-extends SortableTypeInterface<C, T>
  */
 interface ResourceTypeInterface extends ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface
 {
     /**
-     * Always CamelCase.
+     * @return non-empty-string
      */
     public static function getName(): string;
 

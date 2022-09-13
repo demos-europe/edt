@@ -6,14 +6,14 @@ namespace EDT\JsonApi\RequestHandling;
 
 /**
  * @template I
- * @template F of \EDT\Querying\Contracts\FunctionInterface<bool>
+ * @template C of \EDT\Querying\Contracts\FunctionInterface<bool>
  */
 interface FilterParserInterface
 {
     /**
      * @param I $filter
      *
-     * @return array<int, F>
+     * @return array<int, C>
      *
      * @throws FilterException
      */

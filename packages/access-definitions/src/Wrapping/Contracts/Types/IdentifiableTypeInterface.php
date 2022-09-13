@@ -8,9 +8,10 @@ namespace EDT\Wrapping\Contracts\Types;
  * Defines the property {@link TypeInterface::getEntityClass() corresponding entities}
  * can be distinguished by.
  *
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-extends TypeInterface<T>
+ * @template-extends TypeInterface<C, T>
  */
 interface IdentifiableTypeInterface extends TypeInterface
 {

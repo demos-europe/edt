@@ -14,17 +14,17 @@ use function is_string;
 class ResourceIdentifierObject
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     private $id;
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     private $type;
 
     /**
-     * @param array{type: string, id: string} $content
+     * @param array{type: non-empty-string, id: non-empty-string} $content
      */
     public function __construct(array $content)
     {
@@ -45,11 +45,17 @@ class ResourceIdentifierObject
         }
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getId(): string
     {
         return $this->id;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getType(): string
     {
         return $this->type;

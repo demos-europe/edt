@@ -48,12 +48,12 @@ class Property implements SetableProperty, GetableProperty
     /**
      * @var callable|null
      */
-    private $customReadCallback = null;
+    private $customReadCallback;
 
     /**
-     * @var string|null
+     * @var non-empty-string|null
      */
-    private $typeName = null;
+    private $typeName;
 
     /**
      * @var bool
@@ -86,6 +86,7 @@ class Property implements SetableProperty, GetableProperty
         $this->name = $name;
         $this->defaultInclude = $defaultInclude;
         $this->relationship = $relationship;
+        // TODO: do not allow null
         $this->typeName = $path instanceof ResourceTypeInterface ? $path::getName() : null;
     }
 
