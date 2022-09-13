@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Contracts;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
@@ -18,9 +17,8 @@ class PropertyAccessException extends AccessException
     protected $propertyName;
 
     /**
-     * @param non-empty-string                           $property
-     * @param TypeInterface<PathsBasedInterface, object> $type
-     * @param non-empty-string                           ...$availableProperties
+     * @param non-empty-string $property
+     * @param non-empty-string ...$availableProperties
      */
     public static function propertyNotAvailableInType(string $property, TypeInterface $type, string ...$availableProperties): self
     {
@@ -34,9 +32,8 @@ class PropertyAccessException extends AccessException
     }
 
     /**
-     * @param non-empty-string                                   $property
-     * @param ReadableTypeInterface<PathsBasedInterface, object> $type
-     * @param non-empty-string                                   ...$availableProperties
+     * @param non-empty-string $property
+     * @param non-empty-string ...$availableProperties
      */
     public static function propertyNotAvailableInReadableType(string $property, ReadableTypeInterface $type, string ...$availableProperties): self
     {
@@ -50,9 +47,8 @@ class PropertyAccessException extends AccessException
     }
 
     /**
-     * @param non-empty-string                                    $property
-     * @param UpdatableTypeInterface<PathsBasedInterface, object> $type
-     * @param non-empty-string                                    ...$availableProperties
+     * @param non-empty-string $property
+     * @param non-empty-string ...$availableProperties
      */
     public static function propertyNotAvailableInUpdatableType(string $property, UpdatableTypeInterface $type, string ...$availableProperties): self
     {
@@ -66,8 +62,7 @@ class PropertyAccessException extends AccessException
     }
 
     /**
-     * @param non-empty-string                           $property
-     * @param TypeInterface<PathsBasedInterface, object> $type
+     * @param non-empty-string $property
      */
     public static function nonRelationship(string $property, TypeInterface $type): self
     {
@@ -80,11 +75,10 @@ class PropertyAccessException extends AccessException
     }
 
     /**
-     * @param TypeInterface<PathsBasedInterface, object> $type
-     * @param PropertyAccessException                    $previous
-     * @param non-empty-string                           ...$path
+     * @param PropertyAccessException          $previous
+     * @param non-empty-list<non-empty-string> $path
      */
-    public static function pathDenied(TypeInterface $type, PropertyAccessException $previous, string ...$path): self
+    public static function pathDenied(TypeInterface $type, PropertyAccessException $previous, array $path): self
     {
         $pathString = implode('.', $path);
         $typeClass = get_class($type);

@@ -9,9 +9,10 @@ namespace EDT\Wrapping\Contracts\Types;
  * can be distinguished by.
  *
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-extends TypeInterface<C, T>
+ * @template-extends TypeInterface<C, S, T>
  */
 interface IdentifiableTypeInterface extends TypeInterface
 {

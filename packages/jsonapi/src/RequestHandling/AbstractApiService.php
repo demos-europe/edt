@@ -7,7 +7,6 @@ namespace EDT\JsonApi\RequestHandling;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
-use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
@@ -21,18 +20,20 @@ use function array_key_exists;
 
 /**
  * @template C of \EDT\Querying\Contracts\FunctionInterface<bool>
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ *
  * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
  * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
  */
 abstract class AbstractApiService
 {
     /**
-     * @var PropertyValuesGenerator<C>
+     * @var PropertyValuesGenerator<C, S>
      */
     protected $propertyValuesGenerator;
 
     /**
-     * @var TypeProviderInterface<C>
+     * @var TypeProviderInterface<C, S>
      */
     protected $typeProvider;
 
@@ -42,7 +43,7 @@ abstract class AbstractApiService
     private $filterParser;
 
     /**
-     * @var JsonApiSortingParser
+     * @var JsonApiSortingParser<S>
      */
     private $sortingParser;
 
@@ -53,8 +54,9 @@ abstract class AbstractApiService
 
     /**
      * @param FilterParserInterface<mixed, C> $filterParser
-     * @param PropertyValuesGenerator<C>      $propertyValuesGenerator
-     * @param TypeProviderInterface<C>        $typeProvider
+     * @param JsonApiSortingParser<S>         $sortingParser
+     * @param PropertyValuesGenerator<C, S>   $propertyValuesGenerator
+     * @param TypeProviderInterface<C, S>     $typeProvider
      */
     public function __construct(
         FilterParserInterface $filterParser,
@@ -158,7 +160,6 @@ abstract class AbstractApiService
      * @param non-empty-string $urlTypeName
      * @param non-empty-string $urlId
      *
-     * @return void
      * @throws Exception
      */
     public function deleteFromRequest(string $urlTypeName, string $urlId): void
@@ -216,8 +217,8 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, O> $type
-     * @param non-empty-string            $id
+     * @param ResourceTypeInterface<C, S, O> $type
+     * @param non-empty-string               $id
      *
      * @return O
      */
@@ -226,7 +227,7 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, O>    $type
+     * @param ResourceTypeInterface<C, S, O> $type
      * @param array<non-empty-string, mixed> $properties
      *
      * @return O|null The created object if the creation had side effects on it (values set in
@@ -241,9 +242,9 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, O>     $type
-     * @param list<C>                   $filters
-     * @param list<SortMethodInterface> $sortMethods
+     * @param ResourceTypeInterface<C, S, O> $type
+     * @param list<C>                        $filters
+     * @param list<S>                        $sortMethods
      *
      * @return ApiListResultInterface<O>
      */
@@ -264,7 +265,7 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, O>    $type
+     * @param ResourceTypeInterface<C, S, O> $type
      * @param non-empty-string               $id
      * @param array<non-empty-string, mixed> $properties
      *
@@ -277,8 +278,8 @@ abstract class AbstractApiService
     abstract protected function updateObject(ResourceTypeInterface $type, string $id, array $properties): ?object;
 
     /**
-     * @param ResourceTypeInterface<C, object> $type
-     * @param non-empty-string                 $id
+     * @param ResourceTypeInterface<C, S, object> $type
+     * @param non-empty-string                    $id
      *
      * @throws Exception
      */
@@ -303,7 +304,7 @@ abstract class AbstractApiService
     }
 
     /**
-     * @return list<SortMethodInterface>
+     * @return list<S>
      */
     protected function getSorting(ParameterBag $query): array
     {

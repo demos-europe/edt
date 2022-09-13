@@ -6,13 +6,14 @@ namespace EDT\Querying\Contracts;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  */
 interface ObjectProviderInterface
 {
     /**
      * @param list<C> $conditions
-     * @param list<SortMethodInterface> $sortMethods
+     * @param list<S> $sortMethods
      *
      * @return iterable<T>
      *

@@ -9,14 +9,10 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
 use function get_class;
 
-/**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template O of object
- */
 class AccessException extends InvalidArgumentException
 {
     /**
-     * @var class-string<TypeInterface<C, O>>|null
+     * @var class-string<TypeInterface>|null
      */
     protected $typeClass;
 
@@ -26,9 +22,7 @@ class AccessException extends InvalidArgumentException
     protected $typeIdentifier;
 
     /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param TypeInterface<C1, O1> $type
+     * @param TypeInterface $type
      */
     public static function typeNotDirectlyAccessible(TypeInterface $type): self
     {
@@ -39,11 +33,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param TypeInterface<C1, O1> $type
-     */
     public static function unexpectedArguments(TypeInterface $type, int $expected, int $actual): self
     {
         $typeClass = get_class($type);
@@ -53,11 +42,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param TypeInterface<C1, O1> $type
-     */
     public static function typeNotSortable(TypeInterface $type): self
     {
         $typeClass = get_class($type);
@@ -67,11 +51,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param TypeInterface<C1, O1> $type
-     */
     public static function typeNotFilterable(TypeInterface $type): self
     {
         $typeClass = get_class($type);
@@ -81,11 +60,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param TypeInterface<C1, O1> $type
-     */
     public static function typeNotAvailable(TypeInterface $type): self
     {
         $typeClass = get_class($type);
@@ -95,11 +69,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param TypeInterface<C1, O1> $type
-     */
     public static function typeNotReadable(TypeInterface $type): self
     {
         $typeClass = get_class($type);
@@ -109,11 +78,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param TypeInterface<C1, O1> $type
-     */
     public static function typeNotUpdatable(TypeInterface $type): self
     {
         $typeClass = get_class($type);
@@ -123,11 +87,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param IdentifiableTypeInterface<C1, O1> $type
-     */
     public static function multipleEntitiesByIdentifier(IdentifiableTypeInterface $type): self
     {
         $typeClass = get_class($type);
@@ -137,11 +96,6 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
-    /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     * @param IdentifiableTypeInterface<C1, O1> $type
-     */
     public static function noEntityByIdentifier(IdentifiableTypeInterface $type): self
     {
         $typeClass = get_class($type);
@@ -152,11 +106,7 @@ class AccessException extends InvalidArgumentException
     }
 
     /**
-     * @template C1 of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template O1 of object
-     *
-     * @param TypeInterface<C1, O1> $type
-     * @param non-empty-string         $methodName
+     * @param non-empty-string $methodName
      */
     public static function failedToParseAccessor(TypeInterface $type, string $methodName): self
     {
@@ -168,7 +118,7 @@ class AccessException extends InvalidArgumentException
     }
 
     /**
-     * @return class-string<TypeInterface<C, O>>|null
+     * @return class-string<TypeInterface>|null
      */
     public function getTypeClass(): ?string
     {

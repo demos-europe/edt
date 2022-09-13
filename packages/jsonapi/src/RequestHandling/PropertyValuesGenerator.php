@@ -15,24 +15,26 @@ use InvalidArgumentException;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ *
  * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
  * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
  */
 class PropertyValuesGenerator
 {
     /**
-     * @var TypeProviderInterface<C>
+     * @var TypeProviderInterface<C, S>
      */
     private $typeProvider;
 
     /**
-     * @var EntityFetcherInterface<C>
+     * @var EntityFetcherInterface<C, S>
      */
     private $entityFetcher;
 
     /**
-     * @param EntityFetcherInterface<C> $entityFetcher
-     * @param TypeProviderInterface<C>  $typeProvider
+     * @param EntityFetcherInterface<C, S> $entityFetcher
+     * @param TypeProviderInterface<C, S>  $typeProvider
      */
     public function __construct(EntityFetcherInterface $entityFetcher, TypeProviderInterface $typeProvider)
     {

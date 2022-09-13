@@ -10,15 +10,20 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template-extends AbstractTypeAccessor<FilterableTypeInterface<C, object>>
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ *
+ * @template-extends AbstractTypeAccessor<FilterableTypeInterface<C, S, object>>
  */
 class ExternFilterableTypeAccessor extends AbstractTypeAccessor
 {
     /**
-     * @var TypeProviderInterface
+     * @var TypeProviderInterface<C, S>
      */
     private $typeProvider;
 
+    /**
+     * @param TypeProviderInterface<C, S> $typeProvider
+     */
     public function __construct(TypeProviderInterface $typeProvider)
     {
         $this->typeProvider = $typeProvider;

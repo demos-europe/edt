@@ -27,13 +27,13 @@ class IncludeDefinition implements IncludeDefinitionInterface
     private $propertyDefinition;
 
     /**
-     * @var ResourceTypeInterface<PathsBasedInterface, T>
+     * @var ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, T>
      */
     private $targetType;
 
     /**
      * @param PropertyDefinitionInterface<O, WrapperObject<T>|list<WrapperObject<T>>|null> $propertyDefinition
-     * @param ResourceTypeInterface<PathsBasedInterface, T>                             $targetType
+     * @param ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, T>           $targetType
      */
     public function __construct(
         PropertyDefinitionInterface $propertyDefinition,

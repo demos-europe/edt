@@ -1,4 +1,5 @@
 # TODO: search for `array_values` and refactor where only needed due to `...` usage
+# TODO: use a flat hierarchy for type interfaces where possible
 includes:
     #- vendor/ergebnis/phpstan-rules/rules.neon
     - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
@@ -16,12 +17,12 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
-            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\:\\:getType\\(\\) should return EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but returns EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\.$#"
+            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\:\\:getType\\(\\) should return EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but returns EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/TypeProviders/AbstractTypeProvider.php
 
         -
-            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\PrefilledTypeProvider\\:\\:getAllAvailableTypes\\(\\) should return array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\> but returns array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\>\\.$#"
+            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\PrefilledTypeProvider\\:\\:getAllAvailableTypes\\(\\) should return array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\> but returns array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\>\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/TypeProviders/PrefilledTypeProvider.php
 
@@ -31,27 +32,27 @@ parameters:
             path: packages/access-definitions/src/Wrapping/Utilities/PropertyReader.php
 
         -
-            message: "#^Parameter \\#1 \\$baseProvider of class EDT\\\\Querying\\\\ObjectProviders\\\\TypeRestrictedEntityProvider constructor expects EDT\\\\Querying\\\\Contracts\\\\ObjectProviderInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\Querying\\\\ObjectProviders\\\\PrefilledObjectProvider\\<V of object, int\\|string\\> given\\.$#"
+            message: "#^Parameter \\#1 \\$baseProvider of class EDT\\\\Querying\\\\ObjectProviders\\\\TypeRestrictedEntityProvider constructor expects EDT\\\\Querying\\\\Contracts\\\\ObjectProviderInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\Querying\\\\ObjectProviders\\\\PrefilledObjectProvider\\<V of object, int\\|string\\> given\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/PropertyReader.php
 
         -
-            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\SchemaPathProcessor\\:\\:processExternalSortMethods\\(\\) should return array\\<int, EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface\\> but returns array\\<int\\|string, EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface\\>\\.$#"
+            message: "#^Parameter \\#2 \\$type of method EDT\\\\Wrapping\\\\Utilities\\\\PropertyPathProcessor\\<EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\SortableTypeInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\>\\:\\:processPropertyPaths\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\SortableTypeInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface given\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/SchemaPathProcessor.php
 
         -
-            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\TypeAccessor\\:\\:getAccessibleReadableProperties\\(\\) should return array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\> but returns array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\>\\.$#"
+            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\TypeAccessor\\:\\:getAccessibleReadableProperties\\(\\) should return array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\> but returns array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\>\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessor.php
 
         -
-            message: "#^Unable to resolve the template type I in call to method EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getType\\(\\)$#"
+            message: "#^Unable to resolve the template type I in call to method EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getType\\(\\)$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessor.php
 
         -
-            message: "#^Unable to resolve the template type I in call to method EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getType\\(\\)$#"
+            message: "#^Unable to resolve the template type I in call to method EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getType\\(\\)$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessors/InternTypeAccessor.php
 
@@ -146,11 +147,6 @@ parameters:
             path: packages/dql/src/Functions/Sum.php
 
         -
-            message: "#^Parameter \\#3 \\$sortMethods of method EDT\\\\DqlQuerying\\\\Utilities\\\\QueryGenerator\\:\\:generateQueryBuilder\\(\\) expects array\\<int, EDT\\\\DqlQuerying\\\\Contracts\\\\OrderByInterface\\>, array\\<int, EDT\\\\DqlQuerying\\\\Contracts\\\\OrderByInterface\\|EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface\\> given\\.$#"
-            count: 1
-            path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
-
-        -
             message: "#^Instanceof between Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata and Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo will always evaluate to true\\.$#"
             count: 1
             path: packages/dql/src/Utilities/JoinFinder.php
@@ -166,7 +162,7 @@ parameters:
             path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
 
         -
-            message: "#^Parameter \\#1 \\$typeIdentifier of method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\:\\:getAvailableType\\(\\) expects non\\-empty\\-string, string given\\.$#"
+            message: "#^Parameter \\#1 \\$typeIdentifier of method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getAvailableType\\(\\) expects non\\-empty\\-string, string given\\.$#"
             count: 1
             path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
 
@@ -191,12 +187,12 @@ parameters:
             path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
 
         -
-            message: "#^Parameter \\#1 \\$type of method EDT\\\\JsonApi\\\\RequestHandling\\\\EntityFetcherInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getEntityByTypeIdentifier\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface given\\.$#"
+            message: "#^Parameter \\#1 \\$type of method EDT\\\\JsonApi\\\\RequestHandling\\\\EntityFetcherInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getEntityByTypeIdentifier\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface given\\.$#"
             count: 1
             path: packages/jsonapi/src/RequestHandling/PropertyValuesGenerator.php
 
         -
-            message: "#^Parameter \\#4 \\$wrapperFactory of class EDT\\\\JsonApi\\\\OutputTransformation\\\\PropertyDefinition constructor expects EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, EDT\\\\Wrapping\\\\Contracts\\\\WrapperInterface\\>, EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\<object\\>\\> given\\.$#"
+            message: "#^Parameter \\#4 \\$wrapperFactory of class EDT\\\\JsonApi\\\\OutputTransformation\\\\PropertyDefinition constructor expects EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, EDT\\\\Wrapping\\\\Contracts\\\\WrapperInterface\\>, EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\<object\\>\\> given\\.$#"
             count: 2
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 

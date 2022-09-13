@@ -21,7 +21,7 @@ class TypeRetrievalAccessException extends AccessException
     }
 
     /**
-     * @template T of \EDT\Wrapping\Contracts\Types\TypeInterface<\EDT\Querying\Contracts\PathsBasedInterface, object>
+     * @template T of \EDT\Wrapping\Contracts\Types\TypeInterface
      *
      * @param non-empty-string $typeIdentifier
      * @param class-string<T> $implementation

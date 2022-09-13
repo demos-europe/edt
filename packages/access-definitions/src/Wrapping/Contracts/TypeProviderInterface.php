@@ -10,6 +10,7 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
  * Returns {@link TypeInterface} instances for given Type identifiers.
  *
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface TypeProviderInterface
 {
@@ -19,7 +20,7 @@ interface TypeProviderInterface
      * @param non-empty-string $typeIdentifier The identifier of your type, used when referencing other types.
      * @param class-string<I>  ...$implementations
      *
-     * @return TypeInterface<C, object>&I
+     * @return TypeInterface<C, S, object>&I
      *
      * @throws TypeRetrievalAccessException
      */
@@ -31,7 +32,7 @@ interface TypeProviderInterface
      * @param non-empty-string $typeIdentifier The identifier of your type, used when referencing other types.
      * @param class-string<I> ...$implementations The fully qualified namespaces that the type must implement.
      *
-     * @return TypeInterface<C, object>&I
+     * @return TypeInterface<C, S, object>&I
      *
      * @throws TypeRetrievalAccessException Thrown if a type with the given identifier and implementations is not available.
      */

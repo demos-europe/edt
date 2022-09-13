@@ -8,9 +8,10 @@ use EDT\Querying\Contracts\FunctionInterface;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-extends TypeInterface<C, T>
+ * @template-extends TypeInterface<C, S, T>
  */
 interface CreatableTypeInterface extends TypeInterface
 {

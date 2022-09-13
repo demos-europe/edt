@@ -8,6 +8,12 @@ use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 
+/**
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ *
+ * @template-implements TypeProviderInterface<C, S>
+ */
 abstract class AbstractTypeProvider implements TypeProviderInterface
 {
     public function getAvailableType(string $typeIdentifier, string ...$implementations): TypeInterface

@@ -25,9 +25,10 @@ use function get_class;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-implements ResourceTypeInterface<C, T>
+ * @template-implements ResourceTypeInterface<C, S, T>
  */
 abstract class AbstractResourceType implements ResourceTypeInterface
 {
@@ -196,10 +197,13 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     /**
      * @template W of object
      *
-     * @return WrapperFactoryInterface<C, W, WrapperObject<W>>
+     * @return WrapperFactoryInterface<C, S, W, WrapperObject<W>>
      */
     abstract protected function getWrapperFactory(): WrapperFactoryInterface;
 
+    /**
+     * @return TypeAccessor<C, S>
+     */
     abstract protected function getTypeAccessor(): TypeAccessor;
 
     abstract protected function getLogger(): LoggerInterface;
@@ -328,9 +332,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * @param array<non-empty-string, ReadableTypeInterface<PathsBasedInterface, object>|null> $properties
+     * @param array<non-empty-string, ReadableTypeInterface<C, S, object>|null> $properties
      *
-     * @return array<non-empty-string, ResourceTypeInterface<PathsBasedInterface, object>>
+     * @return array<non-empty-string, ResourceTypeInterface<C, S, object>>
      */
     private function extractRelationships(array $properties): array
     {

@@ -13,6 +13,7 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
  * or be more generic and create wrappers suitable for different kinds of objects.
  *
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
  * @template R
  */
@@ -20,7 +21,7 @@ interface WrapperFactoryInterface
 {
     /**
      * @param O $object
-     * @param ReadableTypeInterface<C, O> $type
+     * @param ReadableTypeInterface<C, S, O> $type
      * @return R
      * @throws AccessException
      */

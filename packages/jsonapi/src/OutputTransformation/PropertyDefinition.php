@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\OutputTransformation;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\WrapperFactoryInterface;
 use EDT\Wrapping\Contracts\WrapperInterface;
 use League\Fractal\ParamBag;
@@ -13,7 +14,7 @@ use function in_array;
 /**
  * Implementation of {@link PropertyDefinitionInterface} providing mostly hardcoded
  * behavior.
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ *
  * @template O of object
  * @template R
  * @template-implements PropertyDefinitionInterface<O, R>
@@ -31,12 +32,12 @@ class PropertyDefinition implements PropertyDefinitionInterface
     private $toBeUsedAsDefaultField;
 
     /**
-     * @var WrapperFactoryInterface<C, O, WrapperInterface>
+     * @var WrapperFactoryInterface<PathsBasedInterface, PathsBasedInterface, O, WrapperInterface>
      */
     private $wrapperFactory;
 
     /**
-     * @var ResourceTypeInterface<C, O>
+     * @var ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, O>
      */
     private $type;
 
@@ -46,11 +47,14 @@ class PropertyDefinition implements PropertyDefinitionInterface
     private $customReadCallable = null;
 
     /**
-     * @param non-empty-string                                $propertyName
-     * @param ResourceTypeInterface<C, O>                     $type
-     * @param WrapperFactoryInterface<C, O, WrapperInterface> $wrapperFactory
-     * @param list<non-empty-string>                          $defaultProperties
-     * @param null|callable(O, ParamBag): R                   $customReadCallable
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+     * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+     *
+     * @param non-empty-string                                   $propertyName
+     * @param ResourceTypeInterface<C, S, O>                     $type
+     * @param WrapperFactoryInterface<C, S, O, WrapperInterface> $wrapperFactory
+     * @param list<non-empty-string>                             $defaultProperties
+     * @param null|callable(O, ParamBag): R                      $customReadCallable
      */
     public function __construct(
         string $propertyName,
