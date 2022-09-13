@@ -13,7 +13,7 @@ use function in_array;
 /**
  * Implementation of {@link PropertyDefinitionInterface} providing mostly hardcoded
  * behavior.
- *
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
  * @template R
  * @template-implements PropertyDefinitionInterface<O, R>
@@ -21,21 +21,22 @@ use function in_array;
 class PropertyDefinition implements PropertyDefinitionInterface
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     private $propertyName;
+
     /**
      * @var bool
      */
     private $toBeUsedAsDefaultField;
 
     /**
-     * @var WrapperFactoryInterface<O, WrapperInterface>
+     * @var WrapperFactoryInterface<C, O, WrapperInterface>
      */
     private $wrapperFactory;
 
     /**
-     * @var ResourceTypeInterface<O>
+     * @var ResourceTypeInterface<C, O>
      */
     private $type;
 
@@ -45,10 +46,11 @@ class PropertyDefinition implements PropertyDefinitionInterface
     private $customReadCallable = null;
 
     /**
-     * @param ResourceTypeInterface<O>                     $type
-     * @param WrapperFactoryInterface<O, WrapperInterface> $wrapperFactory
-     * @param array<int,string>                            $defaultProperties
-     * @param null|callable(O, ParamBag): R                $customReadCallable
+     * @param non-empty-string                                $propertyName
+     * @param ResourceTypeInterface<C, O>                     $type
+     * @param WrapperFactoryInterface<C, O, WrapperInterface> $wrapperFactory
+     * @param array<int, non-empty-string>                    $defaultProperties
+     * @param null|callable(O, ParamBag): R                   $customReadCallable
      */
     public function __construct(
         string $propertyName,
@@ -83,6 +85,9 @@ class PropertyDefinition implements PropertyDefinitionInterface
         return $this->toBeUsedAsDefaultField;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getPropertyName(): string
     {
         return $this->propertyName;

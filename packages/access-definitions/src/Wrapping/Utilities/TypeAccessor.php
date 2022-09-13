@@ -16,22 +16,28 @@ use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
  * As {@link TypeInterface} provides raw information only some of them need to be processed
  * before decisions within the application logic can be made. This class encapsulates the
  * most basic processing of these raw information.
+ *
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  */
 class TypeAccessor
 {
     /**
-     * @var TypeProviderInterface
+     * @var TypeProviderInterface<C>
      */
     private $typeProvider;
 
+    /**
+     * @param TypeProviderInterface<C> $typeProvider
+     */
     public function __construct(TypeProviderInterface $typeProvider)
     {
         $this->typeProvider = $typeProvider;
     }
 
     /**
-     * @param TypeInterface $type
-     * @return array<string,ReadableTypeInterface|null>
+     * @param TypeInterface<C, object> $type
+     *
+     * @return array<non-empty-string, ReadableTypeInterface<C, object>|null>
      *
      * @throws TypeRetrievalAccessException
      */
@@ -44,9 +50,7 @@ class TypeAccessor
         $readableProperties = array_map([$this, 'getTypeInstance'], $readableProperties);
         $readableProperties = array_filter($readableProperties, [$this, 'isReadableProperty']);
 
-        return array_map(static function (?ReadableTypeInterface $type): ?ReadableTypeInterface {
-            return $type;
-        }, $readableProperties);
+        return $readableProperties;
     }
 
     /**
@@ -57,10 +61,10 @@ class TypeAccessor
      *
      * @template T of object
      *
-     * @param TypeInterface<T> $type
-     * @param T                $updateTarget
+     * @param TypeInterface<C, T> $type
+     * @param T                   $updateTarget
      *
-     * @return array<string,TypeInterface<object>|null>
+     * @return array<non-empty-string, TypeInterface<C, object>|null>
      */
     public function getAccessibleUpdatableProperties(TypeInterface $type, object $updateTarget): array
     {
@@ -73,19 +77,26 @@ class TypeAccessor
     }
 
     /**
-     * @return TypeInterface<object>|null
+     * @param non-empty-string|null $typeIdentifier
+     *
+     * @return TypeInterface<C, object>|null
      *
      * @throws TypeRetrievalAccessException
      */
-    private function getTypeInstance(?string $value): ?TypeInterface
+    private function getTypeInstance(?string $typeIdentifier): ?TypeInterface
     {
-        if (null === $value) {
+        if (null === $typeIdentifier) {
             return null;
         }
 
-        return $this->typeProvider->getType($value);
+        return $this->typeProvider->getType($typeIdentifier);
     }
 
+    /**
+     * @param TypeInterface<C, object>|null $type
+     *
+     * @return bool
+     */
     private function isReadableProperty(?TypeInterface $type): bool
     {
         return null === $type || ($type->isAvailable() && $type->isReferencable() && $type instanceof ReadableTypeInterface);
@@ -93,6 +104,7 @@ class TypeAccessor
 
     private function isUpdatableProperty(?TypeInterface $type): bool
     {
+        // TODO: add instanceof check?
         return null === $type || ($type->isAvailable() && $type->isReferencable());
     }
 }

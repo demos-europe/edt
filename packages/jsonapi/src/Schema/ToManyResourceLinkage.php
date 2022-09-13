@@ -19,7 +19,7 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
     /**
      * ToManyResourceLinkage constructor. You may want to use the static factory functions instead.
      *
-     * @param array<int, array{type: string, id: string}> $content
+     * @param array<int, array{type: non-empty-string, id: non-empty-string}> $content
      *
      * @throws Exception
      */
@@ -34,7 +34,7 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
     }
 
     /**
-     * @param array<int, array{type: string, id: string}> $resourceLinkage
+     * @param list<array{type: non-empty-string, id: non-empty-string}> $resourceLinkage
      *
      * @throws Exception
      *

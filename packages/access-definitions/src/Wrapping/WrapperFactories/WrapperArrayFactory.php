@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\WrapperFactories;
 
+use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SliceException;
@@ -17,7 +18,7 @@ use EDT\Wrapping\Utilities\TypeAccessor;
 use InvalidArgumentException;
 
 /**
- * @template-implements WrapperFactoryInterface<object,array<string,mixed>>
+ * @template-implements WrapperFactoryInterface<FunctionInterface<bool>, object,array<string,mixed>>
  */
 class WrapperArrayFactory implements WrapperFactoryInterface
 {

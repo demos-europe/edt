@@ -19,7 +19,8 @@ interface ContextualizedTypeAccessorInterface
      * criteria, e.g. if the instance has the context of filtering then only filterable
      * properties should be considered.
      *
-     * @param T $type
+     * @param T                $type
+     * @param non-empty-string $propertyName
      *
      * @return T
      *

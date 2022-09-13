@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Contracts\Types;
 
-use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 
 /**
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object The class of the backing entity returned by {@link TypeInterface::getEntityClass()}
  */
 interface TypeInterface
@@ -92,9 +93,9 @@ interface TypeInterface
      * For a list query on a `CatType` the condition returned by this method must define
      * limits to only get `Animal` instances that are a `Cat`.
      *
-     * @return FunctionInterface<bool>
+     * @return C
      */
-    public function getAccessCondition(): FunctionInterface;
+    public function getAccessCondition(): PathsBasedInterface;
 
     /**
      * Get the properties of the schema of this type that are aliases to different properties

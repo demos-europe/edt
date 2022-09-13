@@ -9,7 +9,8 @@ use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
- * @template-extends AbstractTypeAccessor<FilterableTypeInterface>
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template-extends AbstractTypeAccessor<FilterableTypeInterface<C, object>>
  */
 class ExternFilterableTypeAccessor extends AbstractTypeAccessor
 {

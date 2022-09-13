@@ -41,6 +41,7 @@ class SchemaPathProcessor
      *
      * @template C of \EDT\Querying\Contracts\PathsBasedInterface
      *
+     * @param TypeInterface<C, object> $type
      * @param C ...$conditions
      *
      * @return array<int, C>
@@ -50,6 +51,7 @@ class SchemaPathProcessor
      */
     public function mapConditions(TypeInterface $type, PathsBasedInterface ...$conditions): array
     {
+        $conditions = array_values($conditions);
         if ([] !== $conditions) {
             if ($type instanceof FilterableTypeInterface) {
                 $this->processExternalConditions($type, ...$conditions);
@@ -172,12 +174,16 @@ class SchemaPathProcessor
     }
 
     /**
-     * @return FunctionInterface<bool>
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+     *
+     * @param TypeInterface<C, object> $type
+     *
+     * @return C
      *
      * @throws AccessException
      * @throws PathException
      */
-    protected function processAccessCondition(TypeInterface $type): FunctionInterface
+    protected function processAccessCondition(TypeInterface $type): PathsBasedInterface
     {
         $condition = $type->getAccessCondition();
         $typeAccessor = new InternTypeAccessor($this->typeProvider);

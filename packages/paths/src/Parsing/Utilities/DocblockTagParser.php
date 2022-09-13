@@ -159,7 +159,7 @@ class DocblockTagParser
             }
         }
 
-        if (isset($fqsen) && class_exists($fqsen)) {
+        if (null !== $fqsen && class_exists($fqsen)) {
             // usable return type found in use statements
             return $fqsen;
         }

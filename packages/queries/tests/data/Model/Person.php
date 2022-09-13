@@ -19,7 +19,7 @@ class Person
      */
     protected $birth;
     /**
-     * @var array<int,Book>
+     * @var array<int, Book>
      */
     protected $books;
 

@@ -51,12 +51,12 @@ abstract class AbstractTypeAccessor implements ContextualizedTypeAccessorInterfa
      *
      * @param T $type
      *
-     * @return array<string, string|null>
+     * @return array<non-empty-string, non-empty-string|null>
      */
     abstract protected function getProperties(TypeInterface $type): array;
 
     /**
-     * @param string $typeIdentifier
+     * @param non-empty-string $typeIdentifier
      *
      * @return T
      *
