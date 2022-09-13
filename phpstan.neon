@@ -27,16 +27,6 @@ parameters:
             path: packages/access-definitions/src/Wrapping/TypeProviders/PrefilledTypeProvider.php
 
         -
-            message: "#^Parameter \\#1 \\$ of callable callable\\(V of object, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\)\\: R expects V of object, object given\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/PropertyReader.php
-
-        -
-            message: "#^Parameter \\#1 \\$baseProvider of class EDT\\\\Querying\\\\ObjectProviders\\\\TypeRestrictedEntityProvider constructor expects EDT\\\\Querying\\\\Contracts\\\\ObjectProviderInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\Querying\\\\ObjectProviders\\\\PrefilledObjectProvider\\<V of object, int\\|string\\> given\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/PropertyReader.php
-
-        -
             message: "#^Parameter \\#2 \\$type of method EDT\\\\Wrapping\\\\Utilities\\\\PropertyPathProcessor\\<EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\SortableTypeInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\>\\:\\:processPropertyPaths\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\SortableTypeInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface given\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/SchemaPathProcessor.php
@@ -55,6 +45,11 @@ parameters:
             message: "#^Unable to resolve the template type I in call to method EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getType\\(\\)$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessors/InternTypeAccessor.php
+
+        -
+            message: "#^Parameter \\#1 \\$wrapperFactory of method EDT\\\\Wrapping\\\\Utilities\\\\PropertyReader\\:\\:determineValue\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object, array\\<string, mixed\\>\\|null\\>, EDT\\\\Wrapping\\\\WrapperFactories\\\\ArrayEndWrapperFactory\\|EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperArrayFactory given\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperArrayFactory.php
 
         -
             message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and non\\-empty\\-array\\<int, string\\> will always evaluate to false\\.$#"
@@ -218,11 +213,6 @@ parameters:
 
         -
             message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
-            count: 1
-            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
-
-        -
-            message: "#^Property class@anonymous/paths/src/Parsing/Utilities/DocblockTagParser\\.php\\:233\\:\\:\\$useStatements \\(array\\<string, class\\-string\\>\\) does not accept array\\<string, string\\>\\.$#"
             count: 1
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
 

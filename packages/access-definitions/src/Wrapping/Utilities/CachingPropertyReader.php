@@ -58,7 +58,7 @@ class CachingPropertyReader extends PropertyReader
             throw new InvalidArgumentException("Unexpected value type '$valueType'.");
         }
 
-        $hashWrapper = spl_object_hash((object) $wrapperFactory);
+        $hashWrapper = spl_object_hash($wrapperFactory);
 
         return hash('sha256', $hashRelationship.$hashProperty.$hashWrapper);
     }
