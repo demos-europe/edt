@@ -164,7 +164,12 @@ class WrapperObject implements WrapperInterface
         $propertyValue = [] === $propertyPath
             ? $this->object
             : $this->propertyAccessor->getValueByPropertyPath($this->object, ...$propertyPath);
-        return $this->propertyReader->determineValue([$this->wrapperFactory, 'createWrapper'], $relationship, $propertyValue);
+
+        return $this->propertyReader->determineValue(
+            [$this->wrapperFactory, 'createWrapper'],
+            $relationship,
+            $propertyValue
+        );
     }
 
     /**

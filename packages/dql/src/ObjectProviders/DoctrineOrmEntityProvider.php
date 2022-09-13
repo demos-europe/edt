@@ -6,7 +6,7 @@ namespace EDT\DqlQuerying\ObjectProviders;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
-use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
+use EDT\DqlQuerying\Contracts\ClauseInterface;
 use EDT\DqlQuerying\Contracts\MappingException;
 use EDT\DqlQuerying\Utilities\QueryGenerator;
 use EDT\DqlQuerying\Contracts\OrderByInterface;
@@ -16,7 +16,7 @@ use EDT\Querying\Contracts\SortMethodInterface;
 
 /**
  * @template T of object
- * @template-implements ObjectProviderInterface<T>
+ * @template-implements ObjectProviderInterface<ClauseInterface, T>
  */
 class DoctrineOrmEntityProvider implements ObjectProviderInterface
 {
@@ -39,12 +39,13 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface
     }
 
     /**
-     * @param array<int,ClauseFunctionInterface<bool>>        $conditions
+     * @param array<int,ClauseInterface>                      $conditions
      * @param array<int,SortMethodInterface|OrderByInterface> $sortMethods
      *
      * @return iterable<T>
      *
      * @throws MappingException
+     * @throws SliceException
      */
     public function getObjects(array $conditions, array $sortMethods = [], int $offset = 0, int $limit = null): iterable
     {
@@ -53,7 +54,7 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface
     }
 
     /**
-     * @param array<int,ClauseFunctionInterface<bool>>        $conditions
+     * @param array<int,ClauseInterface>                      $conditions
      * @param array<int,SortMethodInterface|OrderByInterface> $sortMethods
      *
      * @throws MappingException

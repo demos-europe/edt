@@ -7,6 +7,9 @@ namespace EDT\Querying\FluentQueries;
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\FluentQueryException;
+use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 
 /**
@@ -24,7 +27,7 @@ use EDT\Querying\Contracts\SortMethodFactoryInterface;
 class FluentQuery
 {
     /**
-     * @var ObjectProviderInterface<T>
+     * @var ObjectProviderInterface<C, T>
      */
     protected $objectProvider;
     /**
@@ -41,7 +44,7 @@ class FluentQuery
     private $sortDefinition;
 
     /**
-     * @param ObjectProviderInterface<T> $objectProvider
+     * @param ObjectProviderInterface<C, T> $objectProvider
      * @param ConditionDefinition<C>     $conditionDefinition
      */
     public function __construct(
@@ -57,7 +60,8 @@ class FluentQuery
     }
 
     /**
-     * @param ObjectProviderInterface<T> $objectProvider
+     * @param ConditionFactoryInterface<C> $conditionFactory
+     * @param ObjectProviderInterface<C, T> $objectProvider
      */
     public static function createWithDefaultDefinitions(
         ConditionFactoryInterface $conditionFactory,
@@ -74,6 +78,10 @@ class FluentQuery
 
     /**
      * @return iterable<T>
+     *
+     * @throws PathException
+     * @throws SliceException
+     * @throws SortException
      */
     public function getEntities(): iterable
     {
@@ -89,6 +97,9 @@ class FluentQuery
      * @return T|null
      *
      * @throws FluentQueryException
+     * @throws PathException
+     * @throws SliceException
+     * @throws SortException
      */
     public function getUniqueEntity(): ?object
     {

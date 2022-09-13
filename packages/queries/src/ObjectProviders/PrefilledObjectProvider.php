@@ -20,7 +20,7 @@ use function array_slice;
  *
  * @template T of object
  * @template K of int|string
- * @template-implements ObjectProviderInterface<T>
+ * @template-implements ObjectProviderInterface<FunctionInterface<bool>, T>
  */
 class PrefilledObjectProvider implements ObjectProviderInterface
 {
