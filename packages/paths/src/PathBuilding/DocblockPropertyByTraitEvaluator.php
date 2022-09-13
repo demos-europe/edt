@@ -6,19 +6,26 @@ namespace EDT\PathBuilding;
 
 use EDT\Parsing\Utilities\DocblockTagParser;
 use EDT\Parsing\Utilities\ParseException;
+use phpDocumentor\Reflection\DocBlock\Tag;
+use phpDocumentor\Reflection\DocBlock\Tags\Param;
+use phpDocumentor\Reflection\DocBlock\Tags\Property;
+use phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
+use phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
+use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use function array_key_exists;
 use function Safe\array_combine;
 
 class DocblockPropertyByTraitEvaluator
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     private $targetTrait;
     /**
      * The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      *
-     * @var array<int,string>
+     * @var non-empty-array<int, non-empty-string>
      */
     private $targetTags;
 
@@ -30,20 +37,25 @@ class DocblockPropertyByTraitEvaluator
     /**
      * Cache of already parsed classes
      *
-     * @var array<class-string, array<string, class-string>>
+     * @var array<class-string, array<non-empty-string, class-string>>
      */
     private $parsedClasses = [];
 
-    public function __construct(TraitEvaluator $traitEvaluator, string $targetTrait, string $targetTag = 'property-read', string ...$targetTags)
+    /**
+     * @param non-empty-string                       $targetTrait
+     * @param non-empty-array<int, non-empty-string> $targetTags
+     */
+    public function __construct(TraitEvaluator $traitEvaluator, string $targetTrait, array $targetTags)
     {
         $this->targetTrait = $targetTrait;
         $this->targetTags = $targetTags;
-        array_unshift($this->targetTags, $targetTag);
         $this->traitEvaluator = $traitEvaluator;
     }
 
     /**
-     * @return array<string, class-string>
+     * @param class-string $class
+     *
+     * @return array<non-empty-string, class-string>
      *
      * @throws ParseException
      */
@@ -56,7 +68,7 @@ class DocblockPropertyByTraitEvaluator
             $classes = [$class];
         }
 
-        return $this->parsePropertiesOfClasses(...$classes);
+        return $this->parsePropertiesOfClasses($classes);
     }
 
     /**
@@ -70,7 +82,7 @@ class DocblockPropertyByTraitEvaluator
     /**
      * @param class-string $class
      *
-     * @return array<string, class-string>
+     * @return array<non-empty-string, class-string>
      *
      * @throws ParseException
      */
@@ -80,6 +92,17 @@ class DocblockPropertyByTraitEvaluator
             $parser = new DocblockTagParser($class);
             $nestedProperties = array_map(function (string $targetTag) use ($parser): array {
                 $tags = $parser->getTags($targetTag);
+                $tags = array_map(static function (Tag $tag): TagWithType {
+                    if (!$tag instanceof PropertyRead
+                        && !$tag instanceof PropertyWrite
+                        && !$tag instanceof Property
+                        && !$tag instanceof Param
+                        && !$tag instanceof Var_) {
+                        throw new \InvalidArgumentException("Can not determine variable name for '{$tag->getName()}' tags.");
+                    }
+
+                    return $tag;
+                }, $tags);
                 $keys = array_map([$parser, 'getVariableNameOfTag'], $tags);
                 $tags = array_combine($keys, $tags);
                 $tags = array_map([$parser, 'getTagType'], $tags);
@@ -98,15 +121,14 @@ class DocblockPropertyByTraitEvaluator
      * array. Tags with the same property name will override each other, with the class
      * being passed later in the parameters taking precedence.
      *
-     * @param class-string ...$classes
+     * @param non-empty-array<int, class-string> $classes
      *
-     * @return array<string, class-string>
+     * @return array<non-empty-string, class-string>
      *
      * @throws ParseException
      */
-    private function parsePropertiesOfClasses(string $class, string ...$classes): array
+    private function parsePropertiesOfClasses(array $classes): array
     {
-        array_unshift($classes, $class);
         $nestedPropertiesByClass = array_map([$this, 'parsePropertiesOfClass'], $classes);
 
         return array_merge(...array_reverse($nestedPropertiesByClass));

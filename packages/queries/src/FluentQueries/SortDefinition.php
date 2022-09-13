@@ -24,6 +24,9 @@ class SortDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyAscending(string $property, string ...$properties): self
@@ -33,6 +36,9 @@ class SortDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyDescending(string $property, string ...$properties): self

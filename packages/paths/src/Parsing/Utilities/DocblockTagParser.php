@@ -85,7 +85,9 @@ class DocblockTagParser
     }
 
     /**
-     * @return array<int,Tag>
+     * @param non-empty-string $tagName
+     *
+     * @return array<int, Tag>
      */
     public function getTags(string $tagName): array
     {
@@ -98,9 +100,12 @@ class DocblockTagParser
 
     /**
      * @param PropertyRead|PropertyWrite|Property|Param|Var_ $tag
+     *
+     * @return non-empty-string
+     *
      * @throws TagNameParseException
      */
-    public function getVariableNameOfTag($tag): string
+    public function getVariableNameOfTag(TagWithType $tag): string
     {
         $variableName = $tag->getVariableName();
         if (null === $variableName || '' === $variableName) {

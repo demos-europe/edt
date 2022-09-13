@@ -47,12 +47,12 @@ trait PropertyAutoPathTrait
     /**
      * Null if no parsing happened yet.
      *
-     * @var array<string,class-string>|null
+     * @var array<non-empty-string, class-string>|null
      */
     private $properties;
 
     /**
-     * @var array<string, PropertyAutoPathTrait>
+     * @var array<non-empty-string, PropertyAutoPathTrait>
      */
     private $children = [];
 
@@ -74,7 +74,10 @@ trait PropertyAutoPathTrait
     }
 
     /**
+     * @param non-empty-string $propertyName
+     *
      * @return PropertyAutoPathTrait
+     *
      * @throws PathBuildException
      */
     public function __get(string $propertyName): object
@@ -98,7 +101,7 @@ trait PropertyAutoPathTrait
             }
         }
 
-        return  $this->children[$propertyName];
+        return $this->children[$propertyName];
     }
 
     /**
@@ -168,13 +171,18 @@ trait PropertyAutoPathTrait
     /**
      * Provides all property-read tags from the docblock of the class this method was invoked on and its parent classes/interfaces.
      *
+     * @param non-empty-array<int, non-empty-string> $targetTags
+     *
      * @return array<string,class-string>
      * @throws ParseException
      */
-    protected function getAutoPathProperties(): array
+    protected function getAutoPathProperties(array $targetTags = ['property-read']): array
     {
         if (null === $this->properties) {
-            $this->properties = $this->getDocblockTraitEvaluator()->parseProperties(static::class, true);
+            $this->properties = $this->getDocblockTraitEvaluator($targetTags)->parseProperties(
+                static::class,
+                true
+            );
         }
 
         return $this->properties;
@@ -214,6 +222,7 @@ trait PropertyAutoPathTrait
      *
      * @param class-string<PropertyAutoPathTrait> $className
      * @param PropertyAutoPathTrait|null $parent
+     * @param non-empty-string|null $parentPropertyName
      *
      * @return PropertyAutoPathTrait
      *
@@ -235,10 +244,6 @@ trait PropertyAutoPathTrait
                 $childPathSegment = $class->newInstanceArgs($constructorArgs);
             }
 
-            if ('' === $parentPropertyName) {
-                throw PathBuildException::childWithEmptyParentPropertyName();
-            }
-
             if (null !== $parent) {
                 $childPathSegment->setParent($parent);
             }
@@ -253,12 +258,16 @@ trait PropertyAutoPathTrait
     }
 
     /**
+     * @param non-empty-array<int, non-empty-string> $targetTags
      * @internal
      */
-    protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
+    protected function getDocblockTraitEvaluator(array $targetTags): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
-            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class);
+            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(
+                PropertyAutoPathTrait::class,
+                $targetTags
+            );
         }
 
         return $this->docblockTraitEvaluator;

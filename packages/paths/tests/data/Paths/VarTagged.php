@@ -26,7 +26,7 @@ class VarTagged
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
-            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, 'var');
+            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, ['var']);
         }
 
         return $this->docblockTraitEvaluator;

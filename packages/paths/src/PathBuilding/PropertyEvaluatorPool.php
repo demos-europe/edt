@@ -37,17 +37,22 @@ class PropertyEvaluatorPool
         return self::$instance;
     }
 
-    public function getEvaluator(string $targetTrait, string $targetTag = 'property-read', string ...$targetTags): DocblockPropertyByTraitEvaluator
+    /**
+     * @param non-empty-string $targetTrait
+     * @param non-empty-array<int, non-empty-string> $targetTags
+     *
+     * @return DocblockPropertyByTraitEvaluator
+     */
+    public function getEvaluator(string $targetTrait, array $targetTags): DocblockPropertyByTraitEvaluator
     {
         $key = $targetTags;
-        array_push($key, $targetTag, $targetTrait);
+        $key[] = $targetTrait;
         $key = implode('|', $key);
         if (!array_key_exists($key, $this->evaluators)) {
             $this->evaluators[$key] = new DocblockPropertyByTraitEvaluator(
                 $this->traitEvaluator,
                 $targetTrait,
-                $targetTag,
-                ...$targetTags
+                $targetTags,
             );
         }
 

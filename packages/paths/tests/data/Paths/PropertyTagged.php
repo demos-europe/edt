@@ -26,7 +26,7 @@ class PropertyTagged
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
-            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, 'property');
+            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, ['property']);
         }
 
         return $this->docblockTraitEvaluator;

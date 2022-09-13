@@ -26,7 +26,7 @@ class ParamTagged
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
-            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, 'param');
+            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, ['param']);
         }
 
         return $this->docblockTraitEvaluator;

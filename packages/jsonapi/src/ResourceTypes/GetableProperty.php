@@ -8,6 +8,9 @@ interface GetableProperty
 {
     public function isReadable(): bool;
 
+    /**
+     * @return non-empty-string
+     */
     public function getName(): string;
 
     public function isSortable(): bool;
@@ -15,7 +18,7 @@ interface GetableProperty
     public function isFilterable(): bool;
 
     /**
-     * @return non-empty-array<int,string>|null
+     * @return non-empty-array<int,non-empty-string>|null
      */
     public function getAliasedPath(): ?array;
 

@@ -128,7 +128,7 @@ class Article
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
-            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, 'property'); // replaces the default 'property-read'
+            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, ['property']); // replaces the default 'property-read'
         }
 
         return $this->docblockTraitEvaluator;
@@ -151,7 +151,7 @@ class Article
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
-            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, 'property-read', 'property');
+            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, ['property-read', 'property']);
         }
 
         return $this->docblockTraitEvaluator;

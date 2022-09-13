@@ -12,7 +12,7 @@ namespace EDT\JsonApi\ResourceTypes;
 abstract class CachingResourceType extends AbstractResourceType
 {
     /**
-     * @var array<string,non-empty-array<int,string>>|null
+     * @var array<non-empty-string,non-empty-array<int,non-empty-string>>|null
      */
     protected $aliasesCache;
     /**
