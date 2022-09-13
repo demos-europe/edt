@@ -23,7 +23,7 @@ class WrapperObjectFactory implements WrapperFactoryInterface
      */
     private $typeAccessor;
     /**
-     * @var PropertyAccessorInterface
+     * @var PropertyAccessorInterface<O>
      */
     private $propertyAccessor;
     /**
@@ -35,6 +35,9 @@ class WrapperObjectFactory implements WrapperFactoryInterface
      */
     private $conditionEvaluator;
 
+    /**
+     * @param PropertyAccessorInterface<O> $propertyAccessor
+     */
     public function __construct(
         TypeAccessor $typeAccessor,
         PropertyReader $propertyReader,
@@ -52,7 +55,8 @@ class WrapperObjectFactory implements WrapperFactoryInterface
         return new WrapperObject(
             $object,
             $this->propertyReader,
-            $type, $this->typeAccessor,
+            $type,
+            $this->typeAccessor,
             $this->propertyAccessor,
             $this->conditionEvaluator,
             $this

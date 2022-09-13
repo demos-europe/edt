@@ -195,7 +195,6 @@ class DynamicTransformer extends TransformerAbstract
      * the default Fractal behavior to silently not include them, because the page will not work
      * and with the log message the cause is way more clear.
      *
-     * @return mixed|array
      * @throws ExcludeException
      */
     public function processIncludedResources(Scope $scope, $data)
