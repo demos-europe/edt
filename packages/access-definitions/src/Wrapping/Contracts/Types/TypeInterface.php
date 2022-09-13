@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Contracts\Types;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Querying\Contracts\SortMethodInterface;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object The class of the backing entity returned by {@link TypeInterface::getEntityClass()}
  */
 interface TypeInterface
@@ -145,7 +145,7 @@ interface TypeInterface
      *
      * Return an empty array to not define any default sorting.
      *
-     * @return list<SortMethodInterface>
+     * @return list<S>
      */
     public function getDefaultSortMethods(): array;
 }

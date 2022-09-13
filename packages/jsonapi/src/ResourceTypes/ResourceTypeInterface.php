@@ -12,11 +12,12 @@ use League\Fractal\TransformerAbstract;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
- * @template-extends ReadableTypeInterface<C, T>
- * @template-extends IdentifiableTypeInterface<C, T>
- * @template-extends FilterableTypeInterface<C, T>
- * @template-extends SortableTypeInterface<C, T>
+ * @template-extends ReadableTypeInterface<C, S, T>
+ * @template-extends IdentifiableTypeInterface<C, S, T>
+ * @template-extends FilterableTypeInterface<C, S, T>
+ * @template-extends SortableTypeInterface<C, S, T>
  */
 interface ResourceTypeInterface extends ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface
 {

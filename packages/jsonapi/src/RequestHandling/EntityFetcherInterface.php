@@ -11,13 +11,14 @@ use InvalidArgumentException;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface EntityFetcherInterface
 {
     /**
      * @template O of object
      *
-     * @param IdentifiableTypeInterface<C, O>&ReadableTypeInterface<C, O> $type
+     * @param IdentifiableTypeInterface<C, S, O>&ReadableTypeInterface<C, S, O> $type
      * @param non-empty-string $id
      *
      * @return O

@@ -9,6 +9,7 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SliceException;
 use EDT\Querying\Contracts\SortException;
+use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\WrapperFactoryInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
@@ -18,7 +19,7 @@ use EDT\Wrapping\Utilities\TypeAccessor;
 use InvalidArgumentException;
 
 /**
- * @template-implements WrapperFactoryInterface<FunctionInterface<bool>, object,array<string,mixed>>
+ * @template-implements WrapperFactoryInterface<FunctionInterface<bool>, SortMethodInterface, object, array<string,mixed>>
  */
 class WrapperArrayFactory implements WrapperFactoryInterface
 {
@@ -31,7 +32,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      */
     private $depth;
     /**
-     * @var TypeAccessor
+     * @var TypeAccessor<FunctionInterface<bool>, SortMethodInterface>
      */
     private $typeAccessor;
     /**
@@ -40,7 +41,9 @@ class WrapperArrayFactory implements WrapperFactoryInterface
     private $propertyReader;
 
     /**
-     * @param PropertyAccessorInterface<object> $propertyAccessor
+     * @param PropertyAccessorInterface<object>                          $propertyAccessor
+     * @param TypeAccessor<FunctionInterface<bool>, SortMethodInterface> $typeAccessor
+     *
      * @throws InvalidArgumentException Thrown if the given depth is negative.
      */
     public function __construct(
@@ -91,6 +94,8 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      * accessible properties of the `author` type as keys. However, the recursion
      * would stop at the author and the values to relationships from the `author` property
      * to other types would be set to `null`.
+     *
+     * @param ReadableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object> $type
      *
      * @return array<string,mixed>|null `null` if $depth is less 0. Otherwise, an array containing
      *                                  the readable properties of the given type.

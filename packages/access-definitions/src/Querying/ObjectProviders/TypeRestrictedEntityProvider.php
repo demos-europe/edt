@@ -11,28 +11,31 @@ use EDT\Wrapping\Utilities\SchemaPathProcessor;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-implements ObjectProviderInterface<C, T>
+ * @template-implements ObjectProviderInterface<C, S, T>
  */
 class TypeRestrictedEntityProvider implements ObjectProviderInterface
 {
     /**
-     * @var ObjectProviderInterface<C, T>
+     * @var ObjectProviderInterface<C, S, T>
      */
     private $baseProvider;
+
     /**
-     * @var ReadableTypeInterface<C, T>
+     * @var ReadableTypeInterface<C, S, T>
      */
     private $type;
+
     /**
      * @var SchemaPathProcessor
      */
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<C, T> $baseProvider
-     * @param ReadableTypeInterface<C, T>   $type
+     * @param ObjectProviderInterface<C, S, T> $baseProvider
+     * @param ReadableTypeInterface<C, S, T>   $type
      */
     public function __construct(
         ObjectProviderInterface $baseProvider,

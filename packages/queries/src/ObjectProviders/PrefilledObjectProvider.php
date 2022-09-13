@@ -20,7 +20,7 @@ use function array_slice;
  *
  * @template T of object
  * @template K of int|string
- * @template-implements ObjectProviderInterface<FunctionInterface<bool>, T>
+ * @template-implements ObjectProviderInterface<FunctionInterface<bool>, SortMethodInterface, T>
  */
 class PrefilledObjectProvider implements ObjectProviderInterface
 {
@@ -81,7 +81,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface
     }
 
     /**
-     * @param array<K, T>    $list
+     * @param array<K, T>                   $list
      * @param list<FunctionInterface<bool>> $conditions
      *
      * @return array<K,T>

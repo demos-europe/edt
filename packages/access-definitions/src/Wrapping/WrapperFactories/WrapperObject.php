@@ -9,6 +9,7 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SliceException;
 use EDT\Querying\Contracts\SortException;
+use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\AccessException;
@@ -52,11 +53,11 @@ class WrapperObject implements WrapperInterface
      */
     private $object;
     /**
-     * @var TypeInterface<FunctionInterface<bool>, T>
+     * @var TypeInterface<FunctionInterface<bool>, SortMethodInterface, T>
      */
     private $type;
     /**
-     * @var TypeAccessor<FunctionInterface<bool>>
+     * @var TypeAccessor<FunctionInterface<bool>, SortMethodInterface>
      */
     private $typeAccessor;
     /**
@@ -77,10 +78,10 @@ class WrapperObject implements WrapperInterface
     private $wrapperFactory;
 
     /**
-     * @param T                                         $object
-     * @param TypeInterface<FunctionInterface<bool>, T> $type
-     * @param TypeAccessor<FunctionInterface<bool>>      $typeAccessor
-     * @param PropertyAccessorInterface<T>              $propertyAccessor
+     * @param T                                                              $object
+     * @param TypeInterface<FunctionInterface<bool>, SortMethodInterface, T> $type
+     * @param TypeAccessor<FunctionInterface<bool>, SortMethodInterface>     $typeAccessor
+     * @param PropertyAccessorInterface<T>                                   $propertyAccessor
      */
     public function __construct(
         object                    $object,
@@ -101,7 +102,7 @@ class WrapperObject implements WrapperInterface
     }
 
     /**
-     * @return TypeInterface<FunctionInterface<bool>, T>
+     * @return TypeInterface<FunctionInterface<bool>, SortMethodInterface, T>
      */
     public function getResourceType(): TypeInterface
     {
@@ -281,7 +282,7 @@ class WrapperObject implements WrapperInterface
      * {@link UpdatableTypeInterface::getUpdatableProperties() updatable} or
      * {@link CreatableTypeInterface::getInitializableProperties() initializable} properties.
      *
-     * @param TypeInterface<FunctionInterface<bool>, object>|null $relationship
+     * @param TypeInterface<FunctionInterface<bool>, SortMethodInterface, object>|null $relationship
      * @param non-empty-string                                    $propertyName
      * @param non-empty-string                                    $deAliasedPropertyName
      * @param mixed                                               $propertyValue         A single value of some type or an iterable.

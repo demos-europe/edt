@@ -20,6 +20,7 @@ use League\Fractal\ParamBag;
  * the callable returned by this method.
  *
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
  */
 class TransformerObjectWrapper
@@ -30,19 +31,19 @@ class TransformerObjectWrapper
     private $callable;
 
     /**
-     * @var ReadableTypeInterface<C, O>
+     * @var ReadableTypeInterface<C, S, O>
      */
     private $relationshipType;
 
     /**
-     * @var WrapperFactoryInterface<C, O, WrapperObject<O>>
+     * @var WrapperFactoryInterface<C, S, O, WrapperObject<O>>
      */
     private $wrapperFactory;
 
     /**
      * @param callable(O, ParamBag): (O|iterable<O>|null)      $callable
-     * @param ReadableTypeInterface<C, O>                      $relationshipType
-     * @param WrapperFactoryInterface<C, O, WrapperObject<O>>  $wrapperFactory
+     * @param ReadableTypeInterface<C, S, O>                      $relationshipType
+     * @param WrapperFactoryInterface<C, S, O, WrapperObject<O>>  $wrapperFactory
      */
     public function __construct(callable $callable, ReadableTypeInterface $relationshipType, WrapperFactoryInterface $wrapperFactory)
     {

@@ -8,9 +8,10 @@ use EDT\Wrapping\Contracts\TypeProviderInterface;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-extends TypeInterface<C, T>
+ * @template-extends TypeInterface<C, S, T>
  */
 interface ReadableTypeInterface extends TypeInterface
 {

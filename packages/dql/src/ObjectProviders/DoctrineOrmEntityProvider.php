@@ -16,7 +16,7 @@ use EDT\Querying\Contracts\SortMethodInterface;
 
 /**
  * @template T of object
- * @template-implements ObjectProviderInterface<ClauseInterface, T>
+ * @template-implements ObjectProviderInterface<ClauseInterface, OrderByInterface, T>
  */
 class DoctrineOrmEntityProvider implements ObjectProviderInterface
 {
@@ -39,11 +39,6 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface
     }
 
     /**
-     * @param list<ClauseInterface>                      $conditions
-     * @param list<SortMethodInterface|OrderByInterface> $sortMethods
-     *
-     * @return iterable<T>
-     *
      * @throws MappingException
      * @throws SliceException
      */
@@ -54,8 +49,8 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface
     }
 
     /**
-     * @param list<ClauseInterface>                      $conditions
-     * @param list<SortMethodInterface|OrderByInterface> $sortMethods
+     * @param list<ClauseInterface>  $conditions
+     * @param list<OrderByInterface> $sortMethods
      *
      * @throws MappingException
      * @throws SliceException

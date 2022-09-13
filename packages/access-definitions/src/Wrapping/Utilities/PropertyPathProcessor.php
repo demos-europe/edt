@@ -11,7 +11,7 @@ use EDT\Querying\PropertyPaths\PathInfo;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Utilities\TypeAccessors\ContextualizedTypeAccessorInterface;
+use EDT\Wrapping\Utilities\TypeAccessors\AbstractTypeAccessor;
 use InvalidArgumentException;
 
 /**
@@ -25,14 +25,14 @@ use InvalidArgumentException;
 class PropertyPathProcessor
 {
     /**
-     * @var ContextualizedTypeAccessorInterface<T>
+     * @var AbstractTypeAccessor<T>
      */
     private $typeAccessor;
 
     /**
-     * @param ContextualizedTypeAccessorInterface<T> $typeAccessor
+     * @param AbstractTypeAccessor<T> $typeAccessor
      */
-    public function __construct(ContextualizedTypeAccessorInterface $typeAccessor)
+    public function __construct(AbstractTypeAccessor $typeAccessor)
     {
         $this->typeAccessor = $typeAccessor;
     }
@@ -63,7 +63,7 @@ class PropertyPathProcessor
             try {
                 $path = $this->processPropertyPath($type, [], ...$path);
             } catch (PropertyAccessException $exception) {
-                throw PropertyAccessException::pathDenied($type, $exception, ...$path);
+                throw PropertyAccessException::pathDenied($type, $exception, $path);
             }
             $propertyPath->setPath($path);
         }, PathInfo::getPropertyPaths($pathsBased));

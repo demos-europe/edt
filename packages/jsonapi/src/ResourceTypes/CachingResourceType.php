@@ -6,9 +6,10 @@ namespace EDT\JsonApi\ResourceTypes;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-extends AbstractResourceType<C, T>
+ * @template-extends AbstractResourceType<C, S, T>
  */
 abstract class CachingResourceType extends AbstractResourceType
 {

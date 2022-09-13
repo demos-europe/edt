@@ -17,16 +17,20 @@ use const ARRAY_FILTER_USE_KEY;
  * override {@link PrefilledTypeProvider::getIdentifier()}.
  *
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ *
+ * @template-extends AbstractTypeProvider<C, S>
  */
 class PrefilledTypeProvider extends AbstractTypeProvider
 {
     /**
-     * @var array<non-empty-string, TypeInterface<C, object>>
+     * @var array<non-empty-string, TypeInterface<C, S, object>>
      */
     protected $typesByIdentifier = [];
 
     /**
-     * @param iterable<TypeInterface<C, object>> $types The types this instance is able to provide.
+     * @param iterable<TypeInterface<C, S, object>> $types The types this instance is able to provide.
+     *
      * @throws InvalidArgumentException Thrown if the given array contains duplicates. Types are considered duplicates
      * if {@link PrefilledTypeProvider::getIdentifier their} return the same result for two given types.
      */
@@ -48,7 +52,7 @@ class PrefilledTypeProvider extends AbstractTypeProvider
      *
      * @param class-string<I> ...$implementations The fully qualified namespaces that the type must implement.
      *
-     * @return array<non-empty-string, I&TypeInterface<C, object>>
+     * @return array<non-empty-string, I&TypeInterface<C, S, object>>
      */
     public function getAllAvailableTypes(string ...$implementations): array
     {

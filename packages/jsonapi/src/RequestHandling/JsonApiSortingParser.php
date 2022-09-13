@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\RequestHandling;
 
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use InvalidArgumentException;
@@ -12,13 +13,19 @@ use Safe\Exceptions\StringsException;
 use function in_array;
 use function Safe\substr;
 
+/**
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ */
 class JsonApiSortingParser
 {
     /**
-     * @var SortMethodFactoryInterface
+     * @var SortMethodFactoryInterface<S>
      */
     private $sortMethodFactory;
 
+    /**
+     * @param SortMethodFactoryInterface<S> $sortMethodFactory
+     */
     public function __construct(SortMethodFactoryInterface $sortMethodFactory)
     {
         $this->sortMethodFactory = $sortMethodFactory;
@@ -28,7 +35,7 @@ class JsonApiSortingParser
      * Create an array of {@link SortMethodInterface} objects from the sort query parameter given if not null.
      * Otherwise, returns an empty array.
      *
-     * @return list<SortMethodInterface>
+     * @return list<S>
      */
     public function createFromQueryParamValue(?string $sortQueryParamValue): array
     {
@@ -44,11 +51,12 @@ class JsonApiSortingParser
     /**
      * @param non-empty-string $sortMethodRaw
      *
-     * @return SortMethodInterface
+     * @return S
+     *
      * @throws PathException
      * @throws StringsException
      */
-    private function parseSortMethod(string $sortMethodRaw): SortMethodInterface
+    private function parseSortMethod(string $sortMethodRaw): PathsBasedInterface
     {
         return $this->isNegativeDirection($sortMethodRaw)
             ? $this->parseNegativeDirection($sortMethodRaw)
@@ -59,10 +67,12 @@ class JsonApiSortingParser
     /**
      * @param non-empty-string $sortMethodRaw
      *
+     * @return S
+     *
      * @throws StringsException
      * @throws PathException
      */
-    private function parseNegativeDirection(string $sortMethodRaw): SortMethodInterface
+    private function parseNegativeDirection(string $sortMethodRaw): PathsBasedInterface
     {
         $pathString = substr($sortMethodRaw, 1);
         $pathArray = $this->toPathArray($pathString);
@@ -72,10 +82,11 @@ class JsonApiSortingParser
     /**
      * @param non-empty-string $sortMethodRaw
      *
-     * @return SortMethodInterface
+     * @return S
+     *
      * @throws PathException
      */
-    private function parsePositiveDirection(string $sortMethodRaw): SortMethodInterface
+    private function parsePositiveDirection(string $sortMethodRaw): PathsBasedInterface
     {
         $pathArray = $this->toPathArray($sortMethodRaw);
         return $this->sortMethodFactory->propertyAscending(...$pathArray);

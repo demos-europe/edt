@@ -9,17 +9,19 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template-extends AbstractTypeAccessor<TypeInterface<C, object>>
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ *
+ * @template-extends AbstractTypeAccessor<TypeInterface<C, S, object>>
  */
 class InternTypeAccessor extends AbstractTypeAccessor
 {
     /**
-     * @var TypeProviderInterface<C>
+     * @var TypeProviderInterface<C, S>
      */
     private $typeProvider;
 
     /**
-     * @param TypeProviderInterface<C> $typeProvider
+     * @param TypeProviderInterface<C, S> $typeProvider
      */
     public function __construct(TypeProviderInterface $typeProvider)
     {

@@ -6,9 +6,9 @@ namespace EDT\Wrapping\Utilities;
 
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SliceException;
 use EDT\Querying\Contracts\SortException;
-use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\ObjectProviders\TypeRestrictedEntityProvider;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Querying\Contracts\ObjectProviderInterface;
@@ -23,13 +23,14 @@ use function count;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
  * @template R
  */
 class GenericEntityFetcher
 {
     /**
-     * @var ObjectProviderInterface<C, O>
+     * @var ObjectProviderInterface<C, S, O>
      */
     private $objectProvider;
     /**
@@ -37,7 +38,7 @@ class GenericEntityFetcher
      */
     private $conditionFactory;
     /**
-     * @var WrapperFactoryInterface<C, O, R>
+     * @var WrapperFactoryInterface<C, S, O, R>
      */
     private $wrapperFactory;
     /**
@@ -46,9 +47,9 @@ class GenericEntityFetcher
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<C, O>    $objectProvider
-     * @param ConditionFactoryInterface<C>     $conditionFactory
-     * @param WrapperFactoryInterface<C, O, R> $wrapperFactory All returned instances are wrapped using the given instance.
+     * @param ObjectProviderInterface<C, S, O>    $objectProvider
+     * @param ConditionFactoryInterface<C>        $conditionFactory
+     * @param WrapperFactoryInterface<C, S, O, R> $wrapperFactory All returned instances are wrapped using the given instance.
      *                                                             To avoid any wrapping simply pass an instance that returns
      *                                                             its input without wrapping.
      */
@@ -74,15 +75,17 @@ class GenericEntityFetcher
      * * the property is available for {@link FilterableTypeInterface::getFilterableProperties() filtering} if conditions were given
      * * the property is available for {@link SortableTypeInterface::getSortableProperties() sorting} if sort methods were given
      *
-     * @param ReadableTypeInterface<C, O> $type
-     * @param list<C> $conditions
+     * @param ReadableTypeInterface<C, S, O> $type
+     * @param list<C>                        $conditions
+     * @param S                              ...$sortMethods
+     *
      * @return list<R>
      *
      * @throws AccessException
      * @throws SortException
      * @throws SliceException
      */
-    public function listEntities(ReadableTypeInterface $type, array $conditions, SortMethodInterface ...$sortMethods): array
+    public function listEntities(ReadableTypeInterface $type, array $conditions, PathsBasedInterface ...$sortMethods): array
     {
         $restrictedProvider = new TypeRestrictedEntityProvider(
             $this->objectProvider,
@@ -101,7 +104,7 @@ class GenericEntityFetcher
     }
 
     /**
-     * @param IdentifiableTypeInterface<C, O>&ReadableTypeInterface<C, O> $type
+     * @param IdentifiableTypeInterface<C, S, O>&ReadableTypeInterface<C, S, O> $type
      * @param non-empty-string $identifier
      * @return R
      * @throws SliceException
