@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Utilities;
 
 use EDT\Querying\Contracts\ConditionFactoryInterface;
-use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\SliceException;
 use EDT\Querying\Contracts\SortException;
@@ -23,17 +22,18 @@ use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use function count;
 
 /**
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
  * @template R
  */
 class GenericEntityFetcher
 {
     /**
-     * @var ObjectProviderInterface<O>
+     * @var ObjectProviderInterface<C, O>
      */
     private $objectProvider;
     /**
-     * @var ConditionFactoryInterface<FunctionInterface<bool>>
+     * @var ConditionFactoryInterface<C>
      */
     private $conditionFactory;
     /**
@@ -46,8 +46,8 @@ class GenericEntityFetcher
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<O>   $objectProvider
-     * @param ConditionFactoryInterface<FunctionInterface<bool>> $conditionFactory
+     * @param ObjectProviderInterface<C, O>   $objectProvider
+     * @param ConditionFactoryInterface<C> $conditionFactory
      * @param WrapperFactoryInterface<O,R> $wrapperFactory All returned instances are wrapped using the given instance.
      *                                                             To avoid any wrapping simply pass an instance that returns
      *                                                             its input without wrapping.
@@ -75,7 +75,7 @@ class GenericEntityFetcher
      * * the property is available for {@link SortableTypeInterface::getSortableProperties() sorting} if sort methods were given
      *
      * @param ReadableTypeInterface<O> $type
-     * @param array<int,FunctionInterface<bool>> $conditions
+     * @param array<int, C> $conditions
      * @return array<int,R>
      *
      * @throws AccessException
@@ -95,7 +95,7 @@ class GenericEntityFetcher
         $entities = Iterables::asArray($entities);
         $entities = array_values($entities);
 
-        return array_map(function ($object) use ($type) {
+        return array_map(function (object $object) use ($type) {
             return $this->wrapperFactory->createWrapper($object, $type);
         }, $entities);
     }

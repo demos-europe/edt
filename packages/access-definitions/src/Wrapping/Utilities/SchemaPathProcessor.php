@@ -6,6 +6,7 @@ namespace EDT\Wrapping\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
@@ -38,14 +39,16 @@ class SchemaPathProcessor
      *
      * Also adds the {@link ReadableTypeInterface::getAccessCondition() access condition} of the given type.
      *
-     * @param FunctionInterface<bool> ...$conditions
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
      *
-     * @return array<int, FunctionInterface<bool>>
+     * @param C ...$conditions
+     *
+     * @return array<int, C>
      *
      * @throws PathException
      * @throws AccessException
      */
-    public function mapConditions(TypeInterface $type, FunctionInterface ...$conditions): array
+    public function mapConditions(TypeInterface $type, PathsBasedInterface ...$conditions): array
     {
         if ([] !== $conditions) {
             if ($type instanceof FilterableTypeInterface) {
@@ -88,12 +91,10 @@ class SchemaPathProcessor
     /**
      * Checks the paths of the given conditions for availability and applies aliases using the given type.
      *
-     * @param FunctionInterface<bool> ...$conditions
-     *
      * @throws AccessException
      * @throws PathException
      */
-    protected function processExternalConditions(FilterableTypeInterface $type, FunctionInterface ...$conditions): void
+    protected function processExternalConditions(FilterableTypeInterface $type, PathsBasedInterface ...$conditions): void
     {
         // check authorizations of the property paths of the conditions and map them to the backing schema
         array_walk($conditions, [$this, 'processExternalCondition'], $type);
@@ -160,12 +161,10 @@ class SchemaPathProcessor
      * Check if all properties used in the condition are available for filtering
      * and map the paths to be applied to the schema of the backing class.
      *
-     * @param FunctionInterface<bool> $condition
-     *
      * @throws AccessException
      * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
      */
-    protected function processExternalCondition(FunctionInterface $condition, int $key, FilterableTypeInterface $type): void
+    protected function processExternalCondition(PathsBasedInterface $condition, int $key, FilterableTypeInterface $type): void
     {
         $typeAccessor = new ExternFilterableTypeAccessor($this->typeProvider);
         $processor = new PropertyPathProcessor($typeAccessor);

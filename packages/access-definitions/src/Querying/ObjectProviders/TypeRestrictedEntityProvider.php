@@ -10,14 +10,15 @@ use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 
 /**
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  *
- * @template-implements ObjectProviderInterface<T>
+ * @template-implements ObjectProviderInterface<C, T>
  */
 class TypeRestrictedEntityProvider implements ObjectProviderInterface
 {
     /**
-     * @var ObjectProviderInterface<T>
+     * @var ObjectProviderInterface<C, T>
      */
     private $baseProvider;
     /**
@@ -30,7 +31,7 @@ class TypeRestrictedEntityProvider implements ObjectProviderInterface
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<T> $baseProvider
+     * @param ObjectProviderInterface<C, T> $baseProvider
      * @param ReadableTypeInterface<T>   $type
      */
     public function __construct(
