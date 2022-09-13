@@ -28,7 +28,7 @@ class JsonApiSortingParser
      * Create an array of {@link SortMethodInterface} objects from the sort query parameter given if not null.
      * Otherwise, returns an empty array.
      *
-     * @return array<int,SortMethodInterface>
+     * @return list<SortMethodInterface>
      */
     public function createFromQueryParamValue(?string $sortQueryParamValue): array
     {
@@ -90,7 +90,7 @@ class JsonApiSortingParser
     }
 
     /**
-     * @return array<int, non-empty-string>
+     * @return list<non-empty-string>
      */
     private function toPathArray(string $pathString): array
     {

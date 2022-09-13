@@ -12,14 +12,14 @@ use Exception;
 class ToManyResourceLinkage implements ResourceLinkageInterface
 {
     /**
-     * @var array<int, ResourceIdentifierObject>
+     * @var list<ResourceIdentifierObject>
      */
     protected $resourceIdentifierObjects;
 
     /**
      * ToManyResourceLinkage constructor. You may want to use the static factory functions instead.
      *
-     * @param array<int, array{type: non-empty-string, id: non-empty-string}> $content
+     * @param list<array{type: non-empty-string, id: non-empty-string}> $content
      *
      * @throws Exception
      */
@@ -46,7 +46,7 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
     }
 
     /**
-     * @return array<int, ResourceIdentifierObject> may be empty
+     * @return list<ResourceIdentifierObject> may be empty
      */
     public function getResourceIdentifierObjects(): array
     {
@@ -70,7 +70,7 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
     }
 
     /**
-     * @return array<int, string>
+     * @return list<string>
      */
     public function getIds(): array
     {

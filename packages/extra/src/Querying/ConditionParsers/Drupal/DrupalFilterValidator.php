@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class DrupalFilterValidator
 {
     /**
-     * @var array<int, Constraint>
+     * @var list<Constraint>
      */
     private $filterSchemaConstraints;
 
@@ -45,9 +45,9 @@ class DrupalFilterValidator
     }
 
     /**
-     * @param array<int, non-empty-string> $validOperatorNames
+     * @param list<non-empty-string> $validOperatorNames
      *
-     * @return array<int, Constraint>
+     * @return list<Constraint>
      */
     private function getFilterConstraints(array $validOperatorNames): array
     {

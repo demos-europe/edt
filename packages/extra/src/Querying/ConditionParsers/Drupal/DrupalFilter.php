@@ -25,7 +25,7 @@ use function array_key_exists;
 class DrupalFilter
 {
     /**
-     * @var array<non-empty-string, array<int, DrupalFilterCondition>>
+     * @var array<non-empty-string, list<DrupalFilterCondition>>
      */
     private $groupedConditions = [];
     /**
@@ -75,7 +75,7 @@ class DrupalFilter
     }
 
     /**
-     * @return array<non-empty-string, array<int, DrupalFilterCondition>>
+     * @return array<non-empty-string, list<DrupalFilterCondition>>
      */
     public function getGroupedConditions(): array
     {

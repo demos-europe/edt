@@ -9,7 +9,7 @@ class TypeRetrievalAccessException extends AccessException
 {
     /**
      * @param non-empty-string $typeIdentifier
-     * @param array<int, non-empty-string> $availableTypeIdentifiers
+     * @param list<non-empty-string> $availableTypeIdentifiers
      */
     public static function unknownTypeIdentifier(string $typeIdentifier, array $availableTypeIdentifiers): self
     {

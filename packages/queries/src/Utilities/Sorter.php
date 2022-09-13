@@ -28,7 +28,7 @@ class Sorter
     }
 
     /**
-     * @param array<int,object> $arrayToSort
+     * @param list<object> $arrayToSort
      * @throws SortException
      */
     public function sortArray(array &$arrayToSort, SortMethodInterface ...$sortMethods): void

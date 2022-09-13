@@ -66,7 +66,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface
 
     /**
      * @param array<K, T> $list
-     * @param array<int,SortMethodInterface> $sortMethods
+     * @param list<SortMethodInterface> $sortMethods
      * @return array<K, T>
      *
      * @throws SortException
@@ -82,7 +82,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface
 
     /**
      * @param array<K, T>    $list
-     * @param array<int, FunctionInterface<bool>> $conditions
+     * @param list<FunctionInterface<bool>> $conditions
      *
      * @return array<K,T>
      */

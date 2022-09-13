@@ -226,7 +226,7 @@ class WrapperObject implements WrapperInterface
     /**
      * @param non-empty-string $methodName
      *
-     * @return array<int,string>
+     * @return list<string>
      *
      * @throws AccessException
      */
@@ -245,7 +245,7 @@ class WrapperObject implements WrapperInterface
     /**
      * @param non-empty-string $propertyName
      *
-     * @return non-empty-array<int,non-empty-string>
+     * @return non-empty-list<non-empty-string>
      */
     private function mapProperty(string $propertyName): array
     {

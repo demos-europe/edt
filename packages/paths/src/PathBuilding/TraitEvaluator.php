@@ -20,7 +20,7 @@ class TraitEvaluator
      *
      * @param class-string $class
      *
-     * @return array<int,string>
+     * @return list<string> may be empty
      */
     public function getAllClassTraits(string $class): array
     {
@@ -51,7 +51,7 @@ class TraitEvaluator
      *
      * @param class-string $class
      *
-     * @return array<int, class-string>
+     * @return list<class-string>
      */
     public function getAllParents(string $class): array
     {
@@ -66,7 +66,7 @@ class TraitEvaluator
     /**
      * @param class-string $class
      *
-     * @return array<int, class-string>
+     * @return list<class-string>
      */
     private function getAllParentClasses(string $class): array
     {
@@ -79,8 +79,8 @@ class TraitEvaluator
      *
      * The given trait will be part of the result.
      *
-     * @param string $trait
-     * @return array<int, string>
+     * @param non-empty-string $trait
+     * @return non-empty-list<non-empty-string>
      */
     public function getAllNestedTraits(string $trait): array
     {
@@ -99,6 +99,7 @@ class TraitEvaluator
      * parent classes and nested traits into consideration.
      *
      * @param class-string $class
+     * @param non-empty-string $trait
      */
     public function isClassUsingTrait(string $class, string $trait): bool
     {

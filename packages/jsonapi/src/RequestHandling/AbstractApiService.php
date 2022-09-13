@@ -22,7 +22,7 @@ use function array_key_exists;
 /**
  * @template C of \EDT\Querying\Contracts\FunctionInterface<bool>
  * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
- * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: array<int, JsonApiRelationship>|JsonApiRelationship|null}>
+ * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
  */
 abstract class AbstractApiService
 {
@@ -242,8 +242,8 @@ abstract class AbstractApiService
      * @template O of object
      *
      * @param ResourceTypeInterface<C, O>     $type
-     * @param array<int, C>                   $filters
-     * @param array<int, SortMethodInterface> $sortMethods
+     * @param list<C>                   $filters
+     * @param list<SortMethodInterface> $sortMethods
      *
      * @return ApiListResultInterface<O>
      */
@@ -285,7 +285,7 @@ abstract class AbstractApiService
     abstract protected function deleteObject(ResourceTypeInterface $type, string $id): void;
 
     /**
-     * @return array<int, C>
+     * @return list<C>
      *
      * @throws DrupalFilterException
      */
@@ -303,7 +303,7 @@ abstract class AbstractApiService
     }
 
     /**
-     * @return array<int, SortMethodInterface>
+     * @return list<SortMethodInterface>
      */
     protected function getSorting(ParameterBag $query): array
     {

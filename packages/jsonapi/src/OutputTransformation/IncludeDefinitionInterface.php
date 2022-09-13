@@ -14,7 +14,7 @@ use League\Fractal\TransformerAbstract;
  *
  * @template O of object
  * @template T of object
- * @template-extends PropertyDefinitionInterface<O, T|array<int, T>|null>
+ * @template-extends PropertyDefinitionInterface<O, T|list<T>|null>
  */
 interface IncludeDefinitionInterface extends PropertyDefinitionInterface
 {

@@ -132,7 +132,7 @@ class DrupalFilterParser implements FilterParserInterface
      *
      * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
      *
-     * @return array<int, F>
+     * @return list<F>
      *
      * @throws DrupalFilterException
      */
@@ -217,7 +217,7 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @param array<string,array<int,F|null>> $conditions
+     * @param array<string,list<F|null>> $conditions
      */
     private function hasReachedRootGroup(array $conditions): bool
     {
@@ -225,8 +225,8 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @param array<non-empty-string, array<int,DrupalFilterCondition>> $groupedConditions
-     * @return array<non-empty-string, array<int, F>>
+     * @param array<non-empty-string, list<DrupalFilterCondition>> $groupedConditions
+     * @return array<non-empty-string, list<F>>
      */
     private function parseConditions(array $groupedConditions): array
     {

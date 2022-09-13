@@ -409,7 +409,7 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @return array<int, Parameter>
+     * @return list<Parameter>
      *
      * @throws TypeErrorException
      */
@@ -454,7 +454,7 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @return array<int, Parameter>
+     * @return list<Parameter>
      *
      * @throws TypeErrorException
      */
@@ -505,7 +505,7 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @return array<int, Parameter>
+     * @return list<Parameter>
      *
      * @throws TypeErrorException
      */

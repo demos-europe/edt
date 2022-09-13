@@ -22,7 +22,7 @@ use League\Fractal\TransformerAbstract;
 class IncludeDefinition implements IncludeDefinitionInterface
 {
     /**
-     * @var PropertyDefinitionInterface<O, WrapperObject<T>|array<int, WrapperObject<T>>|null>
+     * @var PropertyDefinitionInterface<O, WrapperObject<T>|list<WrapperObject<T>>|null>
      */
     private $propertyDefinition;
 
@@ -32,7 +32,7 @@ class IncludeDefinition implements IncludeDefinitionInterface
     private $targetType;
 
     /**
-     * @param PropertyDefinitionInterface<O, WrapperObject<T>|array<int, WrapperObject<T>>|null> $propertyDefinition
+     * @param PropertyDefinitionInterface<O, WrapperObject<T>|list<WrapperObject<T>>|null> $propertyDefinition
      * @param ResourceTypeInterface<PathsBasedInterface, T>                             $targetType
      */
     public function __construct(

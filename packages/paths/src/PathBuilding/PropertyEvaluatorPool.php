@@ -39,7 +39,7 @@ class PropertyEvaluatorPool
 
     /**
      * @param non-empty-string $targetTrait
-     * @param non-empty-array<int, non-empty-string> $targetTags
+     * @param non-empty-list<non-empty-string> $targetTags
      *
      * @return DocblockPropertyByTraitEvaluator
      */

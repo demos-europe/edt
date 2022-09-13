@@ -25,10 +25,10 @@ class Iterables
      * @template V
      * @template R
      *
-     * @param callable(V): array<int,R> $callable how to map each given value to an array
+     * @param callable(V): list<R> $callable how to map each given value to an array
      * @param array<int|string, V>      $values   the values to be mapped to an array
      *
-     * @return array<int,R>
+     * @return list<R>
      */
     public static function mapFlat(callable $callable, array $values): array
     {
@@ -55,7 +55,7 @@ class Iterables
      *                             with integer keys (starting with `0`).
      * @param int ...$sizes        The intended array size of each item in the result array.
      *
-     * @return array<int,array<int|string,V>> The nested result array, same length as the $sizes array.
+     * @return list<array<int|string,V>> The nested result array, same length as the $sizes array.
      */
     public static function split(iterable $toSplit, bool $preserveKeys, int ...$sizes): array
     {
@@ -93,7 +93,7 @@ class Iterables
      *                   current target should be considered iterable and thus flatted.
      *                   Defaults to {@link is_iterable()} if `null` is given.
      *
-     * @return array<int,mixed>
+     * @return list<mixed>
      * @throws InvalidArgumentException If a negative value is passed as $depth
      */
     public static function restructureNesting($target, int $depth, callable $isIterable = null): array
@@ -156,8 +156,8 @@ class Iterables
      *
      * @template T
      * @param callable(T,T):bool $equalityComparison
-     * @param array<int,T> $values
-     * @return array<int,T|int>
+     * @param list<T> $values
+     * @return list<T|int>
      */
     public static function setReferences(callable $equalityComparison, array $values): array
     {
@@ -183,8 +183,8 @@ class Iterables
      * The type T of the given values must not be `int`.
      *
      * @template T
-     * @param array<int, T|int> $values
-     * @return array<int, T>
+     * @param list<T|int> $values
+     * @return list<T>
      */
     public static function setDeReferencing(array $values): array
     {
@@ -210,7 +210,7 @@ class Iterables
      * Will iterate through the given array and inserts the given value into each of its values
      * (which are expected to be an array too).
      *
-     * @param array<string|int,array<int,mixed>> $array
+     * @param array<string|int, list<mixed>> $array
      * @param mixed $value
      */
     public static function insertValue(array &$array, int $index, $value): void

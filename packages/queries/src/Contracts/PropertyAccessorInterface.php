@@ -44,7 +44,7 @@ interface PropertyAccessorInterface
      *
      * @param T $target
      *
-     * @return array<int,mixed>
+     * @return list<mixed>
      */
     public function getValuesByPropertyPath($target, int $depth, string $property, string ...$properties): array;
 

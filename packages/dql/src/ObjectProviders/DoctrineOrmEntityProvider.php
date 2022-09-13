@@ -39,8 +39,8 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface
     }
 
     /**
-     * @param array<int,ClauseInterface>                      $conditions
-     * @param array<int,SortMethodInterface|OrderByInterface> $sortMethods
+     * @param list<ClauseInterface>                      $conditions
+     * @param list<SortMethodInterface|OrderByInterface> $sortMethods
      *
      * @return iterable<T>
      *
@@ -54,8 +54,8 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface
     }
 
     /**
-     * @param array<int,ClauseInterface>                      $conditions
-     * @param array<int,SortMethodInterface|OrderByInterface> $sortMethods
+     * @param list<ClauseInterface>                      $conditions
+     * @param list<SortMethodInterface|OrderByInterface> $sortMethods
      *
      * @throws MappingException
      * @throws SliceException

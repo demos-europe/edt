@@ -16,7 +16,7 @@ use InvalidArgumentException;
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
- * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: array<int, JsonApiRelationship>|JsonApiRelationship|null}>
+ * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
  */
 class PropertyValuesGenerator
 {
@@ -102,7 +102,7 @@ class PropertyValuesGenerator
     }
 
     /**
-     * @return array<int,object>
+     * @return list<object>
      */
     private function getRelationshipEntities(ToManyResourceLinkage $resourceLinkage): array
     {

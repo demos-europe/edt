@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Utilities;
 
-use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
 
@@ -16,24 +16,24 @@ class PathTransformer
      * else the path the conditions were originally built for. The prefix will be
      * prepended to all paths within the given conditions.
      *
-     * @param array<int, FunctionInterface> $conditions
+     * @param list<PathsBasedInterface> $pathsBasedList
      *
      * @throws PathException
      */
-    public function prefixConditionPaths(array $conditions, string ...$prefix): void
+    public function prefixPathsList(array $pathsBasedList, string ...$prefix): void
     {
-        array_walk($conditions, [$this, 'prefixConditionPath'], $prefix);
+        array_walk($pathsBasedList, [$this, 'prefixPaths'], $prefix);
     }
 
     /**
-     * @param array<int, non-empty-string> $prefix
+     * @param list<non-empty-string> $prefix
      *
      * @throws PathException
      */
-    public function prefixConditionPath(FunctionInterface $condition, int $key, array $prefix): void
+    public function prefixPaths(PathsBasedInterface $pathsBased, int $key, array $prefix): void
     {
         $paths = array_filter(
-            PathInfo::getPropertyPaths($condition),
+            PathInfo::getPropertyPaths($pathsBased),
             static function (PropertyPathAccessInterface $path): bool {
                 return null === $path->getContext();
             }
@@ -42,7 +42,7 @@ class PathTransformer
     }
 
     /**
-     * @param array<int, non-empty-string> $prefix
+     * @param list<non-empty-string> $prefix
      *
      * @throws PathException
      */

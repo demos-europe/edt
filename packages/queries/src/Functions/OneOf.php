@@ -8,7 +8,7 @@ use function in_array;
 
 /**
  * @template V
- * @template-extends AbstractMultiFunction<bool, array<int, V>|V, array{0: array<int, V>, 1: V}>
+ * @template-extends AbstractMultiFunction<bool, list<V>|V, array{0: list<V>, 1: V}>
  */
 class OneOf extends AbstractMultiFunction
 {

@@ -44,7 +44,7 @@ class SchemaPathProcessor
      * @param TypeInterface<C, object> $type
      * @param C ...$conditions
      *
-     * @return array<int, C>
+     * @return list<C>
      *
      * @throws PathException
      * @throws AccessException
@@ -72,7 +72,7 @@ class SchemaPathProcessor
      * If no sort methods were given then apply the {@link TypeInterface::getDefaultSortMethods() default sort methods}
      * of the given type.
      *
-     * @return array<int, SortMethodInterface>
+     * @return list<SortMethodInterface>
      *
      * @throws AccessException
      * @throws PathException
@@ -106,7 +106,7 @@ class SchemaPathProcessor
      * Check the paths of the given sort methods for availability and aliases using the given type.
      *
      * @param SortMethodInterface ...$sortMethods
-     * @return array<int, SortMethodInterface>
+     * @return list<SortMethodInterface>
      *
      * @throws PathException
      * @throws AccessException
@@ -120,7 +120,7 @@ class SchemaPathProcessor
     }
 
     /**
-     * @return array<int, SortMethodInterface>
+     * @return list<SortMethodInterface>
      *
      * @throws PathException
      */

@@ -72,7 +72,7 @@ class TableJoiner
 
         // this is an array of arrays as each property path results in an array as it may access a
         // to-many property with UNPACK enabled
-        /** @var array<int,array<int,mixed>|int> $valuesOfPropertyPaths */
+        /** @var list<list<mixed>|int> $valuesOfPropertyPaths */
         $valuesOfPropertyPaths = array_map(function ($propertyPath) use ($target) {
             if (is_int($propertyPath)) {
                 return $propertyPath;
@@ -93,11 +93,11 @@ class TableJoiner
     }
 
     /**
-     * @param array<int,array<int,mixed>|int> $columns the columns to create the cartesian product from, each with their
-     *                                                 own list of values, i.e. each column may have a different number
-     *                                                 of rows. an integer instead of an array indicates a reference to another column
+     * @param list<list<mixed>|int> $columns the columns to create the cartesian product from, each with their
+     *                                       own list of values, i.e. each column may have a different number
+     *                                       of rows. an integer instead of an array indicates a reference to another column
      *
-     * @return array<int,array<int,mixed>> The resulting table with a row oriented layout (the outer items being rows and the inner items being columns).
+     * @return list<list<mixed>> The resulting table with a row oriented layout (the outer items being rows and the inner items being columns).
      */
     public function cartesianProduct(array $columns): array
     {
@@ -122,10 +122,10 @@ class TableJoiner
     }
 
     /**
-     * @param array<int,mixed>|int $rightColumn
-     * @param array<int,mixed>|int ...$leftColumns
+     * @param list<mixed>|int $rightColumn
+     * @param list<mixed>|int ...$leftColumns
      *
-     * @return array<int,array<int,mixed>|int>
+     * @return list<list<mixed>|int>
      */
     protected function cartesianProductRecursive($rightColumn, ...$leftColumns): array
     {
@@ -170,9 +170,9 @@ class TableJoiner
      * references another column we simply de-reference the value and add it, meaning
      * the result is a table with r rows and k + 1 columns.
      *
-     * @param array<int,mixed>|int $rightColumn
-     * @param array<int,array<int,mixed>> $wipTable
-     * @return array<int,array<int,mixed>|int>
+     * @param list<mixed>|int $rightColumn
+     * @param list<list<mixed>> $wipTable
+     * @return list<list<mixed>|int>
      */
     private function rebuildTable($rightColumn, array $wipTable): array
     {
@@ -195,9 +195,9 @@ class TableJoiner
     /**
      * Appends the given value to all rows in the given table.
      *
-     * @param array<int,array<int,mixed>> $table
+     * @param list<list<mixed>> $table
      * @param mixed $value
-     * @return array<int,array<int,mixed>>
+     * @return list<list<mixed>>
      */
     private function addValueToRows(array $table, $value): array
     {
@@ -209,8 +209,8 @@ class TableJoiner
     }
 
     /**
-     * @param array<int,array<int,mixed>> $table
-     * @return array<int,array<int,mixed>>
+     * @param list<list<mixed>> $table
+     * @return list<list<mixed>>
      */
     private function addReferenceToRows(array $table, int $reference): array
     {
@@ -232,7 +232,7 @@ class TableJoiner
      * be considered as well, meaning the replacement will only happen if
      * both paths define the same access depth.
      *
-     * @return array<int,PropertyPathAccessInterface|int>
+     * @return list<PropertyPathAccessInterface|int>
      */
     private function setReferences(PropertyPathAccessInterface ...$paths): array
     {
@@ -250,10 +250,10 @@ class TableJoiner
     /**
      * Re-add the previously removed empty columns by adding null values into each row.
      *
-     * @param array<int,array<int,mixed>|int> $array
-     * @param array<int, int> $emptyColumnIndices
+     * @param list<list<mixed>|int> $array
+     * @param list<int> $emptyColumnIndices
      *
-     * @return array<int,array<int,mixed>|int>
+     * @return list<list<mixed>|int>
      */
     private function reAddEmptyColumnsAsNull(array $array, array $emptyColumnIndices): array
     {

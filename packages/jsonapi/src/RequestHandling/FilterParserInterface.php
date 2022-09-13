@@ -13,7 +13,7 @@ interface FilterParserInterface
     /**
      * @param I $filter
      *
-     * @return array<int, C>
+     * @return list<C>
      *
      * @throws FilterException
      */

@@ -60,7 +60,7 @@ class TransformerObjectWrapper
      *
      * @param O $entity
      *
-     * @return WrapperObject<O>|array<int, WrapperObject<O>>|null
+     * @return WrapperObject<O>|list<WrapperObject<O>>|null
      */
     public function __invoke(object $entity, ParamBag $params)
     {

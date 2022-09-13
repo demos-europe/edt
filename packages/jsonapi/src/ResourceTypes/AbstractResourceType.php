@@ -73,7 +73,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * @return array<int, non-empty-string>
+     * @return list<non-empty-string>
      */
     public function getPropertiesRequiredForCreation(): array
     {
@@ -100,7 +100,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * @return array<non-empty-string, non-empty-array<int, non-empty-string>|null>
+     * @return array<non-empty-string, non-empty-list<non-empty-string>|null>
      */
     private function getAliasArrayItem(GetableProperty $property): array
     {
@@ -189,7 +189,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * determining the order of properties in JSON:API responses) you can not rely on these
      * effects; they may be changed in the future.
      *
-     * @return array<int, GetableProperty>
+     * @return list<GetableProperty>
      */
     abstract protected function getProperties(): array;
 
@@ -205,9 +205,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     abstract protected function getLogger(): LoggerInterface;
 
     /**
-     * @param array<int, GetableProperty> $properties
+     * @param list<GetableProperty> $properties
      *
-     * @return array<int, GetableProperty>
+     * @return list<GetableProperty>
      */
     protected function processProperties(array $properties): array
     {
@@ -234,7 +234,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * @return array<int, non-empty-string>
+     * @return list<non-empty-string>
      */
     protected function getDefaultProperties(): array
     {
@@ -253,7 +253,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * @return array<int,GetableProperty>
+     * @return list<GetableProperty>
      *
      * @throws InvalidArgumentException
      *

@@ -139,7 +139,7 @@ This allows to adjust the behavior of the provider without the need to completel
 [source,php]
 ----
 // The books to be filtered, preloaded into an array
-/** @var array<int, object> $books */
+/** @var list<object> $books */
 
 // Setting up the factories and provider
 $conditionFactory = new \EDT\Querying\ConditionFactories\PhpConditionFactory();

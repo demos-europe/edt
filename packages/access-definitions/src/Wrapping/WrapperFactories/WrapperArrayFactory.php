@@ -128,7 +128,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      *
      * @param ReadableTypeInterface|null $value If not null the type must be {@link TypeInterface::isAvailable() available} and {@link TypeInterface::isReferencable() referencable}.
      *
-     * @param array<int, mixed> $context
+     * @param array{0: object, 1: int, 2: array<non-empty-string, non-empty-list<non-empty-string>>} $context
      *
      * @throws PathException
      * @throws SliceException
@@ -138,6 +138,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
     {
         [$target, $depth, $aliases] = $context;
         $propertyPath = $aliases[$propertyName] ?? [$propertyName];
+        // TODO: this should probably be `1 === count($propertyPath)`
         $propertyValue = [] === $propertyPath
             ? $target
             : $this->propertyAccessor->getValueByPropertyPath($target, ...$propertyPath);
