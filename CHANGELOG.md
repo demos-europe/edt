@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.10 - 2022-09-13
 
 - feature: add `CachingPropertyReader`
 - refactor: improve types and type-hint usage
