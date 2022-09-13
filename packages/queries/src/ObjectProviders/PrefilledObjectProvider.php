@@ -28,10 +28,12 @@ class PrefilledObjectProvider implements ObjectProviderInterface
      * @var array<K,T>
      */
     private $prefilledArray;
+
     /**
      * @var ConditionEvaluator
      */
     private $conditionEvaluator;
+
     /**
      * @var Sorter
      */
