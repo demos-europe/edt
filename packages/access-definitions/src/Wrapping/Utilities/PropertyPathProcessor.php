@@ -73,11 +73,11 @@ class PropertyPathProcessor
      * Follows the given property path recursively and rewrites it if necessary by appending the rewritten path to the given array.
      *
      * @param T $type
-     * @param array<int,non-empty-string> $newPath is filled with the rewritten path during the recursive execution of this method
+     * @param list<non-empty-string> $newPath is filled with the rewritten path during the recursive execution of this method
      * @param non-empty-string $currentPathPart
      * @param non-empty-string ...$remainingParts
      *
-     * @return non-empty-array<int,non-empty-string> A list of property names denoting the processed path to a specific property.
+     * @return non-empty-list<non-empty-string> A list of property names denoting the processed path to a specific property.
      *
      * @throws PropertyAccessException if the property of the $currentPathPart or any of the $remainingParts is not available for some reason
      */

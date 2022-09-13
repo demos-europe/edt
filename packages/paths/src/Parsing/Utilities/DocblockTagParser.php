@@ -87,7 +87,7 @@ class DocblockTagParser
     /**
      * @param non-empty-string $tagName
      *
-     * @return array<int, Tag>
+     * @return list<Tag>
      */
     public function getTags(string $tagName): array
     {

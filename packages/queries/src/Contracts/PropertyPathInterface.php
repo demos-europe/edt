@@ -14,7 +14,7 @@ interface PropertyPathInterface extends Traversable
     /**
      * Returns the names of the properties that are part of this path.
      *
-     * @return array<int,non-empty-string> Empty array if this path has no parent set. Otherwise, the complete path build so far.
+     * @return list<non-empty-string> Empty array if this path has no parent set. Otherwise, the complete path build so far.
      * @throws PathException Thrown if the array could not be generated.
      */
     public function getAsNames(): array;

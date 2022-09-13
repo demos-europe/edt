@@ -24,7 +24,7 @@ interface ConditionFactoryInterface
      * the given path has a value assigned that is present in the given
      * array of values.
      *
-     * @param array<int,mixed> $values
+     * @param list<mixed> $values
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
@@ -35,7 +35,7 @@ interface ConditionFactoryInterface
     public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @param array<int,mixed> $values
+     * @param list<mixed> $values
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
@@ -76,8 +76,8 @@ interface ConditionFactoryInterface
     public function false(): PathsBasedInterface;
 
     /**
-     * @param non-empty-array<int, non-empty-string> $leftProperties
-     * @param non-empty-array<int, non-empty-string> $rightProperties
+     * @param non-empty-list<non-empty-string> $leftProperties
+     * @param non-empty-list<non-empty-string> $rightProperties
      *
      * @return C
      *
@@ -229,7 +229,7 @@ interface ConditionFactoryInterface
      * use this method with the parameters `['A', 'B']` (the required titles as array),
      * and `'books'` and `'title'` (the path to the titles).
      *
-     * @param non-empty-array<int,mixed> $values
+     * @param non-empty-list<mixed> $values
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *

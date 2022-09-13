@@ -35,7 +35,7 @@ interface ContextualizedTypeAccessorInterface
      *
      * @param non-empty-string $propertyName
      *
-     * @return non-empty-array<int, non-empty-string>
+     * @return non-empty-list<non-empty-string>
      */
     public function getDeAliasedPath(TypeInterface $type, string $propertyName): array;
 }

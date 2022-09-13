@@ -51,7 +51,7 @@ class PathInfo
     }
 
     /**
-     * @return array<int, PropertyPathAccessInterface>
+     * @return list<PropertyPathAccessInterface>
      */
     public static function getPropertyPaths(PathsBasedInterface $pathsBased): array
     {

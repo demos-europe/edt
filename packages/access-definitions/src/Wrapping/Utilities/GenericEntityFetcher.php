@@ -75,8 +75,8 @@ class GenericEntityFetcher
      * * the property is available for {@link SortableTypeInterface::getSortableProperties() sorting} if sort methods were given
      *
      * @param ReadableTypeInterface<C, O> $type
-     * @param array<int, C> $conditions
-     * @return array<int,R>
+     * @param list<C> $conditions
+     * @return list<R>
      *
      * @throws AccessException
      * @throws SortException

@@ -18,7 +18,7 @@ interface GetableProperty
     public function isFilterable(): bool;
 
     /**
-     * @return non-empty-array<int,non-empty-string>|null
+     * @return non-empty-list<non-empty-string>|null
      */
     public function getAliasedPath(): ?array;
 

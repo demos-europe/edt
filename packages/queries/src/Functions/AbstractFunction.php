@@ -29,7 +29,7 @@ abstract class AbstractFunction implements FunctionInterface
     private $toManyAllowed = true;
 
     /**
-     * @var array<int,FunctionInterface<I>>
+     * @var list<FunctionInterface<I>>
      */
     protected $functions = [];
 
@@ -86,9 +86,9 @@ abstract class AbstractFunction implements FunctionInterface
      *
      * @template T
      *
-     * @param array<int, T> $propertyValues
+     * @param list<T> $propertyValues
      *
-     * @return array<int, array<int, T>>
+     * @return list<list<T>>
      */
     protected function unflatPropertyValues(array $propertyValues): array
     {

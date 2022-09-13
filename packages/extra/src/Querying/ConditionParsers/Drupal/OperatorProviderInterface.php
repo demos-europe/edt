@@ -14,14 +14,14 @@ interface OperatorProviderInterface
     /**
      * Returns all Drupal operator names supported by this instance.
      *
-     * @return array<int, non-empty-string>
+     * @return list<non-empty-string>
      */
     public function getAllOperatorNames(): array;
 
     /**
      * @param non-empty-string                       $operatorName
      * @param mixed|null                             $value
-     * @param non-empty-array<int, non-empty-string> $path
+     * @param non-empty-list<non-empty-string> $path
      *
      * @return F
      */

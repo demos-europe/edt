@@ -37,7 +37,7 @@ class PathTransformerTest extends TestCase
             $this->conditionFactory->propertyNotBetweenValuesInclusive(1, 3, 'y', 'x')
         );
 
-        $this->pathTransformer->prefixConditionPaths([$conditionA, $conditionB, $conditionC], 'foo', 'bar');
+        $this->pathTransformer->prefixPathsList([$conditionA, $conditionB, $conditionC], 'foo', 'bar');
 
         $pathA = $conditionA->getPropertyPaths()[0]->getPath()->getAsNames();
         self::assertEquals(['foo', 'bar', 'x'], $pathA);

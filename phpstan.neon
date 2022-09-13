@@ -56,6 +56,11 @@ parameters:
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessors/InternTypeAccessor.php
 
         -
+            message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and non\\-empty\\-array\\<int, string\\> will always evaluate to false\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperArrayFactory.php
+
+        -
             message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and non\\-empty\\-array\\<int, non\\-empty\\-string\\> will always evaluate to false\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
@@ -171,6 +176,11 @@ parameters:
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
 
         -
+            message: "#^Strict comparison using \\=\\=\\= between null and League\\\\Fractal\\\\Scope will always evaluate to false\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
             message: "#^Offset 'attributes' on array\\{\\} on left side of \\?\\? does not exist\\.$#"
             count: 1
             path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
@@ -271,6 +281,11 @@ parameters:
             path: packages/paths/src/PathBuilding/End.php
 
         -
+            message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:toAliases\\(\\) should return array\\<non\\-empty\\-string, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\> but returns array\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/End.php
+
+        -
             message: "#^PHPDoc tag @var for variable \\$childPathSegment has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
@@ -351,6 +366,16 @@ parameters:
             path: packages/paths/src/PathBuilding/End.php
 
         -
+            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllNestedTraits\\(\\) should return non\\-empty\\-array\\<int, non\\-empty\\-string\\> but returns non\\-empty\\-array\\<int, string\\>\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/TraitEvaluator.php
+
+        -
+            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(string\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getAllNestedTraits'\\} given\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/TraitEvaluator.php
+
+        -
             message: "#^Parameter \\#1 \\$contains of class EDT\\\\Querying\\\\Functions\\\\StringEndsWith constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<string\\|null\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<string\\> given\\.$#"
             count: 1
             path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
@@ -406,7 +431,7 @@ parameters:
             path: packages/queries/src/Utilities/Iterables.php
 
         -
-            message: "#^Parameter \\#2 \\$callback of function array_walk expects callable\\(EDT\\\\Querying\\\\Contracts\\\\FunctionInterface, int, array\\<int\\|string, string\\>\\)\\: mixed, array\\{\\$this\\(EDT\\\\Querying\\\\Utilities\\\\PathTransformer\\), 'prefixConditionPath'\\} given\\.$#"
+            message: "#^Parameter \\#2 \\$callback of function array_walk expects callable\\(EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, int, array\\<int\\|string, string\\>\\)\\: mixed, array\\{\\$this\\(EDT\\\\Querying\\\\Utilities\\\\PathTransformer\\), 'prefixPaths'\\} given\\.$#"
             count: 1
             path: packages/queries/src/Utilities/PathTransformer.php
 
@@ -429,8 +454,3 @@ parameters:
             message: "#^Parameter \\#2 \\$wipTable of method EDT\\\\Querying\\\\Utilities\\\\TableJoiner\\:\\:rebuildTable\\(\\) expects array\\<int, array\\<int, mixed\\>\\>, array\\<int, array\\<int, mixed\\>\\|int\\> given\\.$#"
             count: 1
             path: packages/queries/src/Utilities/TableJoiner.php
-
-        -
-            message: "#^Strict comparison using \\=\\=\\= between null and League\\\\Fractal\\\\Scope will always evaluate to false\\.$#"
-            count: 1
-            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php

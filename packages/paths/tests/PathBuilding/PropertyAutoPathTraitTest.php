@@ -25,6 +25,7 @@ use Tests\data\Paths\ParamTagged;
 use Tests\data\Paths\PropertyTagged;
 use Tests\data\Paths\PropertyWriteTagged;
 use Tests\data\Paths\VarTagged;
+use function get_class;
 
 class PropertyAutoPathTraitTest extends TestCase
 {
@@ -436,7 +437,7 @@ class PropertyAutoPathTraitTest extends TestCase
 
     /**
      * @param PropertyAutoPathTrait&object $autoPath
-     * @return array<int,string>
+     * @return non-empty-list<class-string>
      */
     private function toClassNames($autoPath): array
     {

@@ -11,8 +11,8 @@ namespace EDT\Querying\Contracts;
 interface ObjectProviderInterface
 {
     /**
-     * @param array<int, C> $conditions
-     * @param array<int,SortMethodInterface> $sortMethods
+     * @param list<C> $conditions
+     * @param list<SortMethodInterface> $sortMethods
      *
      * @return iterable<T>
      *

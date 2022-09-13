@@ -112,7 +112,7 @@ class PropertyReader
      * @param callable(V, ReadableTypeInterface): R $createWrapper
      * @param array<int|string, V> $items must not contain `null` values
      *
-     * @return array<int, R>
+     * @return list<R>
      *
      * @throws SliceException
      * @throws PathException

@@ -89,7 +89,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return array<int, PropertyPathAccessInterface>
+     * @return list<PropertyPathAccessInterface>
      * @throws PathException
      */
     public static function createIndexSaltedPaths(int $count, int $depth, string $property, string ...$properties): array

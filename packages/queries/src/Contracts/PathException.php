@@ -22,7 +22,7 @@ class PathException extends Exception
      * Prefixing of context-bound paths is not allowed, as they would become invalid in most
      * use-cases.
      *
-     * @param array<int, string> $prefix
+     * @param non-empty-list<non-empty-string> $prefix
      *
      * @throws PathException
      */

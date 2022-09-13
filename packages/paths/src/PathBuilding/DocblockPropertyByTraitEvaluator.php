@@ -25,7 +25,7 @@ class DocblockPropertyByTraitEvaluator
     /**
      * The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      *
-     * @var non-empty-array<int, non-empty-string>
+     * @var non-empty-list<non-empty-string>
      */
     private $targetTags;
 
@@ -42,8 +42,8 @@ class DocblockPropertyByTraitEvaluator
     private $parsedClasses = [];
 
     /**
-     * @param non-empty-string                       $targetTrait
-     * @param non-empty-array<int, non-empty-string> $targetTags
+     * @param non-empty-string                 $targetTrait
+     * @param non-empty-list<non-empty-string> $targetTags
      */
     public function __construct(TraitEvaluator $traitEvaluator, string $targetTrait, array $targetTags)
     {
@@ -72,7 +72,7 @@ class DocblockPropertyByTraitEvaluator
     }
 
     /**
-     * @return array<int, string>
+     * @return non-empty-list<non-empty-string>
      */
     public function getTargetTags(): array
     {
@@ -121,7 +121,7 @@ class DocblockPropertyByTraitEvaluator
      * array. Tags with the same property name will override each other, with the class
      * being passed later in the parameters taking precedence.
      *
-     * @param non-empty-array<int, class-string> $classes
+     * @param non-empty-list<class-string> $classes
      *
      * @return array<non-empty-string, class-string>
      *

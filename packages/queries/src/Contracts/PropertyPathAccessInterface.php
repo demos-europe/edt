@@ -41,7 +41,7 @@ interface PropertyPathAccessInterface extends PropertyPathInterface
     /**
      * Changes the path of this instance.
      *
-     * @param non-empty-array<int, non-empty-string> $path
+     * @param non-empty-list<non-empty-string> $path
      *
      * @throws PathException
      */

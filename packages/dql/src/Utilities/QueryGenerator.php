@@ -25,8 +25,8 @@ class QueryGenerator
 
     /**
      * @param class-string                  $entityClass
-     * @param array<int,ClauseInterface>    $conditions
-     * @param array<int,OrderByInterface>   $sortMethods
+     * @param list<ClauseInterface>         $conditions
+     * @param list<OrderByInterface>        $sortMethods
      * @param array<string,ClauseInterface> $selections
      *
      * @throws MappingException

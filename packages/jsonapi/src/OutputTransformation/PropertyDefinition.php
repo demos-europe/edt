@@ -49,7 +49,7 @@ class PropertyDefinition implements PropertyDefinitionInterface
      * @param non-empty-string                                $propertyName
      * @param ResourceTypeInterface<C, O>                     $type
      * @param WrapperFactoryInterface<C, O, WrapperInterface> $wrapperFactory
-     * @param array<int, non-empty-string>                    $defaultProperties
+     * @param list<non-empty-string>                          $defaultProperties
      * @param null|callable(O, ParamBag): R                   $customReadCallable
      */
     public function __construct(

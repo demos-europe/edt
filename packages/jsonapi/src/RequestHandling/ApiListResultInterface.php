@@ -12,7 +12,7 @@ use Pagerfanta\Pagerfanta;
 interface ApiListResultInterface
 {
     /**
-     * @return array<int, O>
+     * @return list<O>
      */
     public function getList(): array;
 

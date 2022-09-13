@@ -14,7 +14,7 @@ interface FunctionInterface extends PathsBasedInterface
     /**
      * Execute this function within PHP.
      *
-     * @param array<int, mixed> $propertyValues
+     * @param list<mixed> $propertyValues
      * @return R
      * @throws FunctionException
      */

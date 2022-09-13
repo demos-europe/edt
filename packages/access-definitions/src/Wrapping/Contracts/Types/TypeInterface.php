@@ -113,7 +113,7 @@ interface TypeInterface
      * However, in case your `Book` has multiple authors, and you use an alias path like
      * `['authors', 'name']` you may get errors or undesired/unexpected behavior.
      *
-     * @return array<non-empty-string,non-empty-array<int,non-empty-string>>
+     * @return array<non-empty-string, non-empty-list<non-empty-string>>
      */
     public function getAliases(): array;
 
@@ -145,7 +145,7 @@ interface TypeInterface
      *
      * Return an empty array to not define any default sorting.
      *
-     * @return array<int,SortMethodInterface>
+     * @return list<SortMethodInterface>
      */
     public function getDefaultSortMethods(): array;
 }

@@ -20,7 +20,7 @@ class PredefinedOperatorProvider implements OperatorProviderInterface
     private $conditionFactory;
 
     /**
-     * @var array<non-empty-string, callable(non-empty-array<int, non-empty-string>, mixed):F>
+     * @var array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed):F>
      */
     private $operatorFunctions;
 
@@ -48,7 +48,7 @@ class PredefinedOperatorProvider implements OperatorProviderInterface
     }
 
     /**
-     * @return array<non-empty-string, callable(non-empty-array<int, non-empty-string>, mixed):F>
+     * @return array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed): F>
      */
     protected function getOperatorFunctions(): array
     {

@@ -14,12 +14,12 @@ use function count;
 class ConditionDefinition
 {
     /**
-     * @var array<int, C>
+     * @var list<C>
      */
     protected $conditions = [];
 
     /**
-     * @var array<int,ConditionDefinition<C>>
+     * @var list<ConditionDefinition<C>>
      */
     protected $subDefinitions = [];
 
@@ -84,7 +84,7 @@ class ConditionDefinition
     }
 
     /**
-     * @param array<int, mixed> $values
+     * @param list<mixed> $values
      * @param non-empty-string  $property
      * @param non-empty-string  ...$properties
      *
@@ -96,7 +96,7 @@ class ConditionDefinition
     }
 
     /**
-     * @param array<int, mixed> $values
+     * @param list<mixed> $values
      * @param non-empty-string  $property
      * @param non-empty-string  ...$properties
      *
@@ -143,8 +143,8 @@ class ConditionDefinition
     }
 
     /**
-     * @param non-empty-array<int,non-empty-string> $leftProperties
-     * @param non-empty-array<int,non-empty-string> $rightProperties
+     * @param non-empty-list<non-empty-string> $leftProperties
+     * @param non-empty-list<non-empty-string> $rightProperties
      *
      * @return $this
      */
@@ -284,9 +284,9 @@ class ConditionDefinition
     }
 
     /**
-     * @param non-empty-array<int, mixed> $values
-     * @param non-empty-string            $property
-     * @param non-empty-string            ...$properties
+     * @param non-empty-list<mixed> $values
+     * @param non-empty-string       $property
+     * @param non-empty-string       ...$properties
      *
      * @return $this
      */
@@ -330,7 +330,7 @@ class ConditionDefinition
     }
 
     /**
-     * @return array<int, C>
+     * @return list<C>
      */
     public function getConditions(): array
     {
@@ -353,7 +353,7 @@ class ConditionDefinition
      * **No {@link ConditionDefinition::conditions} property of any {@link ConditionDefinition} instance will be modified
      * in the process.**
      *
-     * @return array<int, C>
+     * @return list<C>
      */
     protected function processSubDefinitions(): array
     {

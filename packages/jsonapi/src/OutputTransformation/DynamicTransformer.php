@@ -268,7 +268,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param array<int, string> $notAvailableIncludes
+     * @param list<string> $notAvailableIncludes
      */
     private function createIncludeErrorMessage(array $notAvailableIncludes): string
     {
@@ -288,7 +288,7 @@ class DynamicTransformer extends TransformerAbstract
     /**
      * Wraps each given property into quotes and concatenates them with a comma.
      *
-     * @param array<int, string> $properties
+     * @param list<string> $properties
      */
     private function propertiesToString(array $properties): string
     {

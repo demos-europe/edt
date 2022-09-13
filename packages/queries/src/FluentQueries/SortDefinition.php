@@ -10,7 +10,7 @@ use EDT\Querying\Contracts\SortMethodInterface;
 class SortDefinition
 {
     /**
-     * @var array<int,SortMethodInterface>
+     * @var list<SortMethodInterface>
      */
     private $sortMethods = [];
     /**
@@ -48,7 +48,7 @@ class SortDefinition
     }
 
     /**
-     * @return array<int, SortMethodInterface>
+     * @return list<SortMethodInterface>
      */
     public function getSortMethods(): array
     {

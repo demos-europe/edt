@@ -31,7 +31,7 @@ class Property implements SetableProperty, GetableProperty
     private $sortable = false;
 
     /**
-     * @var non-empty-array<int,non-empty-string>|null
+     * @var non-empty-list<non-empty-string>|null
      */
     private $aliasedPath;
 

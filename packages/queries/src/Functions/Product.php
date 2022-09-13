@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Functions;
 
 /**
- * @template-extends AbstractMultiFunction<numeric, numeric, array<int, mixed>>
+ * @template-extends AbstractMultiFunction<numeric, numeric, list<mixed>>
  */
 class Product extends AbstractMultiFunction
 {
