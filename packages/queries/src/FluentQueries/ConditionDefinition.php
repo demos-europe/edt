@@ -5,34 +5,46 @@ declare(strict_types=1);
 namespace EDT\Querying\FluentQueries;
 
 use EDT\Querying\Contracts\ConditionFactoryInterface;
-use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use function count;
 
+/**
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ */
 class ConditionDefinition
 {
     /**
-     * @var array<int,FunctionInterface<bool>>
+     * @var array<int, C>
      */
     protected $conditions = [];
+
     /**
-     * @var array<int,ConditionDefinition>
+     * @var array<int,ConditionDefinition<C>>
      */
     protected $subDefinitions = [];
+
     /**
-     * @var ConditionFactoryInterface
+     * @var ConditionFactoryInterface<C>
      */
     protected $conditionFactory;
+
     /**
      * @var bool
      */
     protected $andConjunction;
 
+    /**
+     * @param ConditionFactoryInterface<C> $conditionFactory
+     */
     public function __construct(ConditionFactoryInterface $conditionFactory, bool $andConjunction)
     {
         $this->conditionFactory = $conditionFactory;
         $this->andConjunction = $andConjunction;
     }
 
+    /**
+     * @return ConditionDefinition<C>
+     */
     public function anyConditionApplies(): ConditionDefinition
     {
         $subDefinition = new ConditionDefinition($this->conditionFactory, false);
@@ -40,6 +52,9 @@ class ConditionDefinition
         return $subDefinition;
     }
 
+    /**
+     * @return ConditionDefinition<C>
+     */
     public function allConditionsApply(): ConditionDefinition
     {
         $subDefinition = new ConditionDefinition($this->conditionFactory, true);
@@ -48,6 +63,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyIsNull(string $property, string ...$properties): self
@@ -56,17 +74,19 @@ class ConditionDefinition
     }
 
     /**
-     * @param FunctionInterface<bool> $condition
+     * @param C $condition
      * @return $this
      */
-    protected function add(FunctionInterface $condition): self
+    protected function add(PathsBasedInterface $condition): self
     {
         $this->conditions[] = $condition;
         return $this;
     }
 
     /**
-     * @param array<int|string, mixed> $values
+     * @param array<int, mixed> $values
+     * @param non-empty-string  $property
+     * @param non-empty-string  ...$properties
      *
      * @return $this
      */
@@ -76,7 +96,9 @@ class ConditionDefinition
     }
 
     /**
-     * @param array<int|string, mixed> $values
+     * @param array<int, mixed> $values
+     * @param non-empty-string  $property
+     * @param non-empty-string  ...$properties
      *
      * @return $this
      */
@@ -94,6 +116,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string  $property
+     * @param non-empty-string  ...$properties
+     *
      * @return $this
      */
     public function propertyHasSize(int $size, string $property, string ...$properties): self
@@ -102,6 +127,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string  $property
+     * @param non-empty-string  ...$properties
+     *
      * @return $this
      */
     public function propertyHasNotSize(int $size, string $property, string ...$properties): self
@@ -115,8 +143,9 @@ class ConditionDefinition
     }
 
     /**
-     * @param array<int,string> $leftProperties
-     * @param array<int,string> $rightProperties
+     * @param non-empty-array<int,non-empty-string> $leftProperties
+     * @param non-empty-array<int,non-empty-string> $rightProperties
+     *
      * @return $this
      */
     public function propertiesEqual(array $leftProperties, array $rightProperties): self
@@ -125,6 +154,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string  $property
+     * @param non-empty-string  ...$properties
+     *
      * @return $this
      */
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): self
@@ -134,6 +166,8 @@ class ConditionDefinition
 
     /**
      * @param mixed $value
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -145,6 +179,8 @@ class ConditionDefinition
     /**
      * @param mixed $min
      * @param mixed $max
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -156,6 +192,8 @@ class ConditionDefinition
     /**
      * @param mixed $min
      * @param mixed $max
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -165,6 +203,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyHasStringAsMember(string $value, string $property, string ...$properties): self
@@ -174,6 +215,8 @@ class ConditionDefinition
 
     /**
      * @param mixed $value
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -184,6 +227,8 @@ class ConditionDefinition
 
     /**
      * @param mixed $value
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -194,6 +239,8 @@ class ConditionDefinition
 
     /**
      * @param mixed $value
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -204,6 +251,8 @@ class ConditionDefinition
 
     /**
      * @param mixed $value
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -213,6 +262,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): self
@@ -221,6 +273,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties): self
@@ -229,7 +284,9 @@ class ConditionDefinition
     }
 
     /**
-     * @param non-empty-array<int|string, mixed> $values
+     * @param non-empty-array<int, mixed> $values
+     * @param non-empty-string            $property
+     * @param non-empty-string            ...$properties
      *
      * @return $this
      */
@@ -239,7 +296,9 @@ class ConditionDefinition
     }
 
     /**
-     * @param mixed $value
+     * @param mixed            $value
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @return $this
      */
@@ -249,6 +308,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyIsNotNull(string $property, string ...$properties): self
@@ -257,6 +319,9 @@ class ConditionDefinition
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return $this
      */
     public function propertyHasNotStringAsMember(string $value, string $property, string ...$properties): self
@@ -265,7 +330,7 @@ class ConditionDefinition
     }
 
     /**
-     * @return array<int, FunctionInterface<bool>>
+     * @return array<int, C>
      */
     public function getConditions(): array
     {
@@ -288,7 +353,7 @@ class ConditionDefinition
      * **No {@link ConditionDefinition::conditions} property of any {@link ConditionDefinition} instance will be modified
      * in the process.**
      *
-     * @return array<int, FunctionInterface<bool>>
+     * @return array<int, C>
      */
     protected function processSubDefinitions(): array
     {

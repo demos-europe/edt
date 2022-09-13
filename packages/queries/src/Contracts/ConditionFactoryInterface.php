@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * @template T of FunctionInterface<bool>
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface ConditionFactoryInterface
 {
     /**
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyIsNull(string $property, string ...$properties): FunctionInterface;
+    public function propertyIsNull(string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * The returned condition will evaluate to `true` if the property denoted by
@@ -22,157 +25,198 @@ interface ConditionFactoryInterface
      * array of values.
      *
      * @param array<int,mixed> $values
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): FunctionInterface;
+    public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @param array<int,mixed> $values
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties): FunctionInterface;
+    public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return T
+     * @return C
      */
-    public function true(): FunctionInterface;
+    public function true(): PathsBasedInterface;
 
     /**
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasSize(int $size, string $property, string ...$properties): FunctionInterface;
+    public function propertyHasSize(int $size, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasNotSize(int $size, string $property, string ...$properties): FunctionInterface;
+    public function propertyHasNotSize(int $size, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return T
+     * @return C
      */
-    public function false(): FunctionInterface;
+    public function false(): PathsBasedInterface;
 
     /**
-     * @param string[] $leftProperties
-     * @param string[] $rightProperties
+     * @param non-empty-array<int, non-empty-string> $leftProperties
+     * @param non-empty-array<int, non-empty-string> $rightProperties
      *
-     * @return T
-     *
-     * @throws PathException
-     */
-    public function propertiesEqual(array $leftProperties, array $rightProperties): FunctionInterface;
-
-    /**
-     * @return T
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): FunctionInterface;
+    public function propertiesEqual(array $leftProperties, array $rightProperties): PathsBasedInterface;
 
     /**
-     * @param T $firstFunction
-     * @param T ...$additionalFunctions
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
-     * @return T
+     * @return C
+     *
+     * @throws PathException
      */
-    public function allConditionsApply(FunctionInterface $firstFunction, FunctionInterface ...$additionalFunctions): FunctionInterface;
+    public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): PathsBasedInterface;
+
+    /**
+     * @param C $firstCondition
+     * @param C ...$additionalConditions
+     *
+     * @return C
+     */
+    public function allConditionsApply(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface;
 
     /**
      * @param mixed $value
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasValue($value, string $property, string ...$properties): FunctionInterface;
+    public function propertyHasValue($value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @param mixed $min
      * @param mixed $max
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
-     * @return T
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$propertyPath): FunctionInterface;
+    public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @param mixed $min
      * @param mixed $max
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
-     * @return T
-     *
-     * @throws PathException
-     */
-    public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$propertyPath): FunctionInterface;
-
-    /**
-     * @param T $firstFunction
-     * @param T ...$additionalFunctions
-     *
-     * @return T
-     */
-    public function anyConditionApplies(FunctionInterface $firstFunction, FunctionInterface ...$additionalFunctions): FunctionInterface;
-
-    /**
-     * @return T
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasStringAsMember(string $value, string $property, string ...$properties): FunctionInterface;
+    public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @param mixed $value
-     * @return T
+     * @param C $firstCondition
+     * @param C ...$additionalConditions
+     *
+     * @return C
+     */
+    public function anyConditionApplies(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface;
+
+    /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function valueGreaterThan($value, string $property, string ...$path): FunctionInterface;
+    public function propertyHasStringAsMember(string $value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @param mixed $value
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function valueGreaterEqualsThan($value, string $property, string ...$path): FunctionInterface;
+    public function valueGreaterThan($value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @param mixed $value
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function valueSmallerThan($value, string $property, string ...$path): FunctionInterface;
+    public function valueGreaterEqualsThan($value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @param mixed $value
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function valueSmallerEqualsThan($value, string $property, string ...$path): FunctionInterface;
+    public function valueSmallerThan($value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return T
+     * @param mixed $value
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$path): FunctionInterface;
+    public function valueSmallerEqualsThan($value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return T
+     * @return C
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
      * @throws PathException
      */
-    public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$path): FunctionInterface;
+    public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface;
+
+    /**
+     * @return C
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @throws PathException
+     */
+    public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * It is expected that the given property path contains a to-many relationship and thus will
@@ -186,35 +230,46 @@ interface ConditionFactoryInterface
      * and `'books'` and `'title'` (the path to the titles).
      *
      * @param non-empty-array<int,mixed> $values
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      *
-     * @return T
+     * @return C
      *
      * @throws PathException
      */
-    public function allValuesPresentInMemberListProperties(array $values, string $property, string ...$properties): FunctionInterface;
+    public function allValuesPresentInMemberListProperties(array $values, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @param mixed $value
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasNotValue($value, string $property, string ...$properties): FunctionInterface;
+    public function propertyHasNotValue($value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyIsNotNull(string $property, string ...$properties): FunctionInterface;
+    public function propertyIsNotNull(string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * The returned condition will match if the property the given path denotes
      * does not contain the given string value as an entry.
      *
-     * @return T
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return C
      *
      * @throws PathException
      */
-    public function propertyHasNotStringAsMember(string $value, string $property, string ...$properties): FunctionInterface;
+    public function propertyHasNotStringAsMember(string $value, string $property, string ...$properties): PathsBasedInterface;
 }

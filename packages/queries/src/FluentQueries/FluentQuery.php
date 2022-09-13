@@ -18,6 +18,7 @@ use EDT\Querying\Contracts\SortMethodFactoryInterface;
  * You may want to implement a factory to create instances of this class instead of using
  * its constructor, to avoid manually providing the same parameters on every usage.
  *
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
  */
 class FluentQuery
@@ -27,7 +28,7 @@ class FluentQuery
      */
     protected $objectProvider;
     /**
-     * @var ConditionDefinition
+     * @var ConditionDefinition<C>
      */
     private $conditionDefinition;
     /**
@@ -41,6 +42,7 @@ class FluentQuery
 
     /**
      * @param ObjectProviderInterface<T> $objectProvider
+     * @param ConditionDefinition<C>     $conditionDefinition
      */
     public function __construct(
         ObjectProviderInterface $objectProvider,
