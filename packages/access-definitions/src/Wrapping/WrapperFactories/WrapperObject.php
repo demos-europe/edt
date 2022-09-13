@@ -119,12 +119,10 @@ class WrapperObject implements WrapperInterface
         $argumentsCount = count($arguments);
 
         if ('get' === $match[1] && 0 === $argumentsCount) {
-            /** @phpstan-ignore-next-line */
-            return $this->$propertyName;
+            return $this->__get($propertyName);
         }
         if ('set' === $match[1] && 1 === $argumentsCount) {
-            /** @phpstan-ignore-next-line */
-            $this->$propertyName = array_pop($arguments);
+            $this->__set($propertyName, array_pop($arguments));
             return;
         }
 
