@@ -91,7 +91,7 @@ class GenericEntityFetcher
         );
 
         // get and map the actual entities
-        $entities = $restrictedProvider->getObjects($conditions, $sortMethods);
+        $entities = $restrictedProvider->getObjects($conditions, array_values($sortMethods));
         $entities = Iterables::asArray($entities);
         $entities = array_values($entities);
 

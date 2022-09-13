@@ -32,7 +32,9 @@ interface ContextualizedTypeAccessorInterface
      * that path will be returned as array. Otherwise, an array containing only the given
      * property name will be returned.
      *
-     * @return array<int, string>
+     * @param non-empty-string $propertyName
+     *
+     * @return non-empty-array<int, non-empty-string>
      */
     public function getDeAliasedPath(TypeInterface $type, string $propertyName): array;
 }

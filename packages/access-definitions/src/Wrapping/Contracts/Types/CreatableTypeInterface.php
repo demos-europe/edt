@@ -37,7 +37,7 @@ interface CreatableTypeInterface extends TypeInterface
      * instances with a publisher initially set while still preventing the user from assigning a
      * `Publisher` instance he is not allowed to use.
      *
-     * @return array<string,FunctionInterface<bool>|null>
+     * @return array<non-empty-string, FunctionInterface<bool>|null>
      */
     public function getInitializableProperties(): array;
 

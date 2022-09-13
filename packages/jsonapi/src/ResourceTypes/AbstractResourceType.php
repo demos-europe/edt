@@ -97,18 +97,22 @@ abstract class AbstractResourceType implements ResourceTypeInterface
 
     public function getAliases(): array
     {
-        return collect($this->getValidatedProperties())
-            ->mapWithKeys(
-                static function (GetableProperty $property): array {
-                    return [$property->getName() => $property->getAliasedPath()];
-                }
-            )
-            ->filter(
-                static function (?array $aliasedPath): bool {
-                    return null !== $aliasedPath;
-                }
-            )
-            ->all();
+        $properties = $this->getValidatedProperties();
+        $nestedAliases = array_map([$this, 'getAliasArrayItem'], $properties);
+        $aliases = array_merge([], ...$nestedAliases);
+        $aliases = array_filter($aliases, static function (?array $aliasedPath): bool {
+            return null !== $aliasedPath;
+        });
+
+       return $aliases;
+    }
+
+    /**
+     * @return array<non-empty-string, non-empty-array<int, non-empty-string>|null>
+     */
+    private function getAliasArrayItem(GetableProperty $property): array
+    {
+        return [$property->getName() => $property->getAliasedPath()];
     }
 
     public function getTransformer(): TransformerAbstract

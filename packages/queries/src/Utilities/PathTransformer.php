@@ -26,7 +26,7 @@ class PathTransformer
     }
 
     /**
-     * @param array<int, string> $prefix
+     * @param array<int, non-empty-string> $prefix
      *
      * @throws PathException
      */
@@ -42,15 +42,20 @@ class PathTransformer
     }
 
     /**
-     * @param array<int, string> $prefix
+     * @param array<int, non-empty-string> $prefix
      *
      * @throws PathException
      */
     public function prefixPath(PropertyPathAccessInterface $path, int $key, array $prefix): void
     {
+        if ([] === $prefix) {
+            return;
+        }
         if (null !== $path->getContext()) {
             throw PathException::contextBoundPrefixing($path, $prefix);
         }
-        $path->setPath(...$prefix, ...$path);
+
+        $newPath = array_merge($prefix, $path->getAsNames());
+        $path->setPath($newPath);
     }
 }

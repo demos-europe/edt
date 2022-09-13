@@ -13,12 +13,12 @@ use Traversable;
 use function in_array;
 
 /**
- * @template-implements IteratorAggregate<int,string>
+ * @template-implements IteratorAggregate<int,non-empty-string>
  */
 class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 {
     /**
-     * @var ArrayIterator<int,string>
+     * @var ArrayIterator<int,non-empty-string>
      */
     private $properties;
     /**
@@ -39,18 +39,22 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     /**
      * @param class-string|null $context
+     * @param non-empty-string  $property
+     * @param non-empty-string  ...$properties
      * @throws PathException
      */
     public function __construct(?string $context, string $salt, int $accessDepth, string $property, string ...$properties)
     {
+        array_unshift($properties, $property);
+
         $this->context = $context;
         $this->accessDepth = $accessDepth;
-        $this->setPath($property, ...$properties);
+        $this->setPath(array_values($properties));
         $this->salt = $salt;
     }
 
     /**
-     * @return Traversable<int,string>
+     * @return Traversable<int,non-empty-string>
      */
     public function getIterator(): Traversable
     {
@@ -62,16 +66,12 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
         return $this->accessDepth;
     }
 
-    /**
-     * @internal
-     */
-    public function setPath(string $property, string ...$properties): void
+    public function setPath(array $path): void
     {
-        array_unshift($properties, $property);
-        if (in_array('', $properties, true)) {
-            throw PathException::emptyPart(...$properties);
+        if (in_array('', $path, true)) {
+            throw PathException::emptyPart(...$path);
         }
-        $this->properties = new ArrayIterator($properties);
+        $this->properties = new ArrayIterator($path);
     }
 
     public function getSalt(): string
@@ -86,6 +86,9 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     }
 
     /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
      * @return array<int, PropertyPathAccessInterface>
      * @throws PathException
      */

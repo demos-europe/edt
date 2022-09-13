@@ -104,7 +104,7 @@ interface TypeInterface
      * or sorting) and it is only an alias, then the return of this method will contain
      * that property name as a key and the (array) path to the actual property of the
      * {@link TypeInterface::getEntityClass() backing entity class} as value.
-     * 
+     *
      * Make sure to **never** use an alias path over to-many relationships. For example aliasing
      * an `authorName` property in a `Book` Type to `['author', 'name']` is fine **if** your book
      * always has a single author. It is also ok if that author has a list of names stored in its
@@ -112,7 +112,7 @@ interface TypeInterface
      * However, in case your `Book` has multiple authors, and you use an alias path like
      * `['authors', 'name']` you may get errors or undesired/unexpected behavior.
      *
-     * @return array<string,non-empty-array<int,string>>
+     * @return array<non-empty-string,non-empty-array<int,non-empty-string>>
      */
     public function getAliases(): array;
 
@@ -125,7 +125,7 @@ interface TypeInterface
      * into the schema of the backing object. Any aliasing defined by {@link TypeInterface::getAliases()}
      * will be applied automatically.
      *
-     * @return array<string,string|null> The mapping from property name (in the schema of this type)
+     * @return array<non-empty-string,non-empty-string|null> The mapping from property name (in the schema of this type)
      *                                   to the identifier of the target type of the relationship,
      *                                   or `null` if the property is a non-relationship.
      */

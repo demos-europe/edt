@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
+use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
+use InvalidArgumentException;
+use Safe\Exceptions\StringsException;
+use function in_array;
 use function Safe\substr;
 
 class JsonApiSortingParser
@@ -37,6 +41,13 @@ class JsonApiSortingParser
         return array_map([$this, 'parseSortMethod'], $sortMethodsRaw);
     }
 
+    /**
+     * @param non-empty-string $sortMethodRaw
+     *
+     * @return SortMethodInterface
+     * @throws PathException
+     * @throws StringsException
+     */
     private function parseSortMethod(string $sortMethodRaw): SortMethodInterface
     {
         return $this->isNegativeDirection($sortMethodRaw)
@@ -45,6 +56,12 @@ class JsonApiSortingParser
     }
 
 
+    /**
+     * @param non-empty-string $sortMethodRaw
+     *
+     * @throws StringsException
+     * @throws PathException
+     */
     private function parseNegativeDirection(string $sortMethodRaw): SortMethodInterface
     {
         $pathString = substr($sortMethodRaw, 1);
@@ -52,22 +69,36 @@ class JsonApiSortingParser
         return $this->sortMethodFactory->propertyDescending(...$pathArray);
     }
 
+    /**
+     * @param non-empty-string $sortMethodRaw
+     *
+     * @return SortMethodInterface
+     * @throws PathException
+     */
     private function parsePositiveDirection(string $sortMethodRaw): SortMethodInterface
     {
         $pathArray = $this->toPathArray($sortMethodRaw);
         return $this->sortMethodFactory->propertyAscending(...$pathArray);
     }
 
+    /**
+     * @param non-empty-string $sortMethodRaw
+     */
     private function isNegativeDirection(string $sortMethodRaw): bool
     {
         return 0 === strncmp($sortMethodRaw, '-', 1);
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, non-empty-string>
      */
     private function toPathArray(string $pathString): array
     {
-        return explode('.', $pathString);
+        $path = explode('.', $pathString);
+        if (in_array('', $path, true)) {
+            throw new InvalidArgumentException("Invalid path: '$pathString'.");
+        }
+
+        return $path;
     }
 }

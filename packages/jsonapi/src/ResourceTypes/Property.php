@@ -11,7 +11,7 @@ use InvalidArgumentException;
 class Property implements SetableProperty, GetableProperty
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     private $name;
 
@@ -31,7 +31,7 @@ class Property implements SetableProperty, GetableProperty
     private $sortable = false;
 
     /**
-     * @var non-empty-array<int,string>|null
+     * @var non-empty-array<int,non-empty-string>|null
      */
     private $aliasedPath;
 
@@ -78,12 +78,12 @@ class Property implements SetableProperty, GetableProperty
     public function __construct(PropertyPathInterface $path, bool $defaultInclude, bool $relationship)
     {
         $names = $path->getAsNames();
-        $namesCount = count($names);
-        if (1 !== $namesCount) {
-            throw new InvalidArgumentException("Expected exactly one path segment, got $namesCount");
+        $name = array_pop($names);
+        if (null === $name) {
+            throw new InvalidArgumentException("Expected exactly one path segment, got '{$path->getAsNamesInDotNotation()}'");
         }
 
-        $this->name = array_pop($names);
+        $this->name = $name;
         $this->defaultInclude = $defaultInclude;
         $this->relationship = $relationship;
         $this->typeName = $path instanceof ResourceTypeInterface ? $path::getName() : null;
