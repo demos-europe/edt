@@ -314,10 +314,10 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      *
      * @template R of object
      *
-     * @param callable(T, ParamBag): R|iterable<R>|null $callable
-     * @param ReadableTypeInterface<R>                  $relationshipType
+     * @param callable(T, ParamBag): (R|iterable<R>|null) $callable
+     * @param ReadableTypeInterface<R>                    $relationshipType
      *
-     * @return callable(T, ParamBag): WrapperObject<R>|array<int, WrapperObject<R>>|null
+     * @return callable(T, ParamBag): (WrapperObject<R>|array<int, WrapperObject<R>>|null)
      */
     private function wrapCallable(callable $callable, ReadableTypeInterface $relationshipType): callable
     {
