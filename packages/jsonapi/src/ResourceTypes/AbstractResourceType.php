@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use Closure;
-use EDT\Querying\Utilities\Iterables;
+use EDT\JsonApi\OutputTransformation\TransformerObjectWrapper;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use function collect;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
@@ -13,12 +13,10 @@ use EDT\JsonApi\OutputTransformation\IncludeDefinition;
 use EDT\JsonApi\OutputTransformation\PropertyDefinition;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Contracts\WrapperFactoryInterface;
 use EDT\Wrapping\Utilities\TypeAccessor;
 use InvalidArgumentException;
-use League\Fractal\ParamBag;
 use League\Fractal\TransformerAbstract;
 use Psr\Log\LoggerInterface;
 
@@ -163,7 +161,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
                     $customReadCallable = $property->getCustomReadCallback();
 
                     if (null !== $customReadCallable) {
-                        $customReadCallable = $this->wrapCallable($customReadCallable, $relationshipType);
+                        $customReadCallable = new TransformerObjectWrapper($customReadCallable, $relationshipType, $this->getWrapperFactory());
                     }
 
                     $propertyDefinition = new PropertyDefinition(
@@ -296,45 +294,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         );
 
         return $properties;
-    }
-
-    /**
-     * Wraps the given callable in another callable which is then returned.
-     *
-     * The returned callable will execute the given callable and wraps the result(s)
-     * using {@link AbstractResourceType::getWrapperFactory()}. Because this method is
-     * only intended (and needed) for relationships we expect the result of the given
-     * callable to be either `null`, an `object`, or an iterable of `object`s. If something
-     * else is returned by the given callable the behavior is undefined.
-     *
-     * Normally the wrapping is done automatically in {@link PropertyDefinition::determineData()}
-     * because it utilizes a {@link WrapperObject} that has the logic of this method
-     * included. But for a custom read callable we must do the wrapping manually with
-     * the callable returned by this method.
-     *
-     * @template R of object
-     *
-     * @param callable(T, ParamBag): (R|iterable<R>|null) $callable
-     * @param ReadableTypeInterface<R>                    $relationshipType
-     *
-     * @return callable(T, ParamBag): (WrapperObject<R>|array<int, WrapperObject<R>>|null)
-     */
-    private function wrapCallable(callable $callable, ReadableTypeInterface $relationshipType): callable
-    {
-        return function (object $entity, ParamBag $params) use ($callable, $relationshipType) {
-            $rawResult = $callable($entity, $params);
-            if (null === $rawResult) {
-                return null;
-            }
-
-            if (is_iterable($rawResult)) {
-                return array_map(function (object $relationship) use ($relationshipType) {
-                    return $this->getWrapperFactory()->createWrapper($relationship, $relationshipType);
-                }, Iterables::asArray($rawResult));
-            }
-
-            return $this->getWrapperFactory()->createWrapper($rawResult, $relationshipType);
-        };
     }
 
     /**
