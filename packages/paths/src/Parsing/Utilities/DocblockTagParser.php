@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Parsing\Utilities;
 
 use Exception;
+use InvalidArgumentException;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\Tags\Param;
@@ -51,7 +52,7 @@ class DocblockTagParser
     private $phpParser;
 
     /**
-     * @var array<string, class-string>
+     * @var array<non-empty-string, non-empty-string>
      */
     private $useStatements;
 
@@ -201,7 +202,7 @@ class DocblockTagParser
 
             $line = fgets($file);
             if (false === $line) {
-                throw new \InvalidArgumentException("Failed to read source code of file: '$fileName' in line $lineNumber.");
+                throw new InvalidArgumentException("Failed to read source code of file: '$fileName' in line $lineNumber.");
             }
             $sourceCode .= $line;
         }
@@ -212,7 +213,7 @@ class DocblockTagParser
     }
 
     /**
-     * @return array<string, class-string> mapping from the usable name (alias are class name) to the fully qualified class name
+     * @return array<non-empty-string, non-empty-string>
      *
      * @throws FilesystemException
      */

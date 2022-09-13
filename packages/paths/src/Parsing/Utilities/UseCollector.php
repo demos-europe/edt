@@ -10,7 +10,7 @@ use PhpParser\NodeVisitorAbstract;
 class UseCollector extends NodeVisitorAbstract
 {
     /**
-     * @var array<string, class-string>
+     * @var array<non-empty-string, non-empty-string>
      */
     private $useStatements = [];
 
@@ -18,7 +18,16 @@ class UseCollector extends NodeVisitorAbstract
         if ($node instanceof Node\Stmt\Use_) {
             foreach ($node->uses as $use) {
                 $key = null === $use->alias ? $use->name->getLast() : $use->alias->toString();
-                $this->useStatements[$key] = $use->name->toString();
+                if ('' === $key) {
+                    throw new \InvalidArgumentException('`use` statement key must not be empty.');
+                }
+
+                $useStatement = $use->name->toString();
+                if ('' === $useStatement) {
+                    throw new \InvalidArgumentException("`use` statement path for alias '$key' must not be empty.");
+                }
+
+                $this->useStatements[$key] = $useStatement;
             }
         }
 
@@ -26,7 +35,10 @@ class UseCollector extends NodeVisitorAbstract
     }
 
     /**
-     * @return array<string, class-string>
+     * Mapping from the implicit or explicit alias of the `use` statement to the corresponding path
+     * which may lead to an actual type or just a namespace or trait.
+     *
+     * @return array<non-empty-string, non-empty-string>
      */
     public function getUseStatements(): array
     {
