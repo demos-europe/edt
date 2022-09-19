@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feature: add basic `fields` validator
 - refactor: require URL parameters in API-request handling
 - feature: inject message formatting logic to allow adjustments
 - feature: validate Drupal filter names
