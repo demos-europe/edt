@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\OutputTransformation;
 
+use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Utilities\Iterables;
 use const ARRAY_FILTER_USE_BOTH;
 use const ARRAY_FILTER_USE_KEY;
@@ -63,6 +64,11 @@ class DynamicTransformer extends TransformerAbstract
     private $logger;
 
     /**
+     * @var MessageFormatter
+     */
+    private $messageFormatter;
+
+    /**
      * @param array<string,PropertyDefinitionInterface> $attributeDefinitions mappings from an
      *                                                                        attribute name to its
      *                                                                        definition
@@ -74,6 +80,7 @@ class DynamicTransformer extends TransformerAbstract
         string $type,
         array $attributeDefinitions,
         array $includeDefinitions,
+        MessageFormatter $messageFormatter,
         ?LoggerInterface $logger
     ) {
         $this->type = $type;
@@ -87,6 +94,7 @@ class DynamicTransformer extends TransformerAbstract
             array_keys(array_filter($includeDefinitions, [$this, 'isDefaultInclude']))
         );
         $this->logger = $logger;
+        $this->messageFormatter = $messageFormatter;
     }
 
     /**
@@ -272,30 +280,16 @@ class DynamicTransformer extends TransformerAbstract
      */
     private function createIncludeErrorMessage(array $notAvailableIncludes): string
     {
-        $notAvailableIncludesString = $this->propertiesToString($notAvailableIncludes);
+        $notAvailableIncludesString = $this->messageFormatter->propertiesToString($notAvailableIncludes);
         $message = "The following requested includes are not available in the resource type '$this->type': $notAvailableIncludesString.";
 
         if ([] !== $this->availableIncludes) {
-            $availableIncludesString = $this->propertiesToString($this->availableIncludes);
+            $availableIncludesString = $this->messageFormatter->propertiesToString($this->availableIncludes);
             $message .= " Available includes are: $availableIncludesString.";
         } else {
             $message .= ' No includes are available.';
         }
 
         return $message;
-    }
-
-    /**
-     * Wraps each given property into quotes and concatenates them with a comma.
-     *
-     * @param list<string> $properties
-     */
-    private function propertiesToString(array $properties): string
-    {
-        $properties = array_map(static function (string $property): string {
-            return "`$property`";
-        }, $properties);
-
-        return implode(', ', $properties);
     }
 }

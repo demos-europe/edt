@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\JsonApi\OutputTransformation\TransformerObjectWrapper;
-use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use function array_key_exists;
@@ -178,7 +178,13 @@ abstract class AbstractResourceType implements ResourceTypeInterface
             )
             ->all();
 
-        return new DynamicTransformer($this::getName(), $attributes, $includes, $this->getLogger());
+        return new DynamicTransformer(
+            $this::getName(),
+            $attributes,
+            $includes,
+            $this->getMessageFormatter(),
+            $this->getLogger()
+        );
     }
 
     /**
@@ -207,6 +213,8 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     abstract protected function getTypeAccessor(): TypeAccessor;
 
     abstract protected function getLogger(): LoggerInterface;
+
+    abstract protected function getMessageFormatter(): MessageFormatter;
 
     /**
      * @param list<GetableProperty> $properties

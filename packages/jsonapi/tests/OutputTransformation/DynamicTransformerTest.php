@@ -6,6 +6,7 @@ namespace Tests\OutputTransformation;
 
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\JsonApi\OutputTransformation\PropertyDefinitionInterface;
+use EDT\JsonApi\RequestHandling\MessageFormatter;
 use League\Fractal\Manager;
 use League\Fractal\ParamBag;
 use League\Fractal\Resource\Item;
@@ -25,7 +26,13 @@ class DynamicTransformerTest extends TestCase
         $attributes = [
             'id' => $this->createIdPropertyDefinition(),
         ];
-        $transformer = new DynamicTransformer('Foobar', $attributes, [], null);
+        $transformer = new DynamicTransformer(
+            'Foobar',
+            $attributes,
+            [],
+            new MessageFormatter(),
+            null
+        );
 
         self::assertEmpty($transformer->getAvailableIncludes());
         self::assertEmpty($transformer->getDefaultIncludes());

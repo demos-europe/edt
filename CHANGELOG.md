@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feature: inject message formatting logic to allow adjustments
 - feature: validate Drupal filter names
 
 ## 0.12.10 - 2022-09-13
