@@ -76,7 +76,7 @@ abstract class AbstractApiService
      * @param non-empty-string $urlTypeName
      * @param non-empty-string $urlId
      */
-    public function getFromRequest(string $urlTypeName, string $urlId): Item
+    public function getFromRequest(string $urlTypeName, string $urlId, ParameterBag $urlParams): Item
     {
         /** @var ResourceTypeInterface $type */
         $type = $this->typeProvider->getAvailableType(
@@ -123,8 +123,8 @@ abstract class AbstractApiService
      *
      * @throws Exception
      */
-    // TODO: add proper format validation
-    public function updateFromRequest(string $urlTypeName, string $urlId, array $requestBody): ?Item
+    // TODO: add proper request body format validation
+    public function updateFromRequest(string $urlTypeName, string $urlId, array $requestBody, ParameterBag $urlParams): ?Item
     {
         // "The PATCH request MUST include a single resource object as primary data."
         $data = $requestBody[ContentField::DATA];
@@ -181,7 +181,7 @@ abstract class AbstractApiService
      *
      * @throws Exception
      */
-    public function createFromRequest(string $urlTypeName, array $requestBody): ?Item
+    public function createFromRequest(string $urlTypeName, array $requestBody, ParameterBag $urlParams): ?Item
     {
         // "The request MUST include a single resource object as primary data."
         $data = $requestBody[ContentField::DATA] ?? [];
