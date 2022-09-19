@@ -704,4 +704,91 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
         self::fail('expected an exception');
     }
+
+    /**
+     * @dataProvider getInvalidFilterNames()
+     */
+    public function testInvalidFilterNames($filterName): void
+    {
+        $this->expectException(DrupalFilterException::class);
+        $this->filterFactory->parseFilter([
+            $filterName => [
+                'condition' => [
+                    'value' => 0,
+                    'path'  => 'foobar'
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * @dataProvider getValidFilterNames()
+     */
+    public function testValidFilterNames($filterName): void
+    {
+        $conditions = $this->filterFactory->parseFilter([
+            $filterName => [
+                'condition' => [
+                    'value' => 0,
+                    'path'  => 'foobar'
+                ],
+            ],
+        ]);
+        self::assertCount(1, $conditions);
+    }
+
+    /**
+     * @return list<non-empty-string>
+     */
+    public function getValidFilterNames(): array
+    {
+        return array_map(static function (string $name): array {
+            return [$name];
+        }, [
+            'x',
+            'condition',
+            'group',
+            'a-a-a',
+            'a-',
+            'FoBAr',
+            'fOObAr',
+            'ROOT',
+            'root',
+            '----',
+            '-a-',
+            '-'
+        ]);
+    }
+
+    /**
+     * @return list<string|int>
+     */
+    public function getInvalidFilterNames(): array
+    {
+        return array_map(static function (string $name): array {
+            return [$name];
+        }, [
+            '',
+            DrupalFilterParser::ROOT,
+            '@ROOT',
+            '*',
+            'a*',
+            'a*a',
+            '*a',
+            '*a*',
+            '^',
+            ' ',
+            'a ',
+            'a a',
+            ' a',
+            ' a ',
+            '1',
+            '1234',
+            '-1',
+            '0',
+            1,
+            -1,
+            0,
+        ]);
+    }
 }

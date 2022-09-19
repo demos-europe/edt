@@ -17,13 +17,19 @@ class DrupalFilterValidator
     private $filterSchemaConstraints;
 
     /**
+     * @var list<Constraint>
+     */
+    private $filterNameConstraints;
+
+    /**
      * @var ValidatorInterface
      */
     private $validator;
 
     public function __construct(ValidatorInterface $validator, OperatorProviderInterface $operatorProvider)
     {
-        $this->filterSchemaConstraints = $this->getFilterConstraints($operatorProvider->getAllOperatorNames());
+        $this->filterSchemaConstraints = $this->getFilterSchemaConstraints($operatorProvider->getAllOperatorNames());
+        $this->filterNameConstraints = $this->getFilterNameConstraints();
         $this->validator = $validator;
     }
 
@@ -34,12 +40,15 @@ class DrupalFilterValidator
      */
     public function validateFilter($filter): void
     {
-        $filterViolations = $this->validator->validate($filter, $this->filterSchemaConstraints);
-        if (0 !== $filterViolations->count()) {
+        $filterSchemaViolations = $this->validator->validate($filter, $this->filterSchemaConstraints);
+        $filterNameViolations = $this->validator->validate(array_keys($filter), $this->filterNameConstraints);
+        $filterSchemaViolations->addAll($filterNameViolations);
+
+        if (0 !== $filterSchemaViolations->count()) {
             throw new DrupalFilterException(
                 'Schema validation of filter data failed.',
                 0,
-                new ValidationFailedException($filter, $filterViolations)
+                new ValidationFailedException($filter, $filterSchemaViolations)
             );
         }
     }
@@ -49,7 +58,7 @@ class DrupalFilterValidator
      *
      * @return list<Constraint>
      */
-    private function getFilterConstraints(array $validOperatorNames): array
+    protected function getFilterSchemaConstraints(array $validOperatorNames): array
     {
         $stringConstraint = new Assert\Type('string');
         $arrayConstraint = new Assert\Type('array');
@@ -120,6 +129,27 @@ class DrupalFilterValidator
         return [
             $arrayConstraint,
             new Assert\All($assertionsOnRootItems),
+        ];
+    }
+
+    /**
+     * @return list<Constraint>
+     */
+    protected function getFilterNameConstraints(): array
+    {
+        return [
+            new Assert\All([
+                // Must not be empty.
+                new Assert\NotBlank(),
+                // Must consist of letters, digits, underscores or hyphens.
+                new Assert\Regex('/\A[-\w]+\z/'),
+                // Must not be a number, as these are problematic due to PHP's
+                // automatic array key type conversion.
+                new Assert\Regex('/\A-?\d+\z/', null, null, false),
+                new Assert\Type('string'),
+                // Must not be the reserved root group.
+                new Assert\Regex('/\A'.DrupalFilterParser::ROOT.'\z/', null, null, false),
+            ]),
         ];
     }
 }

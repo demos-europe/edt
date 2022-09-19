@@ -42,7 +42,7 @@ class DrupalFilter
      * group definitions and all conditions are on the first level, each having
      * a unique name.
      *
-     * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
+     * @param array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
      * @throws DrupalFilterException
      */
     public function __construct(array $groupsAndConditions)

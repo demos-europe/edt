@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- feature: validate Drupal filter names
+
 ## 0.12.10 - 2022-09-13
 
 - feature: add `CachingPropertyReader`
