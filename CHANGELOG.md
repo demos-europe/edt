@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.13 - 2022-09-20
 
 - feature: separate logic into new method to allow overriding
 
