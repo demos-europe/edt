@@ -7,7 +7,7 @@ namespace EDT\JsonApi\RequestHandling;
 class MessageFormatter
 {
     /**
-     * Wraps each given property into quotes and concatenates them with a comma.
+     * Wraps each given property between backticks and concatenates them with a comma.
      *
      * @param list<string> $properties
      */
