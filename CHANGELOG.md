@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.11 - 2022-09-20
 
 - feature: allow validation of external read-paths
 - feature: validate paths on alias processing
