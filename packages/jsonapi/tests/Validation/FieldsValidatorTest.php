@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 use Tests\data\ApiTypes\AuthorType;
 use Tests\data\ApiTypes\BookType;
+use Tests\data\Types\BirthType;
 
 class FieldsValidatorTest extends TestCase
 {
@@ -34,6 +35,7 @@ class FieldsValidatorTest extends TestCase
         $this->typeProvider = new PrefilledTypeProvider([
             new AuthorType($conditionFactory),
             new BookType($conditionFactory),
+            new BirthType($conditionFactory),
         ]);
         $typeAccessor = new TypeAccessor($this->typeProvider);
         $this->fieldsValidator = new FieldsValidator(

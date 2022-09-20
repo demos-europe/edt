@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feature: allow validation of external read-paths
 - feature: validate paths on alias processing
 - feature: add basic `fields` validator
 - refactor: require URL parameters in API-request handling
