@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.12 - 2022-09-20
 
 - feature: allow injection of `PropertyPathProcessor` implementation
 
