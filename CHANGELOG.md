@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- feature: separate logic into new method to allow overriding
+
 ## 0.12.12 - 2022-09-20
 
 - feature: allow injection of `PropertyPathProcessor` implementation
