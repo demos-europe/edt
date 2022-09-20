@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- feature: allow injection of `PropertyPathProcessor` implementation
+
 ## 0.12.11 - 2022-09-20
 
 - feature: allow validation of external read-paths
