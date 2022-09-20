@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feature: validate paths on alias processing
 - feature: add basic `fields` validator
 - refactor: require URL parameters in API-request handling
 - feature: inject message formatting logic to allow adjustments
