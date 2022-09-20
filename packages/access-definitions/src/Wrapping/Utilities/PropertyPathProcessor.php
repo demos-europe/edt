@@ -101,20 +101,30 @@ class PropertyPathProcessor
         $propertyTypeIdentifier = $availableProperties[$currentPathPart];
         if (null !== $propertyTypeIdentifier) {
             try {
+                // even if we don't need the $nextTarget here because there may be no
+                // remaining segments, we still check with this call if the current
+                // relationship is valid in this path
                 $nextTarget = $this->typeAccessor->getType($propertyTypeIdentifier);
+
+                if ([] === $remainingParts) {
+                    // if no parts remain after the current relationship are done and don't need to follow the $nextTarget
+                    return $newPath;
+                }
+
+                // otherwise, we continue the mapping recursively
+                return $this->processPropertyPath($nextTarget, $newPath, ...$remainingParts);
             } catch (TypeRetrievalAccessException $exception) {
                 throw RelationshipAccessException::relationshipTypeAccess($type, $currentPathPart, $exception);
             }
-        } elseif ([] !== $remainingParts) {
-            throw PropertyAccessException::nonRelationship($currentPathPart, $type);
         }
 
         if ([] === $remainingParts) {
-            // if no parts remain we are done and don't need to follow the $nextTarget
+            // no parts remain after the attribute, we are done
             return $newPath;
         }
 
-        // otherwise, we continue the mapping recursively
-        return $this->processPropertyPath($nextTarget, $newPath, ...$remainingParts);
+        // the current segment is an attribute followed by more segments,
+        // thus we throw an exception
+        throw PropertyAccessException::nonRelationship($currentPathPart, $type);
     }
 }
