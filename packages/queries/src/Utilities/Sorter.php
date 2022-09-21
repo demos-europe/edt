@@ -37,8 +37,8 @@ class Sorter
             usort($arrayToSort, function (object $valueA, object $valueB) use ($sortMethods): int {
                 foreach ($sortMethods as $sortMethod) {
                     $propertyPaths = PathInfo::getPropertyPaths($sortMethod);
-                    $propertyValuesRowsA = $this->tableJoiner->getValueRows($valueA, ...$propertyPaths);
-                    $propertyValuesRowsB = $this->tableJoiner->getValueRows($valueB, ...$propertyPaths);
+                    $propertyValuesRowsA = $this->tableJoiner->getValueRows($valueA, $propertyPaths);
+                    $propertyValuesRowsB = $this->tableJoiner->getValueRows($valueB, $propertyPaths);
                     /**
                      * Sorting by relationships is not supported yet as it is not as easy to implement as one might think.
                      * Which of the values should be used for the comparison. See also (basically) the same problem in SQL:

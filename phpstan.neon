@@ -432,11 +432,6 @@ parameters:
             path: packages/queries/src/Utilities/TableJoiner.php
 
         -
-            message: "#^Parameter \\#2 \\$values of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:setReferences\\(\\) expects array\\<int, EDT\\\\Querying\\\\Contracts\\\\PropertyPathAccessInterface\\>, array\\<int\\|string, EDT\\\\Querying\\\\Contracts\\\\PropertyPathAccessInterface\\> given\\.$#"
-            count: 1
-            path: packages/queries/src/Utilities/TableJoiner.php
-
-        -
             message: "#^Parameter \\#2 \\$wipTable of method EDT\\\\Querying\\\\Utilities\\\\TableJoiner\\:\\:rebuildTable\\(\\) expects array\\<int, array\\<int, mixed\\>\\>, array\\<int, array\\<int, mixed\\>\\|int\\> given\\.$#"
             count: 1
             path: packages/queries/src/Utilities/TableJoiner.php

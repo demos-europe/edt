@@ -103,7 +103,7 @@ class ConditionEvaluator
         $propertyPaths = PathInfo::getPropertyPaths($condition);
 
         // accesses all values of the given path and creates the cartesian product,
-        return $this->tableJoiner->getValueRows($target, ...$propertyPaths);
+        return $this->tableJoiner->getValueRows($target, $propertyPaths);
     }
 
     /**

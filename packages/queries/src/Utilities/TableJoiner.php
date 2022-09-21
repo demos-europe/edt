@@ -60,15 +60,17 @@ class TableJoiner
      *  ['text2', 'nameA2'],
      *  ['text3', 'nameA2']]
      *
-     * @return mixed[][]
+     * @param list<PropertyPathAccessInterface> $propertyPaths
+     *
+     * @return list<list<mixed>>
      */
-    public function getValueRows(object $target, PropertyPathAccessInterface ...$propertyPaths): array
+    public function getValueRows(object $target, array $propertyPaths): array
     {
         if ([] === $propertyPaths) {
             return [[]];
         }
 
-        $propertyPaths = $this->setReferences(...$propertyPaths);
+        $propertyPaths = $this->setReferences($propertyPaths);
 
         // this is an array of arrays as each property path results in an array as it may access a
         // to-many property with UNPACK enabled
@@ -232,9 +234,11 @@ class TableJoiner
      * be considered as well, meaning the replacement will only happen if
      * both paths define the same access depth.
      *
+     * @param list<PropertyPathAccessInterface> $paths
+     *
      * @return list<PropertyPathAccessInterface|int>
      */
-    private function setReferences(PropertyPathAccessInterface ...$paths): array
+    private function setReferences(array $paths): array
     {
         return Iterables::setReferences(Closure::fromCallable([$this, 'equalPaths']), $paths);
     }
