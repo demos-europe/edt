@@ -99,7 +99,7 @@ class TableJoiner
      *
      * @return list<list<mixed>> The resulting table with a row oriented layout (the outer items being rows and the inner items being columns).
      */
-    public function cartesianProduct(array $columns): array
+    private function cartesianProduct(array $columns): array
     {
         $deReferencedColumns = Iterables::setDeReferencing($columns);
 

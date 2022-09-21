@@ -7,6 +7,7 @@ namespace Tests\Querying\Utilities;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\Utilities\TableJoiner;
+use ReflectionMethod;
 use Tests\ModelBasedTest;
 
 class TableJoinerTest extends ModelBasedTest
@@ -16,15 +17,21 @@ class TableJoinerTest extends ModelBasedTest
      */
     private $tableJoiner;
 
+    /**
+     * @var ReflectionMethod
+     */
+    private $cartesianProduct;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->tableJoiner = new TableJoiner(new ReflectionPropertyAccessor());
+        $this->cartesianProduct = new ReflectionMethod($this->tableJoiner, 'cartesianProduct');
     }
 
     public function testCartesianProductWithNoColumns(): void
     {
-        $actual = $this->tableJoiner->cartesianProduct([]);
+        $actual = $this->cartesianProduct->invoke($this->tableJoiner, []);
         self::assertEquals([], $actual);
     }
 
@@ -38,7 +45,7 @@ class TableJoinerTest extends ModelBasedTest
             ['b'],
             ['c'],
         ];
-        $actual = $this->tableJoiner->cartesianProduct($input);
+        $actual = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         self::assertEquals($expected, $actual);
     }
 
@@ -59,7 +66,7 @@ class TableJoinerTest extends ModelBasedTest
             ['b', 3],
             ['c', 3],
         ];
-        $actual = $this->tableJoiner->cartesianProduct($input);
+        $actual = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         self::assertEquals($expected, $actual);
     }
 
@@ -101,7 +108,7 @@ class TableJoinerTest extends ModelBasedTest
             ['abc'],
         ];
 
-        $this->tableJoiner->cartesianProduct($input);
+        $this->cartesianProduct->invoke($this->tableJoiner, $input);
     }
 
     public function testCartesianWithMissingReference(): void
@@ -114,7 +121,7 @@ class TableJoinerTest extends ModelBasedTest
             3,
         ];
 
-        $this->tableJoiner->cartesianProduct($input);
+        $this->cartesianProduct->invoke($this->tableJoiner, $input);
     }
 
     public function testCartesianWithSingleEmptyRow(): void
@@ -123,7 +130,7 @@ class TableJoinerTest extends ModelBasedTest
             [],
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         $expected = [];
 
         self::assertEquals($expected, $output);
@@ -136,7 +143,7 @@ class TableJoinerTest extends ModelBasedTest
             [],
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         $expected = [
             ['abc', null],
         ];
@@ -151,7 +158,7 @@ class TableJoinerTest extends ModelBasedTest
             [1],
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         $expected = [
             [null, 1],
         ];
@@ -166,7 +173,7 @@ class TableJoinerTest extends ModelBasedTest
             0,
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         $expected = [];
 
         self::assertEquals($expected, $output);
@@ -179,7 +186,7 @@ class TableJoinerTest extends ModelBasedTest
             [],
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         $expected = [
             [1, null],
         ];
@@ -195,7 +202,7 @@ class TableJoinerTest extends ModelBasedTest
             [],
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         $expected = [];
 
         self::assertEquals($expected, $output);
@@ -209,7 +216,7 @@ class TableJoinerTest extends ModelBasedTest
             0,
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
         $expected = [
             [null, 1, null],
         ];
@@ -229,7 +236,7 @@ class TableJoinerTest extends ModelBasedTest
             [7],
         ];
 
-        $output = $this->tableJoiner->cartesianProduct($input);
+        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
 
         $expected = [
             [false, 'abc', null, 'abc', false, 7],
