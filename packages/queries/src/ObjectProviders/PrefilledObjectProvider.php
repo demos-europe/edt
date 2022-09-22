@@ -75,11 +75,11 @@ class PrefilledObjectProvider implements ObjectProviderInterface
      */
     protected function sort(array $list, array $sortMethods): array
     {
-        if ([] !== $sortMethods) {
-            $this->sorter->sortArray($list, ...$sortMethods);
+        if ([] === $sortMethods) {
+            return $list;
         }
 
-        return $list;
+        return $this->sorter->sortArray($list, $sortMethods);
     }
 
     /**

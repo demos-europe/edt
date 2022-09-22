@@ -32,8 +32,7 @@ class SorterTest extends ModelBasedTest
     public function testTitlePropertyAscending(): void
     {
         $titleSorting = $this->sortMethodFactory->propertyAscending('title');
-        $sortedBooks = $this->books;
-        $this->sorter->sortArray($sortedBooks, $titleSorting);
+        $sortedBooks = $this->sorter->sortArray($this->books, [$titleSorting]);
         $expected = [
             $this->books['beowulf'],
             $this->books['doctorSleep'],
@@ -47,8 +46,7 @@ class SorterTest extends ModelBasedTest
     public function testTitlePropertyDescending(): void
     {
         $titleSorting = $this->sortMethodFactory->propertyDescending('title');
-        $sortedBooks = $this->books;
-        $this->sorter->sortArray($sortedBooks, $titleSorting);
+        $sortedBooks = $this->sorter->sortArray($this->books, [$titleSorting]);
         $expected = array_reverse([
             $this->books['beowulf'],
             $this->books['doctorSleep'],
@@ -62,8 +60,7 @@ class SorterTest extends ModelBasedTest
     public function testBirthdayPropertyDescending(): void
     {
         $birthdaySorting = $this->sortMethodFactory->propertyAscending('author', 'birth', 'day');
-        $sortedBooks = $this->books;
-        $this->sorter->sortArray($sortedBooks, $birthdaySorting);
+        $sortedBooks = $this->sorter->sortArray($this->books, [$birthdaySorting]);
         $expected = [
             $this->books['beowulf'],
             $this->books['pickwickPapers'],
@@ -78,8 +75,7 @@ class SorterTest extends ModelBasedTest
     {
         $pseudonymSorting = $this->sortMethodFactory->propertyAscending('author', 'pseudonym');
         $titleSorting = $this->sortMethodFactory->propertyAscending('title');
-        $sortedBooks = $this->books;
-        $this->sorter->sortArray($sortedBooks, $pseudonymSorting, $titleSorting);
+        $sortedBooks = $this->sorter->sortArray($this->books, [$pseudonymSorting, $titleSorting]);
         $expected = [
             $this->books['beowulf'],
             $this->books['pickwickPapers'],
@@ -94,8 +90,7 @@ class SorterTest extends ModelBasedTest
     {
         $pseudonymSorting = $this->sortMethodFactory->propertyDescending('author', 'pseudonym');
         $titleSorting = $this->sortMethodFactory->propertyDescending('title');
-        $sortedBooks = $this->books;
-        $this->sorter->sortArray($sortedBooks, $pseudonymSorting, $titleSorting);
+        $sortedBooks = $this->sorter->sortArray($this->books, [$pseudonymSorting, $titleSorting]);
         $expected = array_reverse([
             $this->books['beowulf'],
             $this->books['pickwickPapers'],
@@ -110,15 +105,13 @@ class SorterTest extends ModelBasedTest
     {
         $this->expectException(SortException::class);
         $authorSorting = $this->sortMethodFactory->propertyDescending('author');
-        $sortedBooks = $this->books;
-        $this->sorter->sortArray($sortedBooks, $authorSorting);
+        $this->sorter->sortArray($this->books, [$authorSorting]);
     }
 
     public function testUnsupportedPath(): void
     {
         $this->expectException(SortException::class);
         $titleSorting = $this->sortMethodFactory->propertyAscending('books', 'title');
-        $sortedAuthors = $this->authors;
-        $this->sorter->sortArray($sortedAuthors, $titleSorting);
+        $this->sorter->sortArray($this->authors, [$titleSorting]);
     }
 }
