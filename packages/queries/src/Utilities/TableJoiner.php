@@ -8,6 +8,7 @@ use Closure;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use InvalidArgumentException;
+use function array_key_exists;
 use function is_array;
 use function is_int;
 
@@ -110,7 +111,7 @@ class TableJoiner
     {
         // Handle empty columns by removing them for now from the columns to
         // build the cartesian product from.
-        $deReferencedColumns = Iterables::setDeReferencing($columns);
+        $deReferencedColumns = self::setDeReferencing($columns);
         $emptyColumns = array_filter($deReferencedColumns, [Iterables::class, 'isEmptyArray']);
 
         // Remove empty columns and references to empty columns
@@ -270,5 +271,32 @@ class TableJoiner
         }, $emptyColumnIndices);
 
         return $rows;
+    }
+
+    /**
+     * Undoes {@link Iterables::setReferences()}.
+     *
+     * @param non-empty-list<Column|Ref> $columns
+     *
+     * @return non-empty-list<Column>
+     */
+    public static function setDeReferencing(array $columns): array
+    {
+        return array_map(static function ($column) use ($columns) {
+            if (!is_int($column)) {
+                return $column;
+            }
+
+            if (!array_key_exists($column, $columns)) {
+                throw new InvalidArgumentException("Could not de-reference: missing index '$column'.");
+            }
+
+            $referencedColumn = $columns[$column];
+            if (is_int($referencedColumn)) {
+                throw new InvalidArgumentException("De-referencing '$column' led to another reference '$referencedColumn'.");
+            }
+
+            return $referencedColumn;
+        }, $columns);
     }
 }
