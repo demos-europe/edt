@@ -156,8 +156,8 @@ class Iterables
      *
      * @template T
      * @param callable(T,T):bool $equalityComparison
-     * @param list<T> $values
-     * @return list<T|int>
+     * @param non-empty-list<T> $values
+     * @return non-empty-list<T|int<0, max>>
      */
     public static function setReferences(callable $equalityComparison, array $values): array
     {
@@ -183,8 +183,10 @@ class Iterables
      * The type T of the given values must not be `int`.
      *
      * @template T
-     * @param list<T|int> $values
-     * @return list<T>
+     *
+     * @param non-empty-list<T|int<0, max>> $values
+     *
+     * @return non-empty-list<T>
      */
     public static function setDeReferencing(array $values): array
     {
@@ -232,7 +234,7 @@ class Iterables
      *
      * @param array<string|int, mixed> $value
      */
-    public static function isEmpty(array $value): bool
+    public static function isEmptyArray(array $value): bool
     {
         return [] === $value;
     }

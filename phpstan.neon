@@ -412,6 +412,11 @@ parameters:
             path: packages/queries/src/Utilities/Iterables.php
 
         -
+            message: "#^Method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:setReferences\\(\\) should return non\\-empty\\-array\\<int, int\\<0, max\\>\\|T\\> but returns array\\<int, int\\<0, max\\>\\|T\\>\\.$#"
+            count: 1
+            path: packages/queries/src/Utilities/Iterables.php
+
+        -
             message: "#^Unable to resolve the template type T in call to method static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:asArray\\(\\)$#"
             count: 1
             path: packages/queries/src/Utilities/Iterables.php
@@ -420,18 +425,3 @@ parameters:
             message: "#^Parameter \\#2 \\$callback of function array_walk expects callable\\(EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, int, array\\<int\\|string, string\\>\\)\\: mixed, array\\{\\$this\\(EDT\\\\Querying\\\\Utilities\\\\PathTransformer\\), 'prefixPaths'\\} given\\.$#"
             count: 1
             path: packages/queries/src/Utilities/PathTransformer.php
-
-        -
-            message: "#^Method EDT\\\\Querying\\\\Utilities\\\\TableJoiner\\:\\:cartesianProduct\\(\\) should return array\\<int, array\\<int, mixed\\>\\> but returns array\\<int, array\\<int, mixed\\>\\|int\\>\\.$#"
-            count: 1
-            path: packages/queries/src/Utilities/TableJoiner.php
-
-        -
-            message: "#^Parameter \\#2 \\$array of function array_map expects array, array\\<int, mixed\\>\\|int given\\.$#"
-            count: 1
-            path: packages/queries/src/Utilities/TableJoiner.php
-
-        -
-            message: "#^Parameter \\#2 \\$wipTable of method EDT\\\\Querying\\\\Utilities\\\\TableJoiner\\:\\:rebuildTable\\(\\) expects array\\<int, array\\<int, mixed\\>\\>, array\\<int, array\\<int, mixed\\>\\|int\\> given\\.$#"
-            count: 1
-            path: packages/queries/src/Utilities/TableJoiner.php

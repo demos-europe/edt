@@ -12,6 +12,12 @@ use function is_array;
 use function is_int;
 
 /**
+ * @psalm-type Ref = int<0,max>
+ * @psalm-type Row = list<mixed>
+ * @psalm-type NonEmptyRow = non-empty-list<mixed>
+ * @psalm-type Column = list<mixed>
+ * @psalm-type NonEmptyColumn = non-empty-list<mixed>
+ *
  * @internal
  */
 class TableJoiner
@@ -62,7 +68,7 @@ class TableJoiner
      *
      * @param list<PropertyPathAccessInterface> $propertyPaths
      *
-     * @return list<list<mixed>>
+     * @return list<Row>
      */
     public function getValueRows(object $target, array $propertyPaths): array
     {
@@ -74,7 +80,6 @@ class TableJoiner
 
         // this is an array of arrays as each property path results in an array as it may access a
         // to-many property with UNPACK enabled
-        /** @var list<list<mixed>|int> $valuesOfPropertyPaths */
         $valuesOfPropertyPaths = array_map(function ($propertyPath) use ($target) {
             if (is_int($propertyPath)) {
                 return $propertyPath;
@@ -95,56 +100,56 @@ class TableJoiner
     }
 
     /**
-     * @param list<list<mixed>|int> $columns the columns to create the cartesian product from, each with their
-     *                                       own list of values, i.e. each column may have a different number
-     *                                       of rows. an integer instead of an array indicates a reference to another column
+     * @param non-empty-list<Column|Ref> $columns the columns to create the cartesian product from, each with their
+     *                                            own list of values, i.e. each column may have a different number
+     *                                            of rows. an integer instead of an array indicates a reference to another column
      *
-     * @return list<list<mixed>> The resulting table with a row oriented layout (the outer items being rows and the inner items being columns).
+     * @return list<NonEmptyRow> The resulting table with a row oriented layout (the outer items being rows and the inner items being columns).
      */
     private function cartesianProduct(array $columns): array
     {
-        $deReferencedColumns = Iterables::setDeReferencing($columns);
-
         // Handle empty columns by removing them for now from the columns to
         // build the cartesian product from.
-        $emptyColumns = array_filter($deReferencedColumns, [Iterables::class, 'isEmpty']);
-        $columns = array_diff_key($columns, $emptyColumns);
+        $deReferencedColumns = Iterables::setDeReferencing($columns);
+        $emptyColumns = array_filter($deReferencedColumns, [Iterables::class, 'isEmptyArray']);
 
-        // Shortcut: if there are no columns we have nothing to do.
-        if ([] === $columns) {
+        // Remove empty columns and references to empty columns
+        /** @var list<NonEmptyColumn|Ref> $nonEmptyColumns */
+        $nonEmptyColumns = array_values(array_diff_key($columns, $emptyColumns));
+
+        // if there are no columns we have nothing to do.
+        if ([] === $nonEmptyColumns) {
             return [];
         }
 
         // Building the cartesian product of the other columns is left to the
         // recursion, we only deal with the right column here.
-        $rightColumn = array_pop($columns);
-        $product = $this->cartesianProductRecursive($rightColumn, ...$columns);
+        $rightColumn = array_pop($nonEmptyColumns);
+        $product = $this->cartesianProductRecursive($rightColumn, $nonEmptyColumns);
 
-        return $this->reAddEmptyColumnsAsNull($product, array_keys($emptyColumns));
+        // TODO: remove type-hint when phpstan can detect that `array_keys(list<X>)` results in` list<int<0, max>>`
+        /** @var list<Ref> $emptyColumnIndices */
+        $emptyColumnIndices = array_values(array_keys($emptyColumns));
+
+        return $this->reAddEmptyColumnsAsNull($product, $emptyColumnIndices);
     }
 
     /**
-     * @param list<mixed>|int $rightColumn
-     * @param list<mixed>|int ...$leftColumns
+     * No given column must be empty, as empty columns need to be handled in a special way.
      *
-     * @return list<list<mixed>|int>
+     * @param NonEmptyColumn|Ref       $rightColumn
+     * @param list<NonEmptyColumn|Ref> $leftColumns
+     *
+     * @return non-empty-list<NonEmptyRow>
      */
-    protected function cartesianProductRecursive($rightColumn, ...$leftColumns): array
+    protected function cartesianProductRecursive($rightColumn, $leftColumns): array
     {
-        if (!is_array($rightColumn) && !is_int($rightColumn)) {
-            throw new InvalidArgumentException('Columns must be either an array or an integer.');
-        }
-
-        // No column must be empty within the recursion, as empty columns need to be
-        // handled in a special way.
-        if ((is_array($rightColumn) && [] === $rightColumn)
-            || (is_int($rightColumn) && [] === $leftColumns[$rightColumn])) {
-            throw new InvalidArgumentException('Column must not be empty.');
-        }
-
         // This is not just a shortcut but the place where the result table is
         // initially filled to be expanded in other recursion steps.
         if ([] === $leftColumns) {
+            if (!is_array($rightColumn)) {
+                throw new InvalidArgumentException("Most left column must not be a reference, was: '$rightColumn'.");
+            }
             return array_map(static function ($value): array {
                 return [$value];
             }, $rightColumn);
@@ -152,10 +157,7 @@ class TableJoiner
 
         // we do have more columns to step into
         $nextRightColumn = array_pop($leftColumns);
-        $wipTable = $this->cartesianProductRecursive($nextRightColumn, ...$leftColumns);
-        if ([] === $wipTable) {
-            throw new InvalidArgumentException('Expected recursion result to be non-empty');
-        }
+        $wipTable = $this->cartesianProductRecursive($nextRightColumn, $leftColumns);
 
         return $this->rebuildTable($rightColumn, $wipTable);
     }
@@ -172,9 +174,10 @@ class TableJoiner
      * references another column we simply de-reference the value and add it, meaning
      * the result is a table with r rows and k + 1 columns.
      *
-     * @param list<mixed>|int $rightColumn
-     * @param list<list<mixed>> $wipTable
-     * @return list<list<mixed>|int>
+     * @param NonEmptyColumn|Ref          $rightColumn
+     * @param non-empty-list<NonEmptyRow> $wipTable
+     *
+     * @return non-empty-list<NonEmptyRow>
      */
     private function rebuildTable($rightColumn, array $wipTable): array
     {
@@ -184,11 +187,9 @@ class TableJoiner
                 $rows = $this->addValueToRows($wipTable, $value);
                 array_push($rebuiltTable, ...$rows);
             }
-        } elseif (is_int($rightColumn)) {
+        } else {
             $rows = $this->addReferenceToRows($wipTable, $rightColumn);
             array_push($rebuiltTable, ...$rows);
-        } else {
-            throw new InvalidArgumentException($rightColumn);
         }
 
         return $rebuiltTable;
@@ -197,30 +198,33 @@ class TableJoiner
     /**
      * Appends the given value to all rows in the given table.
      *
-     * @param list<list<mixed>> $table
-     * @param mixed $value
-     * @return list<list<mixed>>
+     * @param non-empty-list<NonEmptyRow> $rows
+     * @param mixed                       $value
+     *
+     * @return non-empty-list<NonEmptyRow>
      */
-    private function addValueToRows(array $table, $value): array
+    private function addValueToRows(array $rows, $value): array
     {
-        array_walk($table, static function (array &$row) use ($value): void {
+        array_walk($rows, static function (array &$row) use ($value): void {
             $row[] = $value;
         });
 
-        return $table;
+        return $rows;
     }
 
     /**
-     * @param list<list<mixed>> $table
-     * @return list<list<mixed>>
+     * @param non-empty-list<NonEmptyRow> $rows
+     * @param Ref                         $reference
+     *
+     * @return non-empty-list<NonEmptyRow>
      */
-    private function addReferenceToRows(array $table, int $reference): array
+    private function addReferenceToRows(array $rows, int $reference): array
     {
-        array_walk($table, static function (array &$row) use ($reference): void {
+        array_walk($rows, static function (array &$row) use ($reference): void {
             $row[] = $row[$reference];
         });
 
-        return $table;
+        return $rows;
     }
 
     /**
@@ -234,9 +238,9 @@ class TableJoiner
      * be considered as well, meaning the replacement will only happen if
      * both paths define the same access depth.
      *
-     * @param list<PropertyPathAccessInterface> $paths
+     * @param non-empty-list<PropertyPathAccessInterface> $paths
      *
-     * @return list<PropertyPathAccessInterface|int>
+     * @return non-empty-list<PropertyPathAccessInterface|Ref>
      */
     private function setReferences(array $paths): array
     {
@@ -254,17 +258,17 @@ class TableJoiner
     /**
      * Re-add the previously removed empty columns by adding null values into each row.
      *
-     * @param list<list<mixed>|int> $array
-     * @param list<int> $emptyColumnIndices
+     * @param non-empty-list<NonEmptyRow> $rows
+     * @param list<Ref>                   $emptyColumnIndices
      *
-     * @return list<list<mixed>|int>
+     * @return non-empty-list<NonEmptyRow>
      */
-    private function reAddEmptyColumnsAsNull(array $array, array $emptyColumnIndices): array
+    private function reAddEmptyColumnsAsNull(array $rows, array $emptyColumnIndices): array
     {
-        array_map(static function (int $index) use (&$array): void {
-            Iterables::insertValue($array, $index, null);
+        array_map(static function (int $index) use (&$rows): void {
+            Iterables::insertValue($rows, $index, null);
         }, $emptyColumnIndices);
 
-        return $array;
+        return $rows;
     }
 }
