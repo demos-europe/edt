@@ -6,6 +6,11 @@ namespace Tests\Querying\FluentQueries;
 
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\Contracts\FluentQueryException;
+use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\FluentQueries\ConditionDefinition;
+use EDT\Querying\FluentQueries\SliceDefinition;
+use EDT\Querying\FluentQueries\SortDefinition;
 use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\FluentQueries\FluentQuery;
@@ -38,11 +43,16 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
     }
 
     /**
-     * @return FluentQuery<Person>
+     * @return FluentQuery<FunctionInterface<bool>, SortMethodInterface, Person>
      */
     protected function createFetchRequest(): FluentQuery
     {
-        return FluentQuery::createWithDefaultDefinitions($this->conditionFactory, $this->sortMethodFactory, $this->authorProvider);
+        return new FluentQuery(
+            $this->authorProvider,
+            new ConditionDefinition($this->conditionFactory, true),
+            new SortDefinition($this->sortMethodFactory),
+            new SliceDefinition()
+        );
     }
 
     public function testRootAnd(): void

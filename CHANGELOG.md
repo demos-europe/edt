@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-
+- refactor: remove problematic static constructor method
 - refacter: improve naming/type-hinting and remove assertions
 
 ## 0.12.13 - 2022-09-20

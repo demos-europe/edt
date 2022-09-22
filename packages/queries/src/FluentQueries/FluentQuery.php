@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
-use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\FluentQueryException;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\SliceException;
 use EDT\Querying\Contracts\SortException;
-use EDT\Querying\Contracts\SortMethodFactoryInterface;
 
 /**
  * A query to retrieve objects of a specific type. Can be modified before being executed.
@@ -59,24 +57,6 @@ class FluentQuery
         $this->conditionDefinition = $conditionDefinition;
         $this->sortDefinition = $sortDefinition;
         $this->sliceDefinition = $sliceDefinition;
-    }
-
-    /**
-     * @param ConditionFactoryInterface<C>  $conditionFactory
-     * @param SortMethodFactoryInterface<S> $sortMethodFactory
-     * @param ObjectProviderInterface<C, S, T> $objectProvider
-     */
-    public static function createWithDefaultDefinitions(
-        ConditionFactoryInterface $conditionFactory,
-        SortMethodFactoryInterface $sortMethodFactory,
-        ObjectProviderInterface $objectProvider
-    ): self {
-        return new self(
-            $objectProvider,
-            new ConditionDefinition($conditionFactory, true),
-            new SortDefinition($sortMethodFactory),
-            new SliceDefinition()
-        );
     }
 
     /**
