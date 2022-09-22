@@ -87,7 +87,7 @@ class TableJoiner
             }
 
             if (null !== $propertyPath->getContext()) {
-                throw new InvalidArgumentException("Custom path contexts are not supported in PHP evaluation yet.");
+                throw new InvalidArgumentException("Custom path contexts are not supported in PHP evaluation yet: '{$propertyPath->getAsNamesInDotNotation()}'");
             }
 
             return $this->propertyAccessor->getValuesByPropertyPath(
