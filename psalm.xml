@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="7"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    cacheDirectory="psalm_cache"
+>
+    <projectFiles>
+        <directory name="packages/access-definitions/src" />
+        <directory name="packages/dql/src" />
+        <directory name="packages/extra/src" />
+        <directory name="packages/jsonapi/src" />
+        <directory name="packages/paths/src" />
+        <directory name="packages/paths/src" />
+        <directory name="packages/queries/src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+            <file name="packages/paths/src/PathBuilding/PropertyAutoPathTrait.php" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>
