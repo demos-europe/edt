@@ -182,18 +182,15 @@ class TableJoiner
      */
     private function rebuildTable($rightColumn, array $wipTable): array
     {
-        $rebuiltTable = [];
         if (is_array($rightColumn)) {
-            foreach ($rightColumn as $value) {
-                $rows = $this->addValueToRows($wipTable, $value);
-                array_push($rebuiltTable, ...$rows);
-            }
-        } else {
-            $rows = $this->addReferenceToRows($wipTable, $rightColumn);
-            array_push($rebuiltTable, ...$rows);
+            $nestedRows = array_map(function ($value) use ($wipTable): array {
+                return $this->addValueToRows($wipTable, $value);
+            }, $rightColumn);
+
+            return array_merge(...$nestedRows);
         }
 
-        return $rebuiltTable;
+        return $this->addReferenceToRows($wipTable, $rightColumn);
     }
 
     /**
