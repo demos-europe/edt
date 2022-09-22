@@ -7,7 +7,11 @@ namespace EDT\Querying\Contracts;
 /**
  * Provides the means to access the property of a target in a reading or writing manner.
  *
- * @template T of object The target type of which a property should be accessed.
+ * Template parameters:
+ *
+ * * `T`: the target type of which a property should be accessed
+ *
+ * @template T of object
  */
 interface PropertyAccessorInterface
 {
