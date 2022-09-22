@@ -53,5 +53,5 @@ interface PropertyAccessorInterface
      *
      * @param mixed|null $value
      */
-    public function setValue(object $target, $value, string $property): void;
+    public function setValue(object $target, $value, string $propertyName): void;
 }

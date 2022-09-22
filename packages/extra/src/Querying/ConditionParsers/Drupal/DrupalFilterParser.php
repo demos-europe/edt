@@ -130,17 +130,17 @@ class DrupalFilterParser implements FilterParserInterface
      * match for an entity to match the Drupal filter. An empty error being returned means that
      * all entities match, as there are no restrictions.
      *
-     * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $groupsAndConditions
+     * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $filter
      *
      * @return list<F>
      *
      * @throws DrupalFilterException
      */
-    public function parseFilter($groupsAndConditions): array
+    public function parseFilter($filter): array
     {
-        $this->filterValidator->validateFilter($groupsAndConditions);
-        $filter = new DrupalFilter($groupsAndConditions);
-        $groupedConditions = $filter->getGroupedConditions();
+        $this->filterValidator->validateFilter($filter);
+        $drupalFilter = new DrupalFilter($filter);
+        $groupedConditions = $drupalFilter->getGroupedConditions();
         $conditions = $this->parseConditions($groupedConditions);
 
         // If no buckets with conditions exist we can return right away
@@ -148,7 +148,7 @@ class DrupalFilterParser implements FilterParserInterface
             return [];
         }
 
-        $groupNameToMemberOf = $filter->getGroupNameToMemberOf();
+        $groupNameToMemberOf = $drupalFilter->getGroupNameToMemberOf();
 
         // We use the indices as information source and work on the $conditions
         // array only.
@@ -172,7 +172,7 @@ class DrupalFilterParser implements FilterParserInterface
 
                 // If no conjunction definition for this group name exists we can remove it,
                 // as the specification says to ignore such groups.
-                if (!$filter->hasGroup($bucketName)) {
+                if (!$drupalFilter->hasGroup($bucketName)) {
                     unset($conditions[$bucketName]);
                     continue;
                 }
@@ -183,8 +183,8 @@ class DrupalFilterParser implements FilterParserInterface
                 // mark it as no longer needed as by a parent.
                 $usedAsParentGroup = in_array($bucketName, $groupNameToMemberOf, true);
                 if (!$usedAsParentGroup) {
-                    $conjunction = $filter->getGroupConjunction($bucketName);
-                    $parentGroupKey = $filter->getFilterGroupParent($bucketName);
+                    $conjunction = $drupalFilter->getGroupConjunction($bucketName);
+                    $parentGroupKey = $drupalFilter->getFilterGroupParent($bucketName);
                     $conditionsToMerge = $conditions[$bucketName];
                     $additionalCondition = 1 === count($conditionsToMerge)
                         ? array_pop($conditionsToMerge)
