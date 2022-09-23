@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: adjust `split` parameters and behavior
 - refactor: remove problematic static constructor method
 - refacter: improve naming/type-hinting and remove assertions
 

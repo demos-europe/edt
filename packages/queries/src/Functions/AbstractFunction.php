@@ -95,6 +95,7 @@ abstract class AbstractFunction implements FunctionInterface
         $propertyAliasCountables = array_map(static function (PathsBasedInterface $pathsBased): int {
             return count($pathsBased->getPropertyPaths());
         }, $this->functions);
-        return Iterables::split($propertyValues, false, ...$propertyAliasCountables);
+
+        return array_map('array_values', Iterables::split($propertyValues, ...$propertyAliasCountables));
     }
 }

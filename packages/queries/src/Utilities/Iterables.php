@@ -46,28 +46,23 @@ class Iterables
      *
      * Can be used to revert a {@link Iterables::mapFlat} operation.
      *
+     * @template K of int|string
      * @template V
      *
-     * @param iterable<V> $toSplit The array to split. Length must be equal to the sum of $sizes, otherwise the behavior is undefined.
-     * @param bool $preserveKeys   If the given iterable has usable keys setting this parameter to `true` will
-     *                             preserve them. Otherwise, each resulting nested array will be re-indexed
-     *                             with integer keys (starting with `0`).
+     * @param array<K, V> $toSplit The array to split. Length must be equal to the sum of $sizes, otherwise the behavior is undefined.
      * @param int ...$sizes        The intended array size of each item in the result array.
      *
-     * @return list<array<int|string,V>> The nested result array, same length as the $sizes array.
+     * @return list<array<K, V>> The nested result array, same length as the $sizes array.
      */
-    public static function split(iterable $toSplit, bool $preserveKeys, int ...$sizes): array
+    public static function split(iterable $toSplit, int ...$sizes): array
     {
         $toSplit = self::asArray($toSplit);
 
         $result = [];
         $valuesOffset = 0;
         foreach ($sizes as $count) {
-            $slice = array_slice($toSplit, $valuesOffset, $count, $preserveKeys);
-            if (!$preserveKeys) {
-                // array_slice always preserves strings keys; this extra step ensures re-indexing
-                $slice = array_values($slice);
-            }
+            /** @var array<K, V> $slice */
+            $slice = array_slice($toSplit, $valuesOffset, $count, true);
             $result[] = $slice;
             $valuesOffset += $count;
         }

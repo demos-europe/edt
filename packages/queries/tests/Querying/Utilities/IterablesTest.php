@@ -253,35 +253,31 @@ class IterablesTest extends ModelBasedTest
     public function testSplitSingle(): void
     {
         $input = ['x' => 'a', 'y' => 'b', 'z' => 'c'];
-        $expected = [['a', 'b', 'c']];
-        $output = Iterables::split($input, false, 3);
+        $expected = [
+            ['x' => 'a', 'y' => 'b', 'z' => 'c'],
+        ];
+        $output = Iterables::split($input, 3);
 
         self::assertEquals($expected, $output);
     }
 
     public function testSplitEmpty(): void
     {
-        $input = [];
-        $expected = [];
-        $output = Iterables::split($input, true);
-
-        self::assertEquals($expected, $output);
+        $output = Iterables::split([]);
+        self::assertEquals([], $output);
     }
 
     public function testSplitWithEmptiesOnly(): void
     {
-        $input = [];
-        $expected = [[], [], []];
-        $output = Iterables::split($input, true, 0, 0, 0);
-
-        self::assertEquals($expected, $output);
+        $output = Iterables::split([], 0, 0, 0);
+        self::assertEquals([[], [], []], $output);
     }
 
     public function testSplitWithEmptiesInserted(): void
     {
         $input = [1, 2, 3];
-        $expected = [[], [1], [], [2, 3], [], []];
-        $output = Iterables::split($input, false, 0, 1, 0, 2, 0, 0);
+        $expected = [[], [0 => 1], [], [1 => 2, 2 => 3], [], []];
+        $output = Iterables::split($input, 0, 1, 0, 2, 0, 0);
 
         self::assertEquals($expected, $output);
     }
@@ -290,7 +286,7 @@ class IterablesTest extends ModelBasedTest
     {
         $input = [1, 2, 3];
         $expected = [[], [1], [], [1 => 2, 2 => 3], [], []];
-        $output = Iterables::split($input, true, 0, 1, 0, 2, 0, 0);
+        $output = Iterables::split($input, 0, 1, 0, 2, 0, 0);
 
         self::assertEquals($expected, $output);
     }
@@ -298,8 +294,8 @@ class IterablesTest extends ModelBasedTest
     public function testSplitWithStringKeys(): void
     {
         $input = ['x' => 'a', 'y' => 'b', 'z' => 'c'];
-        $expected = [['a', 'b'], ['c']];
-        $output = Iterables::split($input, false, 2, 1);
+        $expected = [['x' => 'a', 'y' => 'b'], ['z' => 'c']];
+        $output = Iterables::split($input, 2, 1);
 
         self::assertEquals($expected, $output);
     }
@@ -307,8 +303,8 @@ class IterablesTest extends ModelBasedTest
     public function testSplitWithIntKeys(): void
     {
         $input = [3 => 'a', 7 => 'b', 1 => 'c'];
-        $expected = [['a', 'b'], ['c']];
-        $output = Iterables::split($input, false, 2, 1);
+        $expected = [[3 => 'a', 7 => 'b'], [1 => 'c']];
+        $output = Iterables::split($input, 2, 1);
 
         self::assertEquals($expected, $output);
     }
@@ -317,7 +313,7 @@ class IterablesTest extends ModelBasedTest
     {
         $input = ['x' => 'a', 'y' => 'b', 'z' => 'c'];
         $expected = [['x' => 'a', 'y' => 'b'], ['z' => 'c']];
-        $output = Iterables::split($input, true, 2, 1);
+        $output = Iterables::split($input, 2, 1);
 
         self::assertEquals($expected, $output);
     }
@@ -326,7 +322,7 @@ class IterablesTest extends ModelBasedTest
     {
         $input = [3 => 'a', 7 => 'b', 1 => 'c'];
         $expected = [[3 => 'a', 7 => 'b'], [1 => 'c']];
-        $output = Iterables::split($input, true, 2, 1);
+        $output = Iterables::split($input, 2, 1);
 
         self::assertEquals($expected, $output);
     }
