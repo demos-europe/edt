@@ -120,8 +120,10 @@ class QueryBuilderPreparer
      * Overwrites the currently set clauses with the conditions to use to limit the result returned
      * by the final query.
      * If called with no parameters then previously set conditions will be removed.
+     *
+     * @param list<ClauseInterface> $conditions
      */
-    public function setWhereExpressions(ClauseInterface ...$conditions): void
+    public function setWhereExpressions(array $conditions): void
     {
         $this->conditions = $conditions;
     }

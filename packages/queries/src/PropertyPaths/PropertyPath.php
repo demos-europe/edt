@@ -68,9 +68,6 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     public function setPath(array $path): void
     {
-        if (in_array('', $path, true)) {
-            throw PathException::emptyPart(...$path);
-        }
         $this->properties = new ArrayIterator($path);
     }
 
@@ -101,7 +98,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     public function getAsNames(): array
     {
-        return array_values(Iterables::asArray($this));
+        return $this->properties->getArrayCopy();
     }
 
     public function getAsNamesInDotNotation(): string

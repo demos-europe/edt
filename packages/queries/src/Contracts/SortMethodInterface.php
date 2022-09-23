@@ -11,4 +11,6 @@ interface SortMethodInterface extends PathsBasedInterface
      * @param mixed[] $propertyValuesB
      */
     public function evaluate(array $propertyValuesA, array $propertyValuesB): int;
+
+    public function __toString(): string;
 }

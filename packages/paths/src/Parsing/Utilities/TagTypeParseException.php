@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Parsing\Utilities;
 
 use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
+use phpDocumentor\Reflection\Types\AggregatedType;
 
 class TagTypeParseException extends ParseException
 {
@@ -42,17 +43,17 @@ class TagTypeParseException extends ParseException
     /**
      * @param class-string $className
      */
-    public static function createForUnionType(TagWithType $tag, string $type, string $className): self
+    public static function createForAggregatedType(TagWithType $tag, AggregatedType $type, string $className): self
     {
         $tagName = $tag->getName();
         $variableName = method_exists($tag, 'getVariableName')
             ? $tag->getVariableName()
             : null;
-        $self = new self('Can\'t handle union types. '.self::createBaseMessage($tagName, $type, $className, $variableName));
+        $self = new self('Can\'t handle aggregated types (e.g. union types). '.self::createBaseMessage($tagName, (string) $type, $className, $variableName));
         $self->tagName = $tagName;
         $self->variableName = $variableName;
         $self->className = $className;
-        $self->type = $type;
+        $self->type = (string) $type;
 
         return $self;
     }

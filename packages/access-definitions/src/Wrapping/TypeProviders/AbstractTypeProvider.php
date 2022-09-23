@@ -27,10 +27,7 @@ abstract class AbstractTypeProvider implements TypeProviderInterface
 
     public function getType(string $typeIdentifier, string ...$implementations): TypeInterface
     {
-        $type = $this->getTypeByIdentifier($typeIdentifier);
-        if (null === $type) {
-            throw TypeRetrievalAccessException::unknownTypeIdentifier($typeIdentifier, $this->getTypeIdentifiers());
-        }
+        $type = $this->getTypeInterface($typeIdentifier);
 
         foreach ($implementations as $implementation) {
             if (!is_a($type, $implementation)) {
@@ -38,6 +35,30 @@ abstract class AbstractTypeProvider implements TypeProviderInterface
             }
         }
 
+        return $type;
+    }
+
+    public function getTypeInterface(string $typeIdentifier): TypeInterface
+    {
+        $type = $this->getTypeByIdentifier($typeIdentifier);
+        if (null === $type) {
+            throw TypeRetrievalAccessException::unknownTypeIdentifier($typeIdentifier, $this->getTypeIdentifiers());
+        }
+
+        return $type;
+    }
+
+    public function getTypeWithImplementation(string $typeIdentifier, string $implementation): TypeInterface
+    {
+        return $this->getType($typeIdentifier, $implementation);
+    }
+
+    public function getAvailableTypeWithImplementation(string $typeIdentifier, string $implementation): TypeInterface
+    {
+        $type = $this->getTypeWithImplementation($typeIdentifier, $implementation);
+        if (!$type->isAvailable()) {
+            throw TypeRetrievalAccessException::typeExistsButNotAvailable($typeIdentifier);
+        }
         return $type;
     }
 

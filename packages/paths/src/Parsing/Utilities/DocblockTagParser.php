@@ -15,10 +15,9 @@ use phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
 use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use phpDocumentor\Reflection\DocBlockFactory;
+use phpDocumentor\Reflection\Types\AggregatedType;
 use phpDocumentor\Reflection\Types\Object_;
-use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use ReflectionClass;
@@ -125,20 +124,20 @@ class DocblockTagParser
     {
         $namespaceName = $this->reflectionClass->getNamespaceName();
 
-        $type = $this->getFqsenOfClass($tag, $namespaceName);
-        if (false !== strpos($type, '|')) {
-            throw TagTypeParseException::createForUnionType($tag, $type, $this->reflectionClass->getName());
-        }
-
-        return $type;
+        return $this->getFqsenOfClass($tag, $namespaceName);
     }
 
     /**
+     * @return class-string
+     *
      * @throws TagTypeParseException
      */
     private function getFqsenOfClass(TagWithType $tag, string $namespaceName): string
     {
         $tagType = $tag->getType();
+        if ($tagType instanceof AggregatedType) {
+            throw TagTypeParseException::createForAggregatedType($tag, $tagType, $this->reflectionClass->getName());
+        }
         if (!$tagType instanceof Object_) {
             // not even an object as return type
             throw TagTypeParseException::createForTagType($tag, (string)$tagType, $this->reflectionClass->getName());

@@ -25,7 +25,7 @@ class Iterables
      * @template R
      *
      * @param callable(V): list<R> $callable how to map each given value to an array
-     * @param array<int|string, V>      $values   the values to be mapped to an array
+     * @param array<int|string, V> $values   the values to be mapped to an array
      *
      * @return list<R>
      */
@@ -125,7 +125,7 @@ class Iterables
     {
         $valueCount = count(self::asArray($values));
         if ($count !== $valueCount) {
-            throw new InvalidArgumentException("Expected exactly $count parameter, got $valueCount");
+            throw new InvalidArgumentException("Expected exactly $count parameter, got $valueCount.");
         }
     }
 
@@ -136,8 +136,12 @@ class Iterables
      */
     public static function getOnlyValue(iterable $propertyValues)
     {
-        self::assertCount(1, $propertyValues);
         $array = self::asArray($propertyValues);
+        if (1 !== count($array)) {
+            $arrayCount = count($array);
+            throw new InvalidArgumentException("Expected exactly 1 parameter, got $arrayCount.");
+        }
+
         return array_pop($array);
     }
 

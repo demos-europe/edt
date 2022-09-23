@@ -64,7 +64,7 @@ class Sorter
 
             return $arrayToSort;
         } catch (Throwable $exception) {
-            throw SortException::forCountAndMethods($exception, count($arrayToSort), ...$sortMethods);
+            throw SortException::forCountAndMethods($exception, count($arrayToSort), $sortMethods);
         }
     }
 }

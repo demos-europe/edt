@@ -78,8 +78,7 @@ abstract class AbstractApiService
      */
     public function getFromRequest(string $urlTypeName, string $urlId, ParameterBag $urlParams): Item
     {
-        /** @var ResourceTypeInterface $type */
-        $type = $this->typeProvider->getAvailableType(
+        $type = $this->typeProvider->getAvailableTypeWithImplementation(
             $urlTypeName,
             ResourceTypeInterface::class
         );
@@ -95,7 +94,7 @@ abstract class AbstractApiService
      */
     public function listFromRequest(string $typeName, ParameterBag $urlParams): Collection
     {
-        $type = $this->typeProvider->getAvailableType(
+        $type = $this->typeProvider->getAvailableTypeWithImplementation(
             $typeName,
             ResourceTypeInterface::class
         );
@@ -164,8 +163,7 @@ abstract class AbstractApiService
      */
     public function deleteFromRequest(string $urlTypeName, string $urlId): void
     {
-        /** @var ResourceTypeInterface $type */
-        $type = $this->typeProvider->getAvailableType(
+        $type = $this->typeProvider->getAvailableTypeWithImplementation(
             $urlTypeName,
             ResourceTypeInterface::class
         );
@@ -177,7 +175,7 @@ abstract class AbstractApiService
 
     /**
      * @param non-empty-string $urlTypeName
-     * @param array{data: array{type: string, id: string, attributes?: array<string,mixed>, relationships?: JsonApiRelationships}} $requestBody
+     * @param array{data: array{type: string, id: string, attributes?: array<string, mixed>, relationships?: JsonApiRelationships}} $requestBody
      *
      * @throws Exception
      */

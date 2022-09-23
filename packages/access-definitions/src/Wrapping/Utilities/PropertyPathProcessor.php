@@ -23,7 +23,7 @@ use function array_key_exists;
  * for property access violations, depending on the context (readability/sortability/...).
  * The context is set on instantiation by using providers that limit the access accordingly.
  *
- * @template T of TypeInterface
+ * @template T of TypeInterface<\EDT\Querying\Contracts\PathsBasedInterface, \EDT\Querying\Contracts\PathsBasedInterface, object>
  */
 class PropertyPathProcessor
 {

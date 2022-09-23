@@ -247,7 +247,7 @@ class TableJoiner
 
     private function equalPaths(PropertyPathAccessInterface $pathA, PropertyPathAccessInterface $pathB): bool
     {
-        return Iterables::asArray($pathA) == Iterables::asArray($pathB)
+        return $pathA->getAsNames() == $pathB->getAsNames()
             && $pathA->getAccessDepth() === $pathB->getAccessDepth()
             && $pathA->getSalt() === $pathB->getSalt()
             && $pathA->getContext() === $pathB->getContext();

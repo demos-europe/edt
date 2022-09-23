@@ -14,7 +14,11 @@ use function implode;
  */
 class SortException extends Exception
 {
-    public static function forCountAndMethods(Throwable $throwable, int $count, SortMethodInterface ...$sortMethods): self
+    /**
+     * @param int<0, max>               $count
+     * @param list<SortMethodInterface> $sortMethods
+     */
+    public static function forCountAndMethods(Throwable $throwable, int $count, array $sortMethods): self
     {
         $sortMethodsString = implode(', ', $sortMethods);
         return new self("Sorting of $count items with the following methods failed: $sortMethodsString", 0, $throwable);

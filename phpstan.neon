@@ -17,7 +17,7 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
-            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\:\\:getType\\(\\) should return EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but returns EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\.$#"
+            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\:\\:getType\\(\\) should return EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&I of EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but returns EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/TypeProviders/AbstractTypeProvider.php
 
@@ -40,11 +40,6 @@ parameters:
             message: "#^Unable to resolve the template type I in call to method EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getType\\(\\)$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessor.php
-
-        -
-            message: "#^Unable to resolve the template type I in call to method EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getType\\(\\)$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessors/InternTypeAccessor.php
 
         -
             message: "#^Parameter \\#1 \\$wrapperFactory of method EDT\\\\Wrapping\\\\Utilities\\\\PropertyReader\\:\\:determineValue\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object, array\\<string, mixed\\>\\|null\\>, EDT\\\\Wrapping\\\\WrapperFactories\\\\ArrayEndWrapperFactory\\|EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperArrayFactory given\\.$#"
@@ -147,17 +142,7 @@ parameters:
             path: packages/dql/src/Utilities/JoinFinder.php
 
         -
-            message: "#^Property EDT\\\\DqlQuerying\\\\Utilities\\\\QueryBuilderPreparer\\:\\:\\$conditions \\(array\\<int, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\) does not accept array\\<int\\|string, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\.$#"
-            count: 1
-            path: packages/dql/src/Utilities/QueryBuilderPreparer.php
-
-        -
             message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:wrapAsJsonApiResponseSchema\\(\\) has parameter \\$includedObjects with no value type specified in iterable type array\\.$#"
-            count: 1
-            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
-
-        -
-            message: "#^Parameter \\#1 \\$typeIdentifier of method EDT\\\\Wrapping\\\\TypeProviders\\\\AbstractTypeProvider\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getAvailableType\\(\\) expects non\\-empty\\-string, string given\\.$#"
             count: 1
             path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
 
@@ -205,11 +190,6 @@ parameters:
             message: "#^Parameter \\#1 \\$resourceLinkage of static method EDT\\\\JsonApi\\\\Schema\\\\ToManyResourceLinkage\\:\\:createFromArray\\(\\) expects array\\<int, array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\>, array\\<int, array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|non\\-empty\\-string\\> given\\.$#"
             count: 1
             path: packages/jsonapi/src/Schema/RelationshipObject.php
-
-        -
-            message: "#^Method EDT\\\\Parsing\\\\Utilities\\\\DocblockTagParser\\:\\:getTagType\\(\\) should return class\\-string but returns string\\.$#"
-            count: 1
-            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
 
         -
             message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
@@ -377,11 +357,6 @@ parameters:
             path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
 
         -
-            message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<int\\|string, EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface\\> given\\.$#"
-            count: 1
-            path: packages/queries/src/Contracts/SortException.php
-
-        -
             message: "#^Empty array passed to foreach\\.$#"
             count: 1
             path: packages/queries/src/Functions/AnyEqual.php
@@ -392,19 +367,9 @@ parameters:
             path: packages/queries/src/Functions/AnyEqual.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:getAsNames\\(\\) should return array\\<int, non\\-empty\\-string\\> but returns array\\<int, string\\>\\.$#"
-            count: 1
-            path: packages/queries/src/PropertyPaths/PropertyPath.php
-
-        -
             message: "#^Property EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:\\$properties \\(ArrayIterator\\<int, non\\-empty\\-string\\>\\) does not accept ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/queries/src/PropertyPaths/PropertyPath.php
-
-        -
-            message: "#^Method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:getOnlyValue\\(\\) should return T but returns T\\|null\\.$#"
-            count: 1
-            path: packages/queries/src/Utilities/Iterables.php
 
         -
             message: "#^Method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:setReferences\\(\\) should return non\\-empty\\-array\\<int, int\\<0, max\\>\\|T\\> but returns array\\<int, int\\<0, max\\>\\|T\\>\\.$#"

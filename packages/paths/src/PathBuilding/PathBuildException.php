@@ -11,7 +11,7 @@ class PathBuildException extends PathException
 {
     public static function getPropertyFailed(string $class, string $propertyName, Exception $previous): self
     {
-        return new self("Parse failed for class '$class' when requesting property '$propertyName'", 0, $previous);
+        return new self("Parse failed for class '$class' when requesting property '$propertyName'.", 0, $previous);
     }
 
     public static function childWithEmptyParentPropertyName(): self
