@@ -20,6 +20,9 @@ class ExternSortableTypeAccessor extends AbstractTypeAccessor
 
     public function getType(string $typeIdentifier): TypeInterface
     {
-        return $this->typeProvider->getAvailableType($typeIdentifier, SortableTypeInterface::class);
+        return $this->typeProvider->requestType($typeIdentifier)
+            ->instanceOf(SortableTypeInterface::class)
+            ->available(true)
+            ->getTypeInstance();
     }
 }

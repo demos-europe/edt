@@ -19,6 +19,6 @@ class InternTypeAccessor extends AbstractTypeAccessor
 
     public function getType(string $typeIdentifier): TypeInterface
     {
-        return $this->typeProvider->getTypeInterface($typeIdentifier);
+        return $this->typeProvider->requestType($typeIdentifier)->getTypeInstance();
     }
 }

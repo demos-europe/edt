@@ -49,7 +49,10 @@ class FieldsValidatorTest extends TestCase
      */
     public function testGetNonReadableProperties(string $typeIdentifier, string $propertiesString, array $expectedNonReadables): void
     {
-        $type = $this->typeProvider->getAvailableType($typeIdentifier, ResourceTypeInterface::class);
+        $type = $this->typeProvider->requestType($typeIdentifier)
+            ->instanceOf(ResourceTypeInterface::class)
+            ->available(true)
+            ->getTypeInstance();
         $nonReadables = $this->fieldsValidator->getNonReadableProperties($propertiesString, $type);
         self::assertSame($expectedNonReadables, $nonReadables);
     }

@@ -78,10 +78,11 @@ abstract class AbstractApiService
      */
     public function getFromRequest(string $urlTypeName, string $urlId, ParameterBag $urlParams): Item
     {
-        $type = $this->typeProvider->getAvailableTypeWithImplementation(
-            $urlTypeName,
-            ResourceTypeInterface::class
-        );
+        $type = $this->typeProvider->requestType($urlTypeName)
+            ->instanceOf(ResourceTypeInterface::class)
+            ->available(true)
+            ->getTypeInstance();
+
         $entity = $this->getObject($type, $urlId);
 
         return new Item($entity, $type->getTransformer(), $type::getName());
@@ -94,10 +95,10 @@ abstract class AbstractApiService
      */
     public function listFromRequest(string $typeName, ParameterBag $urlParams): Collection
     {
-        $type = $this->typeProvider->getAvailableTypeWithImplementation(
-            $typeName,
-            ResourceTypeInterface::class
-        );
+        $type = $this->typeProvider->requestType($typeName)
+            ->instanceOf(ResourceTypeInterface::class)
+            ->available(true)
+            ->getTypeInstance();
 
         $filters = $this->getFilters($urlParams);
         $sortMethods = $this->getSorting($urlParams);
@@ -140,12 +141,11 @@ abstract class AbstractApiService
         $relationships = $data[ContentField::RELATIONSHIPS] ?? [];
         $properties = $this->propertyValuesGenerator->generatePropertyValues($attributes, $relationships);
 
-        /** @var ResourceTypeInterface&UpdatableTypeInterface $type */
-        $type = $this->typeProvider->getAvailableType(
-            $urlTypeName,
-            ResourceTypeInterface::class,
-            UpdatableTypeInterface::class
-        );
+        $type = $this->typeProvider->requestType($urlTypeName)
+            ->instanceOf(ResourceTypeInterface::class)
+            ->instanceOf(UpdatableTypeInterface::class)
+            ->available(true)
+            ->getTypeInstance();
 
         $updatedEntity = $this->updateObject($type, $urlId, $properties);
         if (null === $updatedEntity) {
@@ -163,10 +163,10 @@ abstract class AbstractApiService
      */
     public function deleteFromRequest(string $urlTypeName, string $urlId): void
     {
-        $type = $this->typeProvider->getAvailableTypeWithImplementation(
-            $urlTypeName,
-            ResourceTypeInterface::class
-        );
+        $type = $this->typeProvider->requestType($urlTypeName)
+            ->instanceOf(ResourceTypeInterface::class)
+            ->available(true)
+            ->getTypeInstance();
 
         $this->deleteObject($type, $urlId);
     }
@@ -197,12 +197,11 @@ abstract class AbstractApiService
         $relationships = $data[ContentField::RELATIONSHIPS] ?? [];
         $properties = $this->propertyValuesGenerator->generatePropertyValues($attributes, $relationships);
 
-        /** @var ResourceTypeInterface&CreatableTypeInterface $type */
-        $type = $this->typeProvider->getAvailableType(
-            $urlTypeName,
-            ResourceTypeInterface::class,
-            CreatableTypeInterface::class
-        );
+        $type = $this->typeProvider->requestType($urlTypeName)
+            ->instanceOf(ResourceTypeInterface::class)
+            ->instanceOf(CreatableTypeInterface::class)
+            ->available(true)
+            ->getTypeInstance();
 
         $createdEntity = $this->createObject($type, $properties);
         if (null === $createdEntity) {

@@ -45,6 +45,8 @@ class ExternReadableTypeAccessor extends AbstractTypeAccessor
 
     public function getType(string $typeIdentifier): TypeInterface
     {
-        return $this->typeProvider->getTypeWithImplementation($typeIdentifier, ReadableTypeInterface::class);
+        return $this->typeProvider->requestType($typeIdentifier)
+            ->instanceOf(ReadableTypeInterface::class)
+            ->getTypeInstance();
     }
 }

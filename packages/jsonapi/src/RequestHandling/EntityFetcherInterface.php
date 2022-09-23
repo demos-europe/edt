@@ -7,6 +7,7 @@ namespace EDT\JsonApi\RequestHandling;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
 
 /**
@@ -18,7 +19,7 @@ interface EntityFetcherInterface
     /**
      * @template O of object
      *
-     * @param IdentifiableTypeInterface<C, S, O>&ReadableTypeInterface<C, S, O> $type
+     * @param TypeInterface<C, S, O>&IdentifiableTypeInterface&ReadableTypeInterface $type
      * @param non-empty-string $id
      *
      * @return O

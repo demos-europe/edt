@@ -16,6 +16,7 @@ use cebe\openapi\spec\Tag;
 use Closure;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
 use Throwable;
 use function collect;
@@ -100,7 +101,10 @@ final class OpenAPISchemaGenerator
             ]
         );
 
-        $tags = collect($this->resourceTypeProvider->getAllAvailableTypes(ResourceTypeInterface::class))
+        $tags = collect($this->resourceTypeProvider->getAllAvailableTypes())
+            ->filter(static function (TypeInterface $type): bool {
+                return $type instanceof ResourceTypeInterface;
+            })
             ->map(function (ResourceTypeInterface $type): ResourceTypeInterface {
                 // create schema information for all resource types
 
@@ -317,7 +321,10 @@ final class OpenAPISchemaGenerator
     private function isReferenceable(string $typeName): bool
     {
         return $this->resourceTypeProvider->isTypeAvailable($typeName)
-            && $this->resourceTypeProvider->getAvailableType($typeName)->isReferencable();
+            && $this->resourceTypeProvider->requestType($typeName)
+                ->available(true)
+                ->getTypeInstance()
+                ->isReferencable();
     }
 
     /**

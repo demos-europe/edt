@@ -20,6 +20,8 @@ class InternSortableTypeAccessor extends AbstractTypeAccessor
 
     public function getType(string $typeIdentifier): TypeInterface
     {
-        return $this->typeProvider->getTypeWithImplementation($typeIdentifier, SortableTypeInterface::class);
+        return $this->typeProvider->requestType($typeIdentifier)
+            ->instanceOf(SortableTypeInterface::class)
+            ->getTypeInstance();
     }
 }
