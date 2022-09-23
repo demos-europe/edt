@@ -1,4 +1,4 @@
-EDT-Queries provides PHP classes to ease the access to a wanted list of entities for common use cases while
+This composer library provides PHP classes to ease the access to a wanted list of entities for common use cases while
 being agnostic about the source of the entities.
 
 == Overview

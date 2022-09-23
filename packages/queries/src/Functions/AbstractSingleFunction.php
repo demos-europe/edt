@@ -8,6 +8,11 @@ use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Utilities\Iterables;
 
 /**
+ * Template parameters:
+ *
+ * * `R`: the possible return types of this function
+ * * `I`: the possible input types of this function
+ *
  * @template R
  * @template I
  * @template-extends AbstractFunction<R, I>

@@ -7,6 +7,10 @@ namespace EDT\Querying\Contracts;
 /**
  * Some kind of function with input parameters and an output of type `R`.
  *
+ * Template parameters:
+ *
+ * * `R`: the possible return types of this function
+ *
  * @template R
  */
 interface FunctionInterface extends PathsBasedInterface

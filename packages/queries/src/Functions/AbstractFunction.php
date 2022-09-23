@@ -15,6 +15,11 @@ use function count;
  * This class is to be used for any {@link FunctionInterface} implementation that itself
  * calls one or multiple other functions.
  *
+ * Template parameters:
+ *
+ * * `R`: the possible return types of this function
+ * * `I`: the possible input types of this function
+ *
  * @template R
  * @template I
  * @template-implements FunctionInterface<R>
