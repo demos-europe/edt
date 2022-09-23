@@ -143,7 +143,7 @@ class TableJoiner
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    protected function cartesianProductRecursive($rightColumn, $leftColumns): array
+    protected function cartesianProductRecursive($rightColumn, array $leftColumns): array
     {
         // This is not just a shortcut but the place where the result table is
         // initially filled to be expanded in other recursion steps.

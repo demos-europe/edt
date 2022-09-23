@@ -17,6 +17,7 @@ class UpperCase extends AbstractSingleFunction
         if (!is_string($baseFunctionResult)) {
             return null;
         }
+
         return mb_strtoupper($baseFunctionResult);
     }
 }

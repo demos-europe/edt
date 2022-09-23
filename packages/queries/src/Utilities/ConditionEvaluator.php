@@ -31,7 +31,7 @@ class ConditionEvaluator
     /**
      * @template T of object
      * @template K of int|string
-     * @param array<K,T> $arrayToFilter must not contain `null` values
+     * @param array<K, T> $arrayToFilter must not contain `null` values
      * @param FunctionInterface<bool> $condition
      * @param FunctionInterface<bool> ...$conditions
      * @return array<K, T> Will not contain `null` values.
@@ -96,7 +96,7 @@ class ConditionEvaluator
     }
 
     /**
-     * @return mixed[][]
+     * @return list<list<mixed>>
      */
     private function getPropertyValueRows(object $target, FunctionInterface $condition): array
     {
