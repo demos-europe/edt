@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.14 - 2022-09-23
 
 - refactor: adjust `split` parameters and behavior
 - refactor: remove problematic static constructor method
