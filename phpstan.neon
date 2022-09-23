@@ -382,11 +382,6 @@ parameters:
             path: packages/queries/src/Contracts/SortException.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\Functions\\\\AbstractFunction\\:\\:unflatPropertyValues\\(\\) should return array\\<int, array\\<int, T\\>\\> but returns array\\<int, array\\<int\\|string, T\\>\\>\\.$#"
-            count: 1
-            path: packages/queries/src/Functions/AbstractFunction.php
-
-        -
             message: "#^Empty array passed to foreach\\.$#"
             count: 1
             path: packages/queries/src/Functions/AnyEqual.php

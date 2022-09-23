@@ -239,7 +239,6 @@ class QueryBuilderPreparer
     {
         array_unshift($properties, $property);
         $originalPathLength = count($properties);
-        $inMainContext = null === $context;
 
         /**
          * If the condition acts on the relationship name (i.e. does not need a join to the target
@@ -256,9 +255,11 @@ class QueryBuilderPreparer
             $lastProperty = $properties[array_key_last($properties)];
         }
 
-        if ($inMainContext) {
+        if (null === $context) {
+            // in main context
             $classMetadata = $this->mainClassMetadata;
         } else {
+            // not in main context
             $classMetadata = $this->metadataFactory->getMetadataFor($context);
             $this->addFromClause($context, $this->joinFinder->createTableAlias($salt, $classMetadata));
         }
@@ -266,7 +267,7 @@ class QueryBuilderPreparer
 
         // For the main context the simple table name will be used to match the alias in the main `from` clause.
         // Separate contexts will be prefixed to distinguish them if they use the same table name as the main context.
-        $entityAlias = $inMainContext
+        $entityAlias = null === $context
             ? $classMetadata->getTableName()
             : $this->joinFinder->createTableAlias($salt, $classMetadata);
 

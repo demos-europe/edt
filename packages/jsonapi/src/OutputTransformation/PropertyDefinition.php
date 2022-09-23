@@ -15,6 +15,8 @@ use function in_array;
  * Implementation of {@link PropertyDefinitionInterface} providing mostly hardcoded
  * behavior.
  *
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
  * @template R
  * @template-implements PropertyDefinitionInterface<O, R>
@@ -32,12 +34,12 @@ class PropertyDefinition implements PropertyDefinitionInterface
     private $toBeUsedAsDefaultField;
 
     /**
-     * @var WrapperFactoryInterface<PathsBasedInterface, PathsBasedInterface, O, WrapperInterface>
+     * @var WrapperFactoryInterface<C, S, O, WrapperInterface>
      */
     private $wrapperFactory;
 
     /**
-     * @var ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, O>
+     * @var ResourceTypeInterface<C, S, O>
      */
     private $type;
 
@@ -47,9 +49,6 @@ class PropertyDefinition implements PropertyDefinitionInterface
     private $customReadCallable = null;
 
     /**
-     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
-     * @template S of \EDT\Querying\Contracts\PathsBasedInterface
-     *
      * @param non-empty-string                                   $propertyName
      * @param ResourceTypeInterface<C, S, O>                     $type
      * @param WrapperFactoryInterface<C, S, O, WrapperInterface> $wrapperFactory

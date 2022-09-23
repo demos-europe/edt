@@ -91,7 +91,7 @@ class PropertyPathProcessor
         // Check if the current type needs mapping to the backing object schema, if so, apply it.
         $pathToAdd = $this->typeAccessor->getDeAliasedPath($type, $currentPathPart);
         // append the de-aliased path to the processed path
-        array_push($newPath, ...$pathToAdd);
+        $newPath = $this->appendDeAliasedPath($newPath, $pathToAdd);
 
         if (null !== $propertyTypeIdentifier) {
             try {
@@ -138,5 +138,18 @@ class PropertyPathProcessor
         }
 
         return $availableProperties[$pathSegment];
+    }
+
+    /**
+     * @param list<non-empty-string>           $newPath
+     * @param non-empty-list<non-empty-string> $pathToAdd
+     *
+     * @return non-empty-list<non-empty-string>
+     */
+    private function appendDeAliasedPath(array $newPath, array $pathToAdd): array
+    {
+        array_push($newPath, ...$pathToAdd);
+
+        return $newPath;
     }
 }

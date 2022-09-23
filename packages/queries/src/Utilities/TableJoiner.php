@@ -218,11 +218,11 @@ class TableJoiner
      */
     private function addReferenceToRows(array $rows, int $reference): array
     {
-        array_walk($rows, static function (array &$row) use ($reference): void {
+        return array_map(static function (array $row) use ($reference): array {
             $row[] = $row[$reference];
-        });
 
-        return $rows;
+            return $row;
+        }, $rows);
     }
 
     /**
@@ -263,9 +263,9 @@ class TableJoiner
      */
     private function reAddEmptyColumnsAsNull(array $rows, array $emptyColumnIndices): array
     {
-        array_map(static function (int $index) use (&$rows): void {
+        foreach ($emptyColumnIndices as $index) {
             Iterables::insertValue($rows, $index, null);
-        }, $emptyColumnIndices);
+        }
 
         return $rows;
     }
