@@ -25,7 +25,7 @@ use function array_slice;
 class PrefilledObjectProvider implements ObjectProviderInterface
 {
     /**
-     * @var array<K,T>
+     * @var array<K, T>
      */
     private $prefilledArray;
 
@@ -43,7 +43,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface
      * @param array<K, T>             $prefilledArray
      * @param ConditionEvaluator|null $conditionEvaluator
      */
-    // TODO: refactor default away
+    // TODO: refactor default away and inject Sorter
     public function __construct(PropertyAccessorInterface $propertyAccessor, array $prefilledArray, ConditionEvaluator $conditionEvaluator = null)
     {
         $this->prefilledArray = $prefilledArray;

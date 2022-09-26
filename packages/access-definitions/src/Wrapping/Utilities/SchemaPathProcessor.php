@@ -47,13 +47,14 @@ class SchemaPathProcessor
      * Also adds the {@link ReadableTypeInterface::getAccessCondition() access condition} of the given type.
      *
      * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+     * @template S of \EDT\Querying\Contracts\PathsBasedInterface
      *
-     * @param TypeInterface<C, PathsBasedInterface, object> $type
-     * @param C ...$conditions
+     * @param TypeInterface<C, S, object> $type
+     * @param C                           ...$conditions
      *
      * @return list<C>
      *
-     * @throws PathException
+     * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
      * @throws AccessException
      */
     public function mapConditions(TypeInterface $type, PathsBasedInterface ...$conditions): array
@@ -79,10 +80,11 @@ class SchemaPathProcessor
      * If no sort methods were given then apply the {@link TypeInterface::getDefaultSortMethods() default sort methods}
      * of the given type.
      *
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
      * @template S of \EDT\Querying\Contracts\PathsBasedInterface
      *
-     * @param TypeInterface<PathsBasedInterface, S, object> $type
-     * @param S                                             ...$sortMethods
+     * @param TypeInterface<C, S, object> $type
+     * @param S                           ...$sortMethods
      *
      * @return list<S>
      *

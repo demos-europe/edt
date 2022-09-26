@@ -218,7 +218,7 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @param array<string,list<F|null>> $conditions
+     * @param array<non-empty-string, list<F|null>> $conditions
      */
     private function hasReachedRootGroup(array $conditions): bool
     {
