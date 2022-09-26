@@ -15,6 +15,8 @@ use EDT\Wrapping\Utilities\SchemaPathProcessor;
  * @template T of object
  *
  * @template-implements ObjectProviderInterface<C, S, T>
+ *
+ * @deprecated use the individual components manually and optimize them for your use-case
  */
 class TypeRestrictedEntityProvider implements ObjectProviderInterface
 {
