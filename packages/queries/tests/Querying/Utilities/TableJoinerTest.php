@@ -27,6 +27,7 @@ class TableJoinerTest extends ModelBasedTest
         parent::setUp();
         $this->tableJoiner = new TableJoiner(new ReflectionPropertyAccessor());
         $this->cartesianProduct = new ReflectionMethod($this->tableJoiner, 'cartesianProduct');
+        $this->cartesianProduct->setAccessible(true);
     }
 
     public function testCartesianProductWithNoColumns(): void
