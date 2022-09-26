@@ -62,7 +62,11 @@ class SchemaPathProcessor
         $conditions = array_values($conditions);
         if ([] !== $conditions) {
             if ($type instanceof FilterableTypeInterface) {
-                array_walk($conditions, [$this, 'processExternalCondition'], $type);
+                $typeAccessor = new ExternFilterableTypeAccessor($this->typeProvider);
+                $processor = $this->propertyPathProcessorFactory->createPropertyPathProcessor($typeAccessor);
+                foreach ($conditions as $condition) {
+                    $processor->processPropertyPaths($condition, $type);
+                }
             } else {
                 throw AccessException::typeNotFilterable($type);
             }
@@ -152,20 +156,6 @@ class SchemaPathProcessor
         }
 
         return $sortMethods;
-    }
-
-    /**
-     * Check if all properties used in the condition are available for filtering
-     * and map the paths to be applied to the schema of the backing class.
-     *
-     * @throws AccessException
-     * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
-     */
-    protected function processExternalCondition(PathsBasedInterface $condition, int $key, FilterableTypeInterface $type): void
-    {
-        $typeAccessor = new ExternFilterableTypeAccessor($this->typeProvider);
-        $processor = $this->propertyPathProcessorFactory->createPropertyPathProcessor($typeAccessor);
-        $processor->processPropertyPaths($condition, $type);
     }
 
     /**
