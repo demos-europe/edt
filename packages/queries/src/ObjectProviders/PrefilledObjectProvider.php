@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ObjectProviders;
 
+use EDT\Querying\Pagination\OffsetBasedPagination;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SliceException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\EntityProviders\OffsetBasedEntityProviderInterface;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Contracts\ObjectProviderInterface;
@@ -21,8 +23,11 @@ use function array_slice;
  * @template T of object
  * @template K of int|string
  * @template-implements ObjectProviderInterface<FunctionInterface<bool>, SortMethodInterface, T>
+ * @template-implements OffsetBasedEntityProviderInterface<FunctionInterface<bool>, SortMethodInterface, T>
+ *
+ * TODO: rename to PrefilledEntityProvider
  */
-class PrefilledObjectProvider implements ObjectProviderInterface
+class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEntityProviderInterface
 {
     /**
      * @var array<K, T>
@@ -62,6 +67,28 @@ class PrefilledObjectProvider implements ObjectProviderInterface
         $result = $this->filter($result, $conditions);
         $result = $this->sort($result, $sortMethods);
         $result = $this->slice($result, $offset, $limit);
+
+        return $result;
+    }
+
+    /**
+     * @param list<FunctionInterface<bool>> $conditions
+     * @param list<SortMethodInterface>     $sortMethods
+     * @param OffsetBasedPagination|null    $pagination
+     *
+     * @return array<K, T>
+     *
+     * @throws SliceException
+     * @throws SortException
+     */
+    public function getEntities(array $conditions, array $sortMethods, ?object $pagination): array
+    {
+        $result = $this->prefilledArray;
+        $result = $this->filter($result, $conditions);
+        $result = $this->sort($result, $sortMethods);
+        $result = null === $pagination
+            ? $this->slice($result, 0, null)
+            : $this->slice($result, $pagination->getOffset(), $pagination->getLimit());
 
         return $result;
     }
