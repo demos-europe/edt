@@ -56,6 +56,8 @@ class SchemaPathProcessor
      *
      * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
      * @throws AccessException
+     *
+     * @deprecated use {@link SchemaPathProcessor::mapFilterConditions()} and {@link SchemaPathProcessor::processAccessCondition()} instead
      */
     public function mapConditions(TypeInterface $type, PathsBasedInterface ...$conditions): array
     {
@@ -79,6 +81,27 @@ class SchemaPathProcessor
     }
 
     /**
+     * Check the paths of the given conditions for availability and applies aliases using the given type.
+     *
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+     * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+     *
+     * @param FilterableTypeInterface<C, S, object> $type
+     * @param non-empty-list<C>                     $conditions
+     *
+     * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
+     * @throws AccessException
+     */
+    public function mapFilterConditions(FilterableTypeInterface $type, array $conditions): void
+    {
+        $typeAccessor = new ExternFilterableTypeAccessor($this->typeProvider);
+        $processor = $this->propertyPathProcessorFactory->createPropertyPathProcessor($typeAccessor);
+        foreach ($conditions as $condition) {
+           $processor->processPropertyPaths($condition, $type);
+        }
+    }
+
+    /**
      * Check the paths of the given sort methods for availability and aliases using the given type.
      *
      * If no sort methods were given then apply the {@link TypeInterface::getDefaultSortMethods() default sort methods}
@@ -94,6 +117,8 @@ class SchemaPathProcessor
      *
      * @throws AccessException
      * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
+     *
+     * @deprecated use {@link SchemaPathProcessor::processDefaultSortMethods()} and {@link SchemaPathProcessor::mapSorting()} instead
      */
     public function mapSortMethods(TypeInterface $type, PathsBasedInterface ...$sortMethods): array
     {
@@ -111,6 +136,27 @@ class SchemaPathProcessor
         }
 
         throw AccessException::typeNotSortable($type);
+    }
+
+    /**
+     * Check the paths of the given sort methods for availability and aliases using the given type.
+     *
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+     * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+     *
+     * @param SortableTypeInterface<C, S, object> $type
+     * @param non-empty-list<S>                   $sortMethods
+     *
+     * @throws AccessException
+     * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
+     */
+    public function mapSorting(SortableTypeInterface $type, array $sortMethods): void
+    {
+        $typeAccessor = new ExternSortableTypeAccessor($this->typeProvider);
+        $processor = $this->propertyPathProcessorFactory->createPropertyPathProcessor($typeAccessor);
+        foreach ($sortMethods as $sortMethod) {
+            $processor->processPropertyPaths($sortMethod, $type);
+        }
     }
 
     /**
