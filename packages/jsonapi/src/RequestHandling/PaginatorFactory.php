@@ -41,7 +41,7 @@ class PaginatorFactory
                 $route = $request->attributes->get('_route');
                 $inputParams = $request->attributes->get('_route_params');
                 $newParams = array_merge($inputParams, $request->query->all());
-                $newParams['page'] = $page;
+                $newParams[UrlParameter::PAGE] = $page;
 
                 return $this->router->generate($route, $newParams, 0);
             }
