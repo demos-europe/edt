@@ -6,7 +6,7 @@ namespace EDT\Querying\Contracts;
 
 /**
  * @template I
- * @template F of FunctionInterface<bool>
+ * @template F of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface ConditionParserInterface
 {
@@ -15,5 +15,5 @@ interface ConditionParserInterface
      *
      * @return F
      */
-    public function parseCondition($condition): FunctionInterface;
+    public function parseCondition($condition): PathsBasedInterface;
 }
