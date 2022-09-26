@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.15 - 2022-09-27
 
 - refactor: improve API
 - refactor: improve implementation
