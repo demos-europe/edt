@@ -52,9 +52,8 @@ class FieldsValidator
             new Assert\All([
                 new Assert\Type('string'),
                 new Assert\NotNull(),
-                // A comma sparated list of properties. Each property must consist of letters,
-                // digits or underscores, but not start with a digit.
-                new Assert\Regex('/^([a-z_]\w*(,[a-z_]\w*)*)?$/')
+                // A comma separated list of property names.
+                new Assert\Regex('/^('.Patterns::PROPERTY_NAME.'(,'.Patterns::PROPERTY_NAME.')*)?$/')
             ]),
         ];
     }
