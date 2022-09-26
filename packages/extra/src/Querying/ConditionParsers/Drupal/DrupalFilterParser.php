@@ -7,12 +7,12 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ConditionParserInterface;
-use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use function count;
 use function in_array;
 
 /**
- * Provides functions to convert data from HTTP requests into {@link FunctionInterface} instances.
+ * Provides functions to convert data from HTTP requests into condition instances.
  *
  * The data is expected to be in the format defined by the Drupal JSON:API filter specification.
  *
@@ -26,7 +26,7 @@ use function in_array;
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
  *          }
- * @template F of FunctionInterface<bool>
+ * @template F of \EDT\Querying\Contracts\PathsBasedInterface
  * @template-implements FilterParserInterface<array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, F>
  */
 class DrupalFilterParser implements FilterParserInterface
@@ -202,9 +202,10 @@ class DrupalFilterParser implements FilterParserInterface
      * @param F $condition
      * @param F ...$conditions
      * @return F
+     *
      * @throws DrupalFilterException
      */
-    protected function createGroup(string $conjunction, FunctionInterface $condition, FunctionInterface ...$conditions): FunctionInterface
+    protected function createGroup(string $conjunction, PathsBasedInterface $condition, PathsBasedInterface ...$conditions): PathsBasedInterface
     {
         switch ($conjunction) {
             case self::AND:
@@ -226,12 +227,13 @@ class DrupalFilterParser implements FilterParserInterface
 
     /**
      * @param array<non-empty-string, list<DrupalFilterCondition>> $groupedConditions
+     *
      * @return array<non-empty-string, list<F>>
      */
     private function parseConditions(array $groupedConditions): array
     {
         return array_map(function (array $conditionGroup): array {
-            return array_map(function (array $condition): FunctionInterface {
+            return array_map(function (array $condition): PathsBasedInterface {
                 return $this->conditionParser->parseCondition($condition);
             }, $conditionGroup);
         }, $groupedConditions);

@@ -6,7 +6,7 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ConditionParserInterface;
-use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use function array_key_exists;
 
 /**
@@ -18,7 +18,7 @@ use function array_key_exists;
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
  *          }
- * @template F of FunctionInterface<bool>
+ * @template F of \EDT\Querying\Contracts\PathsBasedInterface
  * @template-implements ConditionParserInterface<DrupalFilterCondition, F>
  */
 class DrupalConditionParser implements ConditionParserInterface
@@ -56,7 +56,7 @@ class DrupalConditionParser implements ConditionParserInterface
      * @param  array{path: non-empty-string, value?: mixed, operator?: non-empty-string, memberOf?: non-empty-string} $condition
      * @throws DrupalFilterException
      */
-    public function parseCondition($condition): FunctionInterface
+    public function parseCondition($condition): PathsBasedInterface
     {
         $operatorName = array_key_exists(DrupalFilterParser::OPERATOR, $condition)
             ? $condition[DrupalFilterParser::OPERATOR]
