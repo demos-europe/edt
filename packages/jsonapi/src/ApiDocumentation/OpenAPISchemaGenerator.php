@@ -108,10 +108,10 @@ final class OpenAPISchemaGenerator
             ->map(function (ResourceTypeInterface $type): ResourceTypeInterface {
                 // create schema information for all resource types
 
-                $typeName = $type::getName();
-                if (!$this->schemaStore->has($typeName)) {
+                $typeIdentifier = $type::getName();
+                if (!$this->schemaStore->has($typeIdentifier)) {
                     $schema = $this->createSchema($type);
-                    $this->schemaStore->set($typeName, $schema);
+                    $this->schemaStore->set($typeIdentifier, $schema);
                 }
 
                 return $type;
@@ -316,12 +316,12 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @param non-empty-string $typeName
+     * @param non-empty-string $typeIdentifier
      */
-    private function isReferenceable(string $typeName): bool
+    private function isReferenceable(string $typeIdentifier): bool
     {
-        return $this->resourceTypeProvider->isTypeAvailable($typeName)
-            && $this->resourceTypeProvider->requestType($typeName)
+        return $this->resourceTypeProvider->isTypeAvailable($typeIdentifier)
+            && $this->resourceTypeProvider->requestType($typeIdentifier)
                 ->available(true)
                 ->getTypeInstance()
                 ->isReferencable();

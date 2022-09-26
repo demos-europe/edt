@@ -73,12 +73,12 @@ abstract class AbstractApiService
     }
 
     /**
-     * @param non-empty-string $urlTypeName
+     * @param non-empty-string $urlTypeIdentifier
      * @param non-empty-string $urlId
      */
-    public function getFromRequest(string $urlTypeName, string $urlId, ParameterBag $urlParams): Item
+    public function getFromRequest(string $urlTypeIdentifier, string $urlId, ParameterBag $urlParams): Item
     {
-        $type = $this->typeProvider->requestType($urlTypeName)
+        $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->available(true)
             ->getTypeInstance();
@@ -89,13 +89,13 @@ abstract class AbstractApiService
     }
 
     /**
-     * @param non-empty-string $typeName
+     * @param non-empty-string $typeIdentifier
      *
      * @throws DrupalFilterException
      */
-    public function listFromRequest(string $typeName, ParameterBag $urlParams): Collection
+    public function listFromRequest(string $typeIdentifier, ParameterBag $urlParams): Collection
     {
-        $type = $this->typeProvider->requestType($typeName)
+        $type = $this->typeProvider->requestType($typeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->available(true)
             ->getTypeInstance();
@@ -117,23 +117,22 @@ abstract class AbstractApiService
     }
 
     /**
-     * @param non-empty-string $urlTypeName
-     * @param non-empty-string $urlId
+     * @param non-empty-string                                                                                                                                   $urlTypeIdentifier
+     * @param non-empty-string                                                                                                                                   $urlId
      * @param array{data: array{type: non-empty-string, id: non-empty-string, attributes?: array<non-empty-string,mixed>, relationships?: JsonApiRelationships}} $requestBody
      *
      * @throws Exception
      */
-    // TODO: add proper request body format validation
-    public function updateFromRequest(string $urlTypeName, string $urlId, array $requestBody, ParameterBag $urlParams): ?Item
+    public function updateFromRequest(string $urlTypeIdentifier, string $urlId, array $requestBody, ParameterBag $urlParams): ?Item
     {
         // "The PATCH request MUST include a single resource object as primary data."
         $data = $requestBody[ContentField::DATA];
         // "The resource object MUST contain type and id members."
         $bodyId = $data[ContentField::ID];
-        $bodyTypeName = $data[ContentField::TYPE];
+        $bodyTypeIdentifier = $data[ContentField::TYPE];
 
-        $bodyTypeName = $this->normalizeTypeName($bodyTypeName);
-        if ($bodyId !== $urlId || $bodyTypeName !== $urlTypeName) {
+        $bodyTypeIdentifier = $this->normalizeTypeName($bodyTypeIdentifier);
+        if ($bodyId !== $urlId || $bodyTypeIdentifier !== $urlTypeIdentifier) {
             throw new InvalidArgumentException('Invalid update request. Resource ID and type defined in URL must match resource ID and type set in the request body.');
         }
 
@@ -141,7 +140,7 @@ abstract class AbstractApiService
         $relationships = $data[ContentField::RELATIONSHIPS] ?? [];
         $properties = $this->propertyValuesGenerator->generatePropertyValues($attributes, $relationships);
 
-        $type = $this->typeProvider->requestType($urlTypeName)
+        $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->instanceOf(UpdatableTypeInterface::class)
             ->available(true)
@@ -156,14 +155,14 @@ abstract class AbstractApiService
     }
 
     /**
-     * @param non-empty-string $urlTypeName
+     * @param non-empty-string $urlTypeIdentifier
      * @param non-empty-string $urlId
      *
      * @throws Exception
      */
-    public function deleteFromRequest(string $urlTypeName, string $urlId): void
+    public function deleteFromRequest(string $urlTypeIdentifier, string $urlId): void
     {
-        $type = $this->typeProvider->requestType($urlTypeName)
+        $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->available(true)
             ->getTypeInstance();
@@ -171,21 +170,19 @@ abstract class AbstractApiService
         $this->deleteObject($type, $urlId);
     }
 
-    // TODO: add proper format validation
-
     /**
-     * @param non-empty-string $urlTypeName
+     * @param non-empty-string                                                                                                      $urlTypeIdentifier
      * @param array{data: array{type: string, id: string, attributes?: array<string, mixed>, relationships?: JsonApiRelationships}} $requestBody
      *
      * @throws Exception
      */
-    public function createFromRequest(string $urlTypeName, array $requestBody, ParameterBag $urlParams): ?Item
+    public function createFromRequest(string $urlTypeIdentifier, array $requestBody, ParameterBag $urlParams): ?Item
     {
         // "The request MUST include a single resource object as primary data."
         $data = $requestBody[ContentField::DATA] ?? [];
         // "The resource object MUST contain at least a type member."
-        $bodyTypeName = $data[ContentField::TYPE] ?? null;
-        if ($bodyTypeName !== $urlTypeName) {
+        $bodyTypeIdentifier = $data[ContentField::TYPE] ?? null;
+        if ($bodyTypeIdentifier !== $urlTypeIdentifier) {
             throw new InvalidArgumentException('Invalid creation request. Resource type defined in URL must match resource type send in the body.');
         }
 
@@ -197,7 +194,7 @@ abstract class AbstractApiService
         $relationships = $data[ContentField::RELATIONSHIPS] ?? [];
         $properties = $this->propertyValuesGenerator->generatePropertyValues($attributes, $relationships);
 
-        $type = $this->typeProvider->requestType($urlTypeName)
+        $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->instanceOf(CreatableTypeInterface::class)
             ->available(true)
@@ -253,11 +250,11 @@ abstract class AbstractApiService
     ): ApiListResultInterface;
 
     /**
-     * @param non-empty-string $typeName
+     * @param non-empty-string $typeIdentifier
      *
      * @return non-empty-string
      */
-    abstract protected function normalizeTypeName(string $typeName): string;
+    abstract protected function normalizeTypeName(string $typeIdentifier): string;
 
     /**
      * @template O of object

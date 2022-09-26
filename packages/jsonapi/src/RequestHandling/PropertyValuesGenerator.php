@@ -116,9 +116,9 @@ class PropertyValuesGenerator
 
     private function getRelationshipEntity(ResourceIdentifierObject $resourceIdentifierObject): object
     {
-        $typeName = $resourceIdentifierObject->getType();
+        $typeIdentifier = $resourceIdentifierObject->getType();
 
-        $type = $this->typeProvider->requestType($typeName)
+        $type = $this->typeProvider->requestType($typeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->available(true)
             ->getTypeInstance();
