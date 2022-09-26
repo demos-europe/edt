@@ -1,10 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- refactor: improve API
+- refactor: improve implementation
+
 ## 0.12.14 - 2022-09-23
 
 - refactor: adjust `split` parameters and behavior
 - refactor: remove problematic static constructor method
-- refacter: improve naming/type-hinting and remove assertions
+- refactor: improve naming/type-hinting and remove assertions
 
 ## 0.12.13 - 2022-09-20
 
