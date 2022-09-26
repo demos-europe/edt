@@ -17,4 +17,10 @@ class UrlParameter
     public const FIELDS = 'fields';
 
     public const INCLUDE = 'include';
+
+    public const NUMBER = 'number';
+
+    public const OFFSET = 'offset';
+
+    public const LIMIT = 'limit';
 }

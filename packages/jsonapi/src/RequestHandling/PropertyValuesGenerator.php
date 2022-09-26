@@ -12,6 +12,7 @@ use EDT\JsonApi\Schema\ToManyResourceLinkage;
 use EDT\JsonApi\Schema\ToOneResourceLinkage;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use InvalidArgumentException;
+use function count;
 
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
@@ -61,11 +62,11 @@ class PropertyValuesGenerator
         $relationships = array_map(function (RelationshipObject $relationshipObject) {
             $resourceLinkage = $relationshipObject->getData();
 
-            if ($resourceLinkage->getCardinality()->isToMany() && $resourceLinkage instanceof ToManyResourceLinkage) {
+            if ($resourceLinkage instanceof ToManyResourceLinkage && $resourceLinkage->getCardinality()->isToMany()) {
                 return new ArrayCollection($this->getRelationshipEntities($resourceLinkage));
             }
 
-            if ($resourceLinkage->getCardinality()->isToOne() && $resourceLinkage instanceof ToOneResourceLinkage) {
+            if ($resourceLinkage instanceof ToOneResourceLinkage && $resourceLinkage->getCardinality()->isToOne()) {
                 return $this->getEntityForResourceLinkage($resourceLinkage);
             }
 
