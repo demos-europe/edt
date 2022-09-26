@@ -129,15 +129,18 @@ class SchemaPathProcessor
      * Check if all properties used in the sort methods are available
      * and map the paths to be applied to the schema of the backing class.
      *
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
      * @template S of \EDT\Querying\Contracts\PathsBasedInterface
      *
-     * @param TypeInterface<PathsBasedInterface, S, object> $type
+     * @param TypeInterface<C, S, object> $type
      *
      * @return list<S>
      *
      * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
+     *
+     * @internal
      */
-    protected function processDefaultSortMethods(TypeInterface $type): array
+    public function processDefaultSortMethods(TypeInterface $type): array
     {
         $sortMethods = $type->getDefaultSortMethods();
         $typeAccessor = new InternTypeAccessor($this->typeProvider);
@@ -164,16 +167,22 @@ class SchemaPathProcessor
     }
 
     /**
-     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+     * Get the processed {@link ReadableTypeInterface::getAccessCondition() access condition}
+     * of the given type.
      *
-     * @param TypeInterface<C, PathsBasedInterface, object> $type
+     * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+     * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+     *
+     * @param TypeInterface<C, S, object> $type
      *
      * @return C
      *
      * @throws AccessException
      * @throws PathException
+     *
+     * @internal
      */
-    protected function processAccessCondition(TypeInterface $type): PathsBasedInterface
+    public function processAccessCondition(TypeInterface $type): PathsBasedInterface
     {
         $condition = $type->getAccessCondition();
         $typeAccessor = new InternTypeAccessor($this->typeProvider);
