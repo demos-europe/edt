@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
- * @template F of FunctionInterface<bool>
+ * @template F of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface OperatorProviderInterface
 {
@@ -25,5 +25,5 @@ interface OperatorProviderInterface
      *
      * @return F
      */
-    public function createOperator(string $operatorName, $value, array $path): FunctionInterface;
+    public function createOperator(string $operatorName, $value, array $path): PathsBasedInterface;
 }
