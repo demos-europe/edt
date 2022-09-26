@@ -6,7 +6,7 @@ namespace EDT\JsonApi\RequestHandling;
 
 /**
  * @template I
- * @template C of \EDT\Querying\Contracts\FunctionInterface<bool>
+ * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface FilterParserInterface
 {
