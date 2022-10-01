@@ -6,6 +6,7 @@ namespace EDT\JsonApi\OutputTransformation;
 
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Utilities\Iterables;
+use function gettype;
 use const ARRAY_FILTER_USE_BOTH;
 use const ARRAY_FILTER_USE_KEY;
 use function array_key_exists;
@@ -49,12 +50,12 @@ class DynamicTransformer extends TransformerAbstract
     private $type;
 
     /**
-     * @var array<string,IncludeDefinitionInterface>
+     * @var array<string, IncludeDefinitionInterface>
      */
     private $includeDefinitions;
 
     /**
-     * @var array<string,PropertyDefinitionInterface>
+     * @var array<string, PropertyDefinitionInterface>
      */
     private $attributeDefinitions;
 
@@ -69,12 +70,12 @@ class DynamicTransformer extends TransformerAbstract
     private $messageFormatter;
 
     /**
-     * @param array<string,PropertyDefinitionInterface> $attributeDefinitions mappings from an
-     *                                                                        attribute name to its
-     *                                                                        definition
-     * @param array<string,IncludeDefinitionInterface>  $includeDefinitions   mappings from an
-     *                                                                        include name to its
-     *                                                                        definition
+     * @param array<string, PropertyDefinitionInterface> $attributeDefinitions mappings from an
+     *                                                                         attribute name to its
+     *                                                                         definition
+     * @param array<string, IncludeDefinitionInterface>  $includeDefinitions   mappings from an
+     *                                                                         include name to its
+     *                                                                         definition
      */
     public function __construct(
         string $type,
@@ -103,10 +104,14 @@ class DynamicTransformer extends TransformerAbstract
      *
      * @param object $entity
      *
-     * @return array<string,mixed>
+     * @return array<string, mixed>
      */
     public function transform($entity): array
     {
+        if (!is_object($entity)) {
+            $actualType = gettype($entity);
+            throw new InvalidArgumentException("Expected object, got $actualType when trying to transform into `$this->type`.");
+        }
         $paramBag = new ParamBag([]);
         $scope = $this->getCurrentScope();
         if (null === $scope) {
@@ -145,10 +150,6 @@ class DynamicTransformer extends TransformerAbstract
             );
         }
 
-        if (!is_object($entity)) {
-            throw new InvalidArgumentException('Expected object, got '.gettype($entity));
-        }
-
         return array_map(
             static function (PropertyDefinitionInterface $definition) use ($entity, $paramBag) {
                 return $definition->determineData($entity, $paramBag);
@@ -158,11 +159,11 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param array<mixed,mixed> $arguments We expect the include-target (the entity to transform)
-     *                                      to be the first value and a
-     *                                      {@link \League\Fractal\ParamBag} as second parameter.
-     *                                      Otherwise, an {@link InvalidArgumentException} is
-     *                                      thrown.
+     * @param array<mixed, mixed> $arguments We expect the include-target (the entity to transform)
+     *                                       to be the first value and a
+     *                                       {@link \League\Fractal\ParamBag} as second parameter.
+     *                                       Otherwise, an {@link InvalidArgumentException} is
+     *                                       thrown.
      *
      * @return Collection|Item|NullResource
      */
@@ -177,7 +178,7 @@ class DynamicTransformer extends TransformerAbstract
 
         $data = $includeDefinition->determineData($arguments[0], $arguments[1]);
         if (null === $data) {
-            return new NullResource();
+            return $this->null();
         }
 
         $params = [
