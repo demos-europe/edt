@@ -7,7 +7,7 @@ namespace EDT\Wrapping\WrapperFactories;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
@@ -119,7 +119,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      * @param array{0: object, 1: int, 2: array<non-empty-string, non-empty-list<non-empty-string>>} $context
      *
      * @throws PathException
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      */
     private function setValue(?ReadableTypeInterface &$value, string $propertyName, array $context): void

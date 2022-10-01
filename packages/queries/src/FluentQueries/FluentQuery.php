@@ -7,7 +7,7 @@ namespace EDT\Querying\FluentQueries;
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\FluentQueryException;
 use EDT\Querying\Contracts\PathException;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 
 /**
@@ -63,7 +63,7 @@ class FluentQuery
      * @return iterable<T>
      *
      * @throws PathException
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      */
     public function getEntities(): iterable
@@ -81,7 +81,7 @@ class FluentQuery
      *
      * @throws FluentQueryException
      * @throws PathException
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      */
     public function getUniqueEntity(): ?object

@@ -7,7 +7,7 @@ namespace EDT\Wrapping\WrapperFactories;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\Utilities\ConditionEvaluator;
@@ -147,7 +147,7 @@ class WrapperObject implements WrapperInterface
      * @throws PropertyAccessException
      * @throws PathException
      * @throws SortException
-     * @throws SliceException
+     * @throws PaginationException
      */
     public function __get(string $propertyName)
     {

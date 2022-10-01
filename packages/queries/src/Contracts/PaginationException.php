@@ -9,7 +9,7 @@ use Exception;
 /**
  * Indicates a problem when slicing a list of items to a requested subset.
  */
-class SliceException extends Exception
+class PaginationException extends Exception
 {
     public static function negativeOffset(int $offset): self
     {

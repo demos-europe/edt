@@ -6,7 +6,7 @@ namespace EDT\Querying\ObjectProviders;
 
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\PathException;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
@@ -58,7 +58,7 @@ class TypeRestrictedEntityProvider implements ObjectProviderInterface
      * {@inheritDoc}
      *
      * @throws PathException
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      * @throws AccessException
      */

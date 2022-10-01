@@ -7,7 +7,7 @@ namespace EDT\Querying\ObjectProviders;
 use EDT\Querying\Pagination\OffsetBasedPagination;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\EntityProviders\OffsetBasedEntityProviderInterface;
@@ -78,7 +78,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
      *
      * @return array<K, T>
      *
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      */
     public function getEntities(array $conditions, array $sortMethods, ?object $pagination): array
@@ -126,16 +126,17 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
 
     /**
      * @param array<K, T> $list
+     *
      * @return array<K, T>
-     * @throws SliceException
+     * @throws PaginationException
      */
     protected function slice(array $list, int $offset, ?int $limit): array
     {
         if (0 > $offset) {
-            throw SliceException::negativeOffset($offset);
+            throw PaginationException::negativeOffset($offset);
         }
         if (0 > $limit) {
-            throw SliceException::negativeLimit($limit);
+            throw PaginationException::negativeLimit($limit);
         }
         if (0 !== $offset || null !== $limit) {
             $list = array_slice($list, $offset, $limit);

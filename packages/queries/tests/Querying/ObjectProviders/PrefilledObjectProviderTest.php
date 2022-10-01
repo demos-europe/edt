@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Querying\ObjectProviders;
 
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use Tests\data\Model\Person;
@@ -56,13 +56,13 @@ class PrefilledObjectProviderTest extends ModelBasedTest
 
     public function testNegativeOffset()
     {
-        $this->expectException(SliceException::class);
+        $this->expectException(PaginationException::class);
         $this->authorProvider->getObjects([], [], -1);
     }
 
     public function testNegativeLimit()
     {
-        $this->expectException(SliceException::class);
+        $this->expectException(PaginationException::class);
         $this->authorProvider->getObjects([], [], 0, -1);
     }
 

@@ -7,7 +7,7 @@ namespace EDT\Wrapping\Utilities;
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\ObjectProviders\TypeRestrictedEntityProvider;
 use EDT\Querying\Utilities\Iterables;
@@ -85,7 +85,7 @@ class GenericEntityFetcher
      *
      * @throws AccessException
      * @throws SortException
-     * @throws SliceException
+     * @throws PaginationException
      */
     public function listEntities(ReadableTypeInterface $type, array $conditions, PathsBasedInterface ...$sortMethods): array
     {
@@ -108,8 +108,9 @@ class GenericEntityFetcher
     /**
      * @param IdentifiableTypeInterface<C, S, O>&ReadableTypeInterface<C, S, O> $type
      * @param non-empty-string $identifier
+     *
      * @return R
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      * @throws PathException
      * @throws AccessException

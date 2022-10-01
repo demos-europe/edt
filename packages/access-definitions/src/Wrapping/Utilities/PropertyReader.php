@@ -7,7 +7,7 @@ namespace EDT\Wrapping\Utilities;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
@@ -77,7 +77,7 @@ class PropertyReader
      * @return V|R|list<R>|null
      *
      * @throws PathException
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      */
     public function determineValue(WrapperFactoryInterface $wrapperFactory, ?ReadableTypeInterface $relationship, $propertyValue)
@@ -101,7 +101,7 @@ class PropertyReader
      * @return R|list<R>|null
      *
      * @throws PathException
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      */
     protected function determineRelationshipValue(
@@ -144,7 +144,7 @@ class PropertyReader
      *
      * @return list<R>
      *
-     * @throws SliceException
+     * @throws PaginationException
      * @throws PathException
      * @throws SortException
      */

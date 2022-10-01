@@ -22,7 +22,7 @@ interface ObjectProviderInterface
      * @return iterable<T>
      *
      * @throws PathException
-     * @throws SliceException
+     * @throws PaginationException
      * @throws SortException
      *
      * @deprecated use {@link EntityProviderInterface} instead

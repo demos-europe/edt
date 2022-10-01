@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\Querying\EntityProviders;
 
+use EDT\Querying\Contracts\PaginationException;
+use EDT\Querying\Contracts\SortException;
+
 /**
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template S of \EDT\Querying\Contracts\PathsBasedInterface
@@ -18,6 +21,9 @@ interface EntityProviderInterface
      * @param P|null  $pagination
      *
      * @return iterable<E>
+     *
+     * @throws SortException
+     * @throws PaginationException
      */
     public function getEntities(array $conditions, array $sortMethods, ?object $pagination): iterable;
 }

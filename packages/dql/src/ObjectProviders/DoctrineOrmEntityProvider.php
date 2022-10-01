@@ -12,7 +12,7 @@ use EDT\DqlQuerying\Utilities\QueryGenerator;
 use EDT\DqlQuerying\Contracts\OrderByInterface;
 use EDT\Querying\Pagination\OffsetBasedPagination;
 use EDT\Querying\Contracts\ObjectProviderInterface;
-use EDT\Querying\Contracts\SliceException;
+use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\EntityProviders\OffsetBasedEntityProviderInterface;
 
 /**
@@ -42,7 +42,7 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedE
 
     /**
      * @throws MappingException
-     * @throws SliceException
+     * @throws PaginationException
      */
     public function getObjects(array $conditions, array $sortMethods = [], int $offset = 0, int $limit = null): iterable
     {
@@ -58,7 +58,7 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedE
      * @return iterable<T>
      *
      * @throws MappingException
-     * @throws SliceException
+     * @throws PaginationException
      */
     public function getEntities(array $conditions, array $sortMethods, ?object $pagination): iterable
     {
@@ -79,7 +79,7 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedE
      * @param list<OrderByInterface> $sortMethods
      *
      * @throws MappingException
-     * @throws SliceException
+     * @throws PaginationException
      */
     public function generateQueryBuilder(array $conditions, array $sortMethods = [], int $offset = 0, int $limit = null): QueryBuilder
     {
