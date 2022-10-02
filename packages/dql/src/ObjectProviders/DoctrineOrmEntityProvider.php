@@ -32,7 +32,7 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedE
     private $className;
 
     /**
-     * @phpstan-param class-string<T> $className
+     * @param class-string<T> $className
      */
     public function __construct(string $className, EntityManager $entityManager)
     {
