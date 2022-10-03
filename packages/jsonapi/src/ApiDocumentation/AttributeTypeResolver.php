@@ -47,7 +47,9 @@ class AttributeTypeResolver
     /**
      * Return a valid `cebe\OpenApi` type declaration.
      *
-     * @return array<string,string>
+     * @param non-empty-string $propertyName
+     *
+     * @return array{type: non-empty-string, format?: non-empty-string, description?: string}
      *
      * @throws ReflectionException
      * @throws Throwable
@@ -83,7 +85,7 @@ class AttributeTypeResolver
     /**
      * @param class-string $entityClassName
      *
-     * @return string[]
+     * @return array{type: non-empty-string, format?: non-empty-string, description?: string}
      *
      * @throws ReflectionException
      */
@@ -154,7 +156,7 @@ class AttributeTypeResolver
     }
 
     /**
-     * @return array{type: string, format?: string}
+     * @return array{type: non-empty-string, format?: non-empty-string}
      */
     private function mapDqlType(string $dqlType): array
     {

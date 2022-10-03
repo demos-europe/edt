@@ -226,7 +226,9 @@ final class OpenAPISchemaGenerator
                             $resource,
                             [
                                 '$ref' => $this->schemaStore->getSchemaReference($resource::getName()),
-                            ]
+                            ],
+                            [],
+                            false
                         ),
                     ],
                 ],
@@ -310,7 +312,7 @@ final class OpenAPISchemaGenerator
                 }
             );
 
-        $properties = $attributes->merge($relationships)->all();
+        $properties = $relationships->merge($attributes)->all();
 
         return new Schema(['type' => 'object', 'properties' => $properties]);
     }
@@ -328,15 +330,15 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @param array<string, mixed> $dataObjects
+     * @param array{type: non-empty-string, items: array<non-empty-string, non-empty-string>}|array<non-empty-string, non-empty-string> $dataObjects
      *
      * @throws TypeErrorException
      */
     private function wrapAsJsonApiResponseSchema(
         ResourceTypeInterface $resource,
         array $dataObjects,
-        array $includedObjects = [],
-        bool $isList = false
+        array $includedObjects,
+        bool $isList
     ): Schema {
         $data = [
             'type'       => 'object',
@@ -396,7 +398,9 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @return array<string,string>
+     * @param non-empty-string $propertyName
+     *
+     * @return array{type: non-empty-string, format?: non-empty-string, description?: string}
      *
      * @throws ReflectionException
      * @throws Throwable
