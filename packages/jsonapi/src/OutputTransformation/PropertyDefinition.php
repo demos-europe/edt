@@ -87,12 +87,4 @@ class PropertyDefinition implements PropertyDefinitionInterface
     {
         return $this->toBeUsedAsDefaultField;
     }
-
-    /**
-     * @return non-empty-string
-     */
-    public function getPropertyName(): string
-    {
-        return $this->propertyName;
-    }
 }
