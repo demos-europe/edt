@@ -50,7 +50,7 @@ class SchemaStore
      */
     public function getSchemaReference(string $schemaName): string
     {
-        return sprintf('#/components/schemas/%s', $schemaName);
+        return "#/components/schemas/$schemaName";
     }
 
     public function get(string $schemaName): Schema

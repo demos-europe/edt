@@ -49,7 +49,7 @@ class AttributeTypeResolver
      *
      * @param non-empty-string $propertyName
      *
-     * @return array{type: non-empty-string, format?: non-empty-string, description?: string}
+     * @return array{type: string, format?: non-empty-string, description?: string}
      *
      * @throws ReflectionException
      * @throws Throwable
