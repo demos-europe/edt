@@ -290,29 +290,24 @@ final class OpenAPISchemaGenerator
     /**
      * @throws TypeErrorException
      */
-    private function createSchema(ResourceTypeInterface $resource): Schema
+    private function createSchema(ResourceTypeInterface $type): Schema
     {
-        $attributes = collect($resource->getReadableProperties())
-            ->filter(static function(?string $typeIdentifier, string $propertyName): bool {
-                return null === $typeIdentifier;
-            })
-            ->map(function (?string $null, string $propertyName) use ($resource): array {
-                // TODO: this is probably incorrect for all aliases with a path longer than 1 element
-                $propertyName = $resource->getAliases()[$propertyName][0] ?? $propertyName;
+        $properties = $type->getReadableProperties();
+        $properties = array_filter(
+            $properties,
+            function (?string $typeIdentifier) {
+                return null === $typeIdentifier || $this->isReferenceable($typeIdentifier);
+            }
+        );
 
-                return $this->resolveAttributeType($resource, $propertyName);
-            });
+        $properties = array_map(function (?string $typeIdentifier, string $propertyName) use ($type): array {
+            // TODO: this is probably incorrect for all aliases with a path longer than 1 element
+            $propertyName = $type->getAliases()[$propertyName][0] ?? $propertyName;
 
-        $relationships = collect($resource->getReadableProperties())
-            ->diff([null])
-            ->filter(Closure::fromCallable([$this, 'isReferenceable']))
-            ->map(
-                function (string $propertyType): array {
-                    return ['$ref' => $this->schemaStore->getSchemaReference($propertyType)];
-                }
-            );
-
-        $properties = $relationships->merge($attributes)->all();
+            return null === $typeIdentifier
+                ? $this->resolveAttributeType($type, $propertyName)
+                : ['$ref' => $this->schemaStore->getSchemaReference($typeIdentifier)];
+        }, $properties, array_keys($properties));
 
         return new Schema(['type' => 'object', 'properties' => $properties]);
     }
