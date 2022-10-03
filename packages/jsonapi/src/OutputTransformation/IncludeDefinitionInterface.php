@@ -12,9 +12,9 @@ use League\Fractal\TransformerAbstract;
  *
  * It provides mandatory information for relationships.
  *
- * @template O of object
+ * @template E of object
  * @template T of object
- * @template-extends PropertyDefinitionInterface<O, T|list<T>|null>
+ * @template-extends PropertyDefinitionInterface<E, T|list<T>|null>
  */
 interface IncludeDefinitionInterface extends PropertyDefinitionInterface
 {
@@ -36,8 +36,8 @@ interface IncludeDefinitionInterface extends PropertyDefinitionInterface
     public function getTransformer(): TransformerAbstract;
 
     /**
-     * @return string The resource type of this include. Named "resource key" here to keep
-     *                the naming consistent with the PHP Fractal library.
+     * @return non-empty-string The resource type of this include. Named "resource key" here to keep
+     *                          the naming consistent with the PHP Fractal library.
      */
     public function getResourceKey(): string;
 

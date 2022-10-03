@@ -17,9 +17,9 @@ use function in_array;
  *
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template O of object
+ * @template E of object
  * @template R
- * @template-implements PropertyDefinitionInterface<O, R>
+ * @template-implements PropertyDefinitionInterface<E, R>
  */
 class PropertyDefinition implements PropertyDefinitionInterface
 {
@@ -34,26 +34,26 @@ class PropertyDefinition implements PropertyDefinitionInterface
     private $toBeUsedAsDefaultField;
 
     /**
-     * @var WrapperFactoryInterface<C, S, O, WrapperInterface>
+     * @var WrapperFactoryInterface<C, S, E, WrapperInterface>
      */
     private $wrapperFactory;
 
     /**
-     * @var ResourceTypeInterface<C, S, O>
+     * @var ResourceTypeInterface<C, S, E>
      */
     private $type;
 
     /**
-     * @var null|callable(O, ParamBag): R
+     * @var null|callable(E, ParamBag): R
      */
-    private $customReadCallable = null;
+    private $customReadCallable;
 
     /**
      * @param non-empty-string                                   $propertyName
-     * @param ResourceTypeInterface<C, S, O>                     $type
-     * @param WrapperFactoryInterface<C, S, O, WrapperInterface> $wrapperFactory
+     * @param ResourceTypeInterface<C, S, E>                     $type
+     * @param WrapperFactoryInterface<C, S, E, WrapperInterface> $wrapperFactory
      * @param list<non-empty-string>                             $defaultProperties
-     * @param null|callable(O, ParamBag): R                      $customReadCallable
+     * @param null|callable(E, ParamBag): R                      $customReadCallable
      */
     public function __construct(
         string $propertyName,

@@ -15,14 +15,14 @@ use League\Fractal\TransformerAbstract;
  * Implementation of {@link IncludeDefinitionInterface} providing mostly hardcoded
  * behavior tailored for {@link ResourceTypeInterface} implementations.
  *
- * @template O of object
+ * @template E of object
  * @template T of object
- * @template-implements IncludeDefinitionInterface<O, T>
+ * @template-implements IncludeDefinitionInterface<E, T>
  */
 class IncludeDefinition implements IncludeDefinitionInterface
 {
     /**
-     * @var PropertyDefinitionInterface<O, WrapperObject<T>|list<WrapperObject<T>>|null>
+     * @var PropertyDefinitionInterface<E, WrapperObject<T>|list<WrapperObject<T>>|null>
      */
     private $propertyDefinition;
 
@@ -32,7 +32,7 @@ class IncludeDefinition implements IncludeDefinitionInterface
     private $targetType;
 
     /**
-     * @param PropertyDefinitionInterface<O, WrapperObject<T>|list<WrapperObject<T>>|null> $propertyDefinition
+     * @param PropertyDefinitionInterface<E, WrapperObject<T>|list<WrapperObject<T>>|null> $propertyDefinition
      * @param ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, T>           $targetType
      */
     public function __construct(
