@@ -89,6 +89,7 @@ class IncludeDefinition implements IncludeDefinitionInterface
 
     public function isToBeUsedAsDefaultInclude(): bool
     {
+        // TODO: compare JSON:API specification with implementation to check how to handle default includes correctly
         return $this->isToBeUsedAsDefaultField();
     }
 }
