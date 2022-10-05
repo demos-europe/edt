@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Querying\PropertyAccessors;
 
-use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use Tests\ModelBasedTest;
 use function array_slice;
