@@ -6,7 +6,6 @@
         "cebe/php-openapi": "^1.5",
         "doctrine/collections": "^1.5",
         "doctrine/orm": "^2.5",
-        "illuminate/collections": "^8.83.23",
         "league/fractal": "^0.19",
         "nette/php-generator": "^3.5",
         "nikic/php-parser": "^4.14",

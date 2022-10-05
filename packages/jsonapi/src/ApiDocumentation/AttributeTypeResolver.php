@@ -12,7 +12,6 @@ use ReflectionFunctionAbstract;
 use ReflectionMethod;
 use ReflectionProperty;
 use function array_key_exists;
-use function collect;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;

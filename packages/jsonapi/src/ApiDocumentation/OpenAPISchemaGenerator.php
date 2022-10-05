@@ -13,13 +13,11 @@ use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Tag;
-use Closure;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
 use Throwable;
-use function collect;
 use function count;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
@@ -101,49 +99,47 @@ final class OpenAPISchemaGenerator
             ]
         );
 
-        $tags = collect($this->resourceTypeProvider->getAllAvailableTypes())
-            ->filter(static function (TypeInterface $type): bool {
-                return $type instanceof ResourceTypeInterface;
-            })
-            ->map(function (ResourceTypeInterface $type): ResourceTypeInterface {
-                // create schema information for all resource types
+        $tags = $this->resourceTypeProvider->getAllAvailableTypes();
+        $tags = array_filter($tags, static function (TypeInterface $type): bool {
+            return $type instanceof ResourceTypeInterface;
+        });
+        $tags = array_map(function (ResourceTypeInterface $type): ResourceTypeInterface {
+            // create schema information for all resource types
 
-                $typeIdentifier = $type::getName();
-                if (!$this->schemaStore->has($typeIdentifier)) {
-                    $schema = $this->createSchema($type);
-                    $this->schemaStore->set($typeIdentifier, $schema);
-                }
+            $typeIdentifier = $type::getName();
+            if (!$this->schemaStore->has($typeIdentifier)) {
+                $schema = $this->createSchema($type);
+                $this->schemaStore->set($typeIdentifier, $schema);
+            }
 
-                return $type;
-            })
-            ->filter(static function (ResourceTypeInterface $type): bool {
-                // remove non-directly accessible ones
-                return $type->isDirectlyAccessible();
-            })
-            ->map(function (ResourceTypeInterface $type) use ($openApi): Tag {
-                // add routing information for directly accessible resource types
-                $tag = $this->createTag($type);
+            return $type;
+        }, $tags);
+        $tags = array_filter($tags, static function (ResourceTypeInterface $type): bool {
+            // remove non-directly accessible ones
+            return $type->isDirectlyAccessible();
+        });
+        $tags = array_map(function (ResourceTypeInterface $type) use ($openApi): Tag {
+            // add routing information for directly accessible resource types
+            $tag = $this->createTag($type);
 
-                $listMethodPathItem = $this->createListMethodsPathItem($tag, $type);
+            $listMethodPathItem = $this->createListMethodsPathItem($tag, $type);
 
-                $entityMethodsPathItem = $this->createEntityMethodsPathItem($tag, $type);
+            $entityMethodsPathItem = $this->createEntityMethodsPathItem($tag, $type);
 
-                $baseUrl = $this->router->generate(
-                    'api_resource_list',
-                    ['resourceType' => $type::getName()]
-                );
+            $baseUrl = $this->router->generate(
+                'api_resource_list',
+                ['resourceType' => $type::getName()]
+            );
 
-                $openApi->paths[$baseUrl] = $listMethodPathItem;
+            $openApi->paths[$baseUrl] = $listMethodPathItem;
 
-                $openApi->paths[$baseUrl.'/{resourceId}/'] = $entityMethodsPathItem;
+            $openApi->paths[$baseUrl.'/{resourceId}/'] = $entityMethodsPathItem;
 
-                return $tag;
-            })
-            ->values()
-            ->all();
+            return $tag;
+        }, $tags);
 
         $openApi->components = new Components(['schemas' => $this->schemaStore->all()]);
-        $openApi->tags = $tags;
+        $openApi->tags = array_values($tags);
 
         return $openApi;
     }
