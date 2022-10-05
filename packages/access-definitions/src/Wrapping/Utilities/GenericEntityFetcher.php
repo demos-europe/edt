@@ -40,7 +40,7 @@ class GenericEntityFetcher
      */
     private $conditionFactory;
     /**
-     * @var WrapperFactoryInterface<C, S, O, R>
+     * @var WrapperFactoryInterface<C, S>
      */
     private $wrapperFactory;
     /**
@@ -49,9 +49,9 @@ class GenericEntityFetcher
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<C, S, O>    $objectProvider
-     * @param ConditionFactoryInterface<C>        $conditionFactory
-     * @param WrapperFactoryInterface<C, S, O, R> $wrapperFactory All returned instances are wrapped using the given instance.
+     * @param ObjectProviderInterface<C, S, O> $objectProvider
+     * @param ConditionFactoryInterface<C>     $conditionFactory
+     * @param WrapperFactoryInterface<C, S>    $wrapperFactory All returned instances are wrapped using the given instance.
      *                                                             To avoid any wrapping simply pass an instance that returns
      *                                                             its input without wrapping.
      */

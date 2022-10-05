@@ -6,7 +6,7 @@ namespace EDT\JsonApi\ApiDocumentation;
 
 use Closure;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
-use EDT\JsonApi\ResourceTypes\GetableProperty;
+use EDT\JsonApi\ResourceTypes\PropertyCollection;
 use EDT\Parsing\Utilities\DocblockTagParser;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
@@ -40,7 +40,7 @@ class AttributeTypeResolver
     private $classReflectionCache = [];
 
     /**
-     * @var array<class-string,array<string,GetableProperty>>
+     * @var array<class-string, PropertyCollection>
      */
     private $propertiesCache = [];
 
@@ -60,20 +60,12 @@ class AttributeTypeResolver
     ): array {
         $resourceClass = get_class($resourceType);
         if (!array_key_exists($resourceClass, $this->propertiesCache)) {
-            $this->propertiesCache[$resourceClass] = collect(
-                $resourceType->getValidatedProperties()
-            )
-                ->mapWithKeys(static function (GetableProperty $property): array {
-                    return [$property->getName() => $property];
-                })
-                ->all();
+            $this->propertiesCache[$resourceClass] = $resourceType->getPropertyCollection();
         }
 
         $resourceProperties = $this->propertiesCache[$resourceClass];
-        if (array_key_exists($propertyName, $resourceProperties)) {
-            $property = $resourceProperties[$propertyName];
-
-            $customReadCallback = $property->getCustomReadCallback();
+        if ($resourceProperties->has($propertyName)) {
+            $customReadCallback = $resourceProperties->get($propertyName)->getCustomReadCallback();
             if (null !== $customReadCallback) {
                 return $this->resolveTypeFromCallable($customReadCallback, $resourceClass, $propertyName);
             }

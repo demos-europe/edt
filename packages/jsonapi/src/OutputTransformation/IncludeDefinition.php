@@ -15,25 +15,28 @@ use League\Fractal\TransformerAbstract;
  * Implementation of {@link IncludeDefinitionInterface} providing mostly hardcoded
  * behavior tailored for {@link ResourceTypeInterface} implementations.
  *
- * @template E of object
- * @template T of object
- * @template-implements IncludeDefinitionInterface<E, T>
+ * @template TEntity of object
+ * @template TValue of object
+ * @template-implements IncludeDefinitionInterface<TEntity, TValue>
  */
 class IncludeDefinition implements IncludeDefinitionInterface
 {
     /**
-     * @var PropertyDefinitionInterface<E, WrapperObject<T>|list<WrapperObject<T>>|null>
+     * @var PropertyDefinitionInterface<TEntity, WrapperObject<TValue>|list<WrapperObject<TValue>>|null>
      */
     private $propertyDefinition;
 
     /**
-     * @var ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, T>
+     * @var ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, TValue>
      */
     private $targetType;
 
     /**
-     * @param PropertyDefinitionInterface<E, WrapperObject<T>|list<WrapperObject<T>>|null> $propertyDefinition
-     * @param ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, T>           $targetType
+     * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+     * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+     *
+     * @param PropertyDefinitionInterface<TEntity, WrapperObject<TValue>|list<WrapperObject<TValue>>|null> $propertyDefinition
+     * @param ResourceTypeInterface<TCondition, TSorting, TValue>                               $targetType
      */
     public function __construct(
         PropertyDefinitionInterface $propertyDefinition,

@@ -6,12 +6,6 @@ namespace EDT\Querying\Contracts;
 
 /**
  * Provides the means to access the property of a target in a reading or writing manner.
- *
- * Template parameters:
- *
- * * `T`: the target type of which a property should be accessed
- *
- * @template T of object
  */
 interface PropertyAccessorInterface
 {
@@ -31,7 +25,6 @@ interface PropertyAccessorInterface
      *
      * If any property in results in a `null` value then `null` will be returned.
      * 
-     * @param T|null $target
      * @return mixed|null
      */
     public function getValueByPropertyPath(?object $target, string $property, string ...$properties);
@@ -46,11 +39,9 @@ interface PropertyAccessorInterface
      * If any property in results in a `null` values then `null` will be used as values in the
      * returned array.
      *
-     * @param T $target
-     *
      * @return list<mixed>
      */
-    public function getValuesByPropertyPath($target, int $depth, string $property, string ...$properties): array;
+    public function getValuesByPropertyPath(object $target, int $depth, string $property, string ...$properties): array;
 
     /**
      * Sets a property values of the given target.

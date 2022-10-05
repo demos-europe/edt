@@ -14,16 +14,20 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
  *
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template O of object
- * @template R
+ *
+ * TODO: check if usages can be replaced with {@link WrapperObjectFactory} and remove interface
  */
 interface WrapperFactoryInterface
 {
     /**
-     * @param O $object
-     * @param ReadableTypeInterface<C, S, O> $type
-     * @return R
+     * @template TEntity of object
+     *
+     * @param TEntity                              $entity
+     * @param ReadableTypeInterface<C, S, TEntity> $type
+     *
+     * @return array<non-empty-string, mixed>|object|null
+     *
      * @throws AccessException
      */
-    public function createWrapper(object $object, ReadableTypeInterface $type);
+    public function createWrapper(object $entity, ReadableTypeInterface $type);
 }

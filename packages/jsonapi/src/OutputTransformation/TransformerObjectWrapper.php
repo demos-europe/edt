@@ -6,8 +6,8 @@ namespace EDT\JsonApi\OutputTransformation;
 
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
-use EDT\Wrapping\Contracts\WrapperFactoryInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
+use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\ParamBag;
 
 /**
@@ -19,33 +19,33 @@ use League\Fractal\ParamBag;
  * included. But for a custom read callable we must do the wrapping manually with
  * the callable returned by this method.
  *
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template O of object
+ * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
+ * @template TSorting of \EDT\Querying\Contracts\SortMethodInterface
+ * @template TEntity of object
+ * @template TRelationship of object
  */
 class TransformerObjectWrapper
 {
     /**
-     * @var callable(O, ParamBag): (O|iterable<O>|null)
+     * @var callable(TEntity, ParamBag): (TRelationship|iterable<TRelationship>|null)
      */
     private $callable;
 
     /**
-     * @var ReadableTypeInterface<C, S, O>
+     * @var ReadableTypeInterface<TCondition, TSorting, TRelationship>
      */
     private $relationshipType;
 
     /**
-     * @var WrapperFactoryInterface<C, S, O, WrapperObject<O>>
+     * @var WrapperObjectFactory
      */
     private $wrapperFactory;
 
     /**
-     * @param callable(O, ParamBag): (O|iterable<O>|null)      $callable
-     * @param ReadableTypeInterface<C, S, O>                      $relationshipType
-     * @param WrapperFactoryInterface<C, S, O, WrapperObject<O>>  $wrapperFactory
+     * @param callable(TEntity, ParamBag): (TRelationship|iterable<TRelationship>|null) $callable
+     * @param ReadableTypeInterface<TCondition, TSorting, TRelationship>                $relationshipType
      */
-    public function __construct(callable $callable, ReadableTypeInterface $relationshipType, WrapperFactoryInterface $wrapperFactory)
+    public function __construct(callable $callable, ReadableTypeInterface $relationshipType, WrapperObjectFactory $wrapperFactory)
     {
         $this->callable = $callable;
         $this->relationshipType = $relationshipType;
@@ -59,9 +59,9 @@ class TransformerObjectWrapper
      * to be either `null`, an `object`, or an iterable of `object`s. If something
      * else is returned by it, then the behavior of this method is undefined.
      *
-     * @param O $entity
+     * @param TEntity $entity
      *
-     * @return WrapperObject<O>|list<WrapperObject<O>>|null
+     * @return WrapperObject<TRelationship>|list<WrapperObject<TRelationship>>|null
      */
     public function __invoke(object $entity, ParamBag $params)
     {
@@ -78,9 +78,9 @@ class TransformerObjectWrapper
     }
 
     /**
-     * @param O $relationship
+     * @param TRelationship $relationship
      *
-     * @return WrapperObject<O>
+     * @return WrapperObject<TRelationship>
      */
     private function wrapSingle(object $relationship): WrapperObject
     {

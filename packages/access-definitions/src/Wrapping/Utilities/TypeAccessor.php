@@ -9,6 +9,7 @@ use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
+use EDT\Wrapping\TypeProviders\OptionalTypeRequirementInterface;
 
 /**
  * Provides utility methods to access processed information of a given {@link TypeInterface}.
@@ -48,7 +49,7 @@ class TypeAccessor
             return [];
         }
         $readableProperties = $type->getReadableProperties();
-        $readableProperties = array_map([$this, 'getTypeInstance'], $readableProperties);
+        $readableProperties = array_map([$this, 'getTypeInstanceOrNull'], $readableProperties);
         $readableProperties = array_filter($readableProperties, [$this, 'isReadableProperty']);
 
         return $readableProperties;
@@ -73,8 +74,26 @@ class TypeAccessor
             return [];
         }
         $updatableProperties = $type->getUpdatableProperties($updateTarget);
-        $updatableProperties = array_map([$this, 'getTypeInstance'], $updatableProperties);
+        $updatableProperties = array_map([$this, 'getTypeInstanceOrNull'], $updatableProperties);
         return array_filter($updatableProperties, [$this, 'isUpdatableProperty']);
+    }
+
+    /**
+     * @param non-empty-string $typeIdentifier
+     *
+     * @return OptionalTypeRequirementInterface<TypeInterface<C, S, object>>
+     */
+    public function requestType(string $typeIdentifier): OptionalTypeRequirementInterface
+    {
+        return $this->typeProvider->requestType($typeIdentifier);
+    }
+
+    /**
+     * @param TypeInterface<C, S, object> $type
+     */
+    private function isReadableRelationship(TypeInterface $type): bool
+    {
+        return $type->isAvailable() && $type->isReferencable() && $type instanceof ReadableTypeInterface;
     }
 
     /**
@@ -84,7 +103,7 @@ class TypeAccessor
      *
      * @throws TypeRetrievalAccessException
      */
-    private function getTypeInstance(?string $typeIdentifier): ?TypeInterface
+    private function getTypeInstanceOrNull(?string $typeIdentifier): ?TypeInterface
     {
         if (null === $typeIdentifier) {
             return null;
@@ -98,7 +117,7 @@ class TypeAccessor
      */
     private function isReadableProperty(?TypeInterface $type): bool
     {
-        return null === $type || ($type->isAvailable() && $type->isReferencable() && $type instanceof ReadableTypeInterface);
+        return null === $type || $this->isReadableRelationship($type);
     }
 
     /**
@@ -106,7 +125,7 @@ class TypeAccessor
      */
     private function isUpdatableProperty(?TypeInterface $type): bool
     {
-        // TODO: add instanceof check?
+        // TODO: add `instanceof UpdatableTypeInterface` check?
         return null === $type || ($type->isAvailable() && $type->isReferencable());
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Contracts\Types;
 
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
@@ -16,14 +17,11 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  * @template C of \EDT\Querying\Contracts\PathsBasedInterface
  * @template S of \EDT\Querying\Contracts\PathsBasedInterface
  * @template T of object
+ *
+ * @template-extends EntityBasedInterface<T>
  */
-interface TypeInterface
+interface TypeInterface extends EntityBasedInterface
 {
-    /**
-     * @return class-string<T> The fully qualified name of the class backing entities this type defines.
-     */
-    public function getEntityClass(): string;
-
     /**
      * This is **not** a simplified version of {@link TypeInterface::getAccessCondition()}.
      * While the condition will prevent access to
@@ -132,7 +130,7 @@ interface TypeInterface
      * into the schema of the backing object. Any aliasing defined by {@link TypeInterface::getAliases()}
      * will be applied automatically.
      *
-     * @return array<non-empty-string,non-empty-string|null> The mapping from property name (in the schema of this type)
+     * @return array<non-empty-string, non-empty-string|null> The mapping from property name (in the schema of this type)
      *                                   to the identifier of the target type of the relationship,
      *                                   or `null` if the property is a non-relationship.
      */

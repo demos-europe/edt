@@ -55,4 +55,15 @@ class TypeRetrievalAccessException extends AccessException
 
         return $self;
     }
+
+    /**
+     * @param non-empty-string $typeIdentifier
+     */
+    public static function typeExistsButNotReferencable(string $typeIdentifier): self
+    {
+        $self = new self("Type '$typeIdentifier' exists but is not referencable.");
+        $self->typeIdentifier = $typeIdentifier;
+
+        return $self;
+    }
 }

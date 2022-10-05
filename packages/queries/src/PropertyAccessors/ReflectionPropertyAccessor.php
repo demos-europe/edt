@@ -13,8 +13,6 @@ use function array_slice;
 
 /**
  * Accesses properties of objects directly via reflection, circumventing any methods.
- *
- * @template-implements PropertyAccessorInterface<object>
  */
 class ReflectionPropertyAccessor implements PropertyAccessorInterface
 {
@@ -37,6 +35,9 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         return $this->getValueByPropertyPath($newTarget, ...$properties);
     }
 
+    /**
+     * @param mixed $target
+     */
     public function getValuesByPropertyPath($target, int $depth, string $property, string ...$properties): array
     {
         array_unshift($properties, $property);
@@ -85,9 +86,9 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
     }
 
     /**
-     * @template T of object
-     * @param T $target
-     * @param class-string<T> $class
+     * @param object       $target
+     * @param class-string $class
+     *
      * @return mixed
      *
      * @throws ReflectionException

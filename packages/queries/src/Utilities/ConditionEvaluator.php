@@ -20,9 +20,6 @@ class ConditionEvaluator
      */
     private $tableJoiner;
 
-    /**
-     * @param PropertyAccessorInterface<object> $propertyAccessor
-     */
     public function __construct(PropertyAccessorInterface $propertyAccessor)
     {
         $this->tableJoiner = new TableJoiner($propertyAccessor);

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template T of object
+ * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
+ * @template TSorting of \EDT\Querying\Contracts\SortMethodInterface
+ * @template TEntity of object
  *
- * @template-extends AbstractResourceType<C, S, T>
+ * @template-extends AbstractResourceType<TCondition, TSorting, TEntity>
  */
 abstract class CachingResourceType extends AbstractResourceType
 {

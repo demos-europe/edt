@@ -41,7 +41,7 @@ use Psr\Log\LoggerInterface;
  * If the transformer is mis-configured, e.g. definitions for properties are given that do not exist
  * in the entity to be transformed, then the behavior is undefined.
  *
- * @template E of object
+ * @template TEntity of object
  */
 class DynamicTransformer extends TransformerAbstract
 {
@@ -73,11 +73,11 @@ class DynamicTransformer extends TransformerAbstract
     private $messageFormatter;
 
     /**
-     * @param non-empty-string                                     $type
-     * @param array<non-empty-string, PropertyDefinitionInterface> $attributeDefinitions mappings from an
+     * @param non-empty-string                                                     $type
+     * @param array<non-empty-string, PropertyDefinitionInterface<TEntity, mixed>> $attributeDefinitions mappings from an
      *                                                                                   attribute name to its
      *                                                                                   definition
-     * @param array<non-empty-string, IncludeDefinitionInterface>  $includeDefinitions   mappings from an
+     * @param array<non-empty-string, IncludeDefinitionInterface<TEntity, object>> $includeDefinitions   mappings from an
      *                                                                                   include name to its
      *                                                                                   definition
      */
@@ -106,7 +106,7 @@ class DynamicTransformer extends TransformerAbstract
      * If no specific fields were requested the attributes marked as defaults will be returned. If
      * a specific set of fields was requested only attributes in that set will be returned.
      *
-     * @param E $entity
+     * @param TEntity $entity
      *
      * @return array<string, mixed>
      *

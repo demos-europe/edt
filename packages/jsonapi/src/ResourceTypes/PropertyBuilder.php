@@ -4,31 +4,109 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
+use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
+use InvalidArgumentException;
+use League\Fractal\ParamBag;
 
 /**
  * Set up a specific property for accesses via the generic JSON:API implementation.
  *
- * * {@link SetableProperty::filterable filtering via property values}
- * * {@link SetableProperty::sortable sorting via property values}
- * * {@link SetableProperty::readable reading of actual property values}
- * * {@link SetableProperty::initializable creating of resources with property values}
+ * * {@link PropertyBuilder::filterable filtering via property values}
+ * * {@link PropertyBuilder::sortable sorting via property values}
+ * * {@link PropertyBuilder::readable reading of actual property values}
+ * * {@link PropertyBuilder::initializable creating of resources with property values}
  *
- * You can also mark the property as an alias by setting {@link SetableProperty::aliasedPath()}.
+ * You can also mark the property as an alias by setting {@link PropertyBuilder::aliasedPath()}.
  * This will result in all accesses mentioned above expecting that the path segments having
  * corresponding properties in the backend entities.
  *
  * Note that the resource type itself must be {@link ResourceTypeInterface::isAvailable() available}
  * for any access to the generic JSON:API implementation to work.
+ *
+ * @template TEntity of object
+ * @template TValue
  */
-interface SetableProperty
+class PropertyBuilder
 {
+    /**
+     * @var non-empty-string
+     */
+    protected $name;
+
+    /**
+     * @var bool
+     */
+    protected $readable = false;
+
+    /**
+     * @var bool
+     */
+    protected $filterable = false;
+
+    /**
+     * @var bool
+     */
+    protected $sortable = false;
+
+    /**
+     * @var non-empty-list<non-empty-string>|null
+     */
+    protected $aliasedPath;
+
+    /**
+     * @var bool
+     */
+    protected $defaultField = false;
+
+    /**
+     * @var null|callable(TEntity, ParamBag): TValue
+     */
+    protected $customReadCallback;
+
+    /**
+     * @var bool
+     */
+    protected $allowingInconsistencies = false;
+
+    /**
+     * @var bool
+     */
+    protected $initializable = false;
+
+    /**
+     * @var bool
+     */
+    protected $requiredForCreation = true;
+
+    /**
+     * @var class-string<TEntity>
+     */
+    protected $entityClass;
+
+    /**
+     * @param class-string<TEntity> $entityClass
+     *
+     * @throws PathException
+     */
+    public function __construct(PropertyPathInterface $path, string $entityClass)
+    {
+        $names = $path->getAsNames();
+        $name = array_pop($names);
+        if (null === $name) {
+            throw new InvalidArgumentException("Expected exactly one path segment, got '{$path->getAsNamesInDotNotation()}'.");
+        }
+
+        $this->name = $name;
+        $this->entityClass = $entityClass;
+    }
+
     /**
      * Set an alias to follow when this property is accessed.
      *
-     * Beside {@link SetableProperty::readable() custom read functions},
+     * Beside {@link PropertyBuilder::readable() custom read functions},
      * aliases are another and the preferred way to slightly deviate from the schema of the backing
      * entity class when exposing properties. Their advantage over custom read functions is that
      * conditions and sort methods that are using aliases can still be executed in the database,
@@ -49,7 +127,17 @@ interface SetableProperty
      *
      * @param PropertyPathInterface $aliasedPath all segments must have a corresponding property in the backing entity
      */
-    public function aliasedPath(PropertyPathInterface $aliasedPath): self;
+    public function aliasedPath(PropertyPathInterface $aliasedPath): self
+    {
+        $aliasedPath = $aliasedPath->getAsNames();
+        if ([] === $aliasedPath) {
+            throw new InvalidArgumentException('The path must not be empty.');
+        }
+
+        $this->aliasedPath = $aliasedPath;
+
+        return $this;
+    }
 
     /**
      * Mark this property as usable when filtering resources. It can then be used to filter
@@ -70,7 +158,12 @@ interface SetableProperty
      * books they have written (assuming the necessary relationship from authors to
      * books is defined and the resources are set as {@link TypeInterface::isAvailable() available}).
      */
-    public function filterable(): self;
+    public function filterable(): self
+    {
+        $this->filterable = true;
+
+        return $this;
+    }
 
     /**
      * Mark this property as usable when sorting resources. It can then be used to sort
@@ -88,7 +181,12 @@ interface SetableProperty
      *
      * @see https://jsonapi.org/format/#fetching-sorting
      */
-    public function sortable(): self;
+    public function sortable(): self
+    {
+        $this->sortable = true;
+
+        return $this;
+    }
 
     /**
      * Mark this property as readable, i.e. allow its value to be read.
@@ -140,15 +238,23 @@ interface SetableProperty
      * and the value stored in the property will be used when filtering or sorting. The interaction
      * with aliases is undefined.
      *
-     * @param bool          $defaultField            the field is to be returned in responses by default
-     * @param callable|null $customRead              to be set if this property needs special handling when read
-     * @param bool          $allowingInconsistencies sanity checks will be disabled
+     * @param bool                                     $defaultField            the field is to be returned in responses by default
+     * @param null|callable(TEntity, ParamBag): TValue $customRead              to be set if this property needs special handling when read
+     * @param bool                                     $allowingInconsistencies sanity checks will be disabled
      *
      * @return $this
      *
      * @see https://jsonapi.org/format/#fetching-sparse-fieldsets JSON:API sparse fieldsets
      */
-    public function readable(bool $defaultField = false, callable $customRead = null, bool $allowingInconsistencies = false): self;
+    public function readable(bool $defaultField = false, callable $customRead = null, bool $allowingInconsistencies = false): self
+    {
+        $this->readable = true;
+        $this->defaultField = $defaultField;
+        $this->customReadCallback = $customRead;
+        $this->allowingInconsistencies = $allowingInconsistencies;
+
+        return $this;
+    }
 
     /**
      * Mark the property as initializable when creating a resource.
@@ -158,6 +264,33 @@ interface SetableProperty
      *
      * By default, properties marked as initializable are required to be present in a request when
      * a resource is created. You can change that by setting the `$optional` parameter to `true`.
+     *
+     * @return $this
      */
-    public function initializable(bool $optional = false): self;
+    public function initializable(bool $optional = false): self
+    {
+        $this->initializable = true;
+        $this->requiredForCreation = !$optional;
+
+        return $this;
+    }
+
+    /**
+     * @return Property<TEntity, TValue>
+     */
+    public function build(): Property
+    {
+        return new Property(
+            $this->name,
+            $this->readable,
+            $this->filterable,
+            $this->sortable,
+            $this->aliasedPath,
+            $this->defaultField,
+            $this->customReadCallback,
+            $this->allowingInconsistencies,
+            $this->initializable,
+            $this->requiredForCreation,
+        );
+    }
 }

@@ -5,21 +5,19 @@ declare(strict_types=1);
 namespace EDT\JsonApi\OutputTransformation;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\WrapperFactoryInterface;
-use EDT\Wrapping\Contracts\WrapperInterface;
+use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\ParamBag;
-use function in_array;
 
 /**
  * Implementation of {@link PropertyDefinitionInterface} providing mostly hardcoded
  * behavior.
  *
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template E of object
- * @template R
- * @template-implements PropertyDefinitionInterface<E, R>
+ * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
+ * @template TSorting of \EDT\Querying\Contracts\SortMethodInterface
+ * @template TEntity of object
+ * @template TValue
+ *
+ * @template-implements PropertyDefinitionInterface<TEntity, TValue>
  */
 class PropertyDefinition implements PropertyDefinitionInterface
 {
@@ -34,36 +32,34 @@ class PropertyDefinition implements PropertyDefinitionInterface
     private $toBeUsedAsDefaultField;
 
     /**
-     * @var WrapperFactoryInterface<C, S, E, WrapperInterface>
+     * @var WrapperObjectFactory
      */
     private $wrapperFactory;
 
     /**
-     * @var ResourceTypeInterface<C, S, E>
+     * @var ResourceTypeInterface<TCondition, TSorting, TEntity>
      */
     private $type;
 
     /**
-     * @var null|callable(E, ParamBag): R
+     * @var null|callable(TEntity, ParamBag): TValue
      */
     private $customReadCallable;
 
     /**
-     * @param non-empty-string                                   $propertyName
-     * @param ResourceTypeInterface<C, S, E>                     $type
-     * @param WrapperFactoryInterface<C, S, E, WrapperInterface> $wrapperFactory
-     * @param list<non-empty-string>                             $defaultProperties
-     * @param null|callable(E, ParamBag): R                      $customReadCallable
+     * @param non-empty-string                                     $propertyName
+     * @param ResourceTypeInterface<TCondition, TSorting, TEntity> $type
+     * @param null|callable(TEntity, ParamBag): TValue             $customReadCallable
      */
     public function __construct(
         string $propertyName,
-        array $defaultProperties,
+        bool $toBeUsedAsDefaultField,
         ResourceTypeInterface $type,
-        WrapperFactoryInterface $wrapperFactory,
+        WrapperObjectFactory $wrapperFactory,
         ?callable $customReadCallable
     ) {
         $this->propertyName = $propertyName;
-        $this->toBeUsedAsDefaultField = in_array($propertyName, $defaultProperties, true);
+        $this->toBeUsedAsDefaultField = $toBeUsedAsDefaultField;
         $this->wrapperFactory = $wrapperFactory;
         $this->type = $type;
         $this->customReadCallable = $customReadCallable;

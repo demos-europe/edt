@@ -17,14 +17,22 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
+            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\GenericEntityFetcher\\:\\:listEntities\\(\\) should return array\\<int, R\\> but returns array\\<int, array\\<string, mixed\\>\\|object\\|null\\>\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Utilities/GenericEntityFetcher.php
+
+        -
+            message: """
+                #^Call to deprecated method getObjects\\(\\) of class EDT\\\\Querying\\\\ObjectProviders\\\\PrefilledObjectProvider\\:
+                use \\{@link EntityProviderInterface\\} instead$#
+            """
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Utilities/PropertyReader.php
+
+        -
             message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\TypeAccessor\\:\\:getAccessibleReadableProperties\\(\\) should return array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\> but returns array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\>\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessor.php
-
-        -
-            message: "#^Parameter \\#1 \\$wrapperFactory of method EDT\\\\Wrapping\\\\Utilities\\\\PropertyReader\\:\\:determineValue\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object, array\\<string, mixed\\>\\|null\\>, EDT\\\\Wrapping\\\\WrapperFactories\\\\ArrayEndWrapperFactory\\|EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperArrayFactory given\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperArrayFactory.php
 
         -
             message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and non\\-empty\\-array\\<int, string\\> will always evaluate to false\\.$#"
@@ -117,6 +125,14 @@ parameters:
             path: packages/dql/src/Functions/Sum.php
 
         -
+            message: """
+                #^Class EDT\\\\DqlQuerying\\\\ObjectProviders\\\\DoctrineOrmEntityProvider implements deprecated interface EDT\\\\Querying\\\\Contracts\\\\ObjectProviderInterface\\:
+                use \\{@link EntityProviderInterface\\} instead$#
+            """
+            count: 1
+            path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
+
+        -
             message: "#^Instanceof between Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata and Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo will always evaluate to true\\.$#"
             count: 1
             path: packages/dql/src/Utilities/JoinFinder.php
@@ -145,16 +161,6 @@ parameters:
             message: "#^Offset 'relationships' on array\\{\\} on left side of \\?\\? does not exist\\.$#"
             count: 1
             path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
-
-        -
-            message: "#^Parameter \\#4 \\$wrapperFactory of class EDT\\\\JsonApi\\\\OutputTransformation\\\\PropertyDefinition constructor expects EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, EDT\\\\Wrapping\\\\Contracts\\\\WrapperInterface\\>, EDT\\\\Wrapping\\\\Contracts\\\\WrapperFactoryInterface\\<C of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, S of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\<object\\>\\> given\\.$#"
-            count: 2
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Template type W of method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getWrapperFactory\\(\\) is not referenced in a parameter\\.$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
             message: "#^Parameter \\#1 \\$resourceIdentifierObject of static method EDT\\\\JsonApi\\\\Schema\\\\ToOneResourceLinkage\\:\\:createFromArray\\(\\) expects array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|null, array\\<'id'\\|'type'\\|int, array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|non\\-empty\\-string\\>\\|null given\\.$#"
@@ -332,6 +338,22 @@ parameters:
             path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
 
         -
+            message: """
+                #^Call to deprecated method getObjects\\(\\) of class EDT\\\\Querying\\\\Contracts\\\\ObjectProviderInterface\\:
+                use \\{@link EntityProviderInterface\\} instead$#
+            """
+            count: 1
+            path: packages/queries/src/FluentQueries/FluentQuery.php
+
+        -
+            message: """
+                #^Parameter \\$objectProvider of method EDT\\\\Querying\\\\FluentQueries\\\\FluentQuery\\:\\:__construct\\(\\) has typehint with deprecated interface EDT\\\\Querying\\\\Contracts\\\\ObjectProviderInterface\\:
+                use \\{@link EntityProviderInterface\\} instead$#
+            """
+            count: 1
+            path: packages/queries/src/FluentQueries/FluentQuery.php
+
+        -
             message: "#^Empty array passed to foreach\\.$#"
             count: 1
             path: packages/queries/src/Functions/AnyEqual.php
@@ -340,6 +362,14 @@ parameters:
             message: "#^Strict comparison using \\=\\=\\= between \\*NEVER\\* and mixed will always evaluate to false\\.$#"
             count: 1
             path: packages/queries/src/Functions/AnyEqual.php
+
+        -
+            message: """
+                #^Class EDT\\\\Querying\\\\ObjectProviders\\\\PrefilledObjectProvider implements deprecated interface EDT\\\\Querying\\\\Contracts\\\\ObjectProviderInterface\\:
+                use \\{@link EntityProviderInterface\\} instead$#
+            """
+            count: 1
+            path: packages/queries/src/ObjectProviders/PrefilledObjectProvider.php
 
         -
             message: "#^Property EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:\\$properties \\(ArrayIterator\\<int, non\\-empty\\-string\\>\\) does not accept ArrayIterator\\<int, string\\>\\.$#"

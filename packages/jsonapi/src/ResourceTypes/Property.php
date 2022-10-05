@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use function count;
-use EDT\Querying\Contracts\PropertyPathInterface;
-use InvalidArgumentException;
+use League\Fractal\ParamBag;
 
-class Property implements SetableProperty, GetableProperty
+/**
+ * @template TEntity of object
+ * @template TValue
+ */
+class Property
 {
     /**
      * @var non-empty-string
@@ -18,17 +20,17 @@ class Property implements SetableProperty, GetableProperty
     /**
      * @var bool
      */
-    private $readable = false;
+    private $readable;
 
     /**
      * @var bool
      */
-    private $filterable = false;
+    private $filterable;
 
     /**
      * @var bool
      */
-    private $sortable = false;
+    private $sortable;
 
     /**
      * @var non-empty-list<non-empty-string>|null
@@ -38,99 +40,64 @@ class Property implements SetableProperty, GetableProperty
     /**
      * @var bool
      */
-    private $defaultField = false;
+    private $defaultField;
 
     /**
-     * @var bool
-     */
-    private $defaultInclude = false;
-
-    /**
-     * @var callable|null
+     * @var null|callable(TEntity, ParamBag): TValue
      */
     private $customReadCallback;
 
     /**
-     * @var non-empty-string|null
+     * @var bool
      */
-    private $typeName;
+    private $allowingInconsistencies;
 
     /**
      * @var bool
      */
-    private $allowingInconsistencies = false;
+    private $initializable;
 
     /**
      * @var bool
      */
-    private $relationship;
+    private $requiredForCreation;
 
     /**
-     * @var bool
+     * @param non-empty-string                         $name
+     * @param non-empty-list<non-empty-string>|null    $aliasedPath
+     * @param null|callable(TEntity, ParamBag): TValue $customReadCallback
      */
-    private $initializable = false;
-
-    /**
-     * @var bool
-     */
-    private $requiredForCreation = true;
-
-    public function __construct(PropertyPathInterface $path, bool $defaultInclude, bool $relationship)
-    {
-        $names = $path->getAsNames();
-        $name = array_pop($names);
-        if (null === $name) {
-            throw new InvalidArgumentException("Expected exactly one path segment, got '{$path->getAsNamesInDotNotation()}'");
-        }
-
+    public function __construct(
+        string $name,
+        bool $readable,
+        bool $filterable,
+        bool $sortable,
+        ?array $aliasedPath,
+        bool $defaultField,
+        ?callable $customReadCallback,
+        bool $allowingInconsistencies,
+        bool $initializable,
+        bool $requiredForCreation
+    ) {
         $this->name = $name;
-        $this->defaultInclude = $defaultInclude;
-        $this->relationship = $relationship;
-        // TODO: do not allow null
-        $this->typeName = $path instanceof ResourceTypeInterface ? $path::getName() : null;
-    }
-
-    public function aliasedPath(PropertyPathInterface $aliasedPath): SetableProperty
-    {
-        $aliasedPath = $aliasedPath->getAsNames();
-        if ([] === $aliasedPath) {
-            throw new InvalidArgumentException('The path must not be empty.');
-        }
-
+        $this->readable = $readable;
+        $this->filterable = $filterable;
+        $this->sortable = $sortable;
         $this->aliasedPath = $aliasedPath;
-
-        return $this;
-    }
-
-    public function filterable(): SetableProperty
-    {
-        $this->filterable = true;
-
-        return $this;
-    }
-
-    public function sortable(): SetableProperty
-    {
-        $this->sortable = true;
-
-        return $this;
-    }
-
-    public function readable(bool $defaultField = false, callable $customRead = null, bool $allowingInconsistencies = false): SetableProperty
-    {
-        $this->readable = true;
         $this->defaultField = $defaultField;
-        $this->customReadCallback = $customRead;
+        $this->customReadCallback = $customReadCallback;
         $this->allowingInconsistencies = $allowingInconsistencies;
-
-        return $this;
+        $this->initializable = $initializable;
+        $this->requiredForCreation = $requiredForCreation;
     }
 
     public function isReadable(): bool
     {
         return $this->readable;
     }
-
+    /**
+     * @return non-empty-string
+     */
     public function getName(): string
     {
         return $this->name;
@@ -146,14 +113,12 @@ class Property implements SetableProperty, GetableProperty
         return $this->filterable;
     }
 
+    /**
+     * @return non-empty-list<non-empty-string>|null
+     */
     public function getAliasedPath(): ?array
     {
         return $this->aliasedPath;
-    }
-
-    public function getCustomReadCallback(): ?callable
-    {
-        return $this->customReadCallback;
     }
 
     public function isDefaultField(): bool
@@ -161,24 +126,17 @@ class Property implements SetableProperty, GetableProperty
         return $this->defaultField;
     }
 
-    public function isDefaultInclude(): bool
+    /**
+     * @return null|callable(TEntity, ParamBag): TValue
+     */
+    public function getCustomReadCallback(): ?callable
     {
-        return $this->defaultInclude;
-    }
-
-    public function getTypeName(): ?string
-    {
-        return $this->typeName;
+        return $this->customReadCallback;
     }
 
     public function isAllowingInconsistencies(): bool
     {
         return $this->allowingInconsistencies;
-    }
-
-    public function isRelationship(): bool
-    {
-        return $this->relationship;
     }
 
     public function isInitializable(): bool
@@ -189,13 +147,5 @@ class Property implements SetableProperty, GetableProperty
     public function isRequiredForCreation(): bool
     {
         return $this->requiredForCreation;
-    }
-
-    public function initializable(bool $optional = false): SetableProperty
-    {
-        $this->initializable = true;
-        $this->requiredForCreation = !$optional;
-
-        return $this;
     }
 }
