@@ -12,8 +12,8 @@ use League\Fractal\ParamBag;
  * It provides mandatory information for attributes and relationships. Relationships require
  * additional information (see {@link IncludeDefinitionInterface}).
  *
- * @template E of object
- * @template R
+ * @template TEntity of object
+ * @template TValue
  */
 interface PropertyDefinitionInterface
 {
@@ -21,11 +21,11 @@ interface PropertyDefinitionInterface
      * Returns data from the given object. The property accessed is the
      * one this instance was configured to access.
      *
-     * @param E        $entity
+     * @param TEntity  $entity
      * @param ParamBag $params Contains optional content that can be used to adjust the data to
      *                         be returned. See {@link https://fractal.thephpleague.com/transformers/#include-parameters fractal include-parameters} for more information.
      *
-     * @return R the data stored in the entity in the property this instance corresponds to
+     * @return TValue the data stored in the entity in the property this instance corresponds to
      */
     public function determineData(object $entity, ParamBag $params);
 

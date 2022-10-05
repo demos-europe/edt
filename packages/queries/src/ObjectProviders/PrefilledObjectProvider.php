@@ -20,17 +20,17 @@ use function array_slice;
  * Implements {@link ObjectProviderInterface::getObjects} by applying the parameters to an array of
  * entities that was given on instantiation and returning the result.
  *
- * @template T of object
- * @template K of int|string
- * @template-implements ObjectProviderInterface<FunctionInterface<bool>, SortMethodInterface, T>
- * @template-implements OffsetBasedEntityProviderInterface<FunctionInterface<bool>, SortMethodInterface, T>
+ * @template TEntity of object
+ * @template TKey of int|string
+ * @template-implements ObjectProviderInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
+ * @template-implements OffsetBasedEntityProviderInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
  *
  * TODO: rename to PrefilledEntityProvider
  */
 class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEntityProviderInterface
 {
     /**
-     * @var array<K, T>
+     * @var array<TKey, TEntity>
      */
     private $prefilledArray;
 
@@ -45,7 +45,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
     private $sorter;
 
     /**
-     * @param array<K, T>             $prefilledArray
+     * @param array<TKey, TEntity>             $prefilledArray
      * @param ConditionEvaluator|null $conditionEvaluator
      */
     // TODO: refactor default away and inject Sorter
@@ -57,7 +57,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
     }
 
     /**
-     * @return array<K, T>
+     * @return array<TKey, TEntity>
      *
      * @inheritDoc
      */
@@ -76,7 +76,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
      * @param list<SortMethodInterface>     $sortMethods
      * @param OffsetBasedPagination|null    $pagination
      *
-     * @return array<K, T>
+     * @return array<TKey, TEntity>
      *
      * @throws PaginationException
      * @throws SortException
@@ -94,9 +94,9 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
     }
 
     /**
-     * @param array<K, T> $list
+     * @param array<TKey, TEntity> $list
      * @param list<SortMethodInterface> $sortMethods
-     * @return array<K, T>
+     * @return array<TKey, TEntity>
      *
      * @throws SortException
      */
@@ -110,10 +110,10 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
     }
 
     /**
-     * @param array<K, T>                   $list
+     * @param array<TKey, TEntity>                   $list
      * @param list<FunctionInterface<bool>> $conditions
      *
-     * @return array<K,T>
+     * @return array<TKey,TEntity>
      */
     protected function filter(array $list, array $conditions): array
     {
@@ -125,9 +125,9 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
     }
 
     /**
-     * @param array<K, T> $list
+     * @param array<TKey, TEntity> $list
      *
-     * @return array<K, T>
+     * @return array<TKey, TEntity>
      * @throws PaginationException
      */
     protected function slice(array $list, int $offset, ?int $limit): array

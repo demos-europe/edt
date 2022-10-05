@@ -12,9 +12,9 @@ use League\Fractal\TransformerAbstract;
  *
  * It provides mandatory information for relationships.
  *
- * @template E of object
- * @template T of object
- * @template-extends PropertyDefinitionInterface<E, T|list<T>|null>
+ * @template TEntity of object
+ * @template TValue of object
+ * @template-extends PropertyDefinitionInterface<TEntity, TValue|list<TValue>|null>
  */
 interface IncludeDefinitionInterface extends PropertyDefinitionInterface
 {

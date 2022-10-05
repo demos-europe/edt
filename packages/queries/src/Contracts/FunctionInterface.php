@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * Some kind of function with input parameters and an output of type `R`.
+ * Some kind of function with input parameters and an output of type `TOutput`.
  *
- * Template parameters:
- *
- * * `R`: the possible return types of this function
- *
- * @template R
+ * @template TOutput
  */
 interface FunctionInterface extends PathsBasedInterface
 {
@@ -19,7 +15,7 @@ interface FunctionInterface extends PathsBasedInterface
      * Execute this function within PHP.
      *
      * @param list<mixed> $propertyValues
-     * @return R
+     * @return TOutput
      * @throws FunctionException
      */
     public function apply(array $propertyValues);

@@ -19,18 +19,18 @@ use EDT\Querying\Contracts\SortException;
  * You may want to implement a factory to create instances of this class instead of using
  * its constructor, to avoid manually providing the same parameters on every usage.
  *
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template T of object
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TEntity of object
  */
 class FluentQuery
 {
     /**
-     * @var ObjectProviderInterface<C, S, T>
+     * @var ObjectProviderInterface<TCondition, TSorting, TEntity>
      */
     protected $objectProvider;
     /**
-     * @var ConditionDefinition<C>
+     * @var ConditionDefinition<TCondition>
      */
     private $conditionDefinition;
     /**
@@ -38,14 +38,14 @@ class FluentQuery
      */
     private $sliceDefinition;
     /**
-     * @var SortDefinition<S>
+     * @var SortDefinition<TSorting>
      */
     private $sortDefinition;
 
     /**
-     * @param ObjectProviderInterface<C, S, T> $objectProvider
-     * @param ConditionDefinition<C>        $conditionDefinition
-     * @param SortDefinition<S>             $sortDefinition
+     * @param ObjectProviderInterface<TCondition, TSorting, TEntity> $objectProvider
+     * @param ConditionDefinition<TCondition>        $conditionDefinition
+     * @param SortDefinition<TSorting>             $sortDefinition
      */
     public function __construct(
         ObjectProviderInterface $objectProvider,
@@ -60,7 +60,7 @@ class FluentQuery
     }
 
     /**
-     * @return iterable<T>
+     * @return iterable<TEntity>
      *
      * @throws PathException
      * @throws PaginationException
@@ -77,7 +77,7 @@ class FluentQuery
     }
 
     /**
-     * @return T|null
+     * @return TEntity|null
      *
      * @throws FluentQueryException
      * @throws PathException
@@ -105,7 +105,7 @@ class FluentQuery
     }
 
     /**
-     * @return SortDefinition<S>
+     * @return SortDefinition<TSorting>
      */
     public function getSortDefinition(): SortDefinition
     {
@@ -113,7 +113,7 @@ class FluentQuery
     }
 
     /**
-     * @return ConditionDefinition<C>
+     * @return ConditionDefinition<TCondition>
      */
     public function getConditionDefinition(): ConditionDefinition
     {

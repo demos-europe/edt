@@ -8,14 +8,9 @@ use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Utilities\Iterables;
 
 /**
- * Template parameters:
- *
- * * `R`: the possible return types of this function
- * * `I`: the possible input types of this function
- *
- * @template R
- * @template I
- * @template-extends AbstractFunction<R, I>
+ * @template TOutput
+ * @template TInput
+ * @template-extends AbstractFunction<TOutput, TInput>
  */
 abstract class AbstractSingleFunction extends AbstractFunction
 {
@@ -25,7 +20,7 @@ abstract class AbstractSingleFunction extends AbstractFunction
      * exactly one {@link FunctionInterface} instance is set in {@link AbstractFunction::$functions}
      * when this method is called.
      *
-     * @return FunctionInterface<I>
+     * @return FunctionInterface<TInput>
      */
     protected function getOnlyFunction(): FunctionInterface
     {

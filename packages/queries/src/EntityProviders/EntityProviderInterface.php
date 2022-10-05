@@ -8,19 +8,19 @@ use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template P of object
- * @template E of object
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TPagination of object
+ * @template TEntity of object
  */
 interface EntityProviderInterface
 {
     /**
-     * @param list<C> $conditions  the conditions to apply, the used paths are already mapped to the backing entity
-     * @param list<S> $sortMethods the sorting to apply, the used paths are already mapped to the backing entity
-     * @param P|null  $pagination
+     * @param list<TCondition> $conditions  the conditions to apply, the used paths are already mapped to the backing entity
+     * @param list<TSorting> $sortMethods the sorting to apply, the used paths are already mapped to the backing entity
+     * @param TPagination|null  $pagination
      *
-     * @return iterable<E>
+     * @return iterable<TEntity>
      *
      * @throws SortException
      * @throws PaginationException

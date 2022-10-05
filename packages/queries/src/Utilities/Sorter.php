@@ -28,20 +28,20 @@ class Sorter
     }
 
     /**
-     * @template K of int|string
-     * @template V of object
+     * @template TKey of int|string
+     * @template TEntity of object
      *
-     * @param array<K, V>                         $arrayToSort
+     * @param array<TKey, TEntity>                   $entitiesToSort
      * @param non-empty-list<SortMethodInterface> $sortMethods
      *
-     * @return array<K, V>
+     * @return array<TKey, TEntity>
      *
      * @throws SortException
      */
-    public function sortArray(array $arrayToSort, array $sortMethods): array
+    public function sortArray(array $entitiesToSort, array $sortMethods): array
     {
         try {
-            usort($arrayToSort, function (object $valueA, object $valueB) use ($sortMethods): int {
+            usort($entitiesToSort, function (object $valueA, object $valueB) use ($sortMethods): int {
                 foreach ($sortMethods as $sortMethod) {
                     $propertyPaths = PathInfo::getPropertyPaths($sortMethod);
                     $propertyValuesRowsA = $this->tableJoiner->getValueRows($valueA, $propertyPaths);
@@ -62,9 +62,9 @@ class Sorter
                 return 0;
             });
 
-            return $arrayToSort;
+            return $entitiesToSort;
         } catch (Throwable $exception) {
-            throw SortException::forCountAndMethods($exception, count($arrayToSort), $sortMethods);
+            throw SortException::forCountAndMethods($exception, count($entitiesToSort), $sortMethods);
         }
     }
 }

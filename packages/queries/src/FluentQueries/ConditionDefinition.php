@@ -9,22 +9,22 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use function count;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  */
 class ConditionDefinition
 {
     /**
-     * @var list<C>
+     * @var list<TCondition>
      */
     protected $conditions = [];
 
     /**
-     * @var list<ConditionDefinition<C>>
+     * @var list<ConditionDefinition<TCondition>>
      */
     protected $subDefinitions = [];
 
     /**
-     * @var ConditionFactoryInterface<C>
+     * @var ConditionFactoryInterface<TCondition>
      */
     protected $conditionFactory;
 
@@ -34,7 +34,7 @@ class ConditionDefinition
     protected $andConjunction;
 
     /**
-     * @param ConditionFactoryInterface<C> $conditionFactory
+     * @param ConditionFactoryInterface<TCondition> $conditionFactory
      */
     public function __construct(ConditionFactoryInterface $conditionFactory, bool $andConjunction)
     {
@@ -43,7 +43,7 @@ class ConditionDefinition
     }
 
     /**
-     * @return ConditionDefinition<C>
+     * @return ConditionDefinition<TCondition>
      */
     public function anyConditionApplies(): ConditionDefinition
     {
@@ -53,7 +53,7 @@ class ConditionDefinition
     }
 
     /**
-     * @return ConditionDefinition<C>
+     * @return ConditionDefinition<TCondition>
      */
     public function allConditionsApply(): ConditionDefinition
     {
@@ -74,7 +74,7 @@ class ConditionDefinition
     }
 
     /**
-     * @param C $condition
+     * @param TCondition $condition
      * @return $this
      */
     protected function add(PathsBasedInterface $condition): self
@@ -330,7 +330,7 @@ class ConditionDefinition
     }
 
     /**
-     * @return list<C>
+     * @return list<TCondition>
      */
     public function getConditions(): array
     {
@@ -353,7 +353,7 @@ class ConditionDefinition
      * **No {@link ConditionDefinition::conditions} property of any {@link ConditionDefinition} instance will be modified
      * in the process.**
      *
-     * @return list<C>
+     * @return list<TCondition>
      */
     protected function processSubDefinitions(): array
     {

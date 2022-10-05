@@ -13,23 +13,23 @@ use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template T of object
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TEntity of object
  *
- * @template-implements ObjectProviderInterface<C, S, T>
+ * @template-implements ObjectProviderInterface<TCondition, TSorting, TEntity>
  *
  * @deprecated use the individual components manually and optimize them for your use-case
  */
 class TypeRestrictedEntityProvider implements ObjectProviderInterface
 {
     /**
-     * @var ObjectProviderInterface<C, S, T>
+     * @var ObjectProviderInterface<TCondition, TSorting, TEntity>
      */
     private $baseProvider;
 
     /**
-     * @var ReadableTypeInterface<C, S, T>
+     * @var ReadableTypeInterface<TCondition, TSorting, TEntity>
      */
     private $type;
 
@@ -39,8 +39,8 @@ class TypeRestrictedEntityProvider implements ObjectProviderInterface
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<C, S, T> $baseProvider
-     * @param ReadableTypeInterface<C, S, T>   $type
+     * @param ObjectProviderInterface<TCondition, TSorting, TEntity> $baseProvider
+     * @param ReadableTypeInterface<TCondition, TSorting, TEntity>   $type
      */
     public function __construct(
         ObjectProviderInterface $baseProvider,
@@ -53,7 +53,7 @@ class TypeRestrictedEntityProvider implements ObjectProviderInterface
     }
 
     /**
-     * @return iterable<T>
+     * @return iterable<TEntity>
      *
      * {@inheritDoc}
      *

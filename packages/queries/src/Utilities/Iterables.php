@@ -22,12 +22,12 @@ class Iterables
      * (flatted) into a single one and returned.
      *
      * @template V
-     * @template R
+     * @template TOutput
      *
-     * @param callable(V): list<R> $callable how to map each given value to an array
+     * @param callable(V): list<TOutput> $callable how to map each given value to an array
      * @param array<int|string, V> $values   the values to be mapped to an array
      *
-     * @return list<R>
+     * @return list<TOutput>
      */
     public static function mapFlat(callable $callable, array $values): array
     {
@@ -46,13 +46,13 @@ class Iterables
      *
      * Can be used to revert a {@link Iterables::mapFlat} operation.
      *
-     * @template K of int|string
+     * @template TKey of int|string
      * @template V
      *
-     * @param array<K, V> $toSplit The array to split. Length must be equal to the sum of $sizes, otherwise the behavior is undefined.
+     * @param array<TKey, V> $toSplit The array to split. Length must be equal to the sum of $sizes, otherwise the behavior is undefined.
      * @param int ...$sizes        The intended array size of each item in the result array.
      *
-     * @return list<array<K, V>> The nested result array, same length as the $sizes array.
+     * @return list<array<TKey, V>> The nested result array, same length as the $sizes array.
      */
     public static function split(iterable $toSplit, int ...$sizes): array
     {
@@ -61,7 +61,7 @@ class Iterables
         $result = [];
         $valuesOffset = 0;
         foreach ($sizes as $count) {
-            /** @var array<K, V> $slice */
+            /** @var array<TKey, V> $slice */
             $slice = array_slice($toSplit, $valuesOffset, $count, true);
             $result[] = $slice;
             $valuesOffset += $count;
@@ -153,7 +153,7 @@ class Iterables
      * The type T of the given values must not be `int`.
      *
      * @template T
-     * @param callable(T,T):bool $equalityComparison
+     * @param callable(T, T):bool $equalityComparison
      * @param non-empty-list<T> $values
      * @return non-empty-list<T|int<0, max>>
      */

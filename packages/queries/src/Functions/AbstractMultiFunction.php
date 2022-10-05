@@ -20,10 +20,10 @@ use function count;
  * expects 2 parameters and the second one 3 parameters, then 5 parameters must be passed
  * into the parent function. Otherwise, the behavior is undefined.
  *
- * @template T
- * @template I
- * @template-extends AbstractFunction<T, I>
- * @template X of array
+ * @template TOutput
+ * @template TInput
+ * @template-extends AbstractFunction<TOutput, TInput>
+ * @template TIntermediate of array
  *
  * @internal
  */
@@ -42,9 +42,9 @@ abstract class AbstractMultiFunction extends AbstractFunction
     }
 
     /**
-     * @param X $functionResults
+     * @param TIntermediate $functionResults
      *
-     * @return T
+     * @return TOutput
      */
     protected abstract function reduce(array $functionResults);
 }

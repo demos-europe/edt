@@ -21,10 +21,10 @@ class TypeRetrievalAccessException extends AccessException
     }
 
     /**
-     * @template T of \EDT\Wrapping\Contracts\Types\TypeInterface
+     * @template TType of \EDT\Wrapping\Contracts\Types\TypeInterface
      *
      * @param non-empty-string $typeIdentifier
-     * @param class-string<T> $implementation
+     * @param class-string<TType> $implementation
      */
     public static function noNameWithImplementation(string $typeIdentifier, string $implementation): self
     {

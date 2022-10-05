@@ -7,19 +7,19 @@ namespace EDT\Querying\Contracts;
 use EDT\Querying\EntityProviders\EntityProviderInterface;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template T of object
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TEntity of object
  *
  * @deprecated use {@link EntityProviderInterface} instead
  */
 interface ObjectProviderInterface
 {
     /**
-     * @param list<C> $conditions
-     * @param list<S> $sortMethods
+     * @param list<TCondition> $conditions
+     * @param list<TSorting> $sortMethods
      *
-     * @return iterable<T>
+     * @return iterable<TEntity>
      *
      * @throws PathException
      * @throws PaginationException

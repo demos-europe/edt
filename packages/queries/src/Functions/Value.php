@@ -8,18 +8,18 @@ use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Utilities\Iterables;
 
 /**
- * @template R
- * @template-implements FunctionInterface<R>
+ * @template TOutput
+ * @template-implements FunctionInterface<TOutput>
  */
 class Value implements FunctionInterface
 {
     /**
-     * @var R
+     * @var TOutput
      */
     protected $value;
 
     /**
-     * @param R $value
+     * @param TOutput $value
      */
     public function __construct($value)
     {

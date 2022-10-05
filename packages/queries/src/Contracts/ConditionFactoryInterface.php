@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface ConditionFactoryInterface
 {
@@ -13,7 +13,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -28,7 +28,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -39,14 +39,14 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
     public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return C
+     * @return TCondition
      */
     public function true(): PathsBasedInterface;
 
@@ -54,7 +54,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -64,14 +64,14 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
     public function propertyHasNotSize(int $size, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return C
+     * @return TCondition
      */
     public function false(): PathsBasedInterface;
 
@@ -79,7 +79,7 @@ interface ConditionFactoryInterface
      * @param non-empty-list<non-empty-string> $leftProperties
      * @param non-empty-list<non-empty-string> $rightProperties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -89,17 +89,17 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @param C $firstCondition
-     * @param C ...$additionalConditions
+     * @param TCondition $firstCondition
+     * @param TCondition ...$additionalConditions
      *
-     * @return C
+     * @return TCondition
      */
     public function allConditionsApply(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface;
 
@@ -108,7 +108,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -120,7 +120,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -132,17 +132,17 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
     public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @param C $firstCondition
-     * @param C ...$additionalConditions
+     * @param TCondition $firstCondition
+     * @param TCondition ...$additionalConditions
      *
-     * @return C
+     * @return TCondition
      */
     public function anyConditionApplies(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface;
 
@@ -150,7 +150,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -161,7 +161,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -172,7 +172,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -183,7 +183,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -194,14 +194,14 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
     public function valueSmallerEqualsThan($value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return C
+     * @return TCondition
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
@@ -210,7 +210,7 @@ interface ConditionFactoryInterface
     public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface;
 
     /**
-     * @return C
+     * @return TCondition
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
@@ -233,7 +233,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -244,7 +244,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -254,7 +254,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */
@@ -267,7 +267,7 @@ interface ConditionFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return C
+     * @return TCondition
      *
      * @throws PathException
      */

@@ -15,8 +15,8 @@ use InvalidArgumentException;
 use function count;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  *
  * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
  * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
@@ -24,18 +24,18 @@ use function count;
 class PropertyValuesGenerator
 {
     /**
-     * @var TypeProviderInterface<C, S>
+     * @var TypeProviderInterface<TCondition, TSorting>
      */
     private $typeProvider;
 
     /**
-     * @var EntityFetcherInterface<C, S>
+     * @var EntityFetcherInterface<TCondition, TSorting>
      */
     private $entityFetcher;
 
     /**
-     * @param EntityFetcherInterface<C, S> $entityFetcher
-     * @param TypeProviderInterface<C, S>  $typeProvider
+     * @param EntityFetcherInterface<TCondition, TSorting> $entityFetcher
+     * @param TypeProviderInterface<TCondition, TSorting>  $typeProvider
      */
     public function __construct(EntityFetcherInterface $entityFetcher, TypeProviderInterface $typeProvider)
     {

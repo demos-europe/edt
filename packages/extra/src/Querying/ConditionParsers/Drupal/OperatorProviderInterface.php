@@ -7,7 +7,7 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
- * @template F of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface OperatorProviderInterface
 {
@@ -23,7 +23,7 @@ interface OperatorProviderInterface
      * @param mixed|null                             $value
      * @param non-empty-list<non-empty-string> $path
      *
-     * @return F
+     * @return TCondition
      */
     public function createOperator(string $operatorName, $value, array $path): PathsBasedInterface;
 }

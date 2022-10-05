@@ -16,9 +16,9 @@ use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\EntityProviders\OffsetBasedEntityProviderInterface;
 
 /**
- * @template T of object
- * @template-implements ObjectProviderInterface<ClauseInterface, OrderByInterface, T>
- * @template-implements OffsetBasedEntityProviderInterface<ClauseInterface, OrderByInterface, T>
+ * @template TEntity of object
+ * @template-implements ObjectProviderInterface<ClauseInterface, OrderByInterface, TEntity>
+ * @template-implements OffsetBasedEntityProviderInterface<ClauseInterface, OrderByInterface, TEntity>
  */
 class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedEntityProviderInterface
 {
@@ -27,12 +27,12 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedE
      */
     private $queryGenerator;
     /**
-     * @var class-string<T>
+     * @var class-string<TEntity>
      */
     private $className;
 
     /**
-     * @param class-string<T> $className
+     * @param class-string<TEntity> $className
      */
     public function __construct(string $className, EntityManager $entityManager)
     {
@@ -55,7 +55,7 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedE
      * @param list<OrderByInterface>     $sortMethods
      * @param OffsetBasedPagination|null $pagination
      *
-     * @return iterable<T>
+     * @return iterable<TEntity>
      *
      * @throws MappingException
      * @throws PaginationException

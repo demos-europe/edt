@@ -8,17 +8,11 @@ use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
- * Template parameters:
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TEntity of object
  *
- * * `C`: the type of the condition instances
- * * `S`: the type of the sort instances
- * * `T`: the class of the backing entity returned by {@link TypeInterface::getEntityClass()}
- *
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template T of object
- *
- * @template-extends EntityBasedInterface<T>
+ * @template-extends EntityBasedInterface<TEntity>
  */
 interface TypeInterface extends EntityBasedInterface
 {
@@ -97,7 +91,7 @@ interface TypeInterface extends EntityBasedInterface
      * For a list query on a `CatType` the condition returned by this method must define
      * limits to only get `Animal` instances that are a `Cat`.
      *
-     * @return C
+     * @return TCondition
      */
     public function getAccessCondition(): PathsBasedInterface;
 
@@ -149,7 +143,7 @@ interface TypeInterface extends EntityBasedInterface
      *
      * Return an empty array to not define any default sorting.
      *
-     * @return list<S>
+     * @return list<TSorting>
      */
     public function getDefaultSortMethods(): array;
 }

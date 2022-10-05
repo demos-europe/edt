@@ -14,17 +14,17 @@ use function in_array;
 use function Safe\substr;
 
 /**
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  */
 class JsonApiSortingParser
 {
     /**
-     * @var SortMethodFactoryInterface<S>
+     * @var SortMethodFactoryInterface<TSorting>
      */
     private $sortMethodFactory;
 
     /**
-     * @param SortMethodFactoryInterface<S> $sortMethodFactory
+     * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
     public function __construct(SortMethodFactoryInterface $sortMethodFactory)
     {
@@ -35,7 +35,7 @@ class JsonApiSortingParser
      * Create an array of {@link SortMethodInterface} objects from the sort query parameter given if not null.
      * Otherwise, returns an empty array.
      *
-     * @return list<S>
+     * @return list<TSorting>
      */
     public function createFromQueryParamValue(?string $sortQueryParamValue): array
     {
@@ -51,7 +51,7 @@ class JsonApiSortingParser
     /**
      * @param non-empty-string $sortMethodRaw
      *
-     * @return S
+     * @return TSorting
      *
      * @throws PathException
      * @throws StringsException
@@ -67,7 +67,7 @@ class JsonApiSortingParser
     /**
      * @param non-empty-string $sortMethodRaw
      *
-     * @return S
+     * @return TSorting
      *
      * @throws StringsException
      * @throws PathException
@@ -82,7 +82,7 @@ class JsonApiSortingParser
     /**
      * @param non-empty-string $sortMethodRaw
      *
-     * @return S
+     * @return TSorting
      *
      * @throws PathException
      */

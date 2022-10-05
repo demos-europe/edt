@@ -26,8 +26,8 @@ use function in_array;
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
  *          }
- * @template F of \EDT\Querying\Contracts\PathsBasedInterface
- * @template-implements FilterParserInterface<array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, F>
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template-implements FilterParserInterface<array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, TCondition>
  */
 class DrupalFilterParser implements FilterParserInterface
 {
@@ -97,12 +97,12 @@ class DrupalFilterParser implements FilterParserInterface
     public const VALUE = 'value';
 
     /**
-     * @var ConditionFactoryInterface<F>
+     * @var ConditionFactoryInterface<TCondition>
      */
     protected $conditionFactory;
 
     /**
-     * @var ConditionParserInterface<DrupalFilterCondition, F>
+     * @var ConditionParserInterface<DrupalFilterCondition, TCondition>
      */
     private $conditionParser;
 
@@ -112,8 +112,8 @@ class DrupalFilterParser implements FilterParserInterface
     private $filterValidator;
 
     /**
-     * @param ConditionFactoryInterface<F>                       $conditionFactory
-     * @param ConditionParserInterface<DrupalFilterCondition, F> $conditionParser
+     * @param ConditionFactoryInterface<TCondition>                       $conditionFactory
+     * @param ConditionParserInterface<DrupalFilterCondition, TCondition> $conditionParser
      */
     public function __construct(
         ConditionFactoryInterface $conditionFactory,
@@ -132,7 +132,7 @@ class DrupalFilterParser implements FilterParserInterface
      *
      * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $filter
      *
-     * @return list<F>
+     * @return list<TCondition>
      *
      * @throws DrupalFilterException
      */
@@ -199,9 +199,9 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @param F $condition
-     * @param F ...$conditions
-     * @return F
+     * @param TCondition $condition
+     * @param TCondition ...$conditions
+     * @return TCondition
      *
      * @throws DrupalFilterException
      */
@@ -218,7 +218,7 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @param array<non-empty-string, list<F|null>> $conditions
+     * @param array<non-empty-string, list<TCondition|null>> $conditions
      */
     private function hasReachedRootGroup(array $conditions): bool
     {
@@ -228,7 +228,7 @@ class DrupalFilterParser implements FilterParserInterface
     /**
      * @param array<non-empty-string, list<DrupalFilterCondition>> $groupedConditions
      *
-     * @return array<non-empty-string, list<F>>
+     * @return array<non-empty-string, list<TCondition>>
      */
     private function parseConditions(array $groupedConditions): array
     {

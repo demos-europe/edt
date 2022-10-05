@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface SortMethodFactoryInterface
 {
@@ -13,7 +13,7 @@ interface SortMethodFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return S
+     * @return TSorting
      *
      * @throws PathException
      */
@@ -23,7 +23,7 @@ interface SortMethodFactoryInterface
      * @param non-empty-string $property
      * @param non-empty-string ...$properties
      *
-     * @return S
+     * @return TSorting
      *
      * @throws PathException
      */

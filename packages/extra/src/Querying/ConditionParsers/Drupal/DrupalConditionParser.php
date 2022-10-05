@@ -18,8 +18,8 @@ use function array_key_exists;
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
  *          }
- * @template F of \EDT\Querying\Contracts\PathsBasedInterface
- * @template-implements ConditionParserInterface<DrupalFilterCondition, F>
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template-implements ConditionParserInterface<DrupalFilterCondition, TCondition>
  */
 class DrupalConditionParser implements ConditionParserInterface
 {
@@ -28,18 +28,18 @@ class DrupalConditionParser implements ConditionParserInterface
      */
     protected $defaultOperator;
     /**
-     * @var ConditionFactoryInterface<F>
+     * @var ConditionFactoryInterface<TCondition>
      */
     protected $conditionFactory;
 
     /**
-     * @var OperatorProviderInterface<F>
+     * @var OperatorProviderInterface<TCondition>
      */
     private $operatorProvider;
 
     /**
-     * @param ConditionFactoryInterface<F> $conditionFactory
-     * @param OperatorProviderInterface<F> $operatorProvider
+     * @param ConditionFactoryInterface<TCondition> $conditionFactory
+     * @param OperatorProviderInterface<TCondition> $operatorProvider
      * @param non-empty-string             $defaultOperator
      */
     public function __construct(

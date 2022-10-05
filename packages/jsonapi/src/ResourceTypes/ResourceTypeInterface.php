@@ -11,13 +11,14 @@ use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use League\Fractal\TransformerAbstract;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template T of object
- * @template-extends ReadableTypeInterface<C, S, T>
- * @template-extends IdentifiableTypeInterface<C, S, T>
- * @template-extends FilterableTypeInterface<C, S, T>
- * @template-extends SortableTypeInterface<C, S, T>
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TEntity of object
+ *
+ * @template-extends ReadableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-extends IdentifiableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-extends FilterableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-extends SortableTypeInterface<TCondition, TSorting, TEntity>
  */
 interface ResourceTypeInterface extends ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface
 {

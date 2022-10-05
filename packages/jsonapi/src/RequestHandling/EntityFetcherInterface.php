@@ -11,15 +11,15 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface EntityFetcherInterface
 {
     /**
      * @template O of object
      *
-     * @param TypeInterface<C, S, O>&IdentifiableTypeInterface&ReadableTypeInterface $type
+     * @param TypeInterface<TCondition, TSorting, O>&IdentifiableTypeInterface&ReadableTypeInterface $type
      * @param non-empty-string $id
      *
      * @return O

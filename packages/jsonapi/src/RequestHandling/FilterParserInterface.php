@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace EDT\JsonApi\RequestHandling;
 
 /**
- * @template I
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TFilter
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface FilterParserInterface
 {
     /**
-     * @param I $filter
+     * @param TFilter $filter
      *
-     * @return list<C>
+     * @return list<TCondition>
      *
      * @throws FilterException
      */

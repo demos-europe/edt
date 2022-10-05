@@ -7,11 +7,11 @@ namespace EDT\Wrapping\Contracts\Types;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template T of object
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TEntity of object
  *
- * @template-extends TypeInterface<C, S, T>
+ * @template-extends TypeInterface<TCondition, TSorting, TEntity>
  */
 interface CreatableTypeInterface extends TypeInterface
 {
@@ -22,7 +22,7 @@ interface CreatableTypeInterface extends TypeInterface
      * Each entry consists of the name of the property as key and {@link FunctionInterface conditions}
      * as value. The conditions will be used to determine if a value is allowed to be set.
      *
-     * @return array<non-empty-string, list<C>>
+     * @return array<non-empty-string, list<TCondition>>
      */
     public function getInitializableProperties(): array;
 

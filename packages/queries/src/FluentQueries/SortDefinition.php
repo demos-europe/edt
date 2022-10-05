@@ -8,21 +8,21 @@ use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 
 /**
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  */
 class SortDefinition
 {
     /**
-     * @var list<S>
+     * @var list<TSorting>
      */
     private $sortMethods = [];
     /**
-     * @var SortMethodFactoryInterface<S>
+     * @var SortMethodFactoryInterface<TSorting>
      */
     private $sortMethodFactory;
 
     /**
-     * @param SortMethodFactoryInterface<S> $sortMethodFactory
+     * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
     public function __construct(SortMethodFactoryInterface $sortMethodFactory)
     {
@@ -54,7 +54,7 @@ class SortDefinition
     }
 
     /**
-     * @return list<S>
+     * @return list<TSorting>
      */
     public function getSortMethods(): array
     {

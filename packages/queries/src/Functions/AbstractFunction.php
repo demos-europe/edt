@@ -15,14 +15,9 @@ use function count;
  * This class is to be used for any {@link FunctionInterface} implementation that itself
  * calls one or multiple other functions.
  *
- * Template parameters:
- *
- * * `R`: the possible return types of this function
- * * `I`: the possible input types of this function
- *
- * @template R
- * @template I
- * @template-implements FunctionInterface<R>
+ * @template TOutput
+ * @template TInput
+ * @template-implements FunctionInterface<TOutput>
  *
  * @internal
  */
@@ -34,13 +29,13 @@ abstract class AbstractFunction implements FunctionInterface
     private $toManyAllowed = true;
 
     /**
-     * @var list<FunctionInterface<I>>
+     * @var list<FunctionInterface<TInput>>
      */
     protected $functions = [];
 
     /**
-     * @param FunctionInterface<I> $function
-     * @param FunctionInterface<I> ...$functions
+     * @param FunctionInterface<TInput> $function
+     * @param FunctionInterface<TInput> ...$functions
      */
     public function __construct(FunctionInterface $function, FunctionInterface ...$functions)
     {

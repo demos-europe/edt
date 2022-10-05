@@ -9,23 +9,23 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use function array_key_exists;
 
 /**
- * @template F of \EDT\Querying\Contracts\PathsBasedInterface
- * @template-implements OperatorProviderInterface<F>
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template-implements OperatorProviderInterface<TCondition>
  */
 class PredefinedOperatorProvider implements OperatorProviderInterface
 {
     /**
-     * @var ConditionFactoryInterface<F>
+     * @var ConditionFactoryInterface<TCondition>
      */
     private $conditionFactory;
 
     /**
-     * @var array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed):F>
+     * @var array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed):TCondition>
      */
     private $operatorFunctions;
 
     /**
-     * @param ConditionFactoryInterface<F> $conditionFactory
+     * @param ConditionFactoryInterface<TCondition> $conditionFactory
      */
     public function __construct(ConditionFactoryInterface $conditionFactory)
     {
@@ -48,7 +48,7 @@ class PredefinedOperatorProvider implements OperatorProviderInterface
     }
 
     /**
-     * @return array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed): F>
+     * @return array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed): TCondition>
      */
     protected function getOperatorFunctions(): array
     {

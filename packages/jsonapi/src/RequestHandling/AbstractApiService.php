@@ -19,8 +19,8 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use function array_key_exists;
 
 /**
- * @template C of \EDT\Querying\Contracts\FunctionInterface<bool>
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  *
  * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
  * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
@@ -28,22 +28,22 @@ use function array_key_exists;
 abstract class AbstractApiService
 {
     /**
-     * @var PropertyValuesGenerator<C, S>
+     * @var PropertyValuesGenerator<TCondition, TSorting>
      */
     protected $propertyValuesGenerator;
 
     /**
-     * @var TypeProviderInterface<C, S>
+     * @var TypeProviderInterface<TCondition, TSorting>
      */
     protected $typeProvider;
 
     /**
-     * @var FilterParserInterface<mixed, C>
+     * @var FilterParserInterface<mixed, TCondition>
      */
     private $filterParser;
 
     /**
-     * @var JsonApiSortingParser<S>
+     * @var JsonApiSortingParser<TSorting>
      */
     private $sortingParser;
 
@@ -53,10 +53,10 @@ abstract class AbstractApiService
     private $paginatorFactory;
 
     /**
-     * @param FilterParserInterface<mixed, C> $filterParser
-     * @param JsonApiSortingParser<S>         $sortingParser
-     * @param PropertyValuesGenerator<C, S>   $propertyValuesGenerator
-     * @param TypeProviderInterface<C, S>     $typeProvider
+     * @param FilterParserInterface<mixed, TCondition> $filterParser
+     * @param JsonApiSortingParser<TSorting>         $sortingParser
+     * @param PropertyValuesGenerator<TCondition, TSorting>   $propertyValuesGenerator
+     * @param TypeProviderInterface<TCondition, TSorting>     $typeProvider
      */
     public function __construct(
         FilterParserInterface $filterParser,
@@ -211,7 +211,7 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, S, O> $type
+     * @param ResourceTypeInterface<TCondition, TSorting, O> $type
      * @param non-empty-string               $id
      *
      * @return O
@@ -221,7 +221,7 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, S, O> $type
+     * @param ResourceTypeInterface<TCondition, TSorting, O> $type
      * @param array<non-empty-string, mixed> $properties
      *
      * @return O|null The created object if the creation had side effects on it (values set in
@@ -236,9 +236,9 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, S, O> $type
-     * @param list<C>                        $filters
-     * @param list<S>                        $sortMethods
+     * @param ResourceTypeInterface<TCondition, TSorting, O> $type
+     * @param list<TCondition>                        $filters
+     * @param list<TSorting>                        $sortMethods
      *
      * @return ApiListResultInterface<O>
      */
@@ -259,7 +259,7 @@ abstract class AbstractApiService
     /**
      * @template O of object
      *
-     * @param ResourceTypeInterface<C, S, O> $type
+     * @param ResourceTypeInterface<TCondition, TSorting, O> $type
      * @param non-empty-string               $id
      * @param array<non-empty-string, mixed> $properties
      *
@@ -272,7 +272,7 @@ abstract class AbstractApiService
     abstract protected function updateObject(ResourceTypeInterface $type, string $id, array $properties): ?object;
 
     /**
-     * @param ResourceTypeInterface<C, S, object> $type
+     * @param ResourceTypeInterface<TCondition, TSorting, object> $type
      * @param non-empty-string                    $id
      *
      * @throws Exception
@@ -280,7 +280,7 @@ abstract class AbstractApiService
     abstract protected function deleteObject(ResourceTypeInterface $type, string $id): void;
 
     /**
-     * @return list<C>
+     * @return list<TCondition>
      *
      * @throws DrupalFilterException
      */
@@ -298,7 +298,7 @@ abstract class AbstractApiService
     }
 
     /**
-     * @return list<S>
+     * @return list<TSorting>
      */
     protected function getSorting(ParameterBag $query): array
     {

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * @template I
- * @template F of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TFilterCondition
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  */
 interface ConditionParserInterface
 {
     /**
-     * @param I $condition
+     * @param TFilterCondition $condition
      *
-     * @return F
+     * @return TCondition
      */
     public function parseCondition($condition): PathsBasedInterface;
 }

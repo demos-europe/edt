@@ -37,7 +37,7 @@ use function Safe\preg_match;
  * Only those relationships will be readable that have an {@link TypeInterface::isAvailable() available}
  * and {@link TypeInterface::isReferencable() referencable} target type. Returned relationships will be wrapped themselves inside {@link WrapperObject} instances.
  *
- * @template T of object
+ * @template TEntity of object
  */
 class WrapperObject
 {
@@ -47,12 +47,12 @@ class WrapperObject
     private const METHOD_PATTERN = '/(get|set)([A-Z_]\w*)/';
 
     /**
-     * @var T
+     * @var TEntity
      */
     private $object;
 
     /**
-     * @var TypeInterface<FunctionInterface<bool>, SortMethodInterface, T>
+     * @var TypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
      */
     private $type;
 
@@ -82,8 +82,8 @@ class WrapperObject
     private $wrapperFactory;
 
     /**
-     * @param T                                                              $object
-     * @param TypeInterface<FunctionInterface<bool>, SortMethodInterface, T> $type
+     * @param TEntity                                                              $object
+     * @param TypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $type
      * @param TypeAccessor<FunctionInterface<bool>, SortMethodInterface>     $typeAccessor
      */
     public function __construct(
@@ -105,7 +105,7 @@ class WrapperObject
     }
 
     /**
-     * @return TypeInterface<FunctionInterface<bool>, SortMethodInterface, T>
+     * @return TypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
      */
     public function getResourceType(): TypeInterface
     {
@@ -336,7 +336,7 @@ class WrapperObject
     }
 
     /**
-     * @return T
+     * @return TEntity
      *
      * @internal Warning: exposing the backing object is dangerous, as it allows to read values
      * unrestricted not only from the returned object but all its relationships.

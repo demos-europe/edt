@@ -7,19 +7,19 @@ namespace EDT\JsonApi\EntityAccess;
 use Pagerfanta\Pagerfanta;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
- * @template P of object
- * @template E of object
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TPagination of object
+ * @template TEntity of object
  */
 interface PaginatingEntityProviderInterface
 {
     /**
-     * @param list<C> $conditions  the conditions to apply, the used paths are already mapped to the backing entity
-     * @param list<S> $sortMethods the sorting to apply, the used paths are already mapped to the backing entity
-     * @param P       $pagination
+     * @param list<TCondition> $conditions  the conditions to apply, the used paths are already mapped to the backing entity
+     * @param list<TSorting> $sortMethods the sorting to apply, the used paths are already mapped to the backing entity
+     * @param TPagination       $pagination
      *
-     * @return Pagerfanta<E>
+     * @return Pagerfanta<TEntity>
      */
     public function getEntityPaginator(array $conditions, array $sortMethods, object $pagination): Pagerfanta;
 }

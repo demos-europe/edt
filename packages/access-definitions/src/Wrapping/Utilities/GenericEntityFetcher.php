@@ -22,25 +22,25 @@ use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use function count;
 
 /**
- * @template C of \EDT\Querying\Contracts\PathsBasedInterface
- * @template S of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  * @template O of object
- * @template R
+ * @template TWrapper
  *
  * @deprecated use the individual components manually and optimize them for your use-case
  */
 class GenericEntityFetcher
 {
     /**
-     * @var ObjectProviderInterface<C, S, O>
+     * @var ObjectProviderInterface<TCondition, TSorting, O>
      */
     private $objectProvider;
     /**
-     * @var ConditionFactoryInterface<C>
+     * @var ConditionFactoryInterface<TCondition>
      */
     private $conditionFactory;
     /**
-     * @var WrapperFactoryInterface<C, S>
+     * @var WrapperFactoryInterface<TCondition, TSorting>
      */
     private $wrapperFactory;
     /**
@@ -49,9 +49,9 @@ class GenericEntityFetcher
     private $schemaPathProcessor;
 
     /**
-     * @param ObjectProviderInterface<C, S, O> $objectProvider
-     * @param ConditionFactoryInterface<C>     $conditionFactory
-     * @param WrapperFactoryInterface<C, S>    $wrapperFactory All returned instances are wrapped using the given instance.
+     * @param ObjectProviderInterface<TCondition, TSorting, O> $objectProvider
+     * @param ConditionFactoryInterface<TCondition>     $conditionFactory
+     * @param WrapperFactoryInterface<TCondition, TSorting>    $wrapperFactory All returned instances are wrapped using the given instance.
      *                                                             To avoid any wrapping simply pass an instance that returns
      *                                                             its input without wrapping.
      */
@@ -77,11 +77,11 @@ class GenericEntityFetcher
      * * the property is available for {@link FilterableTypeInterface::getFilterableProperties() filtering} if conditions were given
      * * the property is available for {@link SortableTypeInterface::getSortableProperties() sorting} if sort methods were given
      *
-     * @param ReadableTypeInterface<C, S, O> $type
-     * @param list<C>                        $conditions
-     * @param S                              ...$sortMethods
+     * @param ReadableTypeInterface<TCondition, TSorting, O> $type
+     * @param list<TCondition>                        $conditions
+     * @param TSorting                              ...$sortMethods
      *
-     * @return list<R>
+     * @return list<TWrapper>
      *
      * @throws AccessException
      * @throws SortException
@@ -106,10 +106,10 @@ class GenericEntityFetcher
     }
 
     /**
-     * @param IdentifiableTypeInterface<C, S, O>&ReadableTypeInterface<C, S, O> $type
+     * @param IdentifiableTypeInterface<TCondition, TSorting, O>&ReadableTypeInterface<TCondition, TSorting, O> $type
      * @param non-empty-string $identifier
      *
-     * @return R
+     * @return TWrapper
      * @throws PaginationException
      * @throws SortException
      * @throws PathException
