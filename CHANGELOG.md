@@ -2,10 +2,15 @@
 
 ## Unreleased
 
-* refactor: remove  `illuminate/collections` dependency due to missing template type support
-* refactor: rename template parameters to new naming pattern
-* refactor: rework resource type property handling
-* feature: add nullable support to `TypeRequirement`
+- refactor: rename `OffsetBasedEntityProviderInterface` to `OffsetPaginatingEntityProviderInterface`
+- feature: add pagination parsers
+- refactor: rename pagination classes for simplicity
+- refactor: remove  `illuminate/collections` dependency due to missing template type support
+- refactor: rename template parameters to new naming pattern
+- refactor: rework resource type property handling
+- feature: add nullable support to `TypeRequirement`
+- feature: improve `DynamicTransformer` exception message
+- refactor: rename `SliceException` to more generic `PaginationException`
 
 ## 0.12.15 - 2022-09-27
 
