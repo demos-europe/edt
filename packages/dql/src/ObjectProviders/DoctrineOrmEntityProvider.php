@@ -13,14 +13,14 @@ use EDT\DqlQuerying\Contracts\OrderByInterface;
 use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\PaginationException;
-use EDT\Querying\EntityProviders\OffsetBasedEntityProviderInterface;
+use EDT\Querying\EntityProviders\OffsetPaginatingEntityProviderInterface;
 
 /**
  * @template TEntity of object
  * @template-implements ObjectProviderInterface<ClauseInterface, OrderByInterface, TEntity>
- * @template-implements OffsetBasedEntityProviderInterface<ClauseInterface, OrderByInterface, TEntity>
+ * @template-implements OffsetPaginatingEntityProviderInterface<ClauseInterface, OrderByInterface, TEntity>
  */
-class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedEntityProviderInterface
+class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetPaginatingEntityProviderInterface
 {
     /**
      * @var QueryGenerator

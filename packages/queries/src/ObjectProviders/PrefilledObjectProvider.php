@@ -10,7 +10,7 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
-use EDT\Querying\EntityProviders\OffsetBasedEntityProviderInterface;
+use EDT\Querying\EntityProviders\OffsetPaginatingEntityProviderInterface;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Contracts\ObjectProviderInterface;
@@ -23,11 +23,11 @@ use function array_slice;
  * @template TEntity of object
  * @template TKey of int|string
  * @template-implements ObjectProviderInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
- * @template-implements OffsetBasedEntityProviderInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
+ * @template-implements OffsetPaginatingEntityProviderInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
  *
  * TODO: rename to PrefilledEntityProvider
  */
-class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEntityProviderInterface
+class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginatingEntityProviderInterface
 {
     /**
      * @var array<TKey, TEntity>

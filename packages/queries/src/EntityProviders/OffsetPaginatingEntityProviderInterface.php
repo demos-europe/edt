@@ -14,7 +14,7 @@ use EDT\Querying\Contracts\SortException;
  *
  * @template-extends EntityProviderInterface<TCondition, TSorting, OffsetPagination, TEntity>
  */
-interface OffsetBasedEntityProviderInterface extends EntityProviderInterface
+interface OffsetPaginatingEntityProviderInterface extends EntityProviderInterface
 {
 
     /**
