@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.16 - 2022-10-06
 
 - refactor: rename `OffsetBasedEntityProviderInterface` to `OffsetPaginatingEntityProviderInterface`
 - feature: add pagination parsers
