@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Pagination;
 
-class OffsetBasedPagination
+class OffsetPagination
 {
     /**
      * @var int<0, max>

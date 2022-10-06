@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\EntityProviders;
 
-use EDT\Querying\Pagination\OffsetBasedPagination;
+use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Contracts\SortException;
 
 /**
@@ -12,15 +12,15 @@ use EDT\Querying\Contracts\SortException;
  * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends EntityProviderInterface<TCondition, TSorting, OffsetBasedPagination, TEntity>
+ * @template-extends EntityProviderInterface<TCondition, TSorting, OffsetPagination, TEntity>
  */
 interface OffsetBasedEntityProviderInterface extends EntityProviderInterface
 {
 
     /**
-     * @param list<TCondition>                    $conditions
-     * @param list<TSorting>                    $sortMethods
-     * @param OffsetBasedPagination|null $pagination
+     * @param list<TCondition>      $conditions
+     * @param list<TSorting>        $sortMethods
+     * @param OffsetPagination|null $pagination
      *
      * @return iterable<TEntity>
      *

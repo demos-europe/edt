@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ObjectProviders;
 
-use EDT\Querying\Pagination\OffsetBasedPagination;
+use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PaginationException;
@@ -74,7 +74,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetBasedEnt
     /**
      * @param list<FunctionInterface<bool>> $conditions
      * @param list<SortMethodInterface>     $sortMethods
-     * @param OffsetBasedPagination|null    $pagination
+     * @param OffsetPagination|null         $pagination
      *
      * @return array<TKey, TEntity>
      *

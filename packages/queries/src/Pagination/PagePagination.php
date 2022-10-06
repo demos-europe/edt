@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Pagination;
 
-class PageBasedPagination
+class PagePagination
 {
     /**
      * @var positive-int

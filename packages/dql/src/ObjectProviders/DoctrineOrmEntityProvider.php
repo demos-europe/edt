@@ -10,7 +10,7 @@ use EDT\DqlQuerying\Contracts\ClauseInterface;
 use EDT\DqlQuerying\Contracts\MappingException;
 use EDT\DqlQuerying\Utilities\QueryGenerator;
 use EDT\DqlQuerying\Contracts\OrderByInterface;
-use EDT\Querying\Pagination\OffsetBasedPagination;
+use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\EntityProviders\OffsetBasedEntityProviderInterface;
@@ -51,9 +51,9 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetBasedE
     }
 
     /**
-     * @param list<ClauseInterface>      $conditions
-     * @param list<OrderByInterface>     $sortMethods
-     * @param OffsetBasedPagination|null $pagination
+     * @param list<ClauseInterface>  $conditions
+     * @param list<OrderByInterface> $sortMethods
+     * @param OffsetPagination|null  $pagination
      *
      * @return iterable<TEntity>
      *
