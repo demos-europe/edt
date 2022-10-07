@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.17 - 2022-10-07
 
 - feature: rename `getAccessCondition` and let it return a list
 
