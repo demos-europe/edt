@@ -54,12 +54,8 @@ class ConditionEvaluator
      *
      * @param FunctionInterface<bool> $condition
      */
-    public function evaluateCondition(?object $target, FunctionInterface $condition): bool
+    public function evaluateCondition(object $target, FunctionInterface $condition): bool
     {
-        if (null === $target) {
-            return false;
-        }
-
         $propertyValueRows = $this->getPropertyValueRows($target, $condition);
         foreach ($propertyValueRows as $propertyValues) {
             // $propertyValues is an array of values corresponding to $propertyPaths
@@ -70,6 +66,21 @@ class ConditionEvaluator
         }
 
         return false;
+    }
+
+    /**
+     * @param list<FunctionInterface> $conditions
+     */
+    public function evaluateConditions(object $target, array $conditions): bool
+    {
+        foreach ($conditions as $condition) {
+            $evaluationResult = $this->evaluateCondition($target, $condition);
+            if (!$evaluationResult) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

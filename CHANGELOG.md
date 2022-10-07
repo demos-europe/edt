@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- feature: rename `getAccessCondition` and let it return a list
+
 ## 0.12.16 - 2022-10-06
 
 - refactor: rename `OffsetBasedEntityProviderInterface` to `OffsetPaginatingEntityProviderInterface`
