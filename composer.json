@@ -66,12 +66,12 @@
         }
     },
     "replace": {
-        "demos-europe/edt-access-definitions": "0.12.17",
-        "demos-europe/edt-dql": "0.12.17",
-        "demos-europe/edt-extra": "0.12.17",
-        "demos-europe/edt-jsonapi": "0.12.17",
-        "demos-europe/edt-paths": "0.12.17",
-        "demos-europe/edt-queries": "0.12.17"
+        "demos-europe/edt-access-definitions": "0.12.18",
+        "demos-europe/edt-dql": "0.12.18",
+        "demos-europe/edt-extra": "0.12.18",
+        "demos-europe/edt-jsonapi": "0.12.18",
+        "demos-europe/edt-paths": "0.12.18",
+        "demos-europe/edt-queries": "0.12.18"
     },
     "config": {
         "bin-dir": "bin",

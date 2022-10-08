@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.18 - 2022-10-08
 
 - refactor: revert code back to version 0.12.16
 
