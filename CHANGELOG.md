@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- refactor: revert code back to version 0.12.16
+
 ## 0.12.17 - 2022-10-07
 
 - feature: rename `getAccessCondition` and let it return a list
