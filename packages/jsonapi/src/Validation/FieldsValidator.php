@@ -52,8 +52,7 @@ class FieldsValidator
             new Assert\All([
                 new Assert\Type('string'),
                 new Assert\NotNull(),
-                // A comma separated list of property names.
-                new Assert\Regex('/^('.Patterns::PROPERTY_NAME.'(,'.Patterns::PROPERTY_NAME.')*)?$/')
+                new Assert\Regex('/^('.Patterns::PROPERTY_NAME_LIST.')?$/')
             ]),
         ];
     }

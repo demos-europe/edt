@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- feature: validate Drupal filter for sane `path` and `memberOf` values
+
 ## 0.12.18 - 2022-10-08
 
 - refactor: revert code back to version 0.12.16

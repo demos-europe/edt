@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
+use EDT\JsonApi\Validation\Patterns;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -19,7 +20,7 @@ class DrupalFilterValidator
     /**
      * @var list<Constraint>
      */
-    private $filterNameConstraints;
+    private $filterNamesConstraints;
 
     /**
      * @var ValidatorInterface
@@ -28,8 +29,8 @@ class DrupalFilterValidator
 
     public function __construct(ValidatorInterface $validator, OperatorProviderInterface $operatorProvider)
     {
+        $this->filterNamesConstraints = $this->getFilterNamesConstraints();
         $this->filterSchemaConstraints = $this->getFilterSchemaConstraints($operatorProvider->getAllOperatorNames());
-        $this->filterNameConstraints = $this->getFilterNameConstraints();
         $this->validator = $validator;
     }
 
@@ -41,7 +42,7 @@ class DrupalFilterValidator
     public function validateFilter($filter): void
     {
         $filterSchemaViolations = $this->validator->validate($filter, $this->filterSchemaConstraints);
-        $filterNameViolations = $this->validator->validate(array_keys($filter), $this->filterNameConstraints);
+        $filterNameViolations = $this->validator->validate(array_keys($filter), $this->filterNamesConstraints);
         $filterSchemaViolations->addAll($filterNameViolations);
 
         if (0 !== $filterSchemaViolations->count()) {
@@ -60,16 +61,21 @@ class DrupalFilterValidator
      */
     protected function getFilterSchemaConstraints(array $validOperatorNames): array
     {
-        $stringConstraint = new Assert\Type('string');
         $arrayConstraint = new Assert\Type('array');
         $conjunctionConstraint = new Assert\Choice([DrupalFilterParser::AND, DrupalFilterParser::OR]);
+        $pathConstraints = [
+            new Assert\Type('string'),
+            new Assert\NotBlank(null, null, false, 'trim'),
+            new Assert\Regex('/^'.Patterns::PROPERTY_PATH.'$/'),
+        ];
+        $filterNameConstraints = $this->getFilterNameConstraints();
         $conditionConstraints = [
             $arrayConstraint,
             new Assert\Collection(
                 [
                     DrupalFilterParser::VALUE     => null,
-                    DrupalFilterParser::MEMBER_OF => $stringConstraint,
-                    DrupalFilterParser::PATH      => $stringConstraint, // TODO: add non-empty path + non-empty path segment validation
+                    DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
+                    DrupalFilterParser::PATH      => $pathConstraints,
                     DrupalFilterParser::OPERATOR  => new Assert\Choice($validOperatorNames),
                 ],
                 null,
@@ -79,7 +85,7 @@ class DrupalFilterValidator
             ),
             new Assert\Collection(
                 [
-                    DrupalFilterParser::PATH => $stringConstraint,
+                    DrupalFilterParser::PATH => $pathConstraints,
                 ],
                 null,
                 null,
@@ -91,7 +97,7 @@ class DrupalFilterValidator
             $arrayConstraint,
             new Assert\Collection(
                 [
-                    DrupalFilterParser::MEMBER_OF => $stringConstraint,
+                    DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
                     DrupalFilterParser::CONJUNCTION => $conjunctionConstraint,
                 ],
                 null,
@@ -135,21 +141,29 @@ class DrupalFilterValidator
     /**
      * @return list<Constraint>
      */
+    protected function getFilterNamesConstraints(): array
+    {
+        return [
+            new Assert\All($this->getFilterNameConstraints()),
+        ];
+    }
+
+    /**
+     * @return list<Constraint>
+     */
     protected function getFilterNameConstraints(): array
     {
         return [
-            new Assert\All([
-                // Must not be empty.
-                new Assert\NotBlank(),
-                // Must consist of letters, digits, underscores or hyphens.
-                new Assert\Regex('/\A[-\w]+\z/'),
-                // Must not be a number, as these are problematic due to PHP's
-                // automatic array key type conversion.
-                new Assert\Regex('/\A-?\d+\z/', null, null, false),
-                new Assert\Type('string'),
-                // Must not be the reserved root group.
-                new Assert\Regex('/\A'.DrupalFilterParser::ROOT.'\z/', null, null, false),
-            ]),
+            // Must not be empty.
+            new Assert\NotBlank(null, null, false),
+            // Must consist of letters, digits, underscores or hyphens.
+            new Assert\Regex('/\A[-\w]+\z/'),
+            // Must not be a number, as these are problematic due to PHP's
+            // automatic array key type conversion.
+            new Assert\Regex('/\A-?\d+\z/', null, null, false),
+            new Assert\Type('string'),
+            // Must not be the reserved root group.
+            new Assert\Regex('/\A'.DrupalFilterParser::ROOT.'\z/', null, null, false),
         ];
     }
 }
