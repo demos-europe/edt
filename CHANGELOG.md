@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.19 - 2022-10-19
 
 - feature: allow more fine-grained adjustments in `DrupalFilterValidator` subclasses
 - remove unneeded factory injection in `DrupalConditionParser`
