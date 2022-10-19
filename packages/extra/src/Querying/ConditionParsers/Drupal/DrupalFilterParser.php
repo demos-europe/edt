@@ -230,7 +230,7 @@ class DrupalFilterParser implements FilterParserInterface
      *
      * @return array<non-empty-string, list<TCondition>>
      */
-    private function parseConditions(array $groupedConditions): array
+    protected function parseConditions(array $groupedConditions): array
     {
         return array_map(function (array $conditionGroup): array {
             return array_map(function (array $condition): PathsBasedInterface {

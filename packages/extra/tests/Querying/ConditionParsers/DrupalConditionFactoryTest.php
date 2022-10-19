@@ -9,7 +9,7 @@ use EDT\Querying\ConditionParsers\Drupal\DrupalConditionParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
-use EDT\Querying\ConditionParsers\Drupal\PredefinedOperatorProvider;
+use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
 use EDT\Querying\Contracts\ConditionFactoryInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
@@ -30,14 +30,14 @@ class DrupalConditionFactoryTest extends TestCase
     {
         parent::setUp();
         $this->conditionFactory = new PhpConditionFactory();
-        $operatorProvider = new PredefinedOperatorProvider($this->conditionFactory);
-        $conditionParser = new DrupalConditionParser($this->conditionFactory, $operatorProvider);
+        $drupalConditionFactory = new PredefinedDrupalConditionFactory($this->conditionFactory);
+        $conditionParser = new DrupalConditionParser($drupalConditionFactory);
         $this->filterFactory = new DrupalFilterParser(
             $this->conditionFactory,
             $conditionParser,
             new DrupalFilterValidator(
                 Validation::createValidator(),
-                $operatorProvider
+                $drupalConditionFactory
             )
         );
     }

@@ -27,15 +27,16 @@ class DrupalFilterValidator
      */
     private $validator;
 
-    public function __construct(ValidatorInterface $validator, OperatorProviderInterface $operatorProvider)
+    public function __construct(ValidatorInterface $validator, DrupalConditionFactoryInterface $drupalConditionFactory)
     {
         $this->filterNamesConstraints = $this->getFilterNamesConstraints();
-        $this->filterSchemaConstraints = $this->getFilterSchemaConstraints($operatorProvider->getAllOperatorNames());
+        $this->filterSchemaConstraints = $this->getFilterSchemaConstraints($drupalConditionFactory->getSupportedOperators());
         $this->validator = $validator;
     }
 
     /**
-     * @param mixed $filter
+     * @param mixed $filter the filter needs to correspond to a specific format, but just for the
+     *                      validation any kind of value is allowed here
      *
      * @throws DrupalFilterException
      */

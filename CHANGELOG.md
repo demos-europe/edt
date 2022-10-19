@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- remove unneeded factory injection in `DrupalConditionParser`
+- refactor: rename `OperatorProviderInterface` and `PredefinedOperatorProvider` for clarity
 - feature: validate Drupal filter for sane `path` and `memberOf` values
 
 ## 0.12.18 - 2022-10-08

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use EDT\Querying\Contracts\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ConditionParserInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use function array_key_exists;
@@ -27,33 +26,27 @@ class DrupalConditionParser implements ConditionParserInterface
      * @var non-empty-string
      */
     protected $defaultOperator;
-    /**
-     * @var ConditionFactoryInterface<TCondition>
-     */
-    protected $conditionFactory;
 
     /**
-     * @var OperatorProviderInterface<TCondition>
+     * @var DrupalConditionFactoryInterface<TCondition>
      */
-    private $operatorProvider;
+    private $drupalConditionFactory;
 
     /**
-     * @param ConditionFactoryInterface<TCondition> $conditionFactory
-     * @param OperatorProviderInterface<TCondition> $operatorProvider
-     * @param non-empty-string             $defaultOperator
+     * @param DrupalConditionFactoryInterface<TCondition> $drupalConditionFactory
+     * @param non-empty-string                            $defaultOperator
      */
     public function __construct(
-        ConditionFactoryInterface $conditionFactory,
-        OperatorProviderInterface $operatorProvider,
+        DrupalConditionFactoryInterface $drupalConditionFactory,
         string $defaultOperator = '='
     ) {
-        $this->conditionFactory = $conditionFactory;
         $this->defaultOperator = $defaultOperator;
-        $this->operatorProvider = $operatorProvider;
+        $this->drupalConditionFactory = $drupalConditionFactory;
     }
 
     /**
-     * @param  array{path: non-empty-string, value?: mixed, operator?: non-empty-string, memberOf?: non-empty-string} $condition
+     * @param array{path: non-empty-string, value?: mixed, operator?: non-empty-string, memberOf?: non-empty-string} $condition
+     *
      * @throws DrupalFilterException
      */
     public function parseCondition($condition): PathsBasedInterface
@@ -78,6 +71,6 @@ class DrupalConditionParser implements ConditionParserInterface
             return $pathSegment;
         }, explode('.', $pathString));
 
-        return $this->operatorProvider->createOperator($operatorName, $value, $path);
+        return $this->drupalConditionFactory->createCondition($operatorName, $value, $path);
     }
 }

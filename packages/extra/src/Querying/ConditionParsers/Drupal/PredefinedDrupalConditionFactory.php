@@ -10,9 +10,9 @@ use function array_key_exists;
 
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template-implements OperatorProviderInterface<TCondition>
+ * @template-implements DrupalConditionFactoryInterface<TCondition>
  */
-class PredefinedOperatorProvider implements OperatorProviderInterface
+class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterface
 {
     /**
      * @var ConditionFactoryInterface<TCondition>
@@ -33,15 +33,15 @@ class PredefinedOperatorProvider implements OperatorProviderInterface
         $this->operatorFunctions = $this->getOperatorFunctions();
     }
 
-    public function getAllOperatorNames(): array
+    public function getSupportedOperators(): array
     {
         return array_keys($this->operatorFunctions);
     }
 
-    public function createOperator(string $operatorName, $value, array $path): PathsBasedInterface
+    public function createCondition(string $operatorName, $value, array $path): PathsBasedInterface
     {
         if (!array_key_exists($operatorName, $this->operatorFunctions)) {
-            throw DrupalFilterException::unknownCondition($operatorName, ...$this->getAllOperatorNames());
+            throw DrupalFilterException::unknownCondition($operatorName, ...$this->getSupportedOperators());
         }
 
         return $this->operatorFunctions[$operatorName]($path, $value);
