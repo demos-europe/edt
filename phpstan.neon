@@ -377,11 +377,6 @@ parameters:
             path: packages/queries/src/PropertyPaths/PropertyPath.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:setReferences\\(\\) should return non\\-empty\\-array\\<int, int\\<0, max\\>\\|T\\> but returns array\\<int, int\\<0, max\\>\\|T\\>\\.$#"
-            count: 1
-            path: packages/queries/src/Utilities/Iterables.php
-
-        -
             message: "#^Unable to resolve the template type T in call to method static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:asArray\\(\\)$#"
             count: 1
             path: packages/queries/src/Utilities/Iterables.php

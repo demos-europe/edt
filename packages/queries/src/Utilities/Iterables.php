@@ -153,7 +153,7 @@ class Iterables
      * The type T of the given values must not be `int`.
      *
      * @template T
-     * @param callable(T, T):bool $equalityComparison
+     * @param callable(T, T): bool $equalityComparison
      * @param non-empty-list<T> $values
      * @return non-empty-list<T|int<0, max>>
      */
