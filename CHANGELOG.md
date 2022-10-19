@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feature: allow more fine-grained adjustments in `DrupalFilterValidator` subclasses
 - remove unneeded factory injection in `DrupalConditionParser`
 - refactor: rename `OperatorProviderInterface` and `PredefinedOperatorProvider` for clarity
 - feature: validate Drupal filter for sane `path` and `memberOf` values

@@ -15,17 +15,17 @@ class DrupalFilterValidator
     /**
      * @var list<Constraint>
      */
-    private $filterSchemaConstraints;
+    protected $filterSchemaConstraints;
 
     /**
      * @var list<Constraint>
      */
-    private $filterNamesConstraints;
+    protected $filterNamesConstraints;
 
     /**
      * @var ValidatorInterface
      */
-    private $validator;
+    protected $validator;
 
     public function __construct(ValidatorInterface $validator, DrupalConditionFactoryInterface $drupalConditionFactory)
     {
@@ -62,16 +62,54 @@ class DrupalFilterValidator
      */
     protected function getFilterSchemaConstraints(array $validOperatorNames): array
     {
-        $arrayConstraint = new Assert\Type('array');
-        $conjunctionConstraint = new Assert\Choice([DrupalFilterParser::AND, DrupalFilterParser::OR]);
+        /** @var mixed $assertionsOnRootItems (avoid incorrect type concern) */
+        $assertionsOnRootItems = [
+            new Assert\Type('array'),
+            new Assert\Count(1),
+            new Assert\Collection(
+                $this->getFilterTypeConstraints($validOperatorNames),
+                null,
+                null,
+                false,
+                true
+            ),
+        ];
+
+        return [
+            new Assert\Type('array'),
+            new Assert\All($assertionsOnRootItems),
+        ];
+    }
+
+    /**
+     * @param list<non-empty-string> $validOperatorNames
+     *
+     * @return array<non-empty-string, list<Constraint>>
+     */
+    protected function getFilterTypeConstraints(array $validOperatorNames): array
+    {
+        return [
+            DrupalFilterParser::CONDITION => $this->getConditionConstraints($validOperatorNames),
+            DrupalFilterParser::GROUP     => $this->getGroupConstraints(),
+        ];
+    }
+
+    /**
+     * @param list<non-empty-string> $validOperatorNames
+     *
+     * @return list<Constraint>
+     */
+    protected function getConditionConstraints(array $validOperatorNames): array
+    {
+        $filterNameConstraints = $this->getFilterNameConstraints();
         $pathConstraints = [
             new Assert\Type('string'),
             new Assert\NotBlank(null, null, false, 'trim'),
             new Assert\Regex('/^'.Patterns::PROPERTY_PATH.'$/'),
         ];
-        $filterNameConstraints = $this->getFilterNameConstraints();
-        $conditionConstraints = [
-            $arrayConstraint,
+
+        return [
+            new Assert\Type('array'),
             new Assert\Collection(
                 [
                     DrupalFilterParser::VALUE     => null,
@@ -94,8 +132,18 @@ class DrupalFilterValidator
                 false
             ),
         ];
-        $groupConstraints = [
-            $arrayConstraint,
+    }
+
+    /**
+     * @return list<Constraint>
+     */
+    protected function getGroupConstraints(): array
+    {
+        $conjunctionConstraint = new Assert\Choice([DrupalFilterParser::AND, DrupalFilterParser::OR]);
+        $filterNameConstraints = $this->getFilterNameConstraints();
+
+        return [
+            new Assert\Type('array'),
             new Assert\Collection(
                 [
                     DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
@@ -115,27 +163,6 @@ class DrupalFilterValidator
                 true,
                 false
             ),
-        ];
-
-        /** @var mixed $assertionsOnRootItems (avoid incorrect type concern) */
-        $assertionsOnRootItems = [
-            $arrayConstraint,
-            new Assert\Count(1),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::CONDITION => $conditionConstraints,
-                    DrupalFilterParser::GROUP     => $groupConstraints,
-                ],
-                null,
-                null,
-                false,
-                true
-            ),
-        ];
-
-        return [
-            $arrayConstraint,
-            new Assert\All($assertionsOnRootItems),
         ];
     }
 
