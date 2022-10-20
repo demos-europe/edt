@@ -10,7 +10,7 @@ use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
 use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
-use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 use TypeError;
@@ -18,7 +18,7 @@ use TypeError;
 class DrupalConditionFactoryTest extends TestCase
 {
     /**
-     * @var ConditionFactoryInterface
+     * @var PathsBasedConditionFactoryInterface
      */
     private $conditionFactory;
     /**

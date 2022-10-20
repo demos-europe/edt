@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionFactories;
 
-use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
@@ -29,9 +30,10 @@ use EDT\Querying\PropertyPaths\PropertyPath;
 use function count;
 
 /**
- * @template-implements ConditionFactoryInterface<FunctionInterface<bool>>
+ * @template-implements PathsBasedConditionFactoryInterface<FunctionInterface<bool>>
+ * @template-implements PathsBasedConditionGroupFactoryInterface<FunctionInterface<bool>>
  */
-class PhpConditionFactory implements ConditionFactoryInterface
+class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsBasedConditionGroupFactoryInterface
 {
     public function true(): PathsBasedInterface
     {
@@ -49,7 +51,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
      *
      * @return FunctionInterface<bool>
      */
-    public function allConditionsApply(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface
+    public function allConditionsApply($firstCondition, ...$additionalConditions): PathsBasedInterface
     {
         return new AllEqual(new Value(true), $firstCondition, ...$additionalConditions);
     }
@@ -60,7 +62,7 @@ class PhpConditionFactory implements ConditionFactoryInterface
      *
      * @return FunctionInterface<bool>
      */
-    public function anyConditionApplies(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface
+    public function anyConditionApplies($firstCondition, ...$additionalConditions): PathsBasedInterface
     {
         return new AnyTrue($firstCondition, ...$additionalConditions);
     }

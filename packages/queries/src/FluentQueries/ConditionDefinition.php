@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
-use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use function count;
 
@@ -24,7 +25,7 @@ class ConditionDefinition
     protected $subDefinitions = [];
 
     /**
-     * @var ConditionFactoryInterface<TCondition>
+     * @var PathsBasedConditionFactoryInterface<TCondition>&PathsBasedConditionGroupFactoryInterface<TCondition>
      */
     protected $conditionFactory;
 
@@ -34,9 +35,9 @@ class ConditionDefinition
     protected $andConjunction;
 
     /**
-     * @param ConditionFactoryInterface<TCondition> $conditionFactory
+     * @param PathsBasedConditionFactoryInterface<TCondition>&PathsBasedConditionGroupFactoryInterface<TCondition> $conditionFactory
      */
-    public function __construct(ConditionFactoryInterface $conditionFactory, bool $andConjunction)
+    public function __construct(PathsBasedConditionFactoryInterface $conditionFactory, bool $andConjunction)
     {
         $this->conditionFactory = $conditionFactory;
         $this->andConjunction = $andConjunction;

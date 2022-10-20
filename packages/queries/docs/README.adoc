@@ -47,7 +47,7 @@ actually initializing them. A possible setup is shown in <<provider-factory-setu
 
 [source,php]
 ----
-use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 
@@ -72,7 +72,7 @@ As an alternative the above can be written as fluent query as shown below.
 
 [source,php]
 ----
-use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\FluentQueries\FluentQuery;

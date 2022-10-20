@@ -2,31 +2,15 @@
 
 declare(strict_types=1);
 
-namespace EDT\Querying\Contracts;
+namespace EDT\ConditionFactory;
 
-use EDT\ConditionFactory\ConditionGroupFactoryInterface;
+use EDT\Querying\Contracts\PathException;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- *
- * @template-extends ConditionGroupFactoryInterface<TCondition>
+ * @template TCondition
  */
-interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
+interface ConditionFactoryInterface
 {
-    /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
-     *
-     * @return TCondition
-     *
-     * @throws PathException
-     */
-    public function propertyIsNull(string $property, string ...$properties): PathsBasedInterface;
-
-    /**
-     * @return TCondition
-     */
-    public function true(): PathsBasedInterface;
 
     /**
      * @param non-empty-string $property
@@ -36,7 +20,38 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasSize(int $size, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyIsNull(string $property, string ...$properties);
+
+    /**
+     * The returned condition will evaluate to `true` if the property denoted by
+     * the given path has a value assigned that is present in the given
+     * array of values.
+     *
+     * @param list<mixed> $values
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return TCondition
+     *
+     * @throws PathException
+     */
+    public function propertyHasAnyOfValues(array $values, string $property, string ...$properties);
+
+    /**
+     * @param list<mixed> $values
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return TCondition
+     *
+     * @throws PathException
+     */
+    public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties);
+
+    /**
+     * @return TCondition
+     */
+    public function true();
 
     /**
      * @param non-empty-string $property
@@ -46,12 +61,22 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasNotSize(int $size, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyHasSize(int $size, string $property, string ...$properties);
+
+    /**
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
+     *
+     * @return TCondition
+     *
+     * @throws PathException
+     */
+    public function propertyHasNotSize(int $size, string $property, string ...$properties);
 
     /**
      * @return TCondition
      */
-    public function false(): PathsBasedInterface;
+    public function false();
 
     /**
      * @param non-empty-list<non-empty-string> $leftProperties
@@ -61,7 +86,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertiesEqual(array $leftProperties, array $rightProperties): PathsBasedInterface;
+    public function propertiesEqual(array $leftProperties, array $rightProperties);
 
     /**
      * @param non-empty-string $property
@@ -71,15 +96,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): PathsBasedInterface;
-
-    /**
-     * @param TCondition $firstCondition
-     * @param TCondition ...$additionalConditions
-     *
-     * @return TCondition
-     */
-    public function allConditionsApply(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface;
+    public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties);
 
     /**
      * @param mixed $value
@@ -90,7 +107,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasValue($value, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyHasValue($value, string $property, string ...$properties);
 
     /**
      * @param mixed $min
@@ -102,7 +119,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$properties);
 
     /**
      * @param mixed $min
@@ -114,15 +131,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface;
-
-    /**
-     * @param TCondition $firstCondition
-     * @param TCondition ...$additionalConditions
-     *
-     * @return TCondition
-     */
-    public function anyConditionApplies(PathsBasedInterface $firstCondition, PathsBasedInterface ...$additionalConditions): PathsBasedInterface;
+    public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$properties);
 
     /**
      * @param non-empty-string $property
@@ -132,7 +141,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasStringAsMember(string $value, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyHasStringAsMember(string $value, string $property, string ...$properties);
 
     /**
      * @param mixed $value
@@ -143,7 +152,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function valueGreaterThan($value, string $property, string ...$properties): PathsBasedInterface;
+    public function valueGreaterThan($value, string $property, string ...$properties);
 
     /**
      * @param mixed $value
@@ -154,7 +163,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function valueGreaterEqualsThan($value, string $property, string ...$properties): PathsBasedInterface;
+    public function valueGreaterEqualsThan($value, string $property, string ...$properties);
 
     /**
      * @param mixed $value
@@ -165,7 +174,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function valueSmallerThan($value, string $property, string ...$properties): PathsBasedInterface;
+    public function valueSmallerThan($value, string $property, string ...$properties);
 
     /**
      * @param mixed $value
@@ -176,7 +185,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function valueSmallerEqualsThan($value, string $property, string ...$properties): PathsBasedInterface;
+    public function valueSmallerEqualsThan($value, string $property, string ...$properties);
 
     /**
      * @return TCondition
@@ -185,7 +194,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties);
 
     /**
      * @return TCondition
@@ -194,7 +203,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties);
 
     /**
      * It is expected that the given property path contains a to-many relationship and thus will
@@ -215,7 +224,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function allValuesPresentInMemberListProperties(array $values, string $property, string ...$properties): PathsBasedInterface;
+    public function allValuesPresentInMemberListProperties(array $values, string $property, string ...$properties);
 
     /**
      * @param mixed $value
@@ -226,7 +235,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasNotValue($value, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyHasNotValue($value, string $property, string ...$properties);
 
     /**
      * @param non-empty-string $property
@@ -236,7 +245,7 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyIsNotNull(string $property, string ...$properties): PathsBasedInterface;
+    public function propertyIsNotNull(string $property, string ...$properties);
 
     /**
      * The returned condition will match if the property the given path denotes
@@ -249,5 +258,5 @@ interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasNotStringAsMember(string $value, string $property, string ...$properties): PathsBasedInterface;
+    public function propertyHasNotStringAsMember(string $value, string $property, string ...$properties);
 }

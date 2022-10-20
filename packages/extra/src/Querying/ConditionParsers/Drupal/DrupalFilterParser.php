@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use EDT\ConditionFactory\ConditionGroupFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
 use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\Querying\Contracts\ConditionParserInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
@@ -97,7 +97,7 @@ class DrupalFilterParser implements FilterParserInterface
     public const VALUE = 'value';
 
     /**
-     * @var ConditionGroupFactoryInterface<TCondition>
+     * @var PathsBasedConditionGroupFactoryInterface<TCondition>
      */
     protected $conditionGroupFactory;
 
@@ -112,11 +112,11 @@ class DrupalFilterParser implements FilterParserInterface
     private $filterValidator;
 
     /**
-     * @param ConditionGroupFactoryInterface<TCondition>                  $conditionGroupFactory
+     * @param PathsBasedConditionGroupFactoryInterface<TCondition>        $conditionGroupFactory
      * @param ConditionParserInterface<DrupalFilterCondition, TCondition> $conditionParser
      */
     public function __construct(
-        ConditionGroupFactoryInterface $conditionGroupFactory,
+        PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
         ConditionParserInterface $conditionParser,
         DrupalFilterValidator $filterValidator
     ) {

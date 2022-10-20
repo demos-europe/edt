@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use EDT\Querying\Contracts\ConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use function array_key_exists;
 
@@ -15,7 +15,7 @@ use function array_key_exists;
 class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterface
 {
     /**
-     * @var ConditionFactoryInterface<TCondition>
+     * @var PathsBasedConditionFactoryInterface<TCondition>
      */
     private $conditionFactory;
 
@@ -25,9 +25,9 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     private $operatorFunctions;
 
     /**
-     * @param ConditionFactoryInterface<TCondition> $conditionFactory
+     * @param PathsBasedConditionFactoryInterface<TCondition> $conditionFactory
      */
-    public function __construct(ConditionFactoryInterface $conditionFactory)
+    public function __construct(PathsBasedConditionFactoryInterface $conditionFactory)
     {
         $this->conditionFactory = $conditionFactory;
         $this->operatorFunctions = $this->getOperatorFunctions();
