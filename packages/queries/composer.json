@@ -14,7 +14,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "EDT\\Querying\\": "src/"
+            "EDT\\Querying\\": "src/",
+            "EDT\\ConditionFactory\\": "src/ConditionFactory"
         }
     },
     "autoload-dev": {

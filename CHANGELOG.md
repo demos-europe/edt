@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- refactor: separate grouping methods into their own class
+
 ## 0.12.19 - 2022-10-19
 
 - feature: allow more fine-grained adjustments in `DrupalFilterValidator` subclasses

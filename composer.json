@@ -31,18 +31,19 @@
     "require-dev": {
         "doctrine/annotations": "^1.13",
         "doctrine/cache": "^1.11",
+        "ergebnis/phpstan-rules": "^1.0",
         "phpstan/phpstan": "^1.8.2",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.4.2",
         "phpunit/phpunit": "^9.5",
         "roave/security-advisories": "dev-latest",
         "symplify/monorepo-builder": "^10.1",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
-        "vimeo/psalm": "^4.1",
-        "ergebnis/phpstan-rules": "^1.0",
-        "phpstan/phpstan-deprecation-rules": "^1.0"
+        "vimeo/psalm": "^4.1"
     },
     "autoload": {
         "psr-4": {
+            "EDT\\ConditionFactory\\": "packages/queries/src/ConditionFactory",
             "EDT\\DqlQuerying\\": "packages/dql/src/",
             "EDT\\JsonApi\\": "packages/jsonapi/src/",
             "EDT\\Parsing\\": "packages/paths/src/Parsing/",

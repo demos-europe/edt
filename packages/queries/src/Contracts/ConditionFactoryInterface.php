@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Contracts;
 
+use EDT\ConditionFactory\ConditionGroupFactoryInterface;
+
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ *
+ * @template-extends ConditionGroupFactoryInterface<TCondition>
  */
-interface ConditionFactoryInterface
+interface ConditionFactoryInterface extends ConditionGroupFactoryInterface
 {
     /**
      * @param non-empty-string $property
@@ -18,32 +22,6 @@ interface ConditionFactoryInterface
      * @throws PathException
      */
     public function propertyIsNull(string $property, string ...$properties): PathsBasedInterface;
-
-    /**
-     * The returned condition will evaluate to `true` if the property denoted by
-     * the given path has a value assigned that is present in the given
-     * array of values.
-     *
-     * @param list<mixed> $values
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
-     *
-     * @return TCondition
-     *
-     * @throws PathException
-     */
-    public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface;
-
-    /**
-     * @param list<mixed> $values
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
-     *
-     * @return TCondition
-     *
-     * @throws PathException
-     */
-    public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface;
 
     /**
      * @return TCondition
