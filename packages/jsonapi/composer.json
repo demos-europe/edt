@@ -5,11 +5,11 @@
     "type": "library",
     "require": {
         "php": ">=7.3,<8",
-        "demos-europe/edt-queries": "^0.12.20",
+        "demos-europe/edt-queries": "^0.12.21",
         "league/fractal": "^0.19",
         "psr/log": "^1.1.4",
         "doctrine/collections": "^1.5",
-        "demos-europe/edt-access-definitions": "^0.12.20",
+        "demos-europe/edt-access-definitions": "^0.12.21",
         "symfony/http-foundation": "^5.3.7,<6",
         "symfony/validator": "5.*.*",
         "pagerfanta/pagerfanta": "^2.7",
@@ -37,8 +37,8 @@
         }
     },
     "conflict": {
-        "demos-europe/edt-extra": "<0.12.20",
-        "demos-europe/edt-paths": "<0.12.20",
-        "demos-europe/edt-dql": "<0.12.20"
+        "demos-europe/edt-extra": "<0.12.21",
+        "demos-europe/edt-paths": "<0.12.21",
+        "demos-europe/edt-dql": "<0.12.21"
     }
 }
