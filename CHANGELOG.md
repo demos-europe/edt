@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.20 - 2022-10-20
 
 - refactor: drop `TCondition` type requirement from root condition factories and introduce separate interfaces instead
 - refactor: separate grouping methods into their own interface
