@@ -20,6 +20,8 @@ use EDT\DqlQuerying\Functions\Size;
 use EDT\DqlQuerying\Functions\Sum;
 use EDT\DqlQuerying\Functions\UpperCase;
 use EDT\DqlQuerying\Functions\Value;
+use EDT\DqlQuerying\Utilities\JoinFinder;
+use EDT\DqlQuerying\Utilities\QueryBuilderPreparer;
 use EDT\DqlQuerying\Utilities\QueryGenerator;
 use EDT\DqlQuerying\SortMethodFactories\SortMethodFactory;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
@@ -50,6 +52,16 @@ class QueryGeneratorTest extends TestCase
      */
     private $queryGenerator;
 
+    /**
+     * @var QueryBuilderPreparer
+     */
+    private $bookBuilderPreparer;
+
+    /**
+     * @var QueryBuilderPreparer
+     */
+    private $personBuilderPreparer;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -73,6 +85,10 @@ class QueryGeneratorTest extends TestCase
         $this->queryGenerator = new QueryGenerator($this->entityManager);
         $this->conditionFactory = new DqlConditionFactory();
         $this->sortingFactory = new SortMethodFactory();
+        $metadataFactory = $this->entityManager->getMetadataFactory();
+        $joinFinder = new JoinFinder($metadataFactory);
+        $this->bookBuilderPreparer = new QueryBuilderPreparer(Book::class, $metadataFactory, $joinFinder);
+        $this->personBuilderPreparer = new QueryBuilderPreparer(Person::class, $metadataFactory, $joinFinder);
     }
 
     public function testTestsetup(): void
@@ -84,7 +100,7 @@ class QueryGeneratorTest extends TestCase
     public function testAlwaysTrue(): void
     {
         $trueCondition = $this->conditionFactory->true();
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$trueCondition]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$trueCondition]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE 1 = 1',
@@ -96,7 +112,7 @@ class QueryGeneratorTest extends TestCase
     public function testAlwaysFalse(): void
     {
         $trueCondition = $this->conditionFactory->false();
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$trueCondition]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$trueCondition]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE 1 = 2',
@@ -110,7 +126,7 @@ class QueryGeneratorTest extends TestCase
         $emptyTitleCondition = $this->conditionFactory->propertyHasValue('', 'title');
         $nullTitleCondition = $this->conditionFactory->propertyIsNull('title');
         $allConditionsApply = $this->conditionFactory->anyConditionApplies($emptyTitleCondition, $nullTitleCondition);
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$allConditionsApply]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$allConditionsApply]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE Book.title = ?0 OR Book.title IS NULL',
@@ -128,7 +144,7 @@ class QueryGeneratorTest extends TestCase
         $bookA = $this->conditionFactory->propertyHasValue('Harry Potter and the Philosopher\'s Stone', 'books', 'title');
         $bookB = $this->conditionFactory->propertyHasValue('Harry Potter and the Deathly Hallows', 'books', 'title');
         $allConditionsApply = $this->conditionFactory->allConditionsApply($bookA, $bookB);
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$allConditionsApply]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$allConditionsApply]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person LEFT JOIN Person.books t_3e6230ca_Book WHERE t_3e6230ca_Book.title = ?0 AND t_3e6230ca_Book.title = ?1',
@@ -145,7 +161,7 @@ class QueryGeneratorTest extends TestCase
     public function testEqualsWithoutSorting(): void
     {
         $propertyHasValue = $this->conditionFactory->propertyHasValue('Example Street', 'author', 'birth', 'street');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$propertyHasValue]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$propertyHasValue]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth WHERE t_7e118c84_Birth.street = ?0',
@@ -164,7 +180,7 @@ class QueryGeneratorTest extends TestCase
         $ascending = $this->sortingFactory->propertyAscending('author', 'birth', 'street');
         $descending = $this->sortingFactory->propertyDescending('title');
         $queryBuilder = $this->queryGenerator->generateQueryBuilder(
-            Book::class,
+            $this->bookBuilderPreparer,
             [$propertyHasValue],
             [$ascending, $descending]
         );
@@ -187,7 +203,7 @@ class QueryGeneratorTest extends TestCase
         $propertyHasValue = $this->conditionFactory->propertyHasValue('Example Street', 'author', 'birth', 'street');
         $ascending = $this->sortingFactory->propertyAscending('books', 'title');
         $this->queryGenerator->generateQueryBuilder(
-            Person::class,
+            $this->bookBuilderPreparer,
             [$propertyHasValue],
             [$ascending]
         );
@@ -199,7 +215,7 @@ class QueryGeneratorTest extends TestCase
         $descending = $this->sortingFactory->propertyDescending('author', 'birth', 'street');
         $ascending = $this->sortingFactory->propertyAscending('title');
         $queryBuilder = $this->queryGenerator->generateQueryBuilder(
-            Book::class,
+            $this->bookBuilderPreparer,
             [$propertyHasValue],
             [$descending, $ascending]
         );
@@ -221,7 +237,7 @@ class QueryGeneratorTest extends TestCase
         $ascending = $this->sortingFactory->propertyAscending('author', 'birth', 'street');
         $descending = $this->sortingFactory->propertyDescending('title');
         $queryBuilder = $this->queryGenerator->generateQueryBuilder(
-            Book::class,
+            $this->bookBuilderPreparer,
             [$propertyHasValue],
             [$ascending, $descending],
             1, 3
@@ -243,7 +259,7 @@ class QueryGeneratorTest extends TestCase
     public function testNullRelationship(): void
     {
         $propertyIsNull = $this->conditionFactory->propertyIsNull('author', 'birth');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$propertyIsNull]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$propertyIsNull]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth WHERE t_7e118c84_Birth IS NULL',
@@ -255,7 +271,7 @@ class QueryGeneratorTest extends TestCase
     public function testNullNonRelationship(): void
     {
         $propertyIsNull = $this->conditionFactory->propertyIsNull('author', 'birth', 'street');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$propertyIsNull]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$propertyIsNull]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth WHERE t_7e118c84_Birth.street IS NULL',
@@ -267,7 +283,7 @@ class QueryGeneratorTest extends TestCase
     public function testEmptyRelationship(): void
     {
         $propertyHasSize = $this->conditionFactory->propertyHasSize(0, 'author');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$propertyHasSize]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$propertyHasSize]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE SIZE(Book.author) = ?0',
@@ -283,7 +299,7 @@ class QueryGeneratorTest extends TestCase
     public function testNonEmptyRelationship(): void
     {
         $propertyHasNotSize = $this->conditionFactory->propertyHasNotSize(0, 'books');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$propertyHasNotSize]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$propertyHasNotSize]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person WHERE NOT(SIZE(Person.books) = ?0)',
@@ -299,7 +315,7 @@ class QueryGeneratorTest extends TestCase
     public function testNonEmptyRelationshipNested(): void
     {
         $propertyHasNotSize = $this->conditionFactory->propertyHasNotSize(0, 'author', 'books');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$propertyHasNotSize]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$propertyHasNotSize]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person WHERE NOT(SIZE(t_58fb870d_Person.books) = ?0)',
@@ -315,7 +331,7 @@ class QueryGeneratorTest extends TestCase
     public function testBetweenValues(): void
     {
         $propertyBetween = $this->conditionFactory->propertyBetweenValuesInclusive(-1, 5, 'author', 'birth', 'streetNumber');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$propertyBetween]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$propertyBetween]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth WHERE t_7e118c84_Birth.streetNumber BETWEEN ?0 AND ?1',
@@ -332,7 +348,7 @@ class QueryGeneratorTest extends TestCase
     public function testContainsValueCaseInsensitive(): void
     {
         $containsValue = $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue('Ave', 'author', 'birth', 'street');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$containsValue]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$containsValue]);
         self::assertSame(
             /** @lang DQL */
             "SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth WHERE LOWER(t_7e118c84_Birth.street) LIKE CONCAT('%', LOWER(?0), '%')",
@@ -348,7 +364,7 @@ class QueryGeneratorTest extends TestCase
     public function testOneOfValues(): void
     {
         $containsValue = $this->conditionFactory->propertyHasAnyOfValues([1, 2, 3], 'author', 'birth', 'streetNumber');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$containsValue]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$containsValue]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth WHERE t_7e118c84_Birth.streetNumber IN(?0)',
@@ -364,7 +380,7 @@ class QueryGeneratorTest extends TestCase
     public function testOneOfValuesWithEmptyArray(): void
     {
         $containsValue = $this->conditionFactory->propertyHasAnyOfValues([], 'author', 'birth', 'streetNumber');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$containsValue]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$containsValue]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE 1 = 2',
@@ -376,7 +392,7 @@ class QueryGeneratorTest extends TestCase
     public function testNotOneOfValuesWithEmptyArray(): void
     {
         $containsValue = $this->conditionFactory->propertyHasNotAnyOfValues([], 'author', 'birth', 'streetNumber');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$containsValue]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$containsValue]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE NOT(1 = 2)',
@@ -388,7 +404,7 @@ class QueryGeneratorTest extends TestCase
     public function testPropertyHasStringAsMember(): void
     {
         $novelBook = $this->conditionFactory->propertyHasStringAsMember('Novel', 'tags');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$novelBook]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$novelBook]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE ?0 MEMBER OF Book.tags',
@@ -404,7 +420,7 @@ class QueryGeneratorTest extends TestCase
     public function testPropertyHasNotStringAsMember(): void
     {
         $noNovelBook = $this->conditionFactory->propertyHasNotStringAsMember('Novel', 'tags');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$noNovelBook]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$noNovelBook]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE NOT(?0 MEMBER OF Book.tags)',
@@ -420,7 +436,7 @@ class QueryGeneratorTest extends TestCase
     public function testPropertiesEqual(): void
     {
         $birthDateCondition = $this->conditionFactory->propertiesEqual(['author', 'birth', 'month'], ['author', 'birth', 'day']);
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$birthDateCondition]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$birthDateCondition]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth WHERE t_7e118c84_Birth.month = t_7e118c84_Birth.day',
@@ -436,7 +452,7 @@ class QueryGeneratorTest extends TestCase
             ['author', 'birth', 'day'],
             Book::class
         );
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$birthDateCondition]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$birthDateCondition]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book LEFT JOIN Book.author t_58fb870d_Person LEFT JOIN t_58fb870d_Person.birth t_7e118c84_Birth, Tests\data\DqlModel\Book t__Book LEFT JOIN t__Book.author t_71115441_Person LEFT JOIN t_71115441_Person.birth t_1a171a0d_Birth WHERE t_7e118c84_Birth.month = t_1a171a0d_Birth.day',
@@ -452,7 +468,7 @@ class QueryGeneratorTest extends TestCase
             new UpperCase(new Property($propertyPath)),
             new Value('FOO'),
         );
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Book::class, [$sameUpperCase]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->bookBuilderPreparer, [$sameUpperCase]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Book FROM Tests\data\DqlModel\Book Book WHERE UPPER(Book.title) = ?0',
@@ -473,7 +489,7 @@ class QueryGeneratorTest extends TestCase
             new Sum($size, $size),
             new Value(4)
         );
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$sum]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$sum]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person WHERE SIZE(Person.name) + SIZE(Person.name) = ?0',
@@ -494,7 +510,7 @@ class QueryGeneratorTest extends TestCase
             new Sum($size, $size, $size, $size),
             new Value(8)
         );
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$sum]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$sum]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person WHERE ((SIZE(Person.name) + SIZE(Person.name)) + SIZE(Person.name)) + SIZE(Person.name) = ?0',
@@ -522,7 +538,7 @@ class QueryGeneratorTest extends TestCase
                 new Value(8)
             )
         );
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$sum]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$sum]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person WHERE ((SIZE(Person.name) + SIZE(Person.name)) * ?0) * (SIZE(Person.name) + SIZE(Person.name)) = (?1 + ((SIZE(Person.name) + SIZE(Person.name)) * ?2)) + ?3',
@@ -551,7 +567,7 @@ class QueryGeneratorTest extends TestCase
                 new Property($propertyPath),
             )
         );
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$condition]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$condition]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person LEFT JOIN Person.books t_3e6230ca_Book WHERE ?0 = t_3e6230ca_Book.title AND ?1 = t_3e6230ca_Book.title',
@@ -579,7 +595,7 @@ class QueryGeneratorTest extends TestCase
                 new Value('Harry Potter and the Deathly Hallows')
             )
         );
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$condition]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$condition]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person LEFT JOIN Person.books t_99a6b3fc_Book LEFT JOIN Person.books t_246cdf32_Book WHERE t_99a6b3fc_Book.title = ?0 AND t_246cdf32_Book.title = ?1',
@@ -599,7 +615,7 @@ class QueryGeneratorTest extends TestCase
             'Harry Potter and the Philosopher\'s Stone',
             'Harry Potter and the Deathly Hallows'
         ], 'books', 'title');
-        $queryBuilder = $this->queryGenerator->generateQueryBuilder(Person::class, [$condition]);
+        $queryBuilder = $this->queryGenerator->generateQueryBuilder($this->personBuilderPreparer, [$condition]);
         self::assertSame(
             /** @lang DQL */
             'SELECT Person FROM Tests\data\DqlModel\Person Person LEFT JOIN Person.books t_4dba5d08_Book LEFT JOIN Person.books t_902c848d_Book WHERE t_4dba5d08_Book.title = ?0 AND t_902c848d_Book.title = ?1',
@@ -632,7 +648,7 @@ class QueryGeneratorTest extends TestCase
             'Harry Potter and the Deathly Hallows'
         ], 'books', 'title');
         $queryBuilder = $this->queryGenerator->generateQueryBuilder(
-            Person::class,
+            $this->personBuilderPreparer,
             [$condition],
             [],
             0,
