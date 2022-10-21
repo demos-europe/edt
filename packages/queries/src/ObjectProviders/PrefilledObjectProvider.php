@@ -124,18 +124,14 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginati
 
     /**
      * @param array<TKey, TEntity> $list
+     * @param int<0, max>          $offset
+     * @param int<0, max>|null     $limit
      *
      * @return array<TKey, TEntity>
      * @throws PaginationException
      */
     protected function slice(array $list, int $offset, ?int $limit): array
     {
-        if (0 > $offset) {
-            throw PaginationException::negativeOffset($offset);
-        }
-        if (0 > $limit) {
-            throw PaginationException::negativeLimit($limit);
-        }
         if (0 !== $offset || null !== $limit) {
             $list = array_slice($list, $offset, $limit);
         }

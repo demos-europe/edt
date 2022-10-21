@@ -11,13 +11,4 @@ use Exception;
  */
 class PaginationException extends Exception
 {
-    public static function negativeOffset(int $offset): self
-    {
-        return new self("Negative offset ($offset) is not supported.");
-    }
-
-    public static function negativeLimit(int $limit): self
-    {
-        return new self("Negative limit ($limit) is not supported.");
-    }
 }
