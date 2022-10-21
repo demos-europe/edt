@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: require `JoinFinder` for `QueryBuilderPreparer` initialization
 - refactor: require `ConditionEvaluator` and `Sorter` for `PropertyReader` initialization
 - refactor: require `TableJoiner` for `Sorter` initialization
 - refactor: require `ConditionEvaluator` and  `Sorter` for `PrefilledObjectProvider` initialization
