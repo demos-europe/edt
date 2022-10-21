@@ -80,7 +80,7 @@ class GenericEntityFetcherTest extends ModelBasedTest
         $this->propertyAccessor = new ReflectionPropertyAccessor();
         $this->authorProvider = new PrefilledObjectProvider(
             new ConditionEvaluator(new TableJoiner($this->propertyAccessor)),
-            new Sorter($this->propertyAccessor),
+            new Sorter(new TableJoiner($this->propertyAccessor)),
             $this->authors
         );
         $this->nonWrappingWrapperFactory = new class implements WrapperFactoryInterface {
