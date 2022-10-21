@@ -7,6 +7,9 @@ namespace Tests\Querying\ObjectProviders;
 use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
+use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\Sorter;
+use EDT\Querying\Utilities\TableJoiner;
 use Tests\data\Model\Person;
 use Tests\ModelBasedTest;
 
@@ -71,6 +74,10 @@ class PrefilledObjectProviderTest extends ModelBasedTest
         parent::setUp();
 
         $propertyAccessor = new ReflectionPropertyAccessor();
-        $this->authorProvider = new PrefilledObjectProvider($propertyAccessor, $this->authors);
+        $this->authorProvider = new PrefilledObjectProvider(
+            new ConditionEvaluator(new TableJoiner($propertyAccessor)),
+            new Sorter($propertyAccessor),
+            $this->authors
+        );
     }
 }

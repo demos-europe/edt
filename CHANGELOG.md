@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: require `ConditionEvaluator` and  `Sorter` for `PrefilledObjectProvider` initialization
 - refactor: require `TableJoiner` for `ConditionEvaluator` initialization
 
 ## 0.12.20 - 2022-10-20

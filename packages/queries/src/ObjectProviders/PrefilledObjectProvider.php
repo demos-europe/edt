@@ -14,7 +14,6 @@ use EDT\Querying\EntityProviders\OffsetPaginatingEntityProviderInterface;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Contracts\ObjectProviderInterface;
-use EDT\Querying\Utilities\TableJoiner;
 use function array_slice;
 
 /**
@@ -46,15 +45,13 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginati
     private $sorter;
 
     /**
-     * @param array<TKey, TEntity>             $prefilledArray
-     * @param ConditionEvaluator|null $conditionEvaluator
+     * @param array<TKey, TEntity> $prefilledArray
      */
-    // TODO: refactor default away and inject Sorter
-    public function __construct(PropertyAccessorInterface $propertyAccessor, array $prefilledArray, ConditionEvaluator $conditionEvaluator = null)
+    public function __construct(ConditionEvaluator $conditionEvaluator, Sorter $sorter, array $prefilledArray)
     {
         $this->prefilledArray = $prefilledArray;
-        $this->conditionEvaluator = $conditionEvaluator ?? new ConditionEvaluator(new TableJoiner($propertyAccessor));
-        $this->sorter = new Sorter($propertyAccessor);
+        $this->conditionEvaluator = $conditionEvaluator;
+        $this->sorter = $sorter;
     }
 
     /**
