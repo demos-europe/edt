@@ -6,7 +6,6 @@ namespace Tests\Querying\Utilities;
 
 use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\Utilities\Iterables;
-use EDT\Querying\Utilities\TableJoiner;
 use InvalidArgumentException;
 use Tests\data\Model\Person;
 use Tests\ModelBasedTest;
@@ -170,84 +169,6 @@ class IterablesTest extends ModelBasedTest
         $output = Iterables::restructureNesting($input, 2);
 
         self::assertEquals($expected, $output);
-    }
-
-    public function testSetReferencesSingle(): void
-    {
-        $input = ['a', 'b', 'c', 'a'];
-
-        $references = Iterables::setReferences(static function (string $a, string $b): bool {
-            return $a === $b;
-        }, $input);
-        $expected = ['a', 'b', 'c', 0];
-
-        self::assertEquals($expected, $references);
-
-        $deReferenced = TableJoiner::setDeReferencing($references);
-
-        self::assertEquals($input, $deReferenced);
-    }
-
-    public function testSetReferencesMulti(): void
-    {
-        $input = ['a', 'a', 'c', 'a'];
-
-        $references = Iterables::setReferences(static function (string $a, string $b): bool {
-            return $a === $b;
-        }, $input);
-        $expected = ['a', 0, 'c', 0];
-
-        self::assertEquals($expected, $references);
-
-        $deReferenced = TableJoiner::setDeReferencing($references);
-
-        self::assertEquals($input, $deReferenced);
-    }
-
-    public function testSetReferencesAll(): void
-    {
-        $input = ['a', 'a', 'a', 'a'];
-
-        $references = Iterables::setReferences(static function (string $a, string $b): bool {
-            return $a === $b;
-        }, $input);
-        $expected = ['a', 0, 0, 0];
-
-        self::assertEquals($expected, $references);
-
-        $deReferenced = TableJoiner::setDeReferencing($references);
-
-        self::assertEquals($input, $deReferenced);
-    }
-
-    public function testInsertValue(): void
-    {
-        $input = [[1, 2, 3], [4, 5, 6]];
-
-        Iterables::insertValue($input, 1, 'x');
-        $expected = [[1, 'x', 2, 3], [4, 'x', 5, 6]];
-
-        self::assertEquals($expected, $input);
-    }
-
-    public function testInsertValueAtEnd(): void
-    {
-        $input = [['a'], ['b']];
-
-        Iterables::insertValue($input, 1, 'x');
-        $expected = [['a', 'x'], ['b', 'x']];
-
-        self::assertEquals($expected, $input);
-    }
-
-    public function testInsertNullAtEnd(): void
-    {
-        $input = [['a'], ['b']];
-
-        Iterables::insertValue($input, 1, null);
-        $expected = [['a', null], ['b', null]];
-
-        self::assertEquals($expected, $input);
     }
 
     public function testSplitSingle(): void
