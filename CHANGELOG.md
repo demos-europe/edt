@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: require `ConditionEvaluator` and `Sorter` for `PropertyReader` initialization
 - refactor: require `TableJoiner` for `Sorter` initialization
 - refactor: require `ConditionEvaluator` and  `Sorter` for `PrefilledObjectProvider` initialization
 - refactor: require `TableJoiner` for `ConditionEvaluator` initialization

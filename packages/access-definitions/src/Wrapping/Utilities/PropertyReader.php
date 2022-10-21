@@ -6,7 +6,6 @@ namespace EDT\Wrapping\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathException;
-use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
@@ -14,7 +13,6 @@ use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Querying\Utilities\Sorter;
-use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -42,12 +40,14 @@ class PropertyReader
      */
     private $sorter;
 
-    public function __construct(PropertyAccessorInterface $propertyAccessor, SchemaPathProcessor $schemaPathProcessor)
-    {
+    public function __construct(
+        SchemaPathProcessor $schemaPathProcessor,
+        ConditionEvaluator $conditionEvaluator,
+        Sorter $sorter
+    ) {
         $this->schemaPathProcessor = $schemaPathProcessor;
-        $tableJoiner = new TableJoiner($propertyAccessor);
-        $this->conditionEvaluator = new ConditionEvaluator($tableJoiner);
-        $this->sorter = new Sorter($tableJoiner);
+        $this->conditionEvaluator = $conditionEvaluator;
+        $this->sorter = $sorter;
     }
 
     /**
