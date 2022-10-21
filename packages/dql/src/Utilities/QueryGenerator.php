@@ -40,7 +40,7 @@ class QueryGenerator
         $builderPreparer = new QueryBuilderPreparer($entityClass, $metadataFactory, $joinFinder);
         $builderPreparer->setSelectExpressions($selections);
         $builderPreparer->setWhereExpressions($conditions);
-        $builderPreparer->setOrderByExpressions(...$sortMethods);
+        $builderPreparer->setOrderByExpressions($sortMethods);
         $builderPreparer->fillQueryBuilder($queryBuilder);
 
         // add offset if needed
