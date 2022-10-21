@@ -11,7 +11,10 @@ use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
+use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Iterables;
+use EDT\Querying\Utilities\Sorter;
+use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -25,18 +28,25 @@ use function count;
 class PropertyReader
 {
     /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
-    /**
      * @var SchemaPathProcessor
      */
     private $schemaPathProcessor;
 
+    /**
+     * @var ConditionEvaluator
+     */
+    private $conditionEvaluator;
+
+    /**
+     * @var Sorter
+     */
+    private $sorter;
+
     public function __construct(PropertyAccessorInterface $propertyAccessor, SchemaPathProcessor $schemaPathProcessor)
     {
-        $this->propertyAccessor = $propertyAccessor;
         $this->schemaPathProcessor = $schemaPathProcessor;
+        $this->conditionEvaluator = new ConditionEvaluator(new TableJoiner($propertyAccessor));
+        $this->sorter = new Sorter($propertyAccessor);
     }
 
     /**
@@ -117,7 +127,7 @@ class PropertyReader
         $sortMethods = $this->schemaPathProcessor->processDefaultSortMethods($relationship);
 
         // filter out restricted items
-        $objectProvider = new PrefilledObjectProvider($this->propertyAccessor, $entities);
+        $objectProvider = new PrefilledObjectProvider($this->conditionEvaluator, $this->sorter, $entities);
         $objectsToWrap = $objectProvider->getObjects([$condition], $sortMethods);
         $objectsToWrap = Iterables::asArray($objectsToWrap);
 
