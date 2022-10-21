@@ -36,7 +36,8 @@ class QueryGenerator
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
         $metadataFactory = $this->entityManager->getMetadataFactory();
-        $builderPreparer = new QueryBuilderPreparer($entityClass, $metadataFactory);
+        $joinFinder = new JoinFinder($metadataFactory);
+        $builderPreparer = new QueryBuilderPreparer($entityClass, $metadataFactory, $joinFinder);
         $builderPreparer->setSelectExpressions($selections);
         $builderPreparer->setWhereExpressions($conditions);
         $builderPreparer->setOrderByExpressions(...$sortMethods);

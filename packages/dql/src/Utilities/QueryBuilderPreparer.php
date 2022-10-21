@@ -96,9 +96,12 @@ class QueryBuilderPreparer
      *
      * @param class-string $mainEntityClass the entity class to fetch instances of
      */
-    public function __construct(string $mainEntityClass, ClassMetadataFactory $metadataFactory)
-    {
-        $this->joinFinder = new JoinFinder($metadataFactory);
+    public function __construct(
+        string $mainEntityClass,
+        ClassMetadataFactory $metadataFactory,
+        JoinFinder $joinFinder
+    ) {
+        $this->joinFinder = $joinFinder;
         $this->metadataFactory = $metadataFactory;
         $this->mainClassMetadata = $metadataFactory->getMetadataFor($mainEntityClass);
     }
