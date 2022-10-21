@@ -57,18 +57,6 @@ class PrefilledObjectProviderTest extends ModelBasedTest
         self::assertEquals($expected, array_values($actual));
     }
 
-    public function testNegativeOffset()
-    {
-        $this->expectException(PaginationException::class);
-        $this->authorProvider->getObjects([], [], -1);
-    }
-
-    public function testNegativeLimit()
-    {
-        $this->expectException(PaginationException::class);
-        $this->authorProvider->getObjects([], [], 0, -1);
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
