@@ -18,6 +18,7 @@ use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
+use EDT\Querying\Utilities\TableJoiner;
 use Tests\ModelBasedTest;
 
 class ConditionEvaluatorTest extends ModelBasedTest
@@ -36,7 +37,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
         parent::setUp();
         $this->conditionFactory = new PhpConditionFactory();
         $propertyAccessor = new ReflectionPropertyAccessor();
-        $this->conditionEvaluator = new ConditionEvaluator($propertyAccessor);
+        $this->conditionEvaluator = new ConditionEvaluator(new TableJoiner($propertyAccessor));
     }
 
     public function testAllConditionsApplyWithOne(): void
