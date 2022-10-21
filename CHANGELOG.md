@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: require `QueryBuilderPreparer` when calling `QueryGenerator::generateQueryBuilder`
 - refactor: require `JoinFinder` for `QueryBuilderPreparer` initialization
 - refactor: require `ConditionEvaluator` and `Sorter` for `PropertyReader` initialization
 - refactor: require `TableJoiner` for `Sorter` initialization

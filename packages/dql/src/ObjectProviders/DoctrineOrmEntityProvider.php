@@ -8,6 +8,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 use EDT\DqlQuerying\Contracts\ClauseInterface;
 use EDT\DqlQuerying\Contracts\MappingException;
+use EDT\DqlQuerying\Utilities\JoinFinder;
+use EDT\DqlQuerying\Utilities\QueryBuilderPreparer;
 use EDT\DqlQuerying\Utilities\QueryGenerator;
 use EDT\DqlQuerying\Contracts\OrderByInterface;
 use EDT\Querying\Pagination\OffsetPagination;
@@ -26,18 +28,20 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetPagina
      * @var QueryGenerator
      */
     private $queryGenerator;
+
     /**
-     * @var class-string<TEntity>
+     * @var QueryBuilderPreparer
      */
-    private $className;
+    private $builderPreparer;
 
     /**
      * @param class-string<TEntity> $className
      */
     public function __construct(string $className, EntityManager $entityManager)
     {
-        $this->className = $className;
+        $metadataFactory = $entityManager->getMetadataFactory();
         $this->queryGenerator = new QueryGenerator($entityManager);
+        $this->builderPreparer = new QueryBuilderPreparer($className, $metadataFactory, new JoinFinder($metadataFactory));
     }
 
     /**
@@ -83,8 +87,18 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetPagina
      * @throws MappingException
      * @throws PaginationException
      */
-    public function generateQueryBuilder(array $conditions, array $sortMethods = [], int $offset = 0, int $limit = null): QueryBuilder
-    {
-        return $this->queryGenerator->generateQueryBuilder($this->className, $conditions, $sortMethods, $offset, $limit);
+    public function generateQueryBuilder(
+        array $conditions,
+        array $sortMethods = [],
+        int $offset = 0,
+        int $limit = null
+    ): QueryBuilder {
+        return $this->queryGenerator->generateQueryBuilder(
+            $this->builderPreparer,
+            $conditions,
+            $sortMethods,
+            $offset,
+            $limit
+        );
     }
 }

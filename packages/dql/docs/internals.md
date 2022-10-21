@@ -18,6 +18,7 @@ Take as an example the following query building:
 use EDT\DqlQuerying\ConditionFactories\DqlConditionFactory;
 use EDT\DqlQuerying\Utilities\QueryGenerator;
 use \Tests\data\DqlModel\Book;
+use EDT\DqlQuerying\Utilities\QueryBuilderPreparer;
 $authorName = 'Charles Dickens';
 $queryGenerator = new QueryGenerator($this->getEntityManager());
 $conditionFactory = new DqlConditionFactory();
@@ -25,7 +26,9 @@ $condition = $conditionFactory->allConditionsApply(
     $conditionFactory->propertyHasValue($authorName, 'authors', 'name'),
     $conditionFactory->propertyHasValue($authorName, 'editors', 'name')
 );
-$queryBuilder = $queryGenerator->generateQueryBuilder(Book::class, [$condition]);
+$metadataFactory = $this->getEntityManager()->getMetadataFactory();
+$builderPreparer = new QueryBuilderPreparer(Book::class, $metadataFactory, new JoinFinder($metadataFactory));
+$queryBuilder = $queryGenerator->generateQueryBuilder($builderPreparer, [$condition]);
 ```
 
 In this query we look up books that were authored and edited by the same person (or two people with the same name).

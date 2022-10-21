@@ -24,7 +24,6 @@ class QueryGenerator
     }
 
     /**
-     * @param class-string                             $entityClass
      * @param list<ClauseInterface>                    $conditions
      * @param list<OrderByInterface>                   $sortMethods
      * @param int<0, max>                              $offset
@@ -34,12 +33,9 @@ class QueryGenerator
      * @throws MappingException
      * @throws PaginationException
      */
-    public function generateQueryBuilder(string $entityClass, array $conditions, array $sortMethods = [], int $offset = 0, int $limit = null, array $selections = []): QueryBuilder
+    public function generateQueryBuilder(QueryBuilderPreparer $builderPreparer, array $conditions, array $sortMethods = [], int $offset = 0, int $limit = null, array $selections = []): QueryBuilder
     {
         $queryBuilder = $this->entityManager->createQueryBuilder();
-        $metadataFactory = $this->entityManager->getMetadataFactory();
-        $joinFinder = new JoinFinder($metadataFactory);
-        $builderPreparer = new QueryBuilderPreparer($entityClass, $metadataFactory, $joinFinder);
         $builderPreparer->setSelectExpressions($selections);
         $builderPreparer->setWhereExpressions($conditions);
         $builderPreparer->setOrderByExpressions($sortMethods);
