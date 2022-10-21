@@ -91,7 +91,10 @@ class GenericEntityFetcherTest extends ModelBasedTest
         };
         $this->schemaPathProcessor = new SchemaPathProcessor(new PropertyPathProcessorFactory(), $this->typeProvider);
         $this->typeAccessor = new TypeAccessor($this->typeProvider);
-        $this->propertyReader = new PropertyReader($this->propertyAccessor, $this->schemaPathProcessor);
+        $tableJoiner = new TableJoiner($this->propertyAccessor);
+        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $sorter = new Sorter($tableJoiner);
+        $this->propertyReader = new PropertyReader($this->schemaPathProcessor, $conditionEvaluator, $sorter);
     }
 
     public function testTrue(): void
