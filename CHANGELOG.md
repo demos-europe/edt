@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- refactor: require `TableJoiner` for `ConditionEvaluator` initialization
+
 ## 0.12.20 - 2022-10-20
 
 - refactor: drop `TCondition` type requirement from root condition factories and introduce separate interfaces instead

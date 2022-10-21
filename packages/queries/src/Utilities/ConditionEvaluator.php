@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\Querying\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
-use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
 use InvalidArgumentException;
 use function is_bool;
@@ -20,9 +19,9 @@ class ConditionEvaluator
      */
     private $tableJoiner;
 
-    public function __construct(PropertyAccessorInterface $propertyAccessor)
+    public function __construct(TableJoiner $tableJoiner)
     {
-        $this->tableJoiner = new TableJoiner($propertyAccessor);
+        $this->tableJoiner = $tableJoiner;
     }
 
     /**

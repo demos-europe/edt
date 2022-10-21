@@ -14,6 +14,7 @@ use EDT\Querying\EntityProviders\OffsetPaginatingEntityProviderInterface;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Contracts\ObjectProviderInterface;
+use EDT\Querying\Utilities\TableJoiner;
 use function array_slice;
 
 /**
@@ -52,7 +53,7 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginati
     public function __construct(PropertyAccessorInterface $propertyAccessor, array $prefilledArray, ConditionEvaluator $conditionEvaluator = null)
     {
         $this->prefilledArray = $prefilledArray;
-        $this->conditionEvaluator = $conditionEvaluator ?? new ConditionEvaluator($propertyAccessor);
+        $this->conditionEvaluator = $conditionEvaluator ?? new ConditionEvaluator(new TableJoiner($propertyAccessor));
         $this->sorter = new Sorter($propertyAccessor);
     }
 
