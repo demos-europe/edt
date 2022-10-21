@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Utilities;
 
-use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
@@ -22,9 +21,9 @@ class Sorter
      */
     private $tableJoiner;
 
-    public function __construct(PropertyAccessorInterface $propertyAccessor)
+    public function __construct(TableJoiner $tableJoiner)
     {
-        $this->tableJoiner = new TableJoiner($propertyAccessor);
+        $this->tableJoiner = $tableJoiner;
     }
 
     /**

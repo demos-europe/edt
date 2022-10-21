@@ -76,7 +76,7 @@ class PrefilledObjectProviderTest extends ModelBasedTest
         $propertyAccessor = new ReflectionPropertyAccessor();
         $this->authorProvider = new PrefilledObjectProvider(
             new ConditionEvaluator(new TableJoiner($propertyAccessor)),
-            new Sorter($propertyAccessor),
+            new Sorter(new TableJoiner($propertyAccessor)),
             $this->authors
         );
     }

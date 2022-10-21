@@ -45,8 +45,9 @@ class PropertyReader
     public function __construct(PropertyAccessorInterface $propertyAccessor, SchemaPathProcessor $schemaPathProcessor)
     {
         $this->schemaPathProcessor = $schemaPathProcessor;
-        $this->conditionEvaluator = new ConditionEvaluator(new TableJoiner($propertyAccessor));
-        $this->sorter = new Sorter($propertyAccessor);
+        $tableJoiner = new TableJoiner($propertyAccessor);
+        $this->conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $this->sorter = new Sorter($tableJoiner);
     }
 
     /**
