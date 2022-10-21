@@ -22,12 +22,24 @@ class TableJoinerTest extends ModelBasedTest
      */
     private $cartesianProduct;
 
+    /**
+     * @var ReflectionMethod
+     */
+    private $setReferences;
+
+    /**
+     * @var ReflectionMethod
+     */
+    private $setDeReferencing;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->tableJoiner = new TableJoiner(new ReflectionPropertyAccessor());
-        $this->cartesianProduct = new ReflectionMethod($this->tableJoiner, 'cartesianProduct');
-        $this->cartesianProduct->setAccessible(true);
+        $this->cartesianProduct = $this->getReflectionMethod('cartesianProduct');
+        $this->setReferences = $this->getReflectionMethod('setReferencesGeneric');
+        $this->setDeReferencing = $this->getReflectionMethod('setDeReferencing');
+        $this->insertValue = $this->getReflectionMethod('insertValue');
     }
 
     public function testCartesianProductWithNoColumns(): void
@@ -244,5 +256,91 @@ class TableJoinerTest extends ModelBasedTest
         ];
 
         self::assertEquals($expected, $output);
+    }
+
+    public function testSetReferencesSingle(): void
+    {
+        $input = ['a', 'b', 'c', 'a'];
+
+        $references = $this->setReferences->invoke($this->tableJoiner, static function (string $a, string $b): bool {
+            return $a === $b;
+        }, $input);
+        $expected = ['a', 'b', 'c', 0];
+
+        self::assertEquals($expected, $references);
+
+        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, $references);
+
+        self::assertEquals($input, $deReferenced);
+    }
+
+    public function testSetReferencesMulti(): void
+    {
+        $input = ['a', 'a', 'c', 'a'];
+
+        $references = $this->setReferences->invoke($this->tableJoiner, static function (string $a, string $b): bool {
+            return $a === $b;
+        }, $input);
+        $expected = ['a', 0, 'c', 0];
+
+        self::assertEquals($expected, $references);
+
+        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, $references);
+
+        self::assertEquals($input, $deReferenced);
+    }
+
+    public function testSetReferencesAll(): void
+    {
+        $input = ['a', 'a', 'a', 'a'];
+
+        $references = $this->setReferences->invoke($this->tableJoiner, static function (string $a, string $b): bool {
+            return $a === $b;
+        }, $input);
+        $expected = ['a', 0, 0, 0];
+
+        self::assertEquals($expected, $references);
+
+        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, $references);
+
+        self::assertEquals($input, $deReferenced);
+    }
+
+    public function testInsertValue(): void
+    {
+        $input = [[1, 2, 3], [4, 5, 6]];
+
+        $this->insertValue->invokeArgs($this->tableJoiner, [&$input, 1, 'x']);
+        $expected = [[1, 'x', 2, 3], [4, 'x', 5, 6]];
+
+        self::assertEquals($expected, $input);
+    }
+
+    public function testInsertValueAtEnd(): void
+    {
+        $input = [['a'], ['b']];
+
+        $this->insertValue->invokeArgs($this->tableJoiner, [&$input, 1, 'x']);
+        $expected = [['a', 'x'], ['b', 'x']];
+
+        self::assertEquals($expected, $input);
+    }
+
+    public function testInsertNullAtEnd(): void
+    {
+        $input = [['a'], ['b']];
+
+        $this->insertValue->invokeArgs($this->tableJoiner, [&$input, 1, null]);
+        $expected = [['a', null], ['b', null]];
+
+        self::assertEquals($expected, $input);
+    }
+
+    private function getReflectionMethod(string $name): ReflectionMethod
+    {
+        $method = new ReflectionMethod($this->tableJoiner, $name);
+        $method->setAccessible(true);
+
+        return $method;
     }
 }
