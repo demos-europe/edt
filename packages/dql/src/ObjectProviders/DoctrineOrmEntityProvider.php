@@ -77,6 +77,8 @@ class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetPagina
     /**
      * @param list<ClauseInterface>  $conditions
      * @param list<OrderByInterface> $sortMethods
+     * @param int<0, max>            $offset
+     * @param int<0, max>|null       $limit
      *
      * @throws MappingException
      * @throws PaginationException

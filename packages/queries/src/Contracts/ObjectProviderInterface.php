@@ -17,7 +17,9 @@ interface ObjectProviderInterface
 {
     /**
      * @param list<TCondition> $conditions
-     * @param list<TSorting> $sortMethods
+     * @param list<TSorting>   $sortMethods
+     * @param int<0, max>      $offset
+     * @param int<0, max>|null $limit
      *
      * @return iterable<TEntity>
      *

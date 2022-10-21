@@ -4,50 +4,54 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
-use InvalidArgumentException;
-
 class SliceDefinition
 {
     /**
-     * @var int
+     * @var int<0, max>
      */
     private $offset = 0;
     /**
-     * @var int|null
+     * @var int<0, max>|null
      */
     private $limit;
 
+    /**
+     * @return int<0, max>
+     */
     public function getOffset(): int
     {
         return $this->offset;
     }
 
     /**
+     * @param int<0, max> $offset
+     *
      * @return $this
      */
     public function setOffset(int $offset): self
     {
-        if (0 > $offset) {
-            throw new InvalidArgumentException("Negative offset ($offset) is not supported.");
-        }
         $this->offset = $offset;
+
         return $this;
     }
 
+    /**
+     * @return int<0, max>|null
+     */
     public function getLimit(): ?int
     {
         return $this->limit;
     }
 
     /**
+     * @param int<0, max>|null $limit
+     *
      * @return $this
      */
     public function setLimit(?int $limit): self
     {
-        if (0 > $limit) {
-            throw new InvalidArgumentException("Negative limit ($limit) is not supported.");
-        }
         $this->limit = $limit;
+
         return $this;
     }
 }

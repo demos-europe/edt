@@ -24,10 +24,12 @@ class QueryGenerator
     }
 
     /**
-     * @param class-string                            $entityClass
-     * @param list<ClauseInterface>                   $conditions
-     * @param list<OrderByInterface>                  $sortMethods
-     * @param array<non-empty-string,ClauseInterface> $selections
+     * @param class-string                             $entityClass
+     * @param list<ClauseInterface>                    $conditions
+     * @param list<OrderByInterface>                   $sortMethods
+     * @param int<0, max>                              $offset
+     * @param int<0, max>|null                         $limit
+     * @param array<non-empty-string, ClauseInterface> $selections
      *
      * @throws MappingException
      * @throws PaginationException
@@ -45,17 +47,11 @@ class QueryGenerator
 
         // add offset if needed
         if (0 !== $offset) {
-            if (0 > $offset) {
-                throw PaginationException::negativeOffset($offset);
-            }
             $queryBuilder->setFirstResult($offset);
         }
 
         // add limit if needed
         if (null !== $limit) {
-            if (0 > $limit) {
-                throw PaginationException::negativeLimit($limit);
-            }
             $queryBuilder->setMaxResults($limit);
         }
 
