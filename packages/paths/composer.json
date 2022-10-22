@@ -4,7 +4,7 @@
     "license": "MIT",
     "type": "library",
     "require": {
-        "php": ">=7.3,<8",
+        "php": ">=7.4,<8",
         "nette/php-generator": "^3.5",
         "phpdocumentor/reflection-docblock": "^5.1.0",
         "demos-europe/edt-queries": "^0.13",
