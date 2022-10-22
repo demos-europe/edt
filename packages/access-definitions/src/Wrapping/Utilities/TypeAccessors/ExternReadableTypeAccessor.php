@@ -34,9 +34,7 @@ class ExternReadableTypeAccessor extends AbstractTypeAccessor
         if (!$this->allowAttribute) {
             $properties = array_filter(
                 $properties,
-                static function (?string $property): bool {
-                    return null !== $property;
-                }
+                static fn (?string $property): bool => null !== $property
             );
         }
 

@@ -13,9 +13,7 @@ class MessageFormatter
      */
     public function propertiesToString(array $properties): string
     {
-        $properties = array_map(static function (string $property): string {
-            return "`$property`";
-        }, $properties);
+        $properties = array_map(static fn (string $property): string => "`$property`", $properties);
 
         return implode(', ', $properties);
     }

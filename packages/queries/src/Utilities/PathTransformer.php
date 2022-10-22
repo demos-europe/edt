@@ -34,9 +34,7 @@ class PathTransformer
     {
         $paths = array_filter(
             PathInfo::getPropertyPaths($pathsBased),
-            static function (PropertyPathAccessInterface $path): bool {
-                return null === $path->getContext();
-            }
+            static fn (PropertyPathAccessInterface $path): bool => null === $path->getContext()
         );
         array_walk($paths, [$this, 'prefixPath'], $prefix);
     }

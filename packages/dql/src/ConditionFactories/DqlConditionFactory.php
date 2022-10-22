@@ -355,9 +355,11 @@ class DqlConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         // Each $propertyPath now corresponds to a different value in $values and accesses a
         // different column as explained above. Hence, we can create a separate condition for each
         // one, each being responsible for a single value in $values.
-        $equalityConditions = array_map(static function ($value, PropertyPathAccessInterface $propertyPath): AllEqual {
-            return new AllEqual(new Property($propertyPath), new Value($value));
-        }, $values, $propertyPaths);
+        $equalityConditions = array_map(
+            static fn ($value, PropertyPathAccessInterface $propertyPath): AllEqual => new AllEqual(new Property($propertyPath), new Value($value)),
+            $values,
+            $propertyPaths
+        );
 
         // Because we want to check if *all* values are present, we combine the created conditions
         // via a logical `AND` operator.

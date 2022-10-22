@@ -190,9 +190,10 @@ class WrapperObject
 
         if (is_array($entityOrEntities)) {
             // wrap the entities
-            return array_map(function (object $objectToWrap) use ($relationship) {
-                return $this->wrapperFactory->createWrapper($objectToWrap, $relationship);
-            }, $entityOrEntities);
+            return array_map(
+                fn (object $objectToWrap) => $this->wrapperFactory->createWrapper($objectToWrap, $relationship),
+                $entityOrEntities
+            );
         }
 
         return $this->wrapperFactory->createWrapper($entityOrEntities, $relationship);

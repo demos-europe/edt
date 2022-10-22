@@ -61,9 +61,10 @@ class IncludeDefinition implements IncludeDefinitionInterface
          * or to dynamically extend {@link WrapperObject} from the current entity class via eval().
          */
         return is_iterable($data)
-            ? array_map(static function (WrapperObject $object): object {
-                return $object->getObject();
-            }, array_values(Iterables::asArray($data)))
+            ? array_map(
+                static fn (WrapperObject $object): object => $object->getObject(),
+                array_values(Iterables::asArray($data))
+            )
             : $data->getObject();
     }
 

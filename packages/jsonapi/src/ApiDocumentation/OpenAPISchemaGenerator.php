@@ -100,9 +100,7 @@ final class OpenAPISchemaGenerator
         );
 
         $tags = $this->resourceTypeProvider->getAllAvailableTypes();
-        $tags = array_filter($tags, static function (TypeInterface $type): bool {
-            return $type instanceof ResourceTypeInterface;
-        });
+        $tags = array_filter($tags, static fn (TypeInterface $type): bool => $type instanceof ResourceTypeInterface);
         $tags = array_map(function (ResourceTypeInterface $type): ResourceTypeInterface {
             // create schema information for all resource types
 
@@ -114,10 +112,8 @@ final class OpenAPISchemaGenerator
 
             return $type;
         }, $tags);
-        $tags = array_filter($tags, static function (ResourceTypeInterface $type): bool {
-            // remove non-directly accessible ones
-            return $type->isDirectlyAccessible();
-        });
+        // remove non-directly accessible ones
+        $tags = array_filter($tags, static fn (ResourceTypeInterface $type): bool => $type->isDirectlyAccessible());
         $tags = array_map(function (ResourceTypeInterface $type) use ($openApi): Tag {
             // add routing information for directly accessible resource types
             $tag = $this->createTag($type);
@@ -291,9 +287,7 @@ final class OpenAPISchemaGenerator
         $properties = $type->getReadableProperties();
         $properties = array_filter(
             $properties,
-            function (?string $typeIdentifier) {
-                return null === $typeIdentifier || $this->isReferenceable($typeIdentifier);
-            }
+            fn (?string $typeIdentifier): bool => null === $typeIdentifier || $this->isReferenceable($typeIdentifier)
         );
 
         $properties = array_map(function (?string $typeIdentifier, string $propertyName) use ($type): array {
@@ -425,16 +419,12 @@ final class OpenAPISchemaGenerator
     {
         $this->schemaStore->findOrCreate(
             'parameters:include',
-            static function (): Schema {
-                return new Schema(['type' => 'array']);
-            }
+            static fn (): Schema => new Schema(['type' => 'array'])
         );
 
         $this->schemaStore->findOrCreate(
             'parameters:exclude',
-            static function (): Schema {
-                return new Schema(['type' => 'array']);
-            }
+            static fn (): Schema => new Schema(['type' => 'array'])
         );
 
         return [
@@ -470,24 +460,20 @@ final class OpenAPISchemaGenerator
     {
         $this->schemaStore->findOrCreate(
             'parameter:pagination_number',
-            static function (): Schema {
-                return new Schema([
-                    'type'        => 'number',
-                    'format'      => 'int64',
-                    'default'     => 1,
-                ]);
-            }
+            static fn (): Schema => new Schema([
+                'type'    => 'number',
+                'format'  => 'int64',
+                'default' => 1,
+            ])
         );
 
         $this->schemaStore->findOrCreate(
             'parameter:pagination_size',
-            function (): Schema {
-                return new Schema([
-                    'type'        => 'number',
-                    'format'      => 'int64',
-                    'default'     => $this->defaultPageSize,
-                ]);
-            }
+            fn (): Schema => new Schema([
+                'type'    => 'number',
+                'format'  => 'int64',
+                'default' => $this->defaultPageSize,
+            ])
         );
 
         return [
@@ -521,11 +507,9 @@ final class OpenAPISchemaGenerator
     {
         $this->schemaStore->findOrCreate(
             'parameter:filter',
-            static function (): Schema {
-                return new Schema([
-                    'type'        => 'array',
-                ]);
-            }
+            static fn (): Schema => new Schema([
+                'type' => 'array',
+            ])
         );
 
         return [

@@ -36,9 +36,7 @@ class PropertyCollection
         }
         $this->defaultProperties = array_filter(
             $this->properties,
-            static function (Property $property): bool {
-                return $property->isDefaultField();
-            }
+            static fn (Property $property): bool => $property->isDefaultField()
         );
     }
 
@@ -91,9 +89,10 @@ class PropertyCollection
     {
         $readableProperties = array_filter($this->properties, [$this, 'isReadable']);
 
-        return array_filter($readableProperties, static function (Property $property): bool {
-            return !$property instanceof Relationship;
-        });
+        return array_filter(
+            $readableProperties,
+            static fn (Property $property): bool => !$property instanceof Relationship
+        );
     }
 
     /**
@@ -103,9 +102,10 @@ class PropertyCollection
     {
         $readableProperties = array_filter($this->properties, [$this, 'isReadable']);
 
-        return array_filter($readableProperties, static function (Property $property): bool {
-            return $property instanceof Relationship;
-        });
+        return array_filter(
+            $readableProperties,
+            static fn (Property $property): bool => $property instanceof Relationship
+        );
     }
 
     /**
@@ -129,9 +129,10 @@ class PropertyCollection
      */
     public function getPropertyNamesRequiredForCreation(): array
     {
-        $properties = array_filter($this->properties, static function (Property $property): bool {
-            return $property->isInitializable() && $property->isRequiredForCreation();
-        });
+        $properties = array_filter(
+            $this->properties,
+            static fn (Property $property): bool => $property->isInitializable() && $property->isRequiredForCreation()
+        );
 
         return array_keys($properties);
     }
@@ -141,13 +142,15 @@ class PropertyCollection
      */
     public function getAliasPaths(): array
     {
-        $aliases = array_map(static function (Property $property): ?array {
-            return $property->getAliasedPath();
-        }, $this->properties);
+        $aliases = array_map(
+            static fn (Property $property): ?array => $property->getAliasedPath(),
+            $this->properties
+        );
 
-        return array_filter($aliases, static function (?array $aliasedPath): bool {
-            return null !== $aliasedPath;
-        });
+        return array_filter(
+            $aliases,
+            static fn (?array $aliasedPath): bool => null !== $aliasedPath
+        );
     }
 
     /**

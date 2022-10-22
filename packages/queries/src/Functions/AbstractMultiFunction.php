@@ -34,9 +34,11 @@ abstract class AbstractMultiFunction extends AbstractFunction
         $functionCount = count($this->functions);
         $nestedPropertyValues = $this->unflatPropertyValues($propertyValues);
         Iterables::assertCount($functionCount, $nestedPropertyValues);
-        $functionResults = array_map(static function (FunctionInterface $function, array $functionParams) {
-            return $function->apply($functionParams);
-        }, $this->functions, $nestedPropertyValues);
+        $functionResults = array_map(
+            static fn (FunctionInterface $function, array $functionParams) => $function->apply($functionParams),
+            $this->functions,
+            $nestedPropertyValues
+        );
 
         return $this->reduce($functionResults);
     }

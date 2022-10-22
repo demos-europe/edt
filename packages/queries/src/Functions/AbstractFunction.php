@@ -48,9 +48,13 @@ abstract class AbstractFunction implements FunctionInterface
      */
     public function getPropertyPaths(): array
     {
-        return Iterables::mapFlat(function (PathsBasedInterface $function): array {
-            return array_map([$this, 'setToManyAllowed'], $function->getPropertyPaths());
-        }, $this->functions);
+        return Iterables::mapFlat(
+            fn (PathsBasedInterface $function): array => array_map(
+                [$this, 'setToManyAllowed'],
+                $function->getPropertyPaths()
+            ),
+            $this->functions
+        );
     }
 
     public function __toString(): string
@@ -59,9 +63,7 @@ abstract class AbstractFunction implements FunctionInterface
         $functionList = implode(
             ',',
             array_map(
-                static function (FunctionInterface $function): string {
-                    return (string)$function;
-                },
+                static fn (FunctionInterface $function): string => (string)$function,
                 $this->functions
             )
         );
@@ -92,9 +94,10 @@ abstract class AbstractFunction implements FunctionInterface
      */
     protected function unflatPropertyValues(array $propertyValues): array
     {
-        $propertyAliasCountables = array_map(static function (PathsBasedInterface $pathsBased): int {
-            return count($pathsBased->getPropertyPaths());
-        }, $this->functions);
+        $propertyAliasCountables = array_map(
+            static fn (PathsBasedInterface $pathsBased): int => count($pathsBased->getPropertyPaths()),
+            $this->functions
+        );
 
         return array_map('array_values', Iterables::split($propertyValues, ...$propertyAliasCountables));
     }
