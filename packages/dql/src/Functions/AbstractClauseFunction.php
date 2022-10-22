@@ -14,6 +14,7 @@ use EDT\DqlQuerying\Contracts\ClauseInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
+use function count;
 
 /**
  * @template TOutput
@@ -69,9 +70,10 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
 
     public function getClauseValues(): array
     {
-        return Iterables::mapFlat(static function (ClauseInterface $clause): array {
-            return $clause->getClauseValues();
-        }, $this->clauses);
+        return Iterables::mapFlat(
+            static fn (ClauseInterface $clause): array => $clause->getClauseValues(),
+            $this->clauses
+        );
     }
 
     /**
@@ -86,9 +88,16 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
     {
         $nestedValueReferences = $this->unflatClauseReferences(...$valueReferences);
         $nestedPropertyAliases = $this->unflatPropertyAliases(...$propertyAliases);
-        return array_map(static function (ClauseInterface $clause, array $valueReferences, array $propertyAliases) {
-            return $clause->asDql($valueReferences, $propertyAliases);
-        }, $this->clauses, $nestedValueReferences, $nestedPropertyAliases);
+        return array_map(
+            static fn (
+                ClauseInterface $clause,
+                array $valueReferences,
+                array $propertyAliases
+            ) => $clause->asDql($valueReferences, $propertyAliases),
+            $this->clauses,
+            $nestedValueReferences,
+            $nestedPropertyAliases
+        );
     }
 
     /**
@@ -99,9 +108,10 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
      */
     protected function unflatClauseReferences(string ...$valueReferences): array
     {
-        $clauseValueCountables = array_map(static function (ClauseInterface $clause): int {
-            return count($clause->getClauseValues());
-        }, $this->clauses);
+        $clauseValueCountables = array_map(
+            static fn (ClauseInterface $clause): int => count($clause->getClauseValues()),
+            $this->clauses
+        );
 
         return array_map('array_values', Iterables::split($valueReferences, ...$clauseValueCountables));
     }
@@ -125,9 +135,10 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
      */
     private function unflatPropertyAliases(string ...$propertyAliases): array
     {
-        $propertyAliasCountables = array_map(static function (PathsBasedInterface $pathsBased): int {
-            return count($pathsBased->getPropertyPaths());
-        }, $this->clauses);
+        $propertyAliasCountables = array_map(
+            static fn (PathsBasedInterface $pathsBased): int => count($pathsBased->getPropertyPaths()),
+            $this->clauses
+        );
 
         return array_map('array_values', Iterables::split($propertyAliases, ...$propertyAliasCountables));
     }

@@ -631,9 +631,10 @@ class DoctrineOrmEntityProviderTest extends TestCase
         $birthMonthPath = new PropertyPath(null, '', PropertyPath::DIRECT, 'birth', 'month');
         $birthYearPath = new PropertyPath(null, '', PropertyPath::DIRECT, 'birth', 'year');
 
-        $selectBirthSum = new Sum(...array_map(static function (PropertyPath $propertyPath): Property {
-            return new Property($propertyPath);
-        }, [$birthDayPath, $birthMonthPath, $birthYearPath]));
+        $selectBirthSum = new Sum(...array_map(
+            static fn (PropertyPath $propertyPath): Property => new Property($propertyPath),
+            [$birthDayPath, $birthMonthPath, $birthYearPath]
+        ));
         $titlePath = new PropertyPath(null, '0', PropertyPath::DIRECT, 'books', 'title');
         $selectTitleProperty = new Property($titlePath);
         $namePath = new PropertyPath(null, '0', PropertyPath::DIRECT, 'name');

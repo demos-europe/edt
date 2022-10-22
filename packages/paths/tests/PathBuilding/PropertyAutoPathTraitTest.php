@@ -441,9 +441,10 @@ class PropertyAutoPathTraitTest extends TestCase
      */
     private function toClassNames($autoPath): array
     {
-        return array_map(static function (object $object): string {
-            return get_class($object);
-        }, $autoPath->getAsValues());
+        return array_map(
+            static fn (object $object): string => get_class($object),
+            $autoPath->getAsValues()
+        );
     }
 
     public function testEndUnpack(): void

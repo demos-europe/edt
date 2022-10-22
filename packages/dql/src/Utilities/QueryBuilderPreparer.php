@@ -166,9 +166,11 @@ class QueryBuilderPreparer
         if ([] === $selectExpressions) {
             $queryBuilder->select($entityAlias);
         }
-        $selectExpressions = array_map(static function ($expression, string $alias): string {
-            return "$expression AS $alias";
-        }, $selectExpressions, array_keys($selectExpressions));
+        $selectExpressions = array_map(
+            static fn ($expression, string $alias): string => "$expression AS $alias",
+            $selectExpressions,
+            array_keys($selectExpressions)
+        );
         $queryBuilder->addSelect($selectExpressions);
 
         // set `FROM`s

@@ -53,54 +53,22 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     protected function getOperatorFunctions(): array
     {
         return [
-            '=' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyHasValue($conditionValue, ...$path);
-            },
-            '<>' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyHasNotValue($conditionValue, ...$path);
-            },
-            'STRING_CONTAINS_CASE_INSENSITIVE' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($conditionValue, ...$path);
-            },
-            'IN' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyHasAnyOfValues($conditionValue, ...$path);
-            },
-            'NOT_IN' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyHasNotAnyOfValues($conditionValue, ...$path);
-            },
-            'BETWEEN' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyBetweenValuesInclusive($conditionValue[0], $conditionValue[1], ...$path);
-            },
-            'NOT BETWEEN' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyNotBetweenValuesInclusive($conditionValue[0], $conditionValue[1], ...$path);
-            },
-            'ARRAY_CONTAINS_VALUE' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyHasStringAsMember($conditionValue, ...$path);
-            },
-            'IS NULL' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyIsNull(...$path);
-            },
-            'IS NOT NULL' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyIsNotNull(...$path);
-            },
-            '>' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->valueGreaterThan($conditionValue, ...$path);
-            },
-            '>=' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->valueGreaterEqualsThan($conditionValue, ...$path);
-            },
-            '<' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->valueSmallerThan($conditionValue, ...$path);
-            },
-            '<=' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->valueSmallerEqualsThan($conditionValue, ...$path);
-            },
-            'STARTS_WITH_CASE_INSENSITIVE' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyStartsWithCaseInsensitive($conditionValue, ...$path);
-            },
-            'ENDS_WITH_CASE_INSENSITIVE' => function (array $path, $conditionValue): PathsBasedInterface {
-                return $this->conditionFactory->propertyEndsWithCaseInsensitive($conditionValue, ...$path);
-            },
+            '=' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasValue($conditionValue, ...$path),
+            '<>' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasNotValue($conditionValue, ...$path),
+            'STRING_CONTAINS_CASE_INSENSITIVE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($conditionValue, ...$path),
+            'IN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasAnyOfValues($conditionValue, ...$path),
+            'NOT_IN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasNotAnyOfValues($conditionValue, ...$path),
+            'BETWEEN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyBetweenValuesInclusive($conditionValue[0], $conditionValue[1], ...$path),
+            'NOT BETWEEN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyNotBetweenValuesInclusive($conditionValue[0], $conditionValue[1], ...$path),
+            'ARRAY_CONTAINS_VALUE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasStringAsMember($conditionValue, ...$path),
+            'IS NULL' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyIsNull(...$path),
+            'IS NOT NULL' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull(...$path),
+            '>' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueGreaterThan($conditionValue, ...$path),
+            '>=' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueGreaterEqualsThan($conditionValue, ...$path),
+            '<' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueSmallerThan($conditionValue, ...$path),
+            '<=' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueSmallerEqualsThan($conditionValue, ...$path),
+            'STARTS_WITH_CASE_INSENSITIVE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyStartsWithCaseInsensitive($conditionValue, ...$path),
+            'ENDS_WITH_CASE_INSENSITIVE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyEndsWithCaseInsensitive($conditionValue, ...$path),
         ];
     }
 }

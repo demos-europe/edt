@@ -262,9 +262,11 @@ class TableJoinerTest extends ModelBasedTest
     {
         $input = ['a', 'b', 'c', 'a'];
 
-        $references = $this->setReferences->invoke($this->tableJoiner, static function (string $a, string $b): bool {
-            return $a === $b;
-        }, $input);
+        $references = $this->setReferences->invoke(
+            $this->tableJoiner,
+            static fn (string $a, string $b): bool => $a === $b,
+            $input
+        );
         $expected = ['a', 'b', 'c', 0];
 
         self::assertEquals($expected, $references);
@@ -278,9 +280,11 @@ class TableJoinerTest extends ModelBasedTest
     {
         $input = ['a', 'a', 'c', 'a'];
 
-        $references = $this->setReferences->invoke($this->tableJoiner, static function (string $a, string $b): bool {
-            return $a === $b;
-        }, $input);
+        $references = $this->setReferences->invoke(
+            $this->tableJoiner,
+            static fn (string $a, string $b): bool => $a === $b,
+            $input
+        );
         $expected = ['a', 0, 'c', 0];
 
         self::assertEquals($expected, $references);
@@ -294,9 +298,11 @@ class TableJoinerTest extends ModelBasedTest
     {
         $input = ['a', 'a', 'a', 'a'];
 
-        $references = $this->setReferences->invoke($this->tableJoiner, static function (string $a, string $b): bool {
-            return $a === $b;
-        }, $input);
+        $references = $this->setReferences->invoke(
+            $this->tableJoiner,
+            static fn (string $a, string $b): bool => $a === $b,
+            $input
+        );
         $expected = ['a', 0, 0, 0];
 
         self::assertEquals($expected, $references);

@@ -27,10 +27,10 @@ class TraitEvaluator
         $classes = $this->getAllParentClasses($class);
         array_unshift($classes, $class);
 
-        $traitsInClasses = array_map(static function (string $class): array {
-            return array_values(class_uses($class));
-        }, $classes);
-
+        $traitsInClasses = array_map(
+            static fn (string $class): array => array_values(class_uses($class)),
+            $classes
+        );
 
         return array_merge(...$traitsInClasses);
     }

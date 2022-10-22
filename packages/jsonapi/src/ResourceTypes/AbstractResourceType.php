@@ -75,10 +75,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     {
         $properties = $this->getPropertyCollection()->getInitializableProperties();
 
-        return array_map(static function (Property $property): array {
+        return array_map(
             // TODO: implement support for initialization conditions
-            return [];
-        }, $properties);
+            static fn (Property $property): array => [],
+            $properties
+        );
     }
 
     /**
@@ -189,9 +190,10 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     {
         $properties = $this->getProperties();
         $properties = $this->processProperties($properties);
-        $properties = array_map(static function (PropertyBuilder $propertyBuilder): Property {
-            return $propertyBuilder->build();
-        }, $properties);
+        $properties = array_map(
+            static fn (PropertyBuilder $propertyBuilder): Property => $propertyBuilder->build(),
+            $properties
+        );
 
         return new PropertyCollection($properties);
     }
