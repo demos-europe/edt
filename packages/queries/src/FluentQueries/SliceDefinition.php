@@ -13,7 +13,7 @@ class SliceDefinition
     /**
      * @var int<0, max>|null
      */
-    private ?int $limit;
+    private ?int $limit = null;
 
     /**
      * @return int<0, max>

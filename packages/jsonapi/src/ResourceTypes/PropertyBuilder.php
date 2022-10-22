@@ -45,7 +45,7 @@ class PropertyBuilder
     /**
      * @var non-empty-list<non-empty-string>|null
      */
-    protected ?array $aliasedPath;
+    protected ?array $aliasedPath = null;
 
     protected bool $defaultField = false;
 

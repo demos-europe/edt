@@ -15,7 +15,7 @@ class PropertyEvaluatorPool
 
     protected TraitEvaluator $traitEvaluator;
 
-    protected static ?PropertyEvaluatorPool $instance;
+    protected static ?PropertyEvaluatorPool $instance = null;
 
     protected function __construct()
     {

@@ -62,7 +62,7 @@ class DynamicTransformer extends TransformerAbstract
      */
     private array $attributeDefinitions;
 
-    private ?LoggerInterface $logger;
+    private ?LoggerInterface $logger = null;
 
     private MessageFormatter $messageFormatter;
 

@@ -14,12 +14,12 @@ class AccessException extends InvalidArgumentException
     /**
      * @var class-string<TypeInterface>|null
      */
-    protected ?string $typeClass;
+    protected ?string $typeClass = null;
 
     /**
      * @var non-empty-string|null
      */
-    protected ?string $typeIdentifier;
+    protected ?string $typeIdentifier = null;
 
     /**
      * @param TypeInterface $type

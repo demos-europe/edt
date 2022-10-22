@@ -8,7 +8,7 @@ class Person
 {
     protected string $name;
 
-    protected ?string $pseudonym;
+    protected ?string $pseudonym = null;
 
     protected Birth $birth;
     /**
