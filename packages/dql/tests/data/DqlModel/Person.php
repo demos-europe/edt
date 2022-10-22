@@ -38,7 +38,7 @@ class Person
 
     /**
      * @ORM\OneToMany(targetEntity="Book", mappedBy="author")
-     * @var Collection<int,Book>
+     * @var Collection<int, Book>
      */
     private $books;
 }

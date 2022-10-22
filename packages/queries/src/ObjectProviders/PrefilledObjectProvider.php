@@ -107,10 +107,10 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginati
     }
 
     /**
-     * @param array<TKey, TEntity>                   $list
+     * @param array<TKey, TEntity>          $list
      * @param list<FunctionInterface<bool>> $conditions
      *
-     * @return array<TKey,TEntity>
+     * @return array<TKey, TEntity>
      */
     protected function filter(array $list, array $conditions): array
     {

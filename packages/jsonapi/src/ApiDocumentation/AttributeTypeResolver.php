@@ -34,7 +34,7 @@ use function strlen;
 class AttributeTypeResolver
 {
     /**
-     * @var array<class-string,ReflectionClass>
+     * @var array<class-string, ReflectionClass>
      */
     private $classReflectionCache = [];
 
