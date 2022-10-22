@@ -210,6 +210,11 @@ parameters:
             path: packages/paths/src/PathBuilding/End.php
 
         -
+            message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:getIterator\\(\\) should return ArrayIterator\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, string\\>\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/End.php
+
+        -
             message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:startPath\\(\\) should return static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\) but returns EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
