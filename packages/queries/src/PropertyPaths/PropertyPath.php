@@ -35,18 +35,16 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     private ?string $context;
 
     /**
-     * @param class-string|null $context
-     * @param non-empty-string  $property
-     * @param non-empty-string  ...$properties
+     * @param class-string|null                $context
+     * @param non-empty-list<non-empty-string> $properties
+     *
      * @throws PathException
      */
-    public function __construct(?string $context, string $salt, int $accessDepth, string $property, string ...$properties)
+    public function __construct(?string $context, string $salt, int $accessDepth, array $properties)
     {
-        array_unshift($properties, $property);
-
         $this->context = $context;
         $this->accessDepth = $accessDepth;
-        $this->setPath(array_values($properties));
+        $this->setPath($properties);
         $this->salt = $salt;
     }
 
@@ -92,7 +90,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
                 null,
                 (string)$pathIndex,
                 $depth,
-                ...$properties
+                $properties
             ),
             range(0, $count - 1));
     }

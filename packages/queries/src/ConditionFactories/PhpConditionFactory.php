@@ -69,8 +69,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertiesEqual(array $leftProperties, array $rightProperties): PathsBasedInterface
     {
-        $leftPropertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, ...$leftProperties);
-        $rightPropertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, ...$rightProperties);
+        $leftPropertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $leftProperties);
+        $rightPropertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $rightProperties);
         return new AllEqual(
             new Property($leftPropertyPath),
             new Property($rightPropertyPath)
@@ -79,7 +79,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathObject = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathObject = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, array_values($properties));
         return new BetweenInclusive(
             new Value($min),
             new Value($max),
@@ -89,7 +90,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK,  array_values($properties));
         return new OneOf(
             new Value($values),
             new Property($propertyPath)
@@ -98,7 +100,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyHasSize(int $size, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new AllEqual(
             new Size(new Property($propertyPath)),
             new Value($size)
@@ -107,7 +110,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK,  array_values($properties));
         $lowerCaseProperty = new LowerCase(new Property($propertyPathInstance));
         $lowerCaseValue = new LowerCase(new Value($value));
         return new StringContains($lowerCaseProperty, $lowerCaseValue, false);
@@ -115,7 +119,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyHasValue($value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new AllEqual(
             new Property($propertyPath),
             new Value($value)
@@ -124,13 +129,15 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyIsNull(string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK,  array_values($properties));
         return new IsNull(new Property($propertyPath));
     }
 
     public function propertyHasStringAsMember(string $value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new OneOf(
             new Property($propertyPathInstance),
             new Value($value)
@@ -139,7 +146,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function valueGreaterThan($value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new Greater(
             new Value($value),
             new Property($propertyPathInstance)
@@ -148,7 +156,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function valueGreaterEqualsThan($value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new GreaterEquals(
             new Value($value),
             new Property($propertyPathInstance)
@@ -157,7 +166,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function valueSmallerThan($value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new Smaller(
             new Value($value),
             new Property($propertyPathInstance)
@@ -166,7 +176,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function valueSmallerEqualsThan($value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new SmallerEquals(
             new Value($value),
             new Property($propertyPathInstance)
@@ -175,7 +186,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new StringStartsWith(
             new Value($value),
             new Property($propertyPathInstance),
@@ -185,7 +197,8 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
 
     public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface
     {
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $property, ...$properties);
+        array_unshift($properties, $property);
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
         return new StringEndsWith(
             new Value($value),
             new Property($propertyPathInstance),
