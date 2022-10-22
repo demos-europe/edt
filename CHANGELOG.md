@@ -2,6 +2,7 @@
 
 ## 0.12.22 - 2022-10-31
 
+- refactor: remove deprecated `GenericEntityFetcher`, use the individual components manually and optimize them for your use-case
 - refactor: require `QueryBuilderPreparer` for `DoctrineOrmEntityProvider` initialization
 - refactor: remove `QueryGenerator`, `QueryBuilderPreparer` or `DoctrineOrmEntityProvider` can be used instead
 - refactor: require `JoinFinder` for `QueryBuilderPreparer` initialization
