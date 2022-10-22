@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Querying\PropertyAccessors;
 
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
+use EDT\Querying\PropertyPaths\PropertyPath;
+use InvalidArgumentException;
 use Tests\ModelBasedTest;
 use function array_slice;
 
@@ -19,6 +21,8 @@ class ReflectionPropertyAccessorTest extends ModelBasedTest
     {
         parent::setUp();
         $this->propertyAccessor = new ReflectionPropertyAccessor();
+        $this->restructureNesting = new \ReflectionMethod($this->propertyAccessor, 'restructureNesting');
+        $this->restructureNesting->setAccessible(true);
     }
 
     public function testSliceBehavior(): void
@@ -91,5 +95,129 @@ class ReflectionPropertyAccessorTest extends ModelBasedTest
         self::assertCount(1, $values);
         self::assertIsIterable($values[0]);
         self::assertEquals($expected, $values[0]);
+    }
+
+    public function testRestructureIterableWithArrayNegative(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->restructureNesting->invoke($this->propertyAccessor, [], -1);
+    }
+
+    public function testRestructureIterableWithArray0(): void
+    {
+        $expected = [[[1, 2, 3], [4, 5, 6]]];
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, [[1, 2, 3], [4, 5, 6]], 0);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithArray0WithValue(): void
+    {
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, 1, 0);
+        self::assertEquals([1], $output);
+    }
+
+    public function testRestructureIterableWithArray1(): void
+    {
+        $expected = [
+            [1, 2, 3],
+            [4, 5, 6],
+        ];
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, [[1, 2, 3], [4, 5, 6]], 1);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithArray1Empty(): void
+    {
+        $expected = [];
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, [], 1);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithArray1Value(): void
+    {
+        $expected = [1];
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, 1, 1);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithArray1Deep(): void
+    {
+        $input = [[[1, 2, 3]], [[4, 5, 6]]];
+
+        $expected = $input;
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, $input, 1);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithArray2(): void
+    {
+        $input = [
+            [
+                [1], [2], [3]
+            ],
+            [
+                [4], [5], [6]
+            ],
+        ];
+
+        $expected = [
+            [1], [2], [3], [4], [5], [6]
+        ];
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, $input, 2);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithArrayAndAutostop(): void
+    {
+        $input = [
+            [[1], [2], [3]],
+            [[4], [5], [6]],
+        ];
+
+        $expected = [1, 2, 3, 4, 5, 6];
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, $input, 999);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithIterable1(): void
+    {
+        $input = [
+            new PropertyPath(null, '', 0, 'a', 'b', 'c'),
+            new PropertyPath(null, '', 0, 'd', 'e', 'f'),
+        ];
+
+        $expected = $input;
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, $input, 1);
+
+        self::assertEquals($expected, $output);
+    }
+
+    public function testRestructureIterableWithIterable2(): void
+    {
+        $input = [
+            new PropertyPath(null, '', 0, 'a', 'b', 'c'),
+            new PropertyPath(null, '', 0, 'd', 'e', 'f'),
+        ];
+
+        $expected = ['a', 'b', 'c', 'd', 'e', 'f'];
+
+        $output = $this->restructureNesting->invoke($this->propertyAccessor, $input, 2);
+
+        self::assertEquals($expected, $output);
     }
 }
