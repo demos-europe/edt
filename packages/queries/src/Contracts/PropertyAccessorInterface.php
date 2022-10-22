@@ -39,14 +39,17 @@ interface PropertyAccessorInterface
      * If any property in results in a `null` values then `null` will be used as values in the
      * returned array.
      *
+     * @param non-empty-list<non-empty-string> $properties
+     *
      * @return list<mixed>
      */
-    public function getValuesByPropertyPath(object $target, int $depth, string $property, string ...$properties): array;
+    public function getValuesByPropertyPath(object $target, int $depth, array $properties): array;
 
     /**
      * Sets a property values of the given target.
      *
-     * @param mixed|null $value
+     * @param mixed|null       $value
+     * @param non-empty-string $propertyName
      */
     public function setValue(object $target, $value, string $propertyName): void;
 }

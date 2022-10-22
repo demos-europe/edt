@@ -279,7 +279,8 @@ class WrapperObject
     /**
      * Set the value into the given object
      *
-     * @param mixed|null $value
+     * @param non-empty-string $propertyName
+     * @param mixed|null       $value
      */
     protected function setUnrestricted(string $propertyName, object $target, $value): void
     {

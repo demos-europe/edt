@@ -40,10 +40,8 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
     /**
      * @param mixed $target
      */
-    public function getValuesByPropertyPath($target, int $depth, string $property, string ...$properties): array
+    public function getValuesByPropertyPath($target, int $depth, array $properties): array
     {
-        array_unshift($properties, $property);
-
         // if depth is negative then cut of the tail of the given path
         if (0 > $depth) {
             $properties = array_slice($properties, 0, $depth);
@@ -68,7 +66,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
             $newTarget = $this->getValueByPropertyPath($newTarget, $currentPart);
             return [] === $properties
                 ? $this->restructureNesting($newTarget, $depth)
-                : $this->getValuesByPropertyPath($newTarget, $depth, ...$properties);
+                : $this->getValuesByPropertyPath($newTarget, $depth, $properties);
         }, $target);
     }
 
