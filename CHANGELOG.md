@@ -2,6 +2,7 @@
 
 ## 0.12.22 - 2022-10-31
 
+- refactor: remove deprecated `SchemaPathProcessor::mapSortMethods`, use `SchemaPathProcessor::processDefaultSortMethods()` and `SchemaPathProcessor::mapSorting()` instead
 - refactor: remove deprecated `SchemaPathProcessor::mapConditions`, use `SchemaPathProcessor::mapFilterConditions()` and `SchemaPathProcessor::processAccessCondition()` instead
 - refactor: remove deprecated `TypeRestrictedEntityProvider`, use the individual components manually and optimize them for your use-case
 - refactor: remove deprecated `GenericEntityFetcher`, use the individual components manually and optimize them for your use-case
