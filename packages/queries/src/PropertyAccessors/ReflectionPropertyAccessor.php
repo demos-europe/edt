@@ -6,10 +6,12 @@ namespace EDT\Querying\PropertyAccessors;
 
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Utilities\Iterables;
+use InvalidArgumentException;
 use ReflectionException;
 use ReflectionProperty;
 use function get_class;
 use function array_slice;
+use function is_array;
 
 /**
  * Accesses properties of objects directly via reflection, circumventing any methods.
@@ -51,13 +53,13 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         // if there are no more paths to follow we either return the $target itself
         // or the values nested in it, depending on the given $depth
         if ([] === $properties) {
-            return Iterables::restructureNesting($target, $depth);
+            return $this->restructureNesting($target, $depth);
         }
 
         // if there are more path to follow we first check if the current target is a list
         // of which we need to access each item individually or if not and we can access
         // the target directly
-        $target = Iterables::restructureNesting($target, 1);
+        $target = $this->restructureNesting($target, 1);
 
         // for each item (or the target) we follow the remaining paths to the values to return
         $currentPart = array_shift($properties);
@@ -65,7 +67,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         return Iterables::mapFlat(function ($newTarget) use ($currentPart, $properties, $depth): array {
             $newTarget = $this->getValueByPropertyPath($newTarget, $currentPart);
             return [] === $properties
-                ? Iterables::restructureNesting($newTarget, $depth)
+                ? $this->restructureNesting($newTarget, $depth)
                 : $this->getValuesByPropertyPath($newTarget, $depth, ...$properties);
         }, $target);
     }
@@ -99,5 +101,43 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         $reflectionProperty->setAccessible(true);
 
         return $reflectionProperty->getValue($target);
+    }
+
+    /**
+     * Restructures the given target recursively. The recursion stops when the specified depth
+     * is reached or the current target is not iterable.
+     *
+     * If at any level the current target is non-iterable then the depth will be assumed to be
+     * this level, even if the actual `$depth` is given with a greater value.
+     *
+     * @param mixed $target
+     * @param int $depth Passing 0 will return the given target wrapped in an array.
+     *                   Passing 1 will keep the structure of the given target.
+     *                   Passing a value greater 1 will flat the target from the top to the
+     *                   bottom, meaning a target with three levels and a depth of 2 will keep the
+     *                   third level as it is but flattens the first two levels.
+     * @param (callable(mixed):bool)|null $isIterable Function to determine if the
+     *                   current target should be considered iterable and thus flatted.
+     *                   Defaults to {@link is_iterable()} if `null` is given.
+     *
+     * @return list<mixed>
+     * @throws InvalidArgumentException If a negative value is passed as $depth
+     */
+    private function restructureNesting($target, int $depth, callable $isIterable = null): array
+    {
+        if (null === $isIterable) {
+            $isIterable = 'is_iterable';
+        }
+        if (0 > $depth) {
+            throw new InvalidArgumentException("depth must be 0 or positive, is $depth instead");
+        }
+        if (0 === $depth || !$isIterable($target)) {
+            return [$target];
+        }
+
+        return Iterables::mapFlat(
+            fn ($newTarget): array => $this->restructureNesting($newTarget, $depth - 1),
+            is_array($target) ? $target : iterator_to_array($target)
+        );
     }
 }
