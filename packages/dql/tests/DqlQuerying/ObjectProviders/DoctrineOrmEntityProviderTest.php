@@ -610,7 +610,7 @@ class DoctrineOrmEntityProviderTest extends TestCase
         $condition = $this->conditionFactory->allValuesPresentInMemberListProperties([
             'Harry Potter and the Philosopher\'s Stone',
             'Harry Potter and the Deathly Hallows'
-        ], 'books', 'title');
+        ], ['books', 'title']);
         $queryBuilder = $this->personEntityProvider->generateQueryBuilder([$condition]);
         self::assertSame(
             /** @lang DQL */
@@ -642,7 +642,7 @@ class DoctrineOrmEntityProviderTest extends TestCase
         $condition = $this->conditionFactory->allValuesPresentInMemberListProperties([
             'Harry Potter and the Philosopher\'s Stone',
             'Harry Potter and the Deathly Hallows'
-        ], 'books', 'title');
+        ], ['books', 'title']);
 
         $this->personBuilderPreparer->setSelectExpressions([
             'name' => $selectNameProperty,

@@ -83,17 +83,21 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return list<PropertyPathAccessInterface>
      * @throws PathException
      */
-    public static function createIndexSaltedPaths(int $count, int $depth, string $property, string ...$properties): array
+    public static function createIndexSaltedPaths(int $count, int $depth, array $properties): array
     {
-        return array_map(static function (int $pathIndex) use ($depth, $property, $properties): PropertyPathAccessInterface {
-            return new PropertyPath(null, (string)$pathIndex, $depth, $property, ...$properties);
-        }, range(0, $count - 1));
+        return array_map(
+            static fn (int $pathIndex): PropertyPathAccessInterface => new PropertyPath(
+                null,
+                (string)$pathIndex,
+                $depth,
+                ...$properties
+            ),
+            range(0, $count - 1));
     }
 
     public function getAsNames(): array
