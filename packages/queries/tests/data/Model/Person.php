@@ -6,22 +6,15 @@ namespace Tests\data\Model;
 
 class Person
 {
-    /**
-     * @var string
-     */
-    protected $name;
-    /**
-     * @var string|null
-     */
-    protected $pseudonym;
-    /**
-     * @var Birth
-     */
-    protected $birth;
+    protected string $name;
+
+    protected ?string $pseudonym;
+
+    protected Birth $birth;
     /**
      * @var list<Book>
      */
-    protected $books;
+    protected array $books;
 
     public function __construct(string $name, ?string $pseudonym, Birth $birth)
     {

@@ -20,22 +20,19 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     /**
      * @var ArrayIterator<int, non-empty-string>
      */
-    private $properties;
+    private ArrayIterator $properties;
+
     /**
-     * @var int
-     *
      * @see PropertyPathAccessInterface::getAccessDepth()
      */
-    private $accessDepth;
-    /**
-     * @var string
-     */
-    private $salt;
+    private int $accessDepth;
+
+    private string $salt;
 
     /**
      * @var class-string|null
      */
-    private $context;
+    private ?string $context;
 
     /**
      * @param class-string|null $context

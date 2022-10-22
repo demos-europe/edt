@@ -23,17 +23,11 @@ class DynamicTransformerFactory
     /**
      * @var TypeAccessor<TCondition, TSorting>
      */
-    private $typeAccessor;
+    private TypeAccessor $typeAccessor;
 
-    /**
-     * @var MessageFormatter
-     */
-    private $messageFormatter;
+    private MessageFormatter $messageFormatter;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @param TypeAccessor<TCondition, TSorting> $typeAccessor

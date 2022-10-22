@@ -14,11 +14,11 @@ abstract class ModelBasedTest extends TestCase
     /**
      * @var Person[]
      */
-    protected $authors;
+    protected array $authors;
     /**
      * @var Book[]
      */
-    protected $books;
+    protected array $books;
 
     protected function setUp(): void
     {

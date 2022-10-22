@@ -25,17 +25,14 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
     /**
      * @var FunctionInterface<TOutput>
      */
-    private $function;
+    private FunctionInterface $function;
 
     /**
      * @var list<ClauseInterface>
      */
-    protected $clauses = [];
+    protected array $clauses = [];
 
-    /**
-     * @var Expr
-     */
-    protected $expr;
+    protected Expr $expr;
 
     /**
      * Will set the clauses of this class. By calling {@link AbstractClauseFunction::getDqls()}

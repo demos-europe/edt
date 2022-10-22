@@ -8,20 +8,14 @@ use Tests\data\Model\Person;
 
 class Book
 {
-    /**
-     * @var string
-     */
-    protected $title;
+    protected string $title;
 
-    /**
-     * @var Person
-     */
-    protected $author;
+    protected Person $author;
 
     /**
      * @var string[]
      */
-    protected $tags;
+    protected array $tags;
 
     public function __construct(string $title, Person $author, string ...$tags)
     {

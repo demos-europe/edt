@@ -14,10 +14,7 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
  */
 class ExternReadableTypeAccessor extends AbstractTypeAccessor
 {
-    /**
-     * @var bool
-     */
-    private $allowAttribute;
+    private bool $allowAttribute;
 
     /**
      * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider

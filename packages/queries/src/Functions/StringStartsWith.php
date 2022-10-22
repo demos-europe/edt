@@ -11,10 +11,7 @@ use EDT\Querying\Contracts\FunctionInterface;
  */
 class StringStartsWith extends AbstractMultiFunction
 {
-    /**
-     * @var bool
-     */
-    private $caseSensitive;
+    private bool $caseSensitive;
 
     /**
      * @param FunctionInterface<string|null> $contains

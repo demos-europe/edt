@@ -14,14 +14,9 @@ use Tests\ModelBasedTest;
 
 class SorterTest extends ModelBasedTest
 {
-    /**
-     * @var PhpSortMethodFactory
-     */
-    private $sortMethodFactory;
-    /**
-     * @var Sorter
-     */
-    private $sorter;
+    private PhpSortMethodFactory $sortMethodFactory;
+
+    private Sorter $sorter;
 
     protected function setUp(): void
     {

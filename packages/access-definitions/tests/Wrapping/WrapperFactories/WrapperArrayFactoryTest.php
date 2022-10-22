@@ -30,38 +30,24 @@ use Tests\data\Types\BookType;
 
 class WrapperArrayFactoryTest extends ModelBasedTest
 {
-    /**
-     * @var AuthorType
-     */
-    private $authorType;
-    /**
-     * @var PhpConditionFactory
-     */
-    private $conditionFactory;
+    private AuthorType $authorType;
+
+    private PhpConditionFactory $conditionFactory;
+
     /**
      * @var PrefilledObjectProvider<Person>
      */
-    private $authorProvider;
-    /**
-     * @var PrefilledTypeProvider
-     */
-    private $typeProvider;
-    /**
-     * @var ReflectionPropertyAccessor
-     */
-    private $propertyAccessor;
-    /**
-     * @var SchemaPathProcessor
-     */
-    private $schemaPathProcessor;
-    /**
-     * @var TypeAccessor
-     */
-    private $typeAccessor;
-    /**
-     * @var PropertyReader
-     */
-    private $propertyReader;
+    private PrefilledObjectProvider $authorProvider;
+
+    private PrefilledTypeProvider $typeProvider;
+
+    private ReflectionPropertyAccessor $propertyAccessor;
+
+    private SchemaPathProcessor $schemaPathProcessor;
+
+    private TypeAccessor $typeAccessor;
+
+    private PropertyReader $propertyReader;
 
     protected function setUp(): void
     {

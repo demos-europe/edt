@@ -49,37 +49,25 @@ class WrapperObject
     /**
      * @var TEntity
      */
-    private $object;
+    private object $object;
 
     /**
      * @var TypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
      */
-    private $type;
+    private TypeInterface $type;
 
     /**
      * @var TypeAccessor<FunctionInterface<bool>, SortMethodInterface>
      */
-    private $typeAccessor;
+    private TypeAccessor $typeAccessor;
 
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
+    private PropertyAccessorInterface $propertyAccessor;
 
-    /**
-     * @var PropertyReader
-     */
-    private $propertyReader;
+    private PropertyReader $propertyReader;
 
-    /**
-     * @var ConditionEvaluator
-     */
-    private $conditionEvaluator;
+    private ConditionEvaluator $conditionEvaluator;
 
-    /**
-     * @var WrapperObjectFactory
-     */
-    private $wrapperFactory;
+    private WrapperObjectFactory $wrapperFactory;
 
     /**
      * @param TEntity                                                              $object

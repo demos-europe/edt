@@ -23,14 +23,9 @@ use Tests\ModelBasedTest;
 
 class ConditionEvaluatorTest extends ModelBasedTest
 {
-    /**
-     * @var PhpConditionFactory
-     */
-    private $conditionFactory;
-    /**
-     * @var ConditionEvaluator
-     */
-    private $conditionEvaluator;
+    private PhpConditionFactory $conditionFactory;
+
+    private ConditionEvaluator $conditionEvaluator;
 
     protected function setUp(): void
     {

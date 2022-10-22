@@ -14,10 +14,7 @@ use EDT\Querying\Utilities\Iterables;
  */
 class Property implements FunctionInterface
 {
-    /**
-     * @var PropertyPathAccessInterface
-     */
-    private $propertyPath;
+    private PropertyPathAccessInterface $propertyPath;
 
     public function __construct(PropertyPathAccessInterface $propertyPath)
     {

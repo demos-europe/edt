@@ -12,25 +12,13 @@ use Tests\ModelBasedTest;
 
 class TableJoinerTest extends ModelBasedTest
 {
-    /**
-     * @var TableJoiner
-     */
-    private $tableJoiner;
+    private TableJoiner $tableJoiner;
 
-    /**
-     * @var ReflectionMethod
-     */
-    private $cartesianProduct;
+    private ReflectionMethod $cartesianProduct;
 
-    /**
-     * @var ReflectionMethod
-     */
-    private $setReferences;
+    private ReflectionMethod $setReferences;
 
-    /**
-     * @var ReflectionMethod
-     */
-    private $setDeReferencing;
+    private ReflectionMethod $setDeReferencing;
 
     protected function setUp(): void
     {

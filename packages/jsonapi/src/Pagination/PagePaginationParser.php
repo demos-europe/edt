@@ -20,12 +20,9 @@ class PagePaginationParser implements PaginationParserInterface
     /**
      * @var positive-int
      */
-    private $defaultSize;
+    private int $defaultSize;
 
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private ValidatorInterface $validator;
 
     /**
      * @param positive-int $defaultSize

@@ -14,7 +14,7 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
     /**
      * @var list<ResourceIdentifierObject>
      */
-    protected $resourceIdentifierObjects;
+    protected array $resourceIdentifierObjects;
 
     /**
      * ToManyResourceLinkage constructor. You may want to use the static factory functions instead.

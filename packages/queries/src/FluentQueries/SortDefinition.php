@@ -15,11 +15,12 @@ class SortDefinition
     /**
      * @var list<TSorting>
      */
-    private $sortMethods = [];
+    private array $sortMethods = [];
+
     /**
      * @var SortMethodFactoryInterface<TSorting>
      */
-    private $sortMethodFactory;
+    private SortMethodFactoryInterface $sortMethodFactory;
 
     /**
      * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory

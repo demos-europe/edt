@@ -12,10 +12,7 @@ use function array_slice;
 
 class ReflectionPropertyAccessorTest extends ModelBasedTest
 {
-    /**
-     * @var ReflectionPropertyAccessor
-     */
-    private $propertyAccessor;
+    private ReflectionPropertyAccessor $propertyAccessor;
 
     protected function setUp(): void
     {

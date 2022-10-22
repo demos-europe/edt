@@ -18,15 +18,9 @@ use Tests\data\Types\BirthType;
 
 class FieldsValidatorTest extends TestCase
 {
-    /**
-     * @var FieldsValidator
-     */
-    private $fieldsValidator;
+    private FieldsValidator $fieldsValidator;
 
-    /**
-     * @var PrefilledTypeProvider
-     */
-    private $typeProvider;
+    private PrefilledTypeProvider $typeProvider;
 
     protected function setUp(): void
     {

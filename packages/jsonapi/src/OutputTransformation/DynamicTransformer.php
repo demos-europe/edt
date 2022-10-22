@@ -50,27 +50,21 @@ class DynamicTransformer extends TransformerAbstract
     /**
      * @var non-empty-string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var array<non-empty-string, IncludeDefinitionInterface>
      */
-    private $includeDefinitions;
+    private array $includeDefinitions;
 
     /**
      * @var array<non-empty-string, PropertyDefinitionInterface>
      */
-    private $attributeDefinitions;
+    private array $attributeDefinitions;
 
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger;
+    private ?LoggerInterface $logger;
 
-    /**
-     * @var MessageFormatter
-     */
-    private $messageFormatter;
+    private MessageFormatter $messageFormatter;
 
     /**
      * @param non-empty-string                                                     $type

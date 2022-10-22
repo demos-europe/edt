@@ -15,7 +15,7 @@ abstract class AbstractSortMethod implements SortMethodInterface
     /**
      * @var FunctionInterface<mixed>
      */
-    protected $target;
+    protected FunctionInterface $target;
 
     /**
      * @param FunctionInterface<mixed> $target

@@ -23,15 +23,12 @@ use function count;
  */
 abstract class AbstractFunction implements FunctionInterface
 {
-    /**
-     * @var bool
-     */
-    private $toManyAllowed = true;
+    private bool $toManyAllowed = true;
 
     /**
      * @var list<FunctionInterface<TInput>>
      */
-    protected $functions = [];
+    protected array $functions = [];
 
     /**
      * @param FunctionInterface<TInput> $function

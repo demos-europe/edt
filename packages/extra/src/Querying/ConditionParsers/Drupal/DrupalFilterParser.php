@@ -99,17 +99,14 @@ class DrupalFilterParser implements FilterParserInterface
     /**
      * @var PathsBasedConditionGroupFactoryInterface<TCondition>
      */
-    protected $conditionGroupFactory;
+    protected PathsBasedConditionGroupFactoryInterface $conditionGroupFactory;
 
     /**
      * @var ConditionParserInterface<DrupalFilterCondition, TCondition>
      */
-    private $conditionParser;
+    private ConditionParserInterface $conditionParser;
 
-    /**
-     * @var DrupalFilterValidator
-     */
-    private $filterValidator;
+    private DrupalFilterValidator $filterValidator;
 
     /**
      * @param PathsBasedConditionGroupFactoryInterface<TCondition>        $conditionGroupFactory
