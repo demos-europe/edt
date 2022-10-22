@@ -54,7 +54,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     }
 
     /**
-     * @return Traversable<int,non-empty-string>
+     * @return Traversable<int, non-empty-string>
      */
     public function getIterator(): Traversable
     {
