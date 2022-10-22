@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- refactor: require `QueryBuilderPreparer` when calling `QueryGenerator::generateQueryBuilder`
+- refactor: require `QueryBuilderPreparer` for `DoctrineOrmEntityProvider` initialization
+- refactor: remove `QueryGenerator`, `QueryBuilderPreparer` or `DoctrineOrmEntityProvider` can be used instead
 - refactor: require `JoinFinder` for `QueryBuilderPreparer` initialization
 - refactor: require `ConditionEvaluator` and `Sorter` for `PropertyReader` initialization
 - refactor: require `TableJoiner` for `Sorter` initialization
