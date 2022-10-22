@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: remove deprecated `SchemaPathProcessor::mapConditions`, use `SchemaPathProcessor::mapFilterConditions()` and `SchemaPathProcessor::processAccessCondition()` instead
 - refactor: remove deprecated `TypeRestrictedEntityProvider`, use the individual components manually and optimize them for your use-case
 - refactor: remove deprecated `GenericEntityFetcher`, use the individual components manually and optimize them for your use-case
 - refactor: require `QueryBuilderPreparer` for `DoctrineOrmEntityProvider` initialization
