@@ -17,11 +17,6 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
-            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\GenericEntityFetcher\\:\\:listEntities\\(\\) should return array\\<int, TWrapper\\> but returns array\\<int, array\\<string, mixed\\>\\|object\\|null\\>\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/GenericEntityFetcher.php
-
-        -
             message: """
                 #^Call to deprecated method getObjects\\(\\) of class EDT\\\\Querying\\\\ObjectProviders\\\\PrefilledObjectProvider\\:
                 use \\{@link EntityProviderInterface\\} instead$#
