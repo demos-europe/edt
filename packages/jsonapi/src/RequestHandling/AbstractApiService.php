@@ -23,7 +23,7 @@ use function array_key_exists;
  * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  *
  * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
- * @psalm-type JsonApiRelationships = array<non-empty-string,array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
+ * @psalm-type JsonApiRelationships = array<non-empty-string, array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
  */
 abstract class AbstractApiService
 {
@@ -119,7 +119,7 @@ abstract class AbstractApiService
     /**
      * @param non-empty-string                                                                                                                                   $urlTypeIdentifier
      * @param non-empty-string                                                                                                                                   $urlId
-     * @param array{data: array{type: non-empty-string, id: non-empty-string, attributes?: array<non-empty-string,mixed>, relationships?: JsonApiRelationships}} $requestBody
+     * @param array{data: array{type: non-empty-string, id: non-empty-string, attributes?: array<non-empty-string, mixed>, relationships?: JsonApiRelationships}} $requestBody
      *
      * @throws Exception
      */

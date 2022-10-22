@@ -13,12 +13,12 @@ use Traversable;
 use function in_array;
 
 /**
- * @template-implements IteratorAggregate<int,non-empty-string>
+ * @template-implements IteratorAggregate<int, non-empty-string>
  */
 class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 {
     /**
-     * @var ArrayIterator<int,non-empty-string>
+     * @var ArrayIterator<int, non-empty-string>
      */
     private $properties;
     /**

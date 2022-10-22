@@ -543,8 +543,8 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @param string              $id         #TranslationKey
-     * @param array<string,mixed> $parameters
+     * @param string               $id         #TranslationKey
+     * @param array<string, mixed> $parameters
      */
     private function trans(string $id, array $parameters = []): string
     {

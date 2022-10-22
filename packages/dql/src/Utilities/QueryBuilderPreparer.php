@@ -38,7 +38,7 @@ class QueryBuilderPreparer
      *
      * Will be filled while {@link QueryBuilderPreparer::processClause() processing the clauses}.
      *
-     * @var array<string,Join>
+     * @var array<string, Join>
      */
     private $joinClauses = [];
 

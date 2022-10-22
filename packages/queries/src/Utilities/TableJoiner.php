@@ -14,7 +14,7 @@ use function is_array;
 use function is_int;
 
 /**
- * @psalm-type Ref = int<0,max>
+ * @psalm-type Ref = int<0, max>
  * @psalm-type Row = list<mixed>
  * @psalm-type NonEmptyRow = non-empty-list<mixed>
  * @psalm-type Column = list<mixed>
