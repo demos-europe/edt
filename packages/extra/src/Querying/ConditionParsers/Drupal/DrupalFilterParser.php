@@ -27,7 +27,7 @@ use function in_array;
  *            memberOf?: non-empty-string
  *          }
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template-implements FilterParserInterface<array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, TCondition>
+ * @template-implements FilterParserInterface<array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, TCondition>
  */
 class DrupalFilterParser implements FilterParserInterface
 {
@@ -130,7 +130,7 @@ class DrupalFilterParser implements FilterParserInterface
      * match for an entity to match the Drupal filter. An empty error being returned means that
      * all entities match, as there are no restrictions.
      *
-     * @param array<non-empty-string,array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $filter
+     * @param array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $filter
      *
      * @return list<TCondition>
      *

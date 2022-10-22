@@ -162,7 +162,7 @@ trait PropertyAutoPathTrait
     }
 
     /**
-     * @return Traversable<int,string>
+     * @return Traversable<int, string>
      */
     public function getIterator(): Traversable
     {

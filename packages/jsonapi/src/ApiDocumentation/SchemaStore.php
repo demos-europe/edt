@@ -17,7 +17,7 @@ class SchemaStore
     /**
      * Schema definitions keyed by type name.
      *
-     * @var array<string,Schema>
+     * @var array<string, Schema>
      */
     private $schemas = [];
 

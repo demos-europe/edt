@@ -7,7 +7,7 @@ namespace EDT\Querying\Contracts;
 use Traversable;
 
 /**
- * @template-extends Traversable<int,non-empty-string>
+ * @template-extends Traversable<int, non-empty-string>
  */
 interface PropertyPathInterface extends Traversable
 {
