@@ -337,7 +337,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
         $condition = $this->conditionFactory->allValuesPresentInMemberListProperties([
             'Harry Potter and the Philosopher\'s Stone',
             'Harry Potter and the Deathly Hallows'
-        ], 'books', 'title');
+        ], ['books', 'title']);
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $condition));
         $expectedAuthors = [$this->authors['rowling']];
         self::assertEquals($expectedAuthors, $filteredAuthors);

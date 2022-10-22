@@ -216,15 +216,14 @@ interface ConditionFactoryInterface
      * use this method with the parameters `['A', 'B']` (the required titles as array),
      * and `'books'` and `'title'` (the path to the titles).
      *
-     * @param non-empty-list<mixed> $values
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<mixed>            $values
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return TCondition
      *
      * @throws PathException
      */
-    public function allValuesPresentInMemberListProperties(array $values, string $property, string ...$properties);
+    public function allValuesPresentInMemberListProperties(array $values, array $properties);
 
     /**
      * @param mixed $value
