@@ -30,7 +30,7 @@ class Sorter
      * @template TKey of int|string
      * @template TEntity of object
      *
-     * @param array<TKey, TEntity>                   $entitiesToSort
+     * @param array<TKey, TEntity>                $entitiesToSort
      * @param non-empty-list<SortMethodInterface> $sortMethods
      *
      * @return array<TKey, TEntity>

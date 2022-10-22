@@ -6,7 +6,6 @@ namespace EDT\Querying\ObjectProviders;
 
 use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Contracts\FunctionInterface;
-use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
