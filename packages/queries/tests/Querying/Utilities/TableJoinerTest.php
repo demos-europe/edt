@@ -73,7 +73,7 @@ class TableJoinerTest extends ModelBasedTest
 
     public function testGetValueRowsWithMergedPaths(): void
     {
-        $bookPath = new PropertyPath(null, '', PropertyPath::DIRECT, 'books');
+        $bookPath = new PropertyPath(null, '', PropertyPath::DIRECT, ['books']);
         $valueRows = $this->tableJoiner->getValueRows($this->authors['rowling'], [$bookPath]);
         $expected = [$this->books['philosopherStone'], $this->books['deathlyHallows']];
         self::assertCount(1, $valueRows);
@@ -87,7 +87,7 @@ class TableJoinerTest extends ModelBasedTest
 
     public function testGetValueRows(): void
     {
-        $bookPath = new PropertyPath(null, '', PropertyPath::DIRECT, 'books');
+        $bookPath = new PropertyPath(null, '', PropertyPath::DIRECT, ['books']);
         $valueRows = $this->tableJoiner->getValueRows($this->authors['rowling'], [$bookPath]);
         $expected = [$this->books['philosopherStone'], $this->books['deathlyHallows']];
         self::assertCount(1, $valueRows);

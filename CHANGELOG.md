@@ -2,6 +2,7 @@
 
 ## 0.13.0 - 2022-10-31
 
+- refactor: require `array` instead of varargs for `PropertyPath` initialization
 - refactor: use PHP 7.4 property types where possible
 - chore: require at least PHP 7.4 as dependency
 
