@@ -24,7 +24,7 @@ class Person
      */
     private string $name;
 
-    private ?string $pseudonym;
+    private ?string $pseudonym = null;
 
     /**
      * @ORM\OneToOne(targetEntity="Birth")

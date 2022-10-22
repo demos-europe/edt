@@ -11,7 +11,7 @@ class TagTypeParseException extends ParseException
 {
     private string $tagName;
 
-    private ?string $variableName;
+    private ?string $variableName = null;
 
     private string $type;
 
