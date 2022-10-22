@@ -285,9 +285,10 @@ class WrapperArrayFactoryTest extends ModelBasedTest
     private function createArrayWrappers(array $entities, $type, int $depth): array
     {
         $wrapper = $this->createWrapperArrayFactory($depth);
-        return array_values(array_map(static function (object $entity) use ($wrapper, $type) {
-            return $wrapper->createWrapper($entity, $type);
-        }, $entities));
+        return array_values(array_map(
+            static fn (object $entity) => $wrapper->createWrapper($entity, $type),
+            $entities
+        ));
     }
 
     private function listEntities(FilterableTypeInterface $type, array $conditions): array

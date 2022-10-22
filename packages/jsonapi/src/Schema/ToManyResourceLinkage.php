@@ -26,9 +26,7 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
     private function __construct(array $content)
     {
         $this->resourceIdentifierObjects = array_map(
-            static function (array $resourceIdentifierObject) {
-                return new ResourceIdentifierObject($resourceIdentifierObject);
-            },
+            static fn (array $resourceIdentifierObject) => new ResourceIdentifierObject($resourceIdentifierObject),
             $content
         );
     }
@@ -74,8 +72,9 @@ class ToManyResourceLinkage implements ResourceLinkageInterface
      */
     public function getIds(): array
     {
-        return array_map(static function (ResourceIdentifierObject $resourceIdentifierObject) {
-            return $resourceIdentifierObject->getId();
-        }, $this->getResourceIdentifierObjects());
+        return array_map(
+            static fn (ResourceIdentifierObject $resourceIdentifierObject) => $resourceIdentifierObject->getId(),
+            $this->getResourceIdentifierObjects()
+        );
     }
 }

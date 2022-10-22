@@ -232,10 +232,12 @@ class DrupalFilterParser implements FilterParserInterface
      */
     protected function parseConditions(array $groupedConditions): array
     {
-        return array_map(function (array $conditionGroup): array {
-            return array_map(function (array $condition): PathsBasedInterface {
-                return $this->conditionParser->parseCondition($condition);
-            }, $conditionGroup);
-        }, $groupedConditions);
+        return array_map(
+            fn (array $conditionGroup): array => array_map(
+                [$this->conditionParser, 'parseCondition'],
+                $conditionGroup
+            ),
+            $groupedConditions
+        );
     }
 }

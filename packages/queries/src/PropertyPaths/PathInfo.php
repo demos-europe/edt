@@ -55,8 +55,9 @@ class PathInfo
      */
     public static function getPropertyPaths(PathsBasedInterface $pathsBased): array
     {
-        return array_map(static function (PathInfo $pathInfo): PropertyPathAccessInterface {
-            return $pathInfo->path;
-        }, $pathsBased->getPropertyPaths());
+        return array_map(
+            static fn (PathInfo $pathInfo): PropertyPathAccessInterface => $pathInfo->path,
+            $pathsBased->getPropertyPaths()
+        );
     }
 }

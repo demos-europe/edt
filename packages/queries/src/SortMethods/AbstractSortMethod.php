@@ -27,10 +27,11 @@ abstract class AbstractSortMethod implements SortMethodInterface
 
     public function getPropertyPaths(): array
     {
-        return array_map(static function (PathInfo $pathInfo): PathInfo {
+        return array_map(
             // forbid to-many paths because this doesn't work with sorting logically
-            return PathInfo::maybeCopy($pathInfo, false);
-        }, $this->target->getPropertyPaths());
+            static fn (PathInfo $pathInfo): PathInfo => PathInfo::maybeCopy($pathInfo, false),
+            $this->target->getPropertyPaths()
+        );
     }
 
     /**

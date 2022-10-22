@@ -149,9 +149,10 @@ class WrapperArrayFactory implements WrapperFactoryInterface
                 $value = null;
             } elseif (is_array($entityOrEntities)) {
                 // wrap the entities
-                $value = array_map(static function (object $objectToWrap) use ($wrapperFactory, $value) {
-                    return $wrapperFactory->createWrapper($objectToWrap, $value);
-                }, $entityOrEntities);
+                $value = array_map(
+                    static fn (object $objectToWrap) => $wrapperFactory->createWrapper($objectToWrap, $value),
+                    $entityOrEntities
+                );
             } else {
                 $value = $wrapperFactory->createWrapper($entityOrEntities, $value);
             }
