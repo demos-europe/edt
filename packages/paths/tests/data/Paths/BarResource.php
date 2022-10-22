@@ -29,7 +29,7 @@ class BarResource
 {
     use PropertyAutoPathTrait;
 
-    private string $paramNeededForUnitTests;
+    private string $paramNeededForUnitTests = '';
 
     public function __construct(string $paramNeededForUnitTests)
     {

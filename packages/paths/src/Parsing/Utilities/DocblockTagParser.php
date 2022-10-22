@@ -38,7 +38,7 @@ class DocblockTagParser
 {
     private ReflectionClass $reflectionClass;
 
-    private ?DocBlock $docBlock;
+    private ?DocBlock $docBlock = null;
 
     private Parser $phpParser;
 

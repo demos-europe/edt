@@ -20,7 +20,7 @@ class Birth
 
     private string $country;
 
-    private ?string $region;
+    private ?string $region = null;
 
     private string $locality;
 

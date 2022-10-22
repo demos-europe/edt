@@ -12,12 +12,12 @@ class RelationshipAccessException extends PropertyAccessException
     /**
      * @var non-empty-string|null
      */
-    protected ?string $relationshipTypeIdentifier;
+    protected ?string $relationshipTypeIdentifier = null;
 
     /**
      * @var class-string<TypeInterface>|null
      */
-    protected ?string $relationshipTypeClass;
+    protected ?string $relationshipTypeClass = null;
 
     /**
      * @param non-empty-string $property

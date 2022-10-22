@@ -16,22 +16,22 @@ abstract class CachingResourceType extends AbstractResourceType
     /**
      * @var array<non-empty-string, non-empty-list<non-empty-string>>|null
      */
-    protected ?array $aliasesCache;
+    protected ?array $aliasesCache = null;
 
     /**
      * @var array<non-empty-string, non-empty-string|null>|null
      */
-    protected ?array $filterablePropertiesCache;
+    protected ?array $filterablePropertiesCache = null;
 
     /**
      * @var array<non-empty-string, non-empty-string|null>|null
      */
-    protected ?array $readablePropertiesCache;
+    protected ?array $readablePropertiesCache = null;
 
     /**
      * @var array<non-empty-string, non-empty-string|null>|null
      */
-    protected ?array $sortablePropertiesCache;
+    protected ?array $sortablePropertiesCache = null;
 
     public function getReadableProperties(): array
     {

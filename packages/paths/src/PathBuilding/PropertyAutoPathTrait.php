@@ -31,11 +31,14 @@ use function Safe\array_combine;
  */
 trait PropertyAutoPathTrait
 {
-    private ?PropertyAutoPathTrait $parent;
+    /**
+     * @var PropertyAutoPathTrait|null
+     */
+    private ?object $parent = null;
     /**
      * @var non-empty-string|null
      */
-    private ?string $parentPropertyName;
+    private ?string $parentPropertyName = null;
     /**
      * Will be used instead of {@link PropertyAutoPathTrait::createChild()} when set to non-null.
      * @var callable(string, PropertyAutoPathTrait, string): PropertyAutoPathTrait
@@ -47,7 +50,7 @@ trait PropertyAutoPathTrait
      *
      * @var array<non-empty-string, class-string>|null
      */
-    private ?array $properties;
+    private ?array $properties = null;
 
     /**
      * @var array<non-empty-string, PropertyAutoPathTrait>
@@ -57,7 +60,7 @@ trait PropertyAutoPathTrait
     /**
      * Use {@link PropertyAutoPathTrait::getDocblockTraitEvaluator()} to initialize.
      */
-    private ?DocblockPropertyByTraitEvaluator $docblockTraitEvaluator;
+    private ?DocblockPropertyByTraitEvaluator $docblockTraitEvaluator = null;
 
     /**
      * @param mixed ...$constructorArgs
