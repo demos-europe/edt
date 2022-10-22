@@ -364,11 +364,6 @@ parameters:
             path: packages/queries/src/PropertyPaths/PropertyPath.php
 
         -
-            message: "#^Unable to resolve the template type T in call to method static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:asArray\\(\\)$#"
-            count: 1
-            path: packages/queries/src/Utilities/Iterables.php
-
-        -
             message: "#^Parameter \\#2 \\$callback of function array_walk expects callable\\(EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, int, array\\<int\\|string, string\\>\\)\\: mixed, array\\{\\$this\\(EDT\\\\Querying\\\\Utilities\\\\PathTransformer\\), 'prefixPaths'\\} given\\.$#"
             count: 1
             path: packages/queries/src/Utilities/PathTransformer.php
