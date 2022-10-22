@@ -11,15 +11,9 @@ use PHPUnit\Framework\TestCase;
 
 class PathTransformerTest extends TestCase
 {
-    /**
-     * @var PathsBasedConditionFactoryInterface
-     */
-    private $conditionFactory;
-    /**
-     * @var PathTransformer
-     */
-    private $pathTransformer;
+    private PathsBasedConditionFactoryInterface $conditionFactory;
 
+    private PathTransformer $pathTransformer;
 
     protected function setUp(): void
     {

@@ -26,12 +26,12 @@ class PropertyValuesGenerator
     /**
      * @var TypeProviderInterface<TCondition, TSorting>
      */
-    private $typeProvider;
+    private TypeProviderInterface $typeProvider;
 
     /**
      * @var EntityFetcherInterface<TCondition, TSorting>
      */
-    private $entityFetcher;
+    private EntityFetcherInterface $entityFetcher;
 
     /**
      * @param EntityFetcherInterface<TCondition, TSorting> $entityFetcher

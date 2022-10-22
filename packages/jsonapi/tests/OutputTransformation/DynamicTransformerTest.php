@@ -16,10 +16,7 @@ use stdClass;
 
 class DynamicTransformerTest extends TestCase
 {
-    /**
-     * @var Manager
-     */
-    private $fractal;
+    private Manager $fractal;
 
     public function testEmpty(): void
     {

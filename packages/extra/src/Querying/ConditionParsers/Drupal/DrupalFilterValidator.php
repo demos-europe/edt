@@ -15,17 +15,14 @@ class DrupalFilterValidator
     /**
      * @var list<Constraint>
      */
-    protected $filterSchemaConstraints;
+    protected array $filterSchemaConstraints;
 
     /**
      * @var list<Constraint>
      */
-    protected $filterNamesConstraints;
+    protected array $filterNamesConstraints;
 
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validator;
+    protected ValidatorInterface $validator;
 
     public function __construct(ValidatorInterface $validator, DrupalConditionFactoryInterface $drupalConditionFactory)
     {

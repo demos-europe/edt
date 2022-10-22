@@ -19,7 +19,7 @@ class Cardinality
     /**
      * @var non-empty-string
      */
-    private $type;
+    private string $type;
 
     /**
      * @param non-empty-string $cardinalityType

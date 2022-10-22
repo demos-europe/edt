@@ -15,52 +15,31 @@ class Property
     /**
      * @var non-empty-string
      */
-    private $name;
+    private string $name;
 
-    /**
-     * @var bool
-     */
-    private $readable;
+    private bool $readable;
 
-    /**
-     * @var bool
-     */
-    private $filterable;
+    private bool $filterable;
 
-    /**
-     * @var bool
-     */
-    private $sortable;
+    private bool $sortable;
 
     /**
      * @var non-empty-list<non-empty-string>|null
      */
-    private $aliasedPath;
+    private ?array $aliasedPath;
 
-    /**
-     * @var bool
-     */
-    private $defaultField;
+    private bool $defaultField;
 
     /**
      * @var null|callable(TEntity, ParamBag): TValue
      */
     private $customReadCallback;
 
-    /**
-     * @var bool
-     */
-    private $allowingInconsistencies;
+    private bool $allowingInconsistencies;
 
-    /**
-     * @var bool
-     */
-    private $initializable;
+    private bool $initializable;
 
-    /**
-     * @var bool
-     */
-    private $requiredForCreation;
+    private bool $requiredForCreation;
 
     /**
      * @param non-empty-string                         $name

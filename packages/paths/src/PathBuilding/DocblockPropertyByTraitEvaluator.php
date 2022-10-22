@@ -21,25 +21,22 @@ class DocblockPropertyByTraitEvaluator
     /**
      * @var non-empty-string
      */
-    private $targetTrait;
+    private string $targetTrait;
     /**
      * The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      *
      * @var non-empty-list<non-empty-string>
      */
-    private $targetTags;
+    private array $targetTags;
 
-    /**
-     * @var TraitEvaluator
-     */
-    private $traitEvaluator;
+    private TraitEvaluator $traitEvaluator;
 
     /**
      * Cache of already parsed classes
      *
      * @var array<class-string, array<non-empty-string, class-string>>
      */
-    private $parsedClasses = [];
+    private array $parsedClasses = [];
 
     /**
      * @param non-empty-string                 $targetTrait

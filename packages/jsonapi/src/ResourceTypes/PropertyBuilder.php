@@ -34,57 +34,36 @@ class PropertyBuilder
     /**
      * @var non-empty-string
      */
-    protected $name;
+    protected string $name;
 
-    /**
-     * @var bool
-     */
-    protected $readable = false;
+    protected bool $readable = false;
 
-    /**
-     * @var bool
-     */
-    protected $filterable = false;
+    protected bool $filterable = false;
 
-    /**
-     * @var bool
-     */
-    protected $sortable = false;
+    protected bool $sortable = false;
 
     /**
      * @var non-empty-list<non-empty-string>|null
      */
-    protected $aliasedPath;
+    protected ?array $aliasedPath;
 
-    /**
-     * @var bool
-     */
-    protected $defaultField = false;
+    protected bool $defaultField = false;
 
     /**
      * @var null|callable(TEntity, ParamBag): TValue
      */
     protected $customReadCallback;
 
-    /**
-     * @var bool
-     */
-    protected $allowingInconsistencies = false;
+    protected bool $allowingInconsistencies = false;
 
-    /**
-     * @var bool
-     */
-    protected $initializable = false;
+    protected bool $initializable = false;
 
-    /**
-     * @var bool
-     */
-    protected $requiredForCreation = true;
+    protected bool $requiredForCreation = true;
 
     /**
      * @var class-string<TEntity>
      */
-    protected $entityClass;
+    protected string $entityClass;
 
     /**
      * @param class-string<TEntity> $entityClass

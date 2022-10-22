@@ -31,17 +31,11 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginati
     /**
      * @var array<TKey, TEntity>
      */
-    private $prefilledArray;
+    private array $prefilledArray;
 
-    /**
-     * @var ConditionEvaluator
-     */
-    private $conditionEvaluator;
+    private ConditionEvaluator $conditionEvaluator;
 
-    /**
-     * @var Sorter
-     */
-    private $sorter;
+    private Sorter $sorter;
 
     /**
      * @param array<TKey, TEntity> $prefilledArray

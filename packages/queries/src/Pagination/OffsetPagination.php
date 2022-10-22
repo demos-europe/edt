@@ -9,12 +9,12 @@ class OffsetPagination
     /**
      * @var int<0, max>
      */
-    private $offset;
+    private int $offset;
 
     /**
      * @var positive-int
      */
-    private $limit;
+    private int $limit;
 
     /**
      * @param int<0, max>  $offset

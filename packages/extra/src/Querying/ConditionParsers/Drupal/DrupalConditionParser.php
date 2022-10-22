@@ -25,12 +25,12 @@ class DrupalConditionParser implements ConditionParserInterface
     /**
      * @var non-empty-string
      */
-    protected $defaultOperator;
+    protected string $defaultOperator;
 
     /**
      * @var DrupalConditionFactoryInterface<TCondition>
      */
-    private $drupalConditionFactory;
+    private DrupalConditionFactoryInterface $drupalConditionFactory;
 
     /**
      * @param DrupalConditionFactoryInterface<TCondition> $drupalConditionFactory

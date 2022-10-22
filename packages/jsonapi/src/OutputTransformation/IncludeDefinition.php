@@ -24,12 +24,12 @@ class IncludeDefinition implements IncludeDefinitionInterface
     /**
      * @var PropertyDefinitionInterface<TEntity, WrapperObject<TValue>|list<WrapperObject<TValue>>|null>
      */
-    private $propertyDefinition;
+    private PropertyDefinitionInterface $propertyDefinition;
 
     /**
      * @var ResourceTypeInterface<PathsBasedInterface, PathsBasedInterface, TValue>
      */
-    private $targetType;
+    private ResourceTypeInterface $targetType;
 
     /**
      * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface

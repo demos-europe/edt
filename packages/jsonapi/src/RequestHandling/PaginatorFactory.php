@@ -16,12 +16,9 @@ class PaginatorFactory
     /**
      * @var RequestStack
      */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
     public function __construct(RequestStack $requestStack, RouterInterface $router)
     {

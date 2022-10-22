@@ -33,35 +33,23 @@ use Tests\data\DqlModel\Person;
 
 class DoctrineOrmEntityProviderTest extends TestCase
 {
-    /**
-     * @var EntityManager
-     */
-    protected $entityManager;
+    protected EntityManager $entityManager;
 
-    /**
-     * @var DqlConditionFactory
-     */
-    protected $conditionFactory;
+    protected DqlConditionFactory $conditionFactory;
 
-    /**
-     * @var SortMethodFactory
-     */
-    protected $sortingFactory;
+    protected SortMethodFactory $sortingFactory;
 
-    /**
-     * @var QueryBuilderPreparer
-     */
-    private $personBuilderPreparer;
+    private QueryBuilderPreparer $personBuilderPreparer;
 
     /**
      * @var DoctrineOrmEntityProvider<Person>
      */
-    private $personEntityProvider;
+    private DoctrineOrmEntityProvider $personEntityProvider;
 
     /**
      * @var DoctrineOrmEntityProvider<Book>
      */
-    private $bookEntityProvider;
+    private DoctrineOrmEntityProvider $bookEntityProvider;
 
     protected function setUp(): void
     {

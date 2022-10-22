@@ -28,40 +28,19 @@ use UnexpectedValueException;
 
 final class OpenAPISchemaGenerator
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
-    /**
-     * @var AttributeTypeResolver
-     */
-    private $typeResolver;
+    private AttributeTypeResolver $typeResolver;
 
-    /**
-     * @var PrefilledTypeProvider
-     */
-    private $resourceTypeProvider;
+    private PrefilledTypeProvider $resourceTypeProvider;
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private TranslatorInterface $translator;
 
-    /**
-     * @var SchemaStore
-     */
-    private $schemaStore;
+    private SchemaStore $schemaStore;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var int
-     */
-    private $defaultPageSize;
+    private int $defaultPageSize;
 
     public function __construct(
         AttributeTypeResolver $typeResolver,

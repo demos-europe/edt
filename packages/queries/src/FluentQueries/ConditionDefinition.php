@@ -17,22 +17,19 @@ class ConditionDefinition
     /**
      * @var list<TCondition>
      */
-    protected $conditions = [];
+    protected array $conditions = [];
 
     /**
      * @var list<ConditionDefinition<TCondition>>
      */
-    protected $subDefinitions = [];
+    protected array $subDefinitions = [];
 
     /**
      * @var PathsBasedConditionFactoryInterface<TCondition>&PathsBasedConditionGroupFactoryInterface<TCondition>
      */
-    protected $conditionFactory;
+    protected object $conditionFactory;
 
-    /**
-     * @var bool
-     */
-    protected $andConjunction;
+    protected bool $andConjunction;
 
     /**
      * @param PathsBasedConditionFactoryInterface<TCondition>&PathsBasedConditionGroupFactoryInterface<TCondition> $conditionFactory

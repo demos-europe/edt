@@ -36,24 +36,16 @@ use function Safe\fclose;
  */
 class DocblockTagParser
 {
-    /**
-     * @var ReflectionClass
-     */
-    private $reflectionClass;
-    /**
-     * @var DocBlock|null
-     */
-    private $docBlock;
+    private ReflectionClass $reflectionClass;
 
-    /**
-     * @var Parser
-     */
-    private $phpParser;
+    private ?DocBlock $docBlock;
+
+    private Parser $phpParser;
 
     /**
      * @var array<non-empty-string, non-empty-string>
      */
-    private $useStatements;
+    private array $useStatements;
 
     /**
      * @param class-string $class

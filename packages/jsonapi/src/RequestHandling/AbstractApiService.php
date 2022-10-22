@@ -30,27 +30,24 @@ abstract class AbstractApiService
     /**
      * @var PropertyValuesGenerator<TCondition, TSorting>
      */
-    protected $propertyValuesGenerator;
+    protected PropertyValuesGenerator $propertyValuesGenerator;
 
     /**
      * @var TypeProviderInterface<TCondition, TSorting>
      */
-    protected $typeProvider;
+    protected TypeProviderInterface $typeProvider;
 
     /**
      * @var FilterParserInterface<mixed, TCondition>
      */
-    private $filterParser;
+    private FilterParserInterface $filterParser;
 
     /**
      * @var JsonApiSortingParser<TSorting>
      */
-    private $sortingParser;
+    private JsonApiSortingParser $sortingParser;
 
-    /**
-     * @var PaginatorFactory
-     */
-    private $paginatorFactory;
+    private PaginatorFactory $paginatorFactory;
 
     /**
      * @param FilterParserInterface<mixed, TCondition> $filterParser

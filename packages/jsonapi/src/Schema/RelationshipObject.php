@@ -14,10 +14,7 @@ use function is_array;
  */
 class RelationshipObject
 {
-    /**
-     * @var ResourceLinkageInterface
-     */
-    private $data;
+    private ResourceLinkageInterface $data;
 
     private function __construct(ResourceLinkageInterface $data)
     {

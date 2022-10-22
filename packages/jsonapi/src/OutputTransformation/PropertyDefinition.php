@@ -24,22 +24,16 @@ class PropertyDefinition implements PropertyDefinitionInterface
     /**
      * @var non-empty-string
      */
-    private $propertyName;
+    private string $propertyName;
 
-    /**
-     * @var bool
-     */
-    private $toBeUsedAsDefaultField;
+    private bool $toBeUsedAsDefaultField;
 
-    /**
-     * @var WrapperObjectFactory
-     */
-    private $wrapperFactory;
+    private WrapperObjectFactory $wrapperFactory;
 
     /**
      * @var ResourceTypeInterface<TCondition, TSorting, TEntity>
      */
-    private $type;
+    private ResourceTypeInterface $type;
 
     /**
      * @var null|callable(TEntity, ParamBag): TValue

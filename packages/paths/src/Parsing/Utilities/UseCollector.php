@@ -12,7 +12,7 @@ class UseCollector extends NodeVisitorAbstract
     /**
      * @var array<non-empty-string, non-empty-string>
      */
-    private $useStatements = [];
+    private array $useStatements = [];
 
     public function leaveNode(Node $node) {
         if ($node instanceof Node\Stmt\Use_) {

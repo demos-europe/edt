@@ -19,7 +19,7 @@ class SchemaStore
      *
      * @var array<string, Schema>
      */
-    private $schemas = [];
+    private array $schemas = [];
 
     public function has(string $schemaName): bool
     {

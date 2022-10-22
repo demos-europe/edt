@@ -34,12 +34,9 @@ class TransformerObjectWrapper
     /**
      * @var ReadableTypeInterface<TCondition, TSorting, TRelationship>
      */
-    private $relationshipType;
+    private ReadableTypeInterface $relationshipType;
 
-    /**
-     * @var WrapperObjectFactory
-     */
-    private $wrapperFactory;
+    private WrapperObjectFactory $wrapperFactory;
 
     /**
      * @param callable(TEntity, ParamBag): (TRelationship|iterable<TRelationship>|null) $callable

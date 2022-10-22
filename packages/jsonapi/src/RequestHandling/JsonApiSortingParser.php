@@ -21,7 +21,7 @@ class JsonApiSortingParser
     /**
      * @var SortMethodFactoryInterface<TSorting>
      */
-    private $sortMethodFactory;
+    private SortMethodFactoryInterface $sortMethodFactory;
 
     /**
      * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory

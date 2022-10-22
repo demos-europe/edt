@@ -9,12 +9,12 @@ class PagePagination
     /**
      * @var positive-int
      */
-    private $size;
+    private int $size;
 
     /**
      * @var positive-int
      */
-    private $number;
+    private int $number;
 
     /**
      * @param positive-int $size

@@ -13,10 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class JsonApiSortingParserTest extends TestCase
 {
-    /**
-     * @var JsonApiSortingParser
-     */
-    private $jsonApiSortingParser;
+    private JsonApiSortingParser $jsonApiSortingParser;
 
     protected function setUp(): void
     {

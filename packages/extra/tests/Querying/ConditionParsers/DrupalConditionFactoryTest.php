@@ -17,14 +17,9 @@ use TypeError;
 
 class DrupalConditionFactoryTest extends TestCase
 {
-    /**
-     * @var PathsBasedConditionFactoryInterface
-     */
-    private $conditionFactory;
-    /**
-     * @var DrupalFilterParser
-     */
-    private $filterFactory;
+    private PathsBasedConditionFactoryInterface $conditionFactory;
+
+    private DrupalFilterParser $filterFactory;
 
     protected function setUp(): void
     {
