@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: require `array` instead of varargs for `PropertyPath` initialization
 - refactor: use PHP 7.4 property types where possible
 - chore: require at least PHP 7.4 as dependency
 - refactor: remove deprecated `SchemaPathProcessor::mapSortMethods`, use `SchemaPathProcessor::processDefaultSortMethods()` and `SchemaPathProcessor::mapSorting()` instead
