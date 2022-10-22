@@ -17,14 +17,6 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
-            message: """
-                #^Call to deprecated method getObjects\\(\\) of class EDT\\\\Querying\\\\ObjectProviders\\\\PrefilledObjectProvider\\:
-                use \\{@link EntityProviderInterface\\} instead$#
-            """
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/PropertyReader.php
-
-        -
             message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\TypeAccessor\\:\\:getAccessibleReadableProperties\\(\\) should return array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\> but returns array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\>\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessor.php
