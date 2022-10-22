@@ -13,10 +13,7 @@ use League\Fractal\ParamBag;
  */
 class Relationship extends Property
 {
-    /**
-     * @var bool
-     */
-    protected $defaultInclude;
+    protected bool $defaultInclude;
 
     /**
      * @param non-empty-string                         $name

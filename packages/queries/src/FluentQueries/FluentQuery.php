@@ -28,19 +28,19 @@ class FluentQuery
     /**
      * @var ObjectProviderInterface<TCondition, TSorting, TEntity>
      */
-    protected $objectProvider;
+    protected ObjectProviderInterface $objectProvider;
+
     /**
      * @var ConditionDefinition<TCondition>
      */
-    private $conditionDefinition;
-    /**
-     * @var SliceDefinition
-     */
-    private $sliceDefinition;
+    private ConditionDefinition $conditionDefinition;
+
+    private SliceDefinition $sliceDefinition;
+
     /**
      * @var SortDefinition<TSorting>
      */
-    private $sortDefinition;
+    private SortDefinition $sortDefinition;
 
     /**
      * @param ObjectProviderInterface<TCondition, TSorting, TEntity> $objectProvider

@@ -16,12 +16,12 @@ class PropertyCollection
     /**
      * @var array<non-empty-string, Property<TEntity, mixed>>
      */
-    private $properties;
+    private array $properties;
 
     /**
      * @var array<non-empty-string, Property<TEntity, mixed>>
      */
-    private $defaultProperties;
+    private array $defaultProperties;
 
     /**
      * @param list<Property<TEntity, mixed>> $properties

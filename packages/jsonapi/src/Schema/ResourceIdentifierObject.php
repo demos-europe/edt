@@ -16,12 +16,12 @@ class ResourceIdentifierObject
     /**
      * @var non-empty-string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var non-empty-string
      */
-    private $type;
+    private string $type;
 
     /**
      * @param array{type: non-empty-string, id: non-empty-string} $content

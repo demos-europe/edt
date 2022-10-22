@@ -17,7 +17,7 @@ class PrefilledObjectProviderTest extends ModelBasedTest
     /**
      * @var PrefilledObjectProvider<Person, int>
      */
-    private $authorProvider;
+    private PrefilledObjectProvider $authorProvider;
 
     public function testUnconditionedAll()
     {

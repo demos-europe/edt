@@ -24,25 +24,19 @@ use function is_array;
  */
 class WrapperArrayFactory implements WrapperFactoryInterface
 {
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
+    private PropertyAccessorInterface $propertyAccessor;
 
     /**
      * @var int<0, max>
      */
-    private $depth;
+    private int $depth;
 
     /**
      * @var TypeAccessor<FunctionInterface<bool>, SortMethodInterface>
      */
-    private $typeAccessor;
+    private TypeAccessor $typeAccessor;
 
-    /**
-     * @var PropertyReader
-     */
-    private $propertyReader;
+    private PropertyReader $propertyReader;
 
     /**
      * @param TypeAccessor<FunctionInterface<bool>, SortMethodInterface> $typeAccessor

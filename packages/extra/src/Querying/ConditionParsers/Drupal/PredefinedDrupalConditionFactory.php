@@ -17,12 +17,12 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     /**
      * @var PathsBasedConditionFactoryInterface<TCondition>
      */
-    private $conditionFactory;
+    private PathsBasedConditionFactoryInterface $conditionFactory;
 
     /**
      * @var array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed):TCondition>
      */
-    private $operatorFunctions;
+    private array $operatorFunctions;
 
     /**
      * @param PathsBasedConditionFactoryInterface<TCondition> $conditionFactory

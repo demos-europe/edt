@@ -9,11 +9,11 @@ class SliceDefinition
     /**
      * @var int<0, max>
      */
-    private $offset = 0;
+    private int $offset = 0;
     /**
      * @var int<0, max>|null
      */
-    private $limit;
+    private ?int $limit;
 
     /**
      * @return int<0, max>

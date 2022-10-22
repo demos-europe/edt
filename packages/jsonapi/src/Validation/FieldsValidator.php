@@ -14,25 +14,19 @@ use function is_array;
 
 class FieldsValidator
 {
-    /**
-     * @var TypeAccessor
-     */
-    private $typeAccessor;
+    private TypeAccessor $typeAccessor;
 
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private ValidatorInterface $validator;
 
     /**
      * @var non-empty-list<Constraint>
      */
-    private $typeConstraints;
+    private array $typeConstraints;
 
     /**
      * @var non-empty-list<Constraint>
      */
-    private $propertiesConstraints;
+    private array $propertiesConstraints;
 
     public function __construct(TypeAccessor $typeAccessor, ValidatorInterface $validator)
     {

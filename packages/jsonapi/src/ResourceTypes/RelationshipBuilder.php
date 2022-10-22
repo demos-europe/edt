@@ -16,10 +16,7 @@ use EDT\Querying\Contracts\PropertyPathInterface;
  */
 class RelationshipBuilder extends PropertyBuilder
 {
-    /**
-     * @var bool
-     */
-    private $defaultInclude;
+    private bool $defaultInclude;
 
     /**
      * @param PropertyPathInterface&EntityBasedInterface<TRelationship> $path

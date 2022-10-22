@@ -14,10 +14,7 @@ use function is_bool;
  */
 class ConditionEvaluator
 {
-    /**
-     * @var TableJoiner
-     */
-    private $tableJoiner;
+    private TableJoiner $tableJoiner;
 
     public function __construct(TableJoiner $tableJoiner)
     {

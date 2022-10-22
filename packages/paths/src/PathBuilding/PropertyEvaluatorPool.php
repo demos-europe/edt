@@ -11,17 +11,11 @@ class PropertyEvaluatorPool
     /**
      * @var array<string, DocblockPropertyByTraitEvaluator>
      */
-    protected $evaluators = [];
+    protected array $evaluators = [];
 
-    /**
-     * @var TraitEvaluator
-     */
-    protected $traitEvaluator;
+    protected TraitEvaluator $traitEvaluator;
 
-    /**
-     * @var self|null
-     */
-    protected static $instance;
+    protected static ?PropertyEvaluatorPool $instance;
 
     protected function __construct()
     {

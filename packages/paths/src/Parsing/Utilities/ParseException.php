@@ -10,9 +10,9 @@ use phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
 class ParseException extends Exception
 {
     /**
-     * @var string
+     * @var class-string
      */
-    protected $className;
+    protected string $className;
 
     /**
      * @param class-string $class
@@ -25,6 +25,9 @@ class ParseException extends Exception
         return $self;
     }
 
+    /**
+     * @return class-string
+     */
     public function getClassName(): string
     {
         return $this->className;

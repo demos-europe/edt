@@ -8,11 +8,11 @@ use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 
 class TagNameParseException extends ParseException
 {
-    /**
-     * @var string
-     */
-    private $property;
+    private string $property;
 
+    /**
+     * @param class-string $className
+     */
     public static function createForEmptyVariableName(TagWithType $property, string $className): self
     {
         $renderedProperty = $property->render();

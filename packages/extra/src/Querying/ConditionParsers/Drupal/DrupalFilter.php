@@ -27,15 +27,15 @@ class DrupalFilter
     /**
      * @var array<non-empty-string, list<DrupalFilterCondition>>
      */
-    private $groupedConditions = [];
+    private array $groupedConditions = [];
     /**
      * @var array<non-empty-string, non-empty-string>
      */
-    private $groupNameToConjunction = [];
+    private array $groupNameToConjunction = [];
     /**
      * @var array<non-empty-string, non-empty-string>
      */
-    private $groupNameToMemberOf = [];
+    private array $groupNameToMemberOf = [];
 
     /**
      * This constructor receives the group definitions and conditions as a "flat" array, meaning all

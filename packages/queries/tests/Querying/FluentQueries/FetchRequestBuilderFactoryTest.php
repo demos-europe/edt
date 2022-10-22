@@ -23,18 +23,11 @@ use Tests\ModelBasedTest;
 
 class FetchRequestBuilderFactoryTest extends ModelBasedTest
 {
-    /**
-     * @var PhpConditionFactory
-     */
-    private $conditionFactory;
-    /**
-     * @var PrefilledObjectProvider
-     */
-    private $authorProvider;
-    /**
-     * @var PhpSortMethodFactory
-     */
-    private $sortMethodFactory;
+    private PhpConditionFactory $conditionFactory;
+
+    private PrefilledObjectProvider $authorProvider;
+
+    private PhpSortMethodFactory $sortMethodFactory;
 
     protected function setUp(): void
     {
