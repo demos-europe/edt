@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Querying\ObjectProviders;
 
-use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\Utilities\ConditionEvaluator;
