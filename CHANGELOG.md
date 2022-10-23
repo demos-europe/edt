@@ -2,6 +2,7 @@
 
 ## 0.13.1 - 2022-10-31
 
+- refactor: disable alias processing for internal properties (no more alias usage allowed in `getDefaultSortMethods` and `getAccessCondition`)
 - refactor: rename `AbstractTypeAccessor` to `AbstractProcessorConfig`
 - refactor: rename `AbstractTypeAccessor::getType` to `getRelationshipType`
 - refactor: require `array` instead of varargs for `PropertyPath` initialization
