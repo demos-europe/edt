@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- refactor: rename `AbstractTypeAccessor` to `AbstractProcessorConfig`
+- refactor: rename `AbstractTypeAccessor::getType` to `getRelationshipType`
 - refactor: require `array` instead of varargs for `PropertyPath` initialization
 - refactor: use PHP 7.4 property types where possible
 - chore: require at least PHP 7.4 as dependency
