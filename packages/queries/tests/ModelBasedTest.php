@@ -12,11 +12,12 @@ use Tests\data\Model\Person;
 abstract class ModelBasedTest extends TestCase
 {
     /**
-     * @var Person[]
+     * @var array<non-empty-string, Person>
      */
     protected array $authors;
+
     /**
-     * @var Book[]
+     * @var array<non-empty-string, Book>
      */
     protected array $books;
 
