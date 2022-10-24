@@ -60,7 +60,6 @@ abstract class CachingResourceType extends AbstractResourceType
         return $this->sortablePropertiesCache;
     }
 
-
     public function getAliases(): array
     {
         if (null === $this->aliasesCache) {

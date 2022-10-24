@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
+use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
@@ -27,7 +28,8 @@ interface ResourceTypeInterface extends
     SortableTypeInterface,
     IdentifiableTypeInterface,
     ExposableRelationshipTypeInterface,
-    ExposablePrimaryResourceTypeInterface
+    ExposablePrimaryResourceTypeInterface,
+    AliasableTypeInterface
 {
     /**
      * @return non-empty-string

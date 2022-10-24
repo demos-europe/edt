@@ -7,6 +7,7 @@ namespace EDT\PathBuilding;
 use ArrayIterator;
 use EDT\Parsing\Utilities\ParseException;
 use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Exception;
 use InvalidArgumentException;
@@ -203,7 +204,7 @@ trait PropertyAutoPathTrait
      * @return array<non-empty-string, non-empty-list<non-empty-string>>
      * @throws PathBuildException
      *
-     * @see TypeInterface::getAliases()
+     * @see AliasableTypeInterface::getAliases()
      */
     protected function toAliases(array ...$paths): array
     {

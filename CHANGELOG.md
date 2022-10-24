@@ -2,6 +2,7 @@
 
 ## 0.13.1 - 2022-10-31
 
+- fix: (re-)allow alias usage inside `TypeInterface::getAccessCondition` and `TypeInterface::getDefaultSortMethods`
 - refactor: adjust `CreatableTypeInterface` template parameters
 - refactor: remove `TypeRetrievalAccessException` static constructors: `unknownTypeIdentifier`, `noNameWithImplementation`, `typeExistsButNotAvailable` and `typeExistsButNotReferencable`
 - refactor: require `ResourceTypeInterface` to implement `ExposableRelationshipTypeInterface` and `ExposablePrimaryResourceTypeInterface`, each should not only correspond to `isReferencable`/`isDirectlyAccessible` respectively but include the logic in `isAvailable` too
