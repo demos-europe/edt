@@ -121,8 +121,8 @@ class PropertyValuesGenerator
 
         $type = $this->typeProvider->requestType($typeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
-            ->available(true)
-            ->getTypeInstance();
+            ->exposedAsRelationship()
+            ->getInstanceOrThrow();
         $id = $resourceIdentifierObject->getId();
 
         return $this->entityFetcher->getEntityByTypeIdentifier($type, $id);

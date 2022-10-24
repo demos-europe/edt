@@ -2,6 +2,14 @@
 
 ## 0.13.1 - 2022-10-31
 
+- refactor: remove `TypeRetrievalAccessException` static constructors: `unknownTypeIdentifier`, `noNameWithImplementation`, `typeExistsButNotAvailable` and `typeExistsButNotReferencable`
+- refactor: require `ResourceTypeInterface` to implement `ExposableRelationshipTypeInterface` and `ExposablePrimaryResourceTypeInterface`, each should not only correspond to `isReferencable`/`isDirectlyAccessible` respectively but include the logic in `isAvailable` too
+- fix: use stricter path processing; every relationship in paths used by external callers must now return `true` in `ExposableRelationshipTypeInterface::isExposedAsRelationship`; this for example affects type wrappers (`WrapperObjectFactory`/`WrapperArrayFactory`) and JSON:API filtering, reading and sorting
+- refactor: remove `TypeInterface::isAvailable`, use `ExposableRelationshipTypeInterface::isExposedAsRelationship` or `ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource` instead, `AbstractApiService` was adjusted to require `isExposedAsPrimaryResource` to return `true` for the primary accessed resource types
+- refactor: remove `TypeInterface::isAvailable` requirement from type wrapper factories (`WrapperObjectFactory`/`WrapperArrayFactory`), calls must decide by themselves on the restriction of the root type (e.g. `ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource`), relationships will automatically checked for `true` return in `ExposableRelationshipTypeInterface::isExposedAsRelationship`
+- refactor: remove `TypeInterface::isDirectlyAccessible`, `ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource` can be used instead
+- refactor: remove `TypeInterface::isReferencable`, `ExposableRelationshipTypeInterface::isExposedAsRelationship` can be used instead
+- refactor: on external accesses to filterable, readable and sortable properties, require the corresponding type to be an exposed relationship
 - refactor: disable alias processing for internal properties (no more alias usage allowed in `getDefaultSortMethods` and `getAccessCondition`)
 - refactor: rename `AbstractTypeAccessor` to `AbstractProcessorConfig`
 - refactor: rename `AbstractTypeAccessor::getType` to `getRelationshipType`

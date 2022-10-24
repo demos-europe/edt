@@ -6,6 +6,7 @@ namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
@@ -19,7 +20,7 @@ use Tests\data\Model\Person;
  * @template-implements FilterableTypeInterface<Person>
  * @template-implements SortableTypeInterface<Person>
  */
-class AuthorType implements ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface, UpdatableTypeInterface
+class AuthorType implements ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface, UpdatableTypeInterface, ExposableRelationshipTypeInterface
 {
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
@@ -65,11 +66,6 @@ class AuthorType implements ReadableTypeInterface, FilterableTypeInterface, Sort
         return Person::class;
     }
 
-    public function isAvailable(): bool
-    {
-        return true;
-    }
-
     public function getIdentifierPropertyPath(): array
     {
         return ['name'];
@@ -83,12 +79,7 @@ class AuthorType implements ReadableTypeInterface, FilterableTypeInterface, Sort
         ];
     }
 
-    public function isReferencable(): bool
-    {
-        return true;
-    }
-
-    public function isDirectlyAccessible(): bool
+    public function isExposedAsRelationship(): bool
     {
         return true;
     }

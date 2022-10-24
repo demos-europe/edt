@@ -7,7 +7,7 @@ namespace EDT\JsonApi\ResourceTypes;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
+use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use InvalidArgumentException;
 use League\Fractal\ParamBag;
 
@@ -23,8 +23,11 @@ use League\Fractal\ParamBag;
  * This will result in all accesses mentioned above expecting that the path segments having
  * corresponding properties in the backend entities.
  *
- * Note that the resource type itself must be {@link ResourceTypeInterface::isAvailable() available}
- * for any access to the generic JSON:API implementation to work.
+ * Note that the resource type itself must return `true` in
+ * {@link ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource()} to be accessed
+ * directly via the JSON:API or in
+ * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} to be usable as
+ * relationship via the JSON:API.
  *
  * @template TEntity of object
  * @template TValue
@@ -135,7 +138,8 @@ class PropertyBuilder
      * E.g. if you enable a `price` property in a `Book` resource for filtering then you
      * can not only filter books by their price but also authors by the price of the
      * books they have written (assuming the necessary relationship from authors to
-     * books is defined and the resources are set as {@link TypeInterface::isAvailable() available}).
+     * books is defined and the resources'
+     * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} returns `true`).
      */
     public function filterable(): self
     {
@@ -170,9 +174,10 @@ class PropertyBuilder
     /**
      * Mark this property as readable, i.e. allow its value to be read.
      *
-     * Please note that either {@link ResourceTypeInterface::isDirectlyAccessible()} or
-     * {@link ResourceTypeInterface::isReferencable()} must return `true` for the readability
-     * to be usable via the generic JSON:API implementation.
+     * Please note that either
+     * {@link ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource()} or
+     * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} in this type must
+     * return `true` for the readability to be usable via the generic JSON:API implementation.
      *
      * When used on an attribute the actual attribute value can be accessed. When used on a
      * relationship the relationship reference can be accessed, but to access the properties

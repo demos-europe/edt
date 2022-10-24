@@ -7,6 +7,7 @@ namespace EDT\JsonApi\ResourceTypes;
 use EDT\JsonApi\OutputTransformation\DynamicTransformerFactory;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Contracts\EntityBasedInterface;
+use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
@@ -110,9 +111,8 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * Relationships: Relationships returned by this method will only have any effect, if they are
-     * {@link TypeInterface::isDirectlyAccessible() accessible} and
-     * {@link TypeInterface::isReferencable() referencable}.
+     * Relationships: Relationships returned by this method will only have any effect, if they
+     * return `true` in {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}.
      *
      * Array order: Even though the order of the properties returned within the array may have an
      * effect (e.g. determining the order of properties in JSON:API responses) you can not rely on
