@@ -114,7 +114,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
      *                   Passing a value greater 1 will flat the target from the top to the
      *                   bottom, meaning a target with three levels and a depth of 2 will keep the
      *                   third level as it is but flattens the first two levels.
-     * @param (callable(mixed):bool)|null $isIterable Function to determine if the
+     * @param null|callable(mixed):bool $isIterable Function to determine if the
      *                   current target should be considered iterable and thus flatted.
      *                   Defaults to {@link is_iterable()} if `null` is given.
      *
