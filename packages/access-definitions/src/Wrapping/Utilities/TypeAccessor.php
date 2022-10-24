@@ -69,9 +69,6 @@ class TypeAccessor
     /**
      * Collects the properties of the given type that are updatable.
      *
-     * If the given type itself is not an instance of {@link UpdatableTypeInterface} an empty array
-     * will be returned.
-     *
      * @template TEntity of object
      *
      * @param UpdatableTypeInterface&TypeInterface<TCondition, TSorting, TEntity> $type
