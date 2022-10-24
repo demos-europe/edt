@@ -77,8 +77,11 @@ abstract class AbstractApiService
     {
         $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
-            ->available(true)
-            ->getTypeInstance();
+            ->getInstanceOrThrow();
+
+        if (!$type->isExposedAsPrimaryResource()) {
+            throw AccessException::typeNotDirectlyAccessible($type);
+        }
 
         $entity = $this->getObject($type, $urlId);
 
@@ -94,8 +97,8 @@ abstract class AbstractApiService
     {
         $type = $this->typeProvider->requestType($typeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
-            ->available(true)
-            ->getTypeInstance();
+            ->getInstanceOrThrow();
+        $this->assertExposureAsPrimaryResource($type);
 
         $filters = $this->getFilters($urlParams);
         $sortMethods = $this->getSorting($urlParams);
@@ -140,8 +143,8 @@ abstract class AbstractApiService
         $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->instanceOf(UpdatableTypeInterface::class)
-            ->available(true)
-            ->getTypeInstance();
+            ->getInstanceOrThrow();
+        $this->assertExposureAsPrimaryResource($type);
 
         $updatedEntity = $this->updateObject($type, $urlId, $properties);
         if (null === $updatedEntity) {
@@ -161,8 +164,8 @@ abstract class AbstractApiService
     {
         $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
-            ->available(true)
-            ->getTypeInstance();
+            ->getInstanceOrThrow();
+        $this->assertExposureAsPrimaryResource($type);
 
         $this->deleteObject($type, $urlId);
     }
@@ -194,8 +197,8 @@ abstract class AbstractApiService
         $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
             ->instanceOf(CreatableTypeInterface::class)
-            ->available(true)
-            ->getTypeInstance();
+            ->getInstanceOrThrow();
+        $this->assertExposureAsPrimaryResource($type);
 
         $createdEntity = $this->createObject($type, $properties);
         if (null === $createdEntity) {
@@ -303,5 +306,12 @@ abstract class AbstractApiService
         $query->remove(UrlParameter::SORT);
 
         return $this->sortingParser->createFromQueryParamValue($sort);
+    }
+
+    private function assertExposureAsPrimaryResource(ResourceTypeInterface $type): void
+    {
+        if (!$type->isExposedAsPrimaryResource()) {
+            throw AccessException::typeNotDirectlyAccessible($type);
+        }
     }
 }

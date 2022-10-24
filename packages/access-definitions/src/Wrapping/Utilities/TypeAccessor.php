@@ -6,10 +6,11 @@ namespace EDT\Wrapping\Utilities;
 
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
+use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
-use EDT\Wrapping\TypeProviders\OptionalTypeRequirementInterface;
+use EDT\Wrapping\TypeProviders\TypeRequirement;
 
 /**
  * Provides utility methods to access processed information of a given {@link TypeInterface}.
@@ -39,7 +40,7 @@ class TypeAccessor
     /**
      * @param TypeInterface<TCondition, TSorting, object> $type
      *
-     * @return array<non-empty-string, ReadableTypeInterface<TCondition, TSorting, object>|null>
+     * @return array<non-empty-string, (ExposableRelationshipTypeInterface&ReadableTypeInterface<TCondition, TSorting, object>)|null>
      *
      * @throws TypeRetrievalAccessException
      */
@@ -48,11 +49,25 @@ class TypeAccessor
         if (!$type instanceof ReadableTypeInterface) {
             return [];
         }
-        $readableProperties = $type->getReadableProperties();
-        $readableProperties = array_map([$this, 'getTypeInstanceOrNull'], $readableProperties);
-        $readableProperties = array_filter($readableProperties, [$this, 'isReadableProperty']);
 
-        return $readableProperties;
+        $allowedProperties = [];
+        foreach ($type->getReadableProperties() as $propertyName => $typeIdentifier) {
+            if (null === $typeIdentifier) {
+                // access to attributes is not restricted by further considerations
+                $allowedProperties[$propertyName] = null;
+            } else {
+                // access to relationships depends on readability and "exposedness"
+                $relationshipType = $this->typeProvider->requestType($typeIdentifier)
+                    ->instanceOf(ReadableTypeInterface::class)
+                    ->exposedAsRelationship()
+                    ->getInstanceOrNull();
+                if (null !== $relationshipType) {
+                    $allowedProperties[$propertyName] = $relationshipType;
+                }
+            }
+        }
+
+        return $allowedProperties;
     }
 
     /**
@@ -81,19 +96,11 @@ class TypeAccessor
     /**
      * @param non-empty-string $typeIdentifier
      *
-     * @return OptionalTypeRequirementInterface<TypeInterface<TCondition, TSorting, object>>
+     * @return TypeRequirement<TypeInterface<TCondition, TSorting, object>>
      */
-    public function requestType(string $typeIdentifier): OptionalTypeRequirementInterface
+    public function requestType(string $typeIdentifier): TypeRequirement
     {
         return $this->typeProvider->requestType($typeIdentifier);
-    }
-
-    /**
-     * @param TypeInterface<TCondition, TSorting, object> $type
-     */
-    private function isReadableRelationship(TypeInterface $type): bool
-    {
-        return $type->isAvailable() && $type->isReferencable() && $type instanceof ReadableTypeInterface;
     }
 
     /**
@@ -109,15 +116,7 @@ class TypeAccessor
             return null;
         }
 
-        return $this->typeProvider->requestType($typeIdentifier)->getTypeInstance();
-    }
-
-    /**
-     * @param TypeInterface<TCondition, TSorting, object>|null $type
-     */
-    private function isReadableProperty(?TypeInterface $type): bool
-    {
-        return null === $type || $this->isReadableRelationship($type);
+        return $this->typeProvider->requestType($typeIdentifier)->getInstanceOrThrow();
     }
 
     /**
@@ -125,7 +124,12 @@ class TypeAccessor
      */
     private function isUpdatableProperty(?TypeInterface $type): bool
     {
-        // TODO: add `instanceof UpdatableTypeInterface` check?
-        return null === $type || ($type->isAvailable() && $type->isReferencable());
+        if (null === $type) {
+            return true;
+        }
+
+        // TODO: add `instanceof UpdatableTypeInterface` check? $type is the relationship property to set, not the type of the instance which is updated
+        return $type instanceof ExposableRelationshipTypeInterface
+            && $type->isExposedAsRelationship();
     }
 }

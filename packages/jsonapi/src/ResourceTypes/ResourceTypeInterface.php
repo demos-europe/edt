@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
+use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
@@ -20,7 +21,13 @@ use League\Fractal\TransformerAbstract;
  * @template-extends FilterableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends SortableTypeInterface<TCondition, TSorting, TEntity>
  */
-interface ResourceTypeInterface extends ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface
+interface ResourceTypeInterface extends
+    ReadableTypeInterface,
+    FilterableTypeInterface,
+    SortableTypeInterface,
+    IdentifiableTypeInterface,
+    ExposableRelationshipTypeInterface,
+    ExposablePrimaryResourceTypeInterface
 {
     /**
      * @return non-empty-string

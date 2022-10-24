@@ -26,4 +26,9 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
         $properties['author'] = AuthorType::class;
         return $properties;
     }
+
+    public function isExposedAsPrimaryResource(): bool
+    {
+        return true;
+    }
 }

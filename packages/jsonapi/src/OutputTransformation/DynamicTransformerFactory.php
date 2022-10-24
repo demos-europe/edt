@@ -137,9 +137,8 @@ class DynamicTransformerFactory
         }
 
         $type = $this->typeAccessor->requestType($typeIdentifier)
-            ->availableOrNull(true)
-            ->referencableOrNull(true)
-            ->getTypeInstanceOrNull();
+            ->exposedAsRelationship()
+            ->getInstanceOrNull();
 
         if (!$type instanceof ResourceTypeInterface) {
             return null;
