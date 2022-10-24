@@ -17,11 +17,6 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
-            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\TypeAccessor\\:\\:getAccessibleReadableProperties\\(\\) should return array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ReadableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\> but returns array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\|null\\>\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/TypeAccessor.php
-
-        -
             message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and non\\-empty\\-array\\<int, string\\> will always evaluate to false\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperArrayFactory.php

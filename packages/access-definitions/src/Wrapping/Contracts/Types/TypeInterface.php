@@ -17,48 +17,6 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 interface TypeInterface extends EntityBasedInterface
 {
     /**
-     * This is **not** a simplified version of {@link TypeInterface::getAccessCondition()}.
-     * While the condition will prevent access to
-     * instances, this method prevents exposing the existence of this type at all.
-     *
-     * If for example the Types `A`, `B` and `C` have relationship to Type `X` and only specific
-     * users should be able to know that Type `X` exists you don't need to hide the
-     * relationship using {@link ReadableTypeInterface::getReadableProperties()} or similar methods with
-     * duplicated conditions in A, B and C but can instead add the condition once here for Type `X`.
-     *
-     * If this method returns false all relationships to the Type will be hidden and no
-     * access to instances of this Type will be possible. This does not only affect direct read
-     * accesses but also filtering if it uses properties of this Type directly or indirectly.
-     *
-     * @return bool True if the existence of this type is allowed to be known at all,
-     *              may depend on the user accessing the type. False otherwise.
-     */
-    public function isAvailable(): bool;
-
-    /**
-     * Determines if this type can be referenced by other types.
-     *
-     * This affects if instances of this type can be accessed (e.g. read, if readable) through
-     * a relationship referencing this type.
-     *
-     * Like {@link TypeInterface::isDirectlyAccessible()} this has **no** precedence over {@link TypeInterface::isAvailable()}. Even
-     * if {@link TypeInterface::isReferencable()} returns `true`, the type can still not be accessed
-     * as long as {@link TypeInterface::isAvailable()} returns `false`.
-     */
-    public function isReferencable(): bool;
-
-    /**
-     * Determines if this type can be used directly.
-     * This affects if instances of this type can be accessed (e.g. read, if readable) directly
-     * without being reached through a reference.
-     *
-     * Like {@link TypeInterface::isReferencable()} this has **no** precedence over {@link TypeInterface::isAvailable()}. Even
-     * if {@link TypeInterface::isDirectlyAccessible()} returns `true`, the type can still not be accessed
-     * as long as {@link TypeInterface::isAvailable()} returns `false`.
-     */
-    public function isDirectlyAccessible(): bool;
-
-    /**
      * Returns the condition limiting the access to {@link TypeInterface::getEntityClass() entities}
      * corresponding to this type.
      *

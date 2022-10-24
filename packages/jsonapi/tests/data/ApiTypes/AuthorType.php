@@ -26,4 +26,9 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
         $properties['books'] = BookType::class;
         return $properties;
     }
+
+    public function isExposedAsPrimaryResource(): bool
+    {
+        return true;
+    }
 }

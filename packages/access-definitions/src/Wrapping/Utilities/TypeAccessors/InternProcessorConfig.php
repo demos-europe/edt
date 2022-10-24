@@ -19,7 +19,7 @@ class InternProcessorConfig extends AbstractProcessorConfig
 
     public function getRelationshipType(string $typeIdentifier): TypeInterface
     {
-        return $this->typeProvider->requestType($typeIdentifier)->getTypeInstance();
+        return $this->typeProvider->requestType($typeIdentifier)->getInstanceOrThrow();
     }
 
     /**

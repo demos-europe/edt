@@ -15,8 +15,7 @@ use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Tag;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
+use EDT\Wrapping\Contracts\TypeProviderInterface;
 use Throwable;
 use function count;
 use Psr\Log\LoggerInterface;
@@ -32,7 +31,7 @@ final class OpenAPISchemaGenerator
 
     private AttributeTypeResolver $typeResolver;
 
-    private PrefilledTypeProvider $resourceTypeProvider;
+    private TypeProviderInterface $typeProvider;
 
     private TranslatorInterface $translator;
 
@@ -45,14 +44,14 @@ final class OpenAPISchemaGenerator
     public function __construct(
         AttributeTypeResolver $typeResolver,
         LoggerInterface $logger,
-        PrefilledTypeProvider $resourceTypeProvider,
+        TypeProviderInterface $typeProvider,
         RouterInterface $router,
         SchemaStore $schemaStore,
         TranslatorInterface $translator,
         int $defaultPageSize
     ) {
         $this->typeResolver = $typeResolver;
-        $this->resourceTypeProvider = $resourceTypeProvider;
+        $this->typeProvider = $typeProvider;
         $this->router = $router;
         $this->translator = $translator;
         $this->schemaStore = $schemaStore;
@@ -78,8 +77,18 @@ final class OpenAPISchemaGenerator
             ]
         );
 
-        $tags = $this->resourceTypeProvider->getAllAvailableTypes();
-        $tags = array_filter($tags, static fn (TypeInterface $type): bool => $type instanceof ResourceTypeInterface);
+        $tags = array_map(
+            fn (string $identifier): ?ResourceTypeInterface => $this->typeProvider->requestType($identifier)
+                ->instanceOf(ResourceTypeInterface::class)
+                ->getInstanceOrNull(),
+            $this->typeProvider->getTypeIdentifiers()
+        );
+        $tags = array_filter(
+            $tags,
+            static fn (?ResourceTypeInterface $type): bool => null !== $type
+                && ($type->isExposedAsPrimaryResource() || $type->isExposedAsRelationship())
+        );
+
         $tags = array_map(function (ResourceTypeInterface $type): ResourceTypeInterface {
             // create schema information for all resource types
 
@@ -92,7 +101,7 @@ final class OpenAPISchemaGenerator
             return $type;
         }, $tags);
         // remove non-directly accessible ones
-        $tags = array_filter($tags, static fn (ResourceTypeInterface $type): bool => $type->isDirectlyAccessible());
+        $tags = array_filter($tags, static fn (ResourceTypeInterface $type) => $type->isExposedAsPrimaryResource());
         $tags = array_map(function (ResourceTypeInterface $type) use ($openApi): Tag {
             // add routing information for directly accessible resource types
             $tag = $this->createTag($type);
@@ -264,10 +273,7 @@ final class OpenAPISchemaGenerator
     private function createSchema(ResourceTypeInterface $type): Schema
     {
         $properties = $type->getReadableProperties();
-        $properties = array_filter(
-            $properties,
-            fn (?string $typeIdentifier): bool => null === $typeIdentifier || $this->isReferenceable($typeIdentifier)
-        );
+        $properties = array_filter($properties, [$this, 'isExposedAsAttributeOrRelationship']);
 
         $properties = array_map(function (?string $typeIdentifier, string $propertyName) use ($type): array {
             // TODO: this is probably incorrect for all aliases with a path longer than 1 element
@@ -282,15 +288,18 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @param non-empty-string $typeIdentifier
+     * @param non-empty-string|null $typeIdentifier
      */
-    private function isReferenceable(string $typeIdentifier): bool
+    private function isExposedAsAttributeOrRelationship(?string $typeIdentifier): bool
     {
-        return $this->resourceTypeProvider->isTypeAvailable($typeIdentifier)
-            && $this->resourceTypeProvider->requestType($typeIdentifier)
-                ->available(true)
-                ->getTypeInstance()
-                ->isReferencable();
+        if (null === $typeIdentifier) {
+            return true;
+        }
+
+        return $this->typeProvider
+            ->requestType($typeIdentifier)
+            ->exposedAsRelationship()
+            ->isPresent();
     }
 
     /**
