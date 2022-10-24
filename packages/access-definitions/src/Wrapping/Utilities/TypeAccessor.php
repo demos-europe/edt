@@ -38,7 +38,7 @@ class TypeAccessor
     }
 
     /**
-     * @param TypeInterface<TCondition, TSorting, object> $type
+     * @param ReadableTypeInterface&TypeInterface<TCondition, TSorting, object> $type
      *
      * @return array<non-empty-string, (ExposableRelationshipTypeInterface&ReadableTypeInterface<TCondition, TSorting, object>)|null>
      *
@@ -46,10 +46,6 @@ class TypeAccessor
      */
     public function getAccessibleReadableProperties(TypeInterface $type): array
     {
-        if (!$type instanceof ReadableTypeInterface) {
-            return [];
-        }
-
         $allowedProperties = [];
         foreach ($type->getReadableProperties() as $propertyName => $typeIdentifier) {
             if (null === $typeIdentifier) {
