@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- refactor: adjust `CreatableTypeInterface` template parameters
 - refactor: remove `TypeRetrievalAccessException` static constructors: `unknownTypeIdentifier`, `noNameWithImplementation`, `typeExistsButNotAvailable` and `typeExistsButNotReferencable`
 - refactor: require `ResourceTypeInterface` to implement `ExposableRelationshipTypeInterface` and `ExposablePrimaryResourceTypeInterface`, each should not only correspond to `isReferencable`/`isDirectlyAccessible` respectively but include the logic in `isAvailable` too
 - fix: use stricter path processing; every relationship in paths used by external callers must now return `true` in `ExposableRelationshipTypeInterface::isExposedAsRelationship`; this for example affects type wrappers (`WrapperObjectFactory`/`WrapperArrayFactory`) and JSON:API filtering, reading and sorting
