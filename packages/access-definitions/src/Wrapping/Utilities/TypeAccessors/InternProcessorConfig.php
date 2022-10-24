@@ -21,12 +21,4 @@ class InternProcessorConfig extends AbstractProcessorConfig
     {
         return $this->typeProvider->requestType($typeIdentifier)->getInstanceOrThrow();
     }
-
-    /**
-     * For internally configured properties no aliasing will be applied.
-     */
-    public function getDeAliasedPath(TypeInterface $type, string $propertyName): array
-    {
-        return [$propertyName];
-    }
 }

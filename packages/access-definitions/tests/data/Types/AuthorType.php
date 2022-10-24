@@ -6,6 +6,7 @@ namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
@@ -21,7 +22,14 @@ use Tests\data\Model\Person;
  * @template-implements SortableTypeInterface<Person>
  * @template-implements UpdatableTypeInterface<Person>
  */
-class AuthorType implements ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface, UpdatableTypeInterface, ExposableRelationshipTypeInterface
+class AuthorType implements
+    ReadableTypeInterface,
+    FilterableTypeInterface,
+    SortableTypeInterface,
+    IdentifiableTypeInterface,
+    UpdatableTypeInterface,
+    ExposableRelationshipTypeInterface,
+    AliasableTypeInterface
 {
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
@@ -59,7 +67,10 @@ class AuthorType implements ReadableTypeInterface, FilterableTypeInterface, Sort
 
     public function getAccessCondition(): PathsBasedInterface
     {
-        return $this->conditionFactory->propertyHasNotSize(0, 'books');
+        return $this->conditionFactory->allConditionsApply(
+            $this->conditionFactory->propertyHasNotSize(0, 'books'),
+            $this->conditionFactory->propertyHasNotSize(0, 'writtenBooks')
+        );
     }
 
     public function getEntityClass(): string
