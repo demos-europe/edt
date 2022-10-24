@@ -12,6 +12,7 @@ use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
+use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Utilities\TypeAccessors\AbstractProcessorConfig;
@@ -55,7 +56,7 @@ class PropertyPathProcessor
      *                         type it leads to is not accessible
      *                         ({@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}
      *                         returned `false`).
-     * @throws PathException Thrown if {@link TypeInterface::getAliases()} returned an invalid path.
+     * @throws PathException Thrown if {@link AliasableTypeInterface::getAliases()} returned an invalid path.
      */
     public function processPropertyPaths(PathsBasedInterface $pathsBased): void
     {
@@ -95,7 +96,10 @@ class PropertyPathProcessor
         $propertyTypeIdentifier = $this->getPropertyTypeIdentifier($currentType, $currentPathPart);
 
         // Check if the current type needs mapping to the backing object schema, if so, apply it.
-        $pathToAdd = $this->processorConfig->getDeAliasedPath($currentType, $currentPathPart);
+        $pathToAdd = $currentType instanceof AliasableTypeInterface
+            ? $currentType->getAliases()[$currentPathPart] ?? [$currentPathPart]
+            : [$currentPathPart];
+
         // append the de-aliased path to the processed path
         $newPath = $this->appendDeAliasedPath($newPath, $pathToAdd);
 

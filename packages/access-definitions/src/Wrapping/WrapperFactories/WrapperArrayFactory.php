@@ -11,6 +11,7 @@ use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
+use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\WrapperFactoryInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
@@ -92,8 +93,10 @@ class WrapperArrayFactory implements WrapperFactoryInterface
         // we only include properties in the result array that are actually accessible
         $readableProperties = $this->typeAccessor->getAccessibleReadableProperties($type);
 
+        $aliases = $type instanceof AliasableTypeInterface ? $type->getAliases() : [];
+
         // Set the actual value for each remaining property
-        array_walk($readableProperties, [$this, 'setValue'], [$entity, $this->depth, $type->getAliases()]);
+        array_walk($readableProperties, [$this, 'setValue'], [$entity, $this->depth, $aliases]);
 
         return $readableProperties;
     }

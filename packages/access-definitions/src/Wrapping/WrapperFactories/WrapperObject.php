@@ -16,6 +16,7 @@ use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
+use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -258,7 +259,9 @@ class WrapperObject
      */
     private function mapProperty(string $propertyName): array
     {
-        return $this->type->getAliases()[$propertyName] ?? [$propertyName];
+        return $this->type instanceof AliasableTypeInterface
+            ? $this->type->getAliases()[$propertyName] ?? [$propertyName]
+            : [$propertyName];
     }
 
     /**
