@@ -19,6 +19,7 @@ use Tests\data\Model\Person;
  * @template-implements IdentifiableTypeInterface<Person>
  * @template-implements FilterableTypeInterface<Person>
  * @template-implements SortableTypeInterface<Person>
+ * @template-implements UpdatableTypeInterface<Person>
  */
 class AuthorType implements ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface, UpdatableTypeInterface, ExposableRelationshipTypeInterface
 {
