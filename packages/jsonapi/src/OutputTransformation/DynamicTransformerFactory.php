@@ -136,14 +136,9 @@ class DynamicTransformerFactory
             throw new InvalidArgumentException("Property '$propertyName' marked as relationship, but no relationship type configured in resource type.");
         }
 
-        $type = $this->typeAccessor->requestType($typeIdentifier)
+        return $this->typeAccessor->requestType($typeIdentifier)
+            ->instanceOf(ResourceTypeInterface::class)
             ->exposedAsRelationship()
             ->getInstanceOrNull();
-
-        if (!$type instanceof ResourceTypeInterface) {
-            return null;
-        }
-
-        return $type;
     }
 }
