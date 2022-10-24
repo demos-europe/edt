@@ -10,6 +10,7 @@ use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortedListableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -101,7 +102,7 @@ class SchemaPathProcessor
      * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
      * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
      *
-     * @param TypeInterface<TCondition, TSorting, object> $type
+     * @param SortedListableTypeInterface<TSorting>&TypeInterface<TCondition, TSorting, object> $type
      *
      * @return list<TSorting>
      *
@@ -109,7 +110,7 @@ class SchemaPathProcessor
      *
      * @internal
      */
-    public function processDefaultSortMethods(TypeInterface $type): array
+    public function processDefaultSortMethods(SortedListableTypeInterface $type): array
     {
         $sortMethods = $type->getDefaultSortMethods();
         if ([] === $sortMethods) {

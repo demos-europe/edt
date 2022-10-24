@@ -10,6 +10,7 @@ use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortedListableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
@@ -29,7 +30,8 @@ class AuthorType implements
     IdentifiableTypeInterface,
     UpdatableTypeInterface,
     ExposableRelationshipTypeInterface,
-    AliasableTypeInterface
+    AliasableTypeInterface,
+    SortedListableTypeInterface
 {
     private PathsBasedConditionFactoryInterface $conditionFactory;
 

@@ -8,6 +8,7 @@ use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortedListableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use League\Fractal\TransformerAbstract;
@@ -29,7 +30,8 @@ interface ResourceTypeInterface extends
     IdentifiableTypeInterface,
     ExposableRelationshipTypeInterface,
     ExposablePrimaryResourceTypeInterface,
-    AliasableTypeInterface
+    AliasableTypeInterface,
+    SortedListableTypeInterface
 {
     /**
      * @return non-empty-string

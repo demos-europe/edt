@@ -9,6 +9,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortedListableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use Tests\data\Model\Book;
@@ -19,7 +20,13 @@ use Tests\data\Model\Book;
  * @template-implements FilterableTypeInterface<Book>
  * @template-implements SortableTypeInterface<Book>
  */
-class BookType implements ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface, ExposableRelationshipTypeInterface
+class BookType implements
+    ReadableTypeInterface,
+    FilterableTypeInterface,
+    SortableTypeInterface,
+    IdentifiableTypeInterface,
+    ExposableRelationshipTypeInterface,
+    SortedListableTypeInterface
 {
     private bool $exposedAsRelationship = true;
 

@@ -14,6 +14,7 @@ use EDT\Querying\Utilities\Iterables;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortedListableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Contracts\WrapperFactoryInterface;
@@ -57,7 +58,8 @@ class PropertyReader
      * instead of the wrapped value `null` will be returned.
      *
      * In case of a to-many relationship the entities will be sorted according to the definition
-     * of {@link TypeInterface::getDefaultSortMethods()} of the relationship.
+     * of {@link SortedListableTypeInterface::getDefaultSortMethods()} of the relationship if
+     * {@link SortedListableTypeInterface} is implemented.
      *
      * @template TEntity of object
      *
@@ -116,7 +118,9 @@ class PropertyReader
         }
 
         $condition = $this->schemaPathProcessor->processAccessCondition($relationship);
-        $sortMethods = $this->schemaPathProcessor->processDefaultSortMethods($relationship);
+        $sortMethods = $relationship instanceof SortedListableTypeInterface
+            ? $this->schemaPathProcessor->processDefaultSortMethods($relationship)
+            : [];
 
         // filter out restricted items and sort the remainders
         $entities = $this->conditionEvaluator->filterArray($entities, $condition);

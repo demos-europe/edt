@@ -56,7 +56,7 @@ interface TypeInterface extends EntityBasedInterface
     /**
      * The properties of this type that are allowed to be use in conditions returned by
      * {@link TypeInterface::getAccessCondition()} and sort methods returned by
-     * {@link TypeInterface::getDefaultSortMethods()}.
+     * {@link SortedListableTypeInterface::getDefaultSortMethods()}.
      *
      * These properties are used to convert a path directed to the schema of this type
      * into the schema of the backing object. Any aliasing defined by {@link AliasableTypeInterface::getAliases()}
@@ -67,22 +67,4 @@ interface TypeInterface extends EntityBasedInterface
      *                                   or `null` if the property is a non-relationship.
      */
     public function getInternalProperties(): array;
-
-    /**
-     * Get the sort method to apply when a collection of this property is fetched directly
-     * and no sort methods were specified.
-    * .*
-     * Inside the method your paths can access all properties defined in the {@link TypeInterface::getInternalProperties()}
-     * Thus you have unrestricted access to all properties of that schema and no limitations by {@link SortableTypeInterface::getSortableProperties}
-     * will be applied.
-     *
-     * Note however, that if {@link AliasableTypeInterface::getAliases() aliases} are configured,
-     * that they will be applied. The reasoning is the same as is in
-     * {@link TypeInterface::getAccessCondition()}, where it is already explained in detail.
-     *
-     * Return an empty array to not define any default sorting.
-     *
-     * @return list<TSorting>
-     */
-    public function getDefaultSortMethods(): array;
 }

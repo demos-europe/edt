@@ -6,10 +6,11 @@ namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\SortedListableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Tests\data\AdModel\Birth;
 
-class BirthType implements TypeInterface
+class BirthType implements TypeInterface, SortedListableTypeInterface
 {
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
