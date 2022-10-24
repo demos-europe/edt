@@ -78,17 +78,13 @@ class TypeAccessor
      *
      * @template TEntity of object
      *
-     * @param TypeInterface<TCondition, TSorting, TEntity> $type
-     * @param TEntity                   $updateTarget
+     * @param UpdatableTypeInterface&TypeInterface<TCondition, TSorting, TEntity> $type
+     * @param TEntity                                                             $updateTarget
      *
      * @return array<non-empty-string, (ExposableRelationshipTypeInterface&TypeInterface<TCondition, TSorting, object>)|null>
      */
     public function getAccessibleUpdatableProperties(TypeInterface $type, object $updateTarget): array
     {
-        if (!$type instanceof UpdatableTypeInterface) {
-            return [];
-        }
-
         $updatableProperties = [];
         foreach ($type->getUpdatableProperties($updateTarget) as $propertyName => $relationshipTypeIdentifier) {
             if (null === $relationshipTypeIdentifier) {
