@@ -81,16 +81,31 @@ class TypeAccessor
      * @param TypeInterface<TCondition, TSorting, TEntity> $type
      * @param TEntity                   $updateTarget
      *
-     * @return array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null>
+     * @return array<non-empty-string, (ExposableRelationshipTypeInterface&TypeInterface<TCondition, TSorting, object>)|null>
      */
     public function getAccessibleUpdatableProperties(TypeInterface $type, object $updateTarget): array
     {
         if (!$type instanceof UpdatableTypeInterface) {
             return [];
         }
-        $updatableProperties = $type->getUpdatableProperties($updateTarget);
-        $updatableProperties = array_map([$this, 'getTypeInstanceOrNull'], $updatableProperties);
-        return array_filter($updatableProperties, [$this, 'isUpdatableProperty']);
+
+        $updatableProperties = [];
+        foreach ($type->getUpdatableProperties($updateTarget) as $propertyName => $relationshipTypeIdentifier) {
+            if (null === $relationshipTypeIdentifier) {
+                $updatableProperties[$propertyName] = null;
+            } else {
+                 // $relationshipType is the relationship property to set, not the type of the instance which is updated
+                 $relationshipType = $this->typeProvider->requestType($relationshipTypeIdentifier)
+                     // TODO: add `instanceof UpdatableTypeInterface` check?
+                     ->exposedAsRelationship()
+                     ->getInstanceOrNull();
+                 if (null !== $relationshipType) {
+                     $updatableProperties[$propertyName] = $relationshipType;
+                 }
+            }
+        }
+
+        return $updatableProperties;
     }
 
     /**
@@ -101,35 +116,5 @@ class TypeAccessor
     public function requestType(string $typeIdentifier): TypeRequirement
     {
         return $this->typeProvider->requestType($typeIdentifier);
-    }
-
-    /**
-     * @param non-empty-string|null $typeIdentifier
-     *
-     * @return TypeInterface<TCondition, TSorting, object>|null
-     *
-     * @throws TypeRetrievalAccessException
-     */
-    private function getTypeInstanceOrNull(?string $typeIdentifier): ?TypeInterface
-    {
-        if (null === $typeIdentifier) {
-            return null;
-        }
-
-        return $this->typeProvider->requestType($typeIdentifier)->getInstanceOrThrow();
-    }
-
-    /**
-     * @param TypeInterface<TCondition, TSorting, object>|null $type
-     */
-    private function isUpdatableProperty(?TypeInterface $type): bool
-    {
-        if (null === $type) {
-            return true;
-        }
-
-        // TODO: add `instanceof UpdatableTypeInterface` check? $type is the relationship property to set, not the type of the instance which is updated
-        return $type instanceof ExposableRelationshipTypeInterface
-            && $type->isExposedAsRelationship();
     }
 }
