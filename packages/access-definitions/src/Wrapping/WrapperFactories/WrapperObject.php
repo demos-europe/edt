@@ -189,8 +189,8 @@ class WrapperObject
     /**
      * @param non-empty-string $propertyName
      * @param mixed $value The value to set. Will only be allowed if the property name matches with an allowed property
-     *                     (must be {@link UpdatableTypeInterface::getUpdatableProperties() updatable} and,
-     *                     if it is a relationship, the target type of the relationship returns `true` in
+     *                     (must be {@link UpdatableTypeInterface::getUpdatableProperties() updatable} and
+     *                     (if it is a relationship) the target type of the relationship returns `true` in
      *                     {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}.
      *
      * @throws AccessException
