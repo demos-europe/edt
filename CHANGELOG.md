@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.13.1 - 2022-10-31
 
 - refactor: rename `AbstractTypeAccessor` to `AbstractProcessorConfig`
 - refactor: rename `AbstractTypeAccessor::getType` to `getRelationshipType`
