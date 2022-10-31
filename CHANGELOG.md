@@ -1,8 +1,7 @@
 # Changelog
 
-## 0.13.1 - 2022-10-31
+## Unreleased
 
-- fix: (re-)allow alias usage inside `TypeInterface::getAccessCondition` and `TypeInterface::getDefaultSortMethods`
 - refactor: adjust `CreatableTypeInterface` template parameters
 - refactor: remove `TypeRetrievalAccessException` static constructors: `unknownTypeIdentifier`, `noNameWithImplementation`, `typeExistsButNotAvailable` and `typeExistsButNotReferencable`
 - refactor: require `ResourceTypeInterface` to implement `ExposableRelationshipTypeInterface` and `ExposablePrimaryResourceTypeInterface`, each should not only correspond to `isReferencable`/`isDirectlyAccessible` respectively but include the logic in `isAvailable` too
@@ -12,7 +11,9 @@
 - refactor: remove `TypeInterface::isDirectlyAccessible`, `ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource` can be used instead
 - refactor: remove `TypeInterface::isReferencable`, `ExposableRelationshipTypeInterface::isExposedAsRelationship` can be used instead
 - refactor: on external accesses to filterable, readable and sortable properties, require the corresponding type to be an exposed relationship
-- refactor: disable alias processing for internal properties (no more alias usage allowed in `getDefaultSortMethods` and `getAccessCondition`)
+
+## 0.13.1 - 2022-10-31
+
 - refactor: rename `AbstractTypeAccessor` to `AbstractProcessorConfig`
 - refactor: rename `AbstractTypeAccessor::getType` to `getRelationshipType`
 - refactor: require `array` instead of varargs for `PropertyPath` initialization
