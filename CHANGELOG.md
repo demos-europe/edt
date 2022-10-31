@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.13.2 - 2022-10-31
 
 - refactor: adjust `CreatableTypeInterface` template parameters
 - refactor: remove `TypeRetrievalAccessException` static constructors: `unknownTypeIdentifier`, `noNameWithImplementation`, `typeExistsButNotAvailable` and `typeExistsButNotReferencable`
