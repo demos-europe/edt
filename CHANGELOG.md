@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.22 - 2022-10-31
 
 - refactor: require `QueryBuilderPreparer` for `DoctrineOrmEntityProvider` initialization
 - refactor: remove `QueryGenerator`, `QueryBuilderPreparer` or `DoctrineOrmEntityProvider` can be used instead
