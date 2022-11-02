@@ -161,10 +161,7 @@ class WrapperObject
         // Get the potentially wrapped value for the requested property
         $relationship = $readableProperties[$propertyName];
         $propertyPath = $this->mapProperty($propertyName);
-        // TODO: this should probably be `1 === count($propertyPath)`
-        $propertyValue = [] === $propertyPath
-            ? $this->object
-            : $this->propertyAccessor->getValueByPropertyPath($this->object, ...$propertyPath);
+        $propertyValue = $this->propertyAccessor->getValueByPropertyPath($this->object, ...$propertyPath);
 
         if (null === $relationship) {
             // if non-relationship, simply use the value read from the target
@@ -210,6 +207,8 @@ class WrapperObject
 
         $relationship = $updatableProperties[$propertyName];
         $propertyPath = $this->mapProperty($propertyName);
+
+        // follow the path to get the actual target in which a property is to be set
         $deAliasedPropertyName = array_pop($propertyPath);
         $target = [] === $propertyPath
             ? $this->object

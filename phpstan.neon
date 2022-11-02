@@ -17,16 +17,6 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
-            message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and non\\-empty\\-array\\<int, string\\> will always evaluate to false\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperArrayFactory.php
-
-        -
-            message: "#^Strict comparison using \\=\\=\\= between array\\{\\} and non\\-empty\\-array\\<int, non\\-empty\\-string\\> will always evaluate to false\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
-
-        -
             message: "#^Property EDT\\\\DqlQuerying\\\\Functions\\\\AbstractClauseFunction\\<TOutput\\>\\:\\:\\$clauses \\(array\\<int, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\) does not accept array\\<int\\|string, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\.$#"
             count: 1
             path: packages/dql/src/Functions/AbstractClauseFunction.php

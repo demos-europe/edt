@@ -125,10 +125,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
     {
         [$target, $depth, $aliases] = $context;
         $propertyPath = $aliases[$propertyName] ?? [$propertyName];
-        // TODO: this should probably be `1 === count($propertyPath)`
-        $propertyValue = [] === $propertyPath
-            ? $target
-            : $this->propertyAccessor->getValueByPropertyPath($target, ...$propertyPath);
+        $propertyValue = $this->propertyAccessor->getValueByPropertyPath($target, ...$propertyPath);
 
         $newDepth = $depth - 1;
         $wrapperFactory = 0 > $newDepth
