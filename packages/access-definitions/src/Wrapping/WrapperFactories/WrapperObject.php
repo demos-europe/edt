@@ -168,20 +168,22 @@ class WrapperObject
             return $propertyValue;
         }
 
-        $entityOrEntities = $this->propertyReader->determineRelationshipValue($relationship, $propertyValue);
-        if (null === $entityOrEntities) {
-            return null;
-        }
+        if (is_iterable($propertyValue)) {
+            $entities = $this->propertyReader->determineToManyRelationshipValue($relationship, $propertyValue);
 
-        if (is_array($entityOrEntities)) {
             // wrap the entities
             return array_map(
                 fn (object $objectToWrap) => $this->wrapperFactory->createWrapper($objectToWrap, $relationship),
-                $entityOrEntities
+                $entities
             );
         }
 
-        return $this->wrapperFactory->createWrapper($entityOrEntities, $relationship);
+        $entity = $this->propertyReader->determineToOneRelationshipValue($relationship, $propertyValue);
+        if (null === $entity) {
+            return null;
+        }
+
+        return $this->wrapperFactory->createWrapper($entity, $relationship);
     }
 
     /**

@@ -135,19 +135,17 @@ class WrapperArrayFactory implements WrapperFactoryInterface
         if (null === $value) {
             // if non-relationship, simply use the value read from the target
             $value = $propertyValue;
+        } elseif (is_iterable($propertyValue)) {
+            $entities = $this->propertyReader->determineToManyRelationshipValue($value, $propertyValue);
+
+            // wrap the entities
+            $value = array_map(
+                static fn (object $objectToWrap) => $wrapperFactory->createWrapper($objectToWrap, $value),
+                $entities
+            );
         } else {
-            $entityOrEntities = $this->propertyReader->determineRelationshipValue($value, $propertyValue);
-            if (null === $entityOrEntities) {
-                $value = null;
-            } elseif (is_array($entityOrEntities)) {
-                // wrap the entities
-                $value = array_map(
-                    static fn (object $objectToWrap) => $wrapperFactory->createWrapper($objectToWrap, $value),
-                    $entityOrEntities
-                );
-            } else {
-                $value = $wrapperFactory->createWrapper($entityOrEntities, $value);
-            }
+            $entity = $this->propertyReader->determineToOneRelationshipValue($value, $propertyValue);
+            $value = null === $entity ? null : $wrapperFactory->createWrapper($entity, $value);
         }
     }
 }
