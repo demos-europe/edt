@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- refactor: deprecate `ExposableRelationshipTypeInterface::isExposedAsRelationship`, evaluate the conditions when returning relationships in methods like `ReadableTypeInterface::getReadableProperties()` instead
+
 ## 0.13.2 - 2022-10-31
 
 - refactor: adjust `CreatableTypeInterface` template parameters
