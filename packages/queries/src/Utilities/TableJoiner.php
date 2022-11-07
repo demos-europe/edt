@@ -14,11 +14,11 @@ use function is_array;
 use function is_int;
 
 /**
- * @psalm-type Ref = int<0, max>
- * @psalm-type Row = list<mixed>
- * @psalm-type NonEmptyRow = non-empty-list<mixed>
- * @psalm-type Column = list<mixed>
- * @psalm-type NonEmptyColumn = non-empty-list<mixed>
+ * @phpstan-type Ref = int<0, max>
+ * @phpstan-type Row = list<mixed>
+ * @phpstan-type NonEmptyRow = non-empty-list<mixed>
+ * @phpstan-type Column = list<mixed>
+ * @phpstan-type NonEmptyColumn = non-empty-list<mixed>
  *
  * @internal
  */

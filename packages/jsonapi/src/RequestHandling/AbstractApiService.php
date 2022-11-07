@@ -6,6 +6,7 @@ namespace EDT\JsonApi\RequestHandling;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Schema\ContentField;
+use EDT\JsonApi\Schema\RelationshipObject;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
@@ -22,8 +23,8 @@ use function array_key_exists;
  * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
  * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  *
- * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
- * @psalm-type JsonApiRelationships = array<non-empty-string, array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
+ * @phpstan-import-type JsonApiRelationship from RelationshipObject
+ * @phpstan-import-type JsonApiRelationships from RelationshipObject
  */
 abstract class AbstractApiService
 {

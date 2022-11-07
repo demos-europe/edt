@@ -18,8 +18,8 @@ use function count;
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  *
- * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
- * @psalm-type JsonApiRelationships = array<non-empty-string, array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
+ * @phpstan-import-type JsonApiRelationship from RelationshipObject
+ * @phpstan-import-type JsonApiRelationships from RelationshipObject
  */
 class PropertyValuesGenerator
 {

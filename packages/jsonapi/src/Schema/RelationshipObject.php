@@ -10,7 +10,8 @@ use function array_key_exists;
 use function is_array;
 
 /**
- * @psalm-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
+ * @phpstan-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}
+ * @phpstan-type JsonApiRelationships = array<non-empty-string, array{data: list<JsonApiRelationship>|JsonApiRelationship|null}>
  */
 class RelationshipObject
 {

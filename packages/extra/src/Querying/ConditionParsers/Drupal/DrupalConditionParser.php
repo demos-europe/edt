@@ -11,12 +11,8 @@ use function array_key_exists;
 /**
  * Parses specific conditions inside a Drupal filter format.
  *
- * @psalm-type DrupalFilterCondition = array{
- *            path: non-empty-string,
- *            value?: mixed,
- *            operator?: non-empty-string,
- *            memberOf?: non-empty-string
- *          }
+ * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser
+ *
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  * @template-implements ConditionParserInterface<DrupalFilterCondition, TCondition>
  */

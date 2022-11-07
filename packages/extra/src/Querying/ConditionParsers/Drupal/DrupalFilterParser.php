@@ -16,11 +16,11 @@ use function in_array;
  *
  * The data is expected to be in the format defined by the Drupal JSON:API filter specification.
  *
- * @psalm-type DrupalFilterGroup = array{
+ * @phpstan-type DrupalFilterGroup = array{
  *            conjunction: non-empty-string,
  *            memberOf?: non-empty-string
  *          }
- * @psalm-type DrupalFilterCondition = array{
+ * @phpstan-type DrupalFilterCondition = array{
  *            path: non-empty-string,
  *            value?: mixed,
  *            operator?: non-empty-string,

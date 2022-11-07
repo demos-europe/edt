@@ -11,16 +11,8 @@ use function array_key_exists;
  * indices from the group definitions. One for the conjunctions and one for the
  * memberOf value.
  *
- * @psalm-type DrupalFilterGroup = array{
- *            conjunction: non-empty-string,
- *            memberOf?: non-empty-string
- *          }
- * @psalm-type DrupalFilterCondition = array{
- *            path: non-empty-string,
- *            value?: mixed,
- *            operator?: non-empty-string,
- *            memberOf?: non-empty-string
- *          }
+ * @phpstan-import-type DrupalFilterGroup from DrupalFilterParser
+ * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser
  */
 class DrupalFilter
 {
