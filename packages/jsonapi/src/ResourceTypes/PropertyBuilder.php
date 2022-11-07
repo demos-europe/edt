@@ -277,4 +277,12 @@ class PropertyBuilder
             $this->requiredForCreation,
         );
     }
+
+    /**
+     * @return non-empty-string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
