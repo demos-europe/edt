@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.14.0 - 2022-11-07
 
 - feature: add `PropertyBuilder::getName()` method
 - refactor: deprecate `ExposableRelationshipTypeInterface::isExposedAsRelationship`, evaluate the conditions when returning relationships in methods like `ReadableTypeInterface::getReadableProperties()` instead
