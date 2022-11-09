@@ -30,11 +30,6 @@ use function array_key_exists;
  */
 abstract class AbstractResourceType implements ResourceTypeInterface
 {
-    /**
-     * @return array<non-empty-string, non-empty-string|null>
-     *
-     * @see ReadableTypeInterface::getReadableProperties()
-     */
     public function getReadableProperties(): array
     {
         $properties = $this->getPropertyCollection()->getReadableProperties();
@@ -42,11 +37,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         return $this->getTypeIdentifiersOrNull($properties);
     }
 
-    /**
-     * @return array<non-empty-string, non-empty-string|null>
-     *
-     * @see FilterableTypeInterface::getFilterableProperties()
-     */
     public function getFilterableProperties(): array
     {
         $properties = $this->getPropertyCollection()->getFilterableProperties();
@@ -54,11 +44,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         return $this->getTypeIdentifiersOrNull($properties);
     }
 
-    /**
-     * @return array<non-empty-string, non-empty-string|null>
-     *
-     * @see SortableTypeInterface::getSortableProperties()
-     */
     public function getSortableProperties(): array
     {
         $properties = $this->getPropertyCollection()->getSortableProperties();
