@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- refactor: avoid type identifier in `PropertyPathProcessor`
+
 ## 0.14.0 - 2022-11-07
 
 - feature: add `PropertyBuilder::getName()` method
