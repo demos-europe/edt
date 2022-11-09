@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- refactor: avoid type identifier in `PropertyPathProcessor`
+
 ## 0.14.1 - 2022-11-11
 
 - feature: attempt parallel PHP 8 support

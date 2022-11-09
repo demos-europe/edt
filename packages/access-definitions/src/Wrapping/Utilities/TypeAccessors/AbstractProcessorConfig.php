@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Utilities\TypeAccessors;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\PropertyAccessException;
+use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
+use function array_key_exists;
 
 /**
  * Implementing this class allows to limit the access to properties by different
@@ -44,6 +47,35 @@ abstract class AbstractProcessorConfig
     public function getRootType(): TypeInterface
     {
         return $this->rootType;
+    }
+
+    /**
+     * @param TType            $type
+     * @param non-empty-string $property
+     *
+     * @return TType|null
+     *
+     * @throws PropertyAccessException
+     */
+    public function getPropertyType(TypeInterface $type, string $property): ?TypeInterface
+    {
+        $availableProperties = $this->getProperties($type);
+        // abort if the (originally accessed/non-de-aliased) property is not available
+        if (!array_key_exists($property, $availableProperties)) {
+            $availablePropertyNames = array_keys($availableProperties);
+            throw PropertyAccessException::propertyNotAvailableInType($property, $type, ...$availablePropertyNames);
+        }
+
+        $propertyTypeIdentifier = $availableProperties[$property];
+        if (null === $propertyTypeIdentifier) {
+            return null;
+        }
+
+        try {
+            return $this->getRelationshipType($propertyTypeIdentifier);
+        } catch (TypeRetrievalAccessException $exception) {
+            throw RelationshipAccessException::relationshipTypeAccess($type, $property, $exception);
+        }
     }
 
     /**
