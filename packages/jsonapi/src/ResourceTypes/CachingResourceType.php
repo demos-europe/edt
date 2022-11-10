@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
+use EDT\Wrapping\Contracts\Types\TypeInterface;
+
 /**
  * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
  * @template TSorting of \EDT\Querying\Contracts\SortMethodInterface
@@ -19,7 +21,7 @@ abstract class CachingResourceType extends AbstractResourceType
     protected ?array $aliasesCache = null;
 
     /**
-     * @var array<non-empty-string, non-empty-string|null>|null
+     * @var array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null>|null
      */
     protected ?array $filterablePropertiesCache = null;
 

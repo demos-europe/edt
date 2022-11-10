@@ -19,14 +19,20 @@ class RelationshipBuilder extends PropertyBuilder
     private bool $defaultInclude;
 
     /**
-     * @param PropertyPathInterface&EntityBasedInterface<TRelationship> $path
-     * @param class-string<TEntity>                                     $entityClass
+     * @var non-empty-string
+     */
+    private string $targetTypeIdentifier;
+
+    /**
+     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface $path
+     * @param class-string<TEntity>                                                           $entityClass
      *
      * @throws PathException
      */
     public function __construct(PropertyPathInterface $path, string $entityClass, bool $defaultInclude)
     {
         parent::__construct($path, $entityClass);
+        $this->targetTypeIdentifier = $path::getName();
         $this->defaultInclude = $defaultInclude;
     }
 
@@ -43,7 +49,8 @@ class RelationshipBuilder extends PropertyBuilder
             $this->customReadCallback,
             $this->allowingInconsistencies,
             $this->initializable,
-            $this->requiredForCreation
+            $this->requiredForCreation,
+            $this->targetTypeIdentifier
         );
     }
 }
