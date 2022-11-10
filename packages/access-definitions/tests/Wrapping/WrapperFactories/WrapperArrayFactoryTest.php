@@ -15,6 +15,7 @@ use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
+use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
 use EDT\Wrapping\Utilities\PropertyReader;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
@@ -54,13 +55,15 @@ class WrapperArrayFactoryTest extends ModelBasedTest
     {
         parent::setUp();
         $this->conditionFactory = new PhpConditionFactory();
-        $this->authorType = new AuthorType($this->conditionFactory);
-        $bookType = new BookType($this->conditionFactory);
+        $lazyTypeProvider = new LazyTypeProvider();
+        $this->authorType = new AuthorType($this->conditionFactory, $lazyTypeProvider);
+        $bookType = new BookType($this->conditionFactory, $lazyTypeProvider);
         $this->typeProvider = new PrefilledTypeProvider([
             $this->authorType,
             $bookType,
             new BirthType($this->conditionFactory),
         ]);
+        $lazyTypeProvider->setAllTypes($this->typeProvider);
         $this->propertyAccessor = new ReflectionPropertyAccessor();
         $this->authorProvider = new PrefilledObjectProvider(
             new ConditionEvaluator(new TableJoiner($this->propertyAccessor)),
