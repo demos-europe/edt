@@ -58,7 +58,7 @@ class BookType implements ReadableTypeInterface, FilterableTypeInterface, Sortab
     {
         return [
             'title' => null,
-            'author' => AuthorType::class,
+            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
         ];
     }
 
