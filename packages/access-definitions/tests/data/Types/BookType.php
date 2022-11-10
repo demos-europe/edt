@@ -6,6 +6,7 @@ namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
@@ -25,21 +26,30 @@ class BookType implements ReadableTypeInterface, FilterableTypeInterface, Sortab
 
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
-    public function __construct(PathsBasedConditionFactoryInterface $conditionFactory)
-    {
+    private TypeProviderInterface $typeProvider;
+
+    public function __construct(
+        PathsBasedConditionFactoryInterface $conditionFactory,
+        TypeProviderInterface $typeProvider
+    ) {
         $this->conditionFactory = $conditionFactory;
+        $this->typeProvider = $typeProvider;
     }
 
     public function getReadableProperties(): array
     {
-        return $this->getFilterableProperties();
+        return [
+            'title' => null,
+            'author' => AuthorType::class,
+            'tags' => null,
+        ];
     }
 
     public function getFilterableProperties(): array
     {
         return [
             'title' => null,
-            'author' => AuthorType::class,
+            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
             'tags' => null,
         ];
     }

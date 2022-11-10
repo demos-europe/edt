@@ -8,6 +8,7 @@ use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Validation\FieldsException;
 use EDT\JsonApi\Validation\FieldsValidator;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
+use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
 use EDT\Wrapping\Utilities\TypeAccessor;
 use PHPUnit\Framework\TestCase;
@@ -26,11 +27,13 @@ class FieldsValidatorTest extends TestCase
     {
         parent::setUp();
         $conditionFactory = new PhpConditionFactory();
+        $lazyTypeProvider = new LazyTypeProvider();
         $this->typeProvider = new PrefilledTypeProvider([
-            new AuthorType($conditionFactory),
-            new BookType($conditionFactory),
+            new AuthorType($conditionFactory, $lazyTypeProvider),
+            new BookType($conditionFactory, $lazyTypeProvider),
             new BirthType($conditionFactory),
         ]);
+        $lazyTypeProvider->setAllTypes($this->typeProvider);
         $typeAccessor = new TypeAccessor($this->typeProvider);
         $this->fieldsValidator = new FieldsValidator(
             $typeAccessor,

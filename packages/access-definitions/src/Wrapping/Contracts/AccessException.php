@@ -60,6 +60,15 @@ class AccessException extends InvalidArgumentException
         return $self;
     }
 
+    public static function typeNotFilterable(TypeInterface $type): self
+    {
+        $typeClass = get_class($type);
+        $self = new self("The type class you try to access is not exposed as filterable relationsh: $typeClass");
+        $self->typeClass = $typeClass;
+
+        return $self;
+    }
+
     public static function typeNotUpdatable(TypeInterface $type): self
     {
         $typeClass = get_class($type);
