@@ -43,9 +43,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
 
     public function getSortableProperties(): array
     {
-        $properties = $this->getPropertyCollection()->getSortableProperties();
-
-        return $this->getTypeIdentifiersOrNull($properties);
+        return $this->getTypesOrNull($this->getPropertyCollection()->getSortableProperties());
     }
 
     /**

@@ -63,7 +63,16 @@ class AccessException extends InvalidArgumentException
     public static function typeNotFilterable(TypeInterface $type): self
     {
         $typeClass = get_class($type);
-        $self = new self("The type class you try to access is not exposed as filterable relationsh: $typeClass");
+        $self = new self("The type class you try to access is not exposed as filterable relationship: $typeClass");
+        $self->typeClass = $typeClass;
+
+        return $self;
+    }
+
+    public static function typeNotSortable(TypeInterface $type): self
+    {
+        $typeClass = get_class($type);
+        $self = new self("The type class you try to access is not exposed as sortable relationship: $typeClass");
         $self->typeClass = $typeClass;
 
         return $self;
