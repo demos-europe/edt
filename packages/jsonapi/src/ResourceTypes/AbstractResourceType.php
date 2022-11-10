@@ -7,13 +7,12 @@ namespace EDT\JsonApi\ResourceTypes;
 use EDT\JsonApi\OutputTransformation\DynamicTransformerFactory;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Contracts\EntityBasedInterface;
+use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
-use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
-use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Utilities\TypeAccessor;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
@@ -39,9 +38,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
 
     public function getFilterableProperties(): array
     {
-        $properties = $this->getPropertyCollection()->getFilterableProperties();
-
-        return $this->getTypeIdentifiersOrNull($properties);
+        return $this->getTypesOrNull($this->getPropertyCollection()->getFilterableProperties());
     }
 
     public function getSortableProperties(): array
@@ -138,7 +135,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     /**
      * @template TRelationship of object
      *
-     * @param PropertyPathInterface&EntityBasedInterface<TRelationship> $path
+     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface $path
      *
      * @return RelationshipBuilder<TEntity, TRelationship>
      */
@@ -152,7 +149,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     /**
      * @template TRelationship of object
      *
-     * @param PropertyPathInterface&EntityBasedInterface<TRelationship> $path
+     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface $path
      *
      * @return RelationshipBuilder<TEntity, TRelationship>
      */
@@ -162,6 +159,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     ): RelationshipBuilder {
         return new RelationshipBuilder($path, $this->getEntityClass(), $defaultInclude);
     }
+
+    /**
+     * @return TypeProviderInterface<TCondition, TSorting>
+     */
+    abstract protected function getTypeProvider(): TypeProviderInterface;
 
     /**
      * @return PropertyCollection<TEntity>
@@ -199,5 +201,22 @@ abstract class AbstractResourceType implements ResourceTypeInterface
 
             return $internalProperties[$propertyName];
         }, $properties);
+    }
+
+    /**
+     * @param array<non-empty-string, Property<TEntity, mixed>> $properties
+     *
+     * @return array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null>
+     */
+    private function getTypesOrNull(array $properties): array
+    {
+        $typeProvider = $this->getTypeProvider();
+
+        return array_map(
+            static fn (Property $property): ?TypeInterface => $property instanceof Relationship
+                ? $typeProvider->requestType($property->getTypeIdentifier())->getInstanceOrThrow()
+                : null,
+            $properties
+        );
     }
 }

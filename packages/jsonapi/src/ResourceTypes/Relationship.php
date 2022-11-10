@@ -16,9 +16,15 @@ class Relationship extends Property
     protected bool $defaultInclude;
 
     /**
-     * @param non-empty-string                         $name
-     * @param non-empty-list<non-empty-string>|null    $aliasedPath
+     * @var non-empty-string
+     */
+    private string $typeIdentifier;
+
+    /**
+     * @param non-empty-string                                                               $name
+     * @param non-empty-list<non-empty-string>|null                                          $aliasedPath
      * @param null|callable(TEntity, ParamBag): (iterable<TRelationship>|TRelationship|null) $customReadCallback
+     * @param non-empty-string                                                               $typeIdentifier
      */
     public function __construct(
         string $name,
@@ -31,7 +37,8 @@ class Relationship extends Property
         ?callable $customReadCallback,
         bool $allowingInconsistencies,
         bool $initializable,
-        bool $requiredForCreation
+        bool $requiredForCreation,
+        string $typeIdentifier
     ) {
         parent::__construct(
             $name,
@@ -45,11 +52,20 @@ class Relationship extends Property
             $initializable,
             $requiredForCreation
         );
+        $this->typeIdentifier = $typeIdentifier;
         $this->defaultInclude = $defaultInclude;
     }
 
     public function isDefaultInclude(): bool
     {
         return $this->defaultInclude;
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    public function getTypeIdentifier(): string
+    {
+        return $this->typeIdentifier;
     }
 }

@@ -6,6 +6,7 @@ namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
@@ -33,17 +34,25 @@ class AuthorType implements
 {
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
-    public function __construct(PathsBasedConditionFactoryInterface $conditionFactory)
-    {
+    private TypeProviderInterface $typeProvider;
+
+    public function __construct(
+        PathsBasedConditionFactoryInterface $conditionFactory,
+        TypeProviderInterface $typeProvider
+    ) {
         $this->conditionFactory = $conditionFactory;
+        $this->typeProvider = $typeProvider;
     }
 
     public function getReadableProperties(): array
     {
-        $properties = $this->getFilterableProperties();
-        $properties['birth'] = BirthType::class;
-
-        return $properties;
+        return [
+            'name' => null,
+            'pseudonym' => null,
+            'books' => BookType::class,
+            'birthCountry' => null,
+            'birth' => BirthType::class,
+        ];
     }
 
     public function getFilterableProperties(): array
@@ -51,7 +60,7 @@ class AuthorType implements
         return [
             'name' => null,
             'pseudonym' => null,
-            'books' => BookType::class,
+            'books' => $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
             'birthCountry' => null,
         ];
     }
