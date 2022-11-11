@@ -53,18 +53,6 @@ class PropertyPathProcessorTest extends TestCase
         );
     }
 
-    public function testProcessPropertyPathWithNonAvailableType(): void
-    {
-        $this->expectException(RelationshipAccessException::class);
-        $processorConfig = new ExternReadableProcessorConfig($this->typeProvider, $this->authorType, true);
-        $propertyPathProcessor = new PropertyPathProcessor($processorConfig);
-        $propertyPathProcessor->processPropertyPath(
-            $this->authorType,
-            [],
-            'birth',
-        );
-    }
-
     public function testProcessPropertyPathWithAllowedAttribute(): void
     {
         $processorConfig = new ExternReadableProcessorConfig($this->typeProvider, $this->authorType, true);

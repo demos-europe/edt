@@ -230,51 +230,6 @@ class WrapperArrayFactoryTest extends ModelBasedTest
         self::assertSame($this->authors['tolkien'], $fetchedAuthor);
     }
 
-    /**
-     * When {@link TypeInterface::getAccessCondition()} is processed the paths must not be
-     * checked against {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}.
-     * Otherwise, a user may request
-     * data without provoking any violation and still get an exception because an internal
-     * check in {@link TypeInterface::getAccessCondition()} accessed a {@link TypeInterface type}
-     * he doesn't have access to.
-     *
-     * As with the skipped {@link ReadableTypeInterface::getReadableProperties()} check
-     * we expect the developer to know
-     * what he does when implementing {@link TypeInterface::getAccessCondition()}.
-     *
-     * @throws \ReflectionException
-     */
-    public function testInternalIsExposedRelationship(): void
-    {
-        // Set the return of `isExposedAsRelationship` to `false` to simulate being able to access
-        // AuthorType but not BookType.
-        $bookType = $this->typeProvider->requestType(BookType::class)
-            ->instanceOf(BookType::class)
-            ->exposedAsRelationship()
-            ->getInstanceOrThrow();
-        $bookTypeReflection = new ReflectionClass($bookType);
-        $property = $bookTypeReflection->getProperty('exposedAsRelationship');
-        $property->setAccessible(true);
-        $property->setValue($bookType, false);
-
-        /** @var BookType $type */
-        $type = $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow();
-        self::assertFalse($type->isExposedAsRelationship());
-
-        // When fetching the AuthorType::getAccessCondition method is automatically executed, in which
-        // a path uses the BookType. This automatic check must not fail due to missing availability
-        // of the BookType for the requesting user.
-        $fetchedAuthor = $this->getEntityByIdentifier($this->authorType,'John Ronald Reuel Tolkien');
-
-        $expected = [
-            'name'         => 'John Ronald Reuel Tolkien',
-            'pseudonym'    => null,
-            'birthCountry' => 'Oranje-Freistaat',
-        ];
-
-        self::assertEquals($expected, $fetchedAuthor);
-    }
-
     private function createWrapperArrayFactory(int $depth): WrapperArrayFactory
     {
         return new WrapperArrayFactory($this->propertyAccessor, $this->propertyReader, $this->typeAccessor, $depth);
