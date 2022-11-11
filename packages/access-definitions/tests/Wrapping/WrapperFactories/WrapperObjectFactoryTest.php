@@ -15,7 +15,6 @@ use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
 use EDT\Wrapping\Utilities\PropertyReader;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
-use EDT\Wrapping\Utilities\TypeAccessor;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use Tests\data\Types\AuthorType;
@@ -46,7 +45,6 @@ class WrapperObjectFactoryTest extends ModelBasedTest
         $conditionEvaluator = new ConditionEvaluator($tableJoiner);
         $sorter = new Sorter($tableJoiner);
         $this->factory = new WrapperObjectFactory(
-            new TypeAccessor($typeProvider),
             new PropertyReader(
                 new SchemaPathProcessor(new PropertyPathProcessorFactory(), $typeProvider),
                 $conditionEvaluator,

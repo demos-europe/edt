@@ -12,7 +12,7 @@ use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
@@ -36,7 +36,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
             fn (Property $property): ?TypeInterface => $property instanceof Relationship
                 ? $this->getTypeProvider()
                     ->requestType($property->getTypeIdentifier())
-                    ->instanceOf(ReadableTypeInterface::class)
+                    ->instanceOf(TransferableTypeInterface::class)
                     ->exposedAsRelationship()
                     ->getInstanceOrThrow()
                 : null,
@@ -70,6 +70,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface
                 : null,
             $this->getPropertyCollection()->getSortableProperties()
         );
+    }
+
+    public function getUpdatableProperties(object $updateTarget): array
+    {
+        return [];
     }
 
     /**

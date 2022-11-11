@@ -33,16 +33,24 @@ class ConditionEvaluator
     public function filterArray(array $arrayToFilter, FunctionInterface $condition, FunctionInterface ...$conditions): array
     {
         array_unshift($conditions, $condition);
+        $conditions = array_values($conditions);
 
         // nested loop: for each item check all conditions
-        return array_filter($arrayToFilter, function (object $value) use ($conditions): bool {
-            foreach ($conditions as $condition) {
-                if (!$this->evaluateCondition($value, $condition)) {
-                    return false;
-                }
+        return array_filter($arrayToFilter, fn (object $value): bool => $this->evaluateConditions($value, $conditions));
+    }
+
+    /**
+     * @param list<FunctionInterface<bool>> $conditions
+     */
+    public function evaluateConditions(?object $target, array $conditions): bool
+    {
+        foreach ($conditions as $condition) {
+            if (!$this->evaluateCondition($target, $condition)) {
+                return false;
             }
-            return true;
-        });
+        }
+
+        return true;
     }
 
     /**

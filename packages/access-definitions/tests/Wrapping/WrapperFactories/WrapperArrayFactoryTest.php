@@ -10,16 +10,13 @@ use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\AccessException;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
 use EDT\Wrapping\Utilities\PropertyReader;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
-use EDT\Wrapping\Utilities\TypeAccessor;
 use EDT\Wrapping\WrapperFactories\WrapperArrayFactory;
 use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
@@ -47,8 +44,6 @@ class WrapperArrayFactoryTest extends ModelBasedTest
 
     private SchemaPathProcessor $schemaPathProcessor;
 
-    private TypeAccessor $typeAccessor;
-
     private PropertyReader $propertyReader;
 
     protected function setUp(): void
@@ -71,7 +66,6 @@ class WrapperArrayFactoryTest extends ModelBasedTest
             $this->authors
         );
         $this->schemaPathProcessor = new SchemaPathProcessor(new PropertyPathProcessorFactory(), $this->typeProvider);
-        $this->typeAccessor = new TypeAccessor($this->typeProvider);
         $tableJoiner = new TableJoiner($this->propertyAccessor);
         $conditionEvaluator = new ConditionEvaluator($tableJoiner);
         $sorter = new Sorter($tableJoiner);
@@ -232,7 +226,7 @@ class WrapperArrayFactoryTest extends ModelBasedTest
 
     private function createWrapperArrayFactory(int $depth): WrapperArrayFactory
     {
-        return new WrapperArrayFactory($this->propertyAccessor, $this->propertyReader, $this->typeAccessor, $depth);
+        return new WrapperArrayFactory($this->propertyAccessor, $this->propertyReader, $depth);
     }
 
     private function createArrayWrappers(array $entities, $type, int $depth): array
@@ -253,8 +247,8 @@ class WrapperArrayFactoryTest extends ModelBasedTest
     }
 
     /**
-     * @param IdentifiableTypeInterface&ReadableTypeInterface $type
-     * @param non-empty-string $identifier
+     * @param IdentifiableTypeInterface&TransferableTypeInterface $type
+     * @param non-empty-string                                    $identifier
      */
     public function getEntityByIdentifier(IdentifiableTypeInterface $type, string $identifier, bool $wrap = true)
     {

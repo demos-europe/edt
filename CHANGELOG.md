@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- refactor: remove unused `TypeAccessor::requestType` method
+- refactor: return conditions by `TransferableTypeInterface::getUpdatableProperties`
+- refactor: merge `ReadableTypeInterface` and `UpdatableTypeInterface` into `TransferableTypeInterface`
+- refactor: remove obsolete `TypeAccessor`
 - refactor: avoid type identifier in `PropertyPathProcessor`
 
 ## 0.14.0 - 2022-11-07

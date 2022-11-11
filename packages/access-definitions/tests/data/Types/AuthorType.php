@@ -11,24 +11,21 @@ use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
-use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
 use Tests\data\Model\Person;
 
 /**
- * @template-implements ReadableTypeInterface<Person>
+ * @template-implements TransferableTypeInterface<Person>
  * @template-implements IdentifiableTypeInterface<Person>
  * @template-implements FilterableTypeInterface<Person>
  * @template-implements SortableTypeInterface<Person>
- * @template-implements UpdatableTypeInterface<Person>
  */
 class AuthorType implements
-    ReadableTypeInterface,
+    TransferableTypeInterface,
     FilterableTypeInterface,
     SortableTypeInterface,
     IdentifiableTypeInterface,
-    UpdatableTypeInterface,
     ExposableRelationshipTypeInterface,
     AliasableTypeInterface
 {
@@ -112,9 +109,9 @@ class AuthorType implements
     public function getUpdatableProperties(object $updateTarget): array
     {
         return [
-            'name' => null,
-            'birthCountry' => null,
-            'books' => BookType::class,
+            'name' => [],
+            'birthCountry' => [],
+            'books' => [$this->typeProvider->requestType(BookType::class)->getInstanceOrThrow()->getAccessCondition()],
         ];
     }
 

@@ -7,7 +7,7 @@ namespace EDT\JsonApi\ResourceTypes;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use League\Fractal\TransformerAbstract;
 
@@ -16,13 +16,13 @@ use League\Fractal\TransformerAbstract;
  * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends ReadableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-extends TransferableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends IdentifiableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends FilterableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends SortableTypeInterface<TCondition, TSorting, TEntity>
  */
 interface ResourceTypeInterface extends
-    ReadableTypeInterface,
+    TransferableTypeInterface,
     FilterableTypeInterface,
     SortableTypeInterface,
     IdentifiableTypeInterface,
