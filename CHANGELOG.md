@@ -6,9 +6,6 @@
 - refactor: merge `ReadableTypeInterface` and `UpdatableTypeInterface` into `TransferableTypeInterface`
 - refactor: remove obsolete `TypeAccessor`
 - refactor: avoid type identifier in `PropertyPathProcessor`
-
-## 0.14.1 - 2022-11-11
-
 - refactor: require implementations of `AbstractResourceType` to implement `getTypeProvider`
 - refactor: assert `ExposableRelationshipTypeInterface` implementation and its `isExposedAsRelationship` for `true` in `AbstractResourceType` for `getReadableProperties`, `getSortableProperties` and `getFilterableProperties` but almost nowhere else
 - refactor: require `TransferableTypeInterface` to create `WrapperObject` instances
@@ -21,6 +18,9 @@
 - refactor: merge `ReadableTypeInterface` and `UpdatableTypeInterface` into `TransferableTypeInterface`
 - refactor: remove obsolete `TypeAccessor`
 - refactor: avoid type identifier in `PropertyPathProcessor`
+
+## 0.14.1 - 2022-11-11
+
 - feature: attempt parallel PHP 8 support
 
 ## 0.14.1 - 2022-11-11
