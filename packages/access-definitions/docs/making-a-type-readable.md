@@ -1,7 +1,7 @@
 ## Making a Type readable
 
 A Type that should be avaiable for reading, filtering and sorting needs to implement
-`ReadableTypeInterface`.
+`TransferableTypeInterface`, `FilterableTypeInterface` and `SortableTypeInterface` respectively.
 We continue the implementation from [how to implement types](how-to-implement-types.md)
 and add the three methods needed for overall readability.
 

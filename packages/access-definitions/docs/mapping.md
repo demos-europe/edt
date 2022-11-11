@@ -27,7 +27,7 @@ For example if your `Author` class has a property `name` but you want to use `fu
 property in your Type schema instead you can add `fullName` to the return of `getPropertyAliases` with
 the value `['name']`. The method will be invoked
 automatically by the library to apply the mapping.
-In combination with other methods like `ReadableTypeInterface::getReadableProperties` you
+In combination with other methods like `TransferableTypeInterface::getReadableProperties` you
 can either support both `fullName` and `name` in the Type or just one of them.
 
 ```php
