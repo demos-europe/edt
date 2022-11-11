@@ -21,7 +21,7 @@ interface ReadableTypeInterface extends TypeInterface
      * A restricted view on the properties of the {@link TypeInterface::getEntityClass() backing object}. Potentially
      * mapped via {@link AliasableTypeInterface::getAliases() aliases}.
      *
-     * @return array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null> The keys in the returned array are the names of the
+     * @return array<non-empty-string, ReadableTypeInterface<TCondition, TSorting, object>|null> The keys in the returned array are the names of the
      *                                   properties. Each value is the target
      *                                   {@link TypeInterface} or `null` if the
      *                                   property is a non-relationship.

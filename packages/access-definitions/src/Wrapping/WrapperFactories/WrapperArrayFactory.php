@@ -91,7 +91,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
     public function createWrapper(object $entity, ReadableTypeInterface $type): array
     {
         // we only include properties in the result array that are actually accessible
-        $readableProperties = $this->typeAccessor->getAccessibleReadableProperties($type);
+        $readableProperties = $type->getReadableProperties();
 
         $aliases = $type instanceof AliasableTypeInterface ? $type->getAliases() : [];
 

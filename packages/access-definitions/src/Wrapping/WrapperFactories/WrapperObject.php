@@ -56,9 +56,9 @@ class WrapperObject
     private object $object;
 
     /**
-     * @var TypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
+     * @var ReadableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
      */
-    private TypeInterface $type;
+    private ReadableTypeInterface $type;
 
     /**
      * @var TypeAccessor<FunctionInterface<bool>, SortMethodInterface>
@@ -74,14 +74,14 @@ class WrapperObject
     private WrapperObjectFactory $wrapperFactory;
 
     /**
-     * @param TEntity                                                              $object
-     * @param TypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $type
-     * @param TypeAccessor<FunctionInterface<bool>, SortMethodInterface>     $typeAccessor
+     * @param TEntity                                                                      $object
+     * @param ReadableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $type
+     * @param TypeAccessor<FunctionInterface<bool>, SortMethodInterface>                   $typeAccessor
      */
     public function __construct(
         object                    $object,
         PropertyReader            $propertyReader,
-        TypeInterface             $type,
+        ReadableTypeInterface     $type,
         TypeAccessor              $typeAccessor,
         PropertyAccessorInterface $propertyAccessor,
         ConditionEvaluator        $conditionEvaluator,
@@ -148,12 +148,8 @@ class WrapperObject
      */
     public function __get(string $propertyName)
     {
-        if (!$this->type instanceof ReadableTypeInterface) {
-            throw AccessException::typeNotReadable($this->type);
-        }
-
         // we allow reading of properties that are actually accessible
-        $readableProperties = $this->typeAccessor->getAccessibleReadableProperties($this->type);
+        $readableProperties = $this->type->getReadableProperties();
         if (!array_key_exists($propertyName, $readableProperties)) {
             throw PropertyAccessException::propertyNotAvailableInReadableType($propertyName, $this->type, ...array_keys($readableProperties));
         }

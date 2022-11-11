@@ -16,7 +16,6 @@ use cebe\openapi\spec\Tag;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Throwable;
 use function count;
@@ -88,7 +87,6 @@ final class OpenAPISchemaGenerator
         $tags = array_filter(
             $tags,
             static fn (?ResourceTypeInterface $type): bool => null !== $type
-                && ($type->isExposedAsPrimaryResource() || $type->isExposedAsRelationship())
         );
 
         $tags = array_map(function (ResourceTypeInterface $type): ResourceTypeInterface {
@@ -278,9 +276,7 @@ final class OpenAPISchemaGenerator
         $properties = array_filter(
             $properties,
             fn (?TypeInterface $relationshipType): bool => null === $relationshipType
-                || ($relationshipType instanceof ExposableRelationshipTypeInterface
-                    && $relationshipType->isExposedAsRelationship()
-                    && $relationshipType instanceof ResourceTypeInterface)
+                || $relationshipType instanceof ResourceTypeInterface
         );
         $properties = array_map(static fn (?ResourceTypeInterface $type): ?string => null === $type ? null : $type::getName(), $properties);
 

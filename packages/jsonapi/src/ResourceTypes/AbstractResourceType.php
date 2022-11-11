@@ -8,12 +8,13 @@ use EDT\JsonApi\OutputTransformation\DynamicTransformerFactory;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
+use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
+use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Utilities\TypeAccessor;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
 use League\Fractal\TransformerAbstract;
@@ -31,19 +32,44 @@ abstract class AbstractResourceType implements ResourceTypeInterface
 {
     public function getReadableProperties(): array
     {
-        $properties = $this->getPropertyCollection()->getReadableProperties();
-
-        return $this->getTypesOrNull($properties);
+        return array_map(
+            fn (Property $property): ?TypeInterface => $property instanceof Relationship
+                ? $this->getTypeProvider()
+                    ->requestType($property->getTypeIdentifier())
+                    ->instanceOf(ReadableTypeInterface::class)
+                    ->exposedAsRelationship()
+                    ->getInstanceOrThrow()
+                : null,
+            $this->getPropertyCollection()->getReadableProperties()
+        );
     }
 
     public function getFilterableProperties(): array
     {
-        return $this->getTypesOrNull($this->getPropertyCollection()->getFilterableProperties());
+        return array_map(
+            fn (Property $property): ?TypeInterface => $property instanceof Relationship
+                ? $this->getTypeProvider()
+                    ->requestType($property->getTypeIdentifier())
+                    ->instanceOf(FilterableTypeInterface::class)
+                    ->exposedAsRelationship()
+                    ->getInstanceOrThrow()
+                : null,
+            $this->getPropertyCollection()->getFilterableProperties()
+        );
     }
 
     public function getSortableProperties(): array
     {
-        return $this->getTypesOrNull($this->getPropertyCollection()->getSortableProperties());
+        return array_map(
+            fn (Property $property): ?TypeInterface => $property instanceof Relationship
+                ? $this->getTypeProvider()
+                    ->requestType($property->getTypeIdentifier())
+                    ->instanceOf(SortableTypeInterface::class)
+                    ->exposedAsRelationship()
+                    ->getInstanceOrThrow()
+                : null,
+            $this->getPropertyCollection()->getSortableProperties()
+        );
     }
 
     /**
@@ -87,9 +113,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * Relationships: Relationships returned by this method will only have any effect, if they
-     * return `true` in {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}.
-     *
      * Array order: Even though the order of the properties returned within the array may have an
      * effect (e.g. determining the order of properties in JSON:API responses) you can not rely on
      * these effects; they may be changed in the future.
@@ -172,22 +195,5 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         );
 
         return new PropertyCollection($properties);
-    }
-
-    /**
-     * @param array<non-empty-string, Property<TEntity, mixed>> $properties
-     *
-     * @return array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null>
-     */
-    private function getTypesOrNull(array $properties): array
-    {
-        $typeProvider = $this->getTypeProvider();
-
-        return array_map(
-            static fn (Property $property): ?TypeInterface => $property instanceof Relationship
-                ? $typeProvider->requestType($property->getTypeIdentifier())->getInstanceOrThrow()
-                : null,
-            $properties
-        );
     }
 }
