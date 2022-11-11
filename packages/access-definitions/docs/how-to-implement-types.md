@@ -258,7 +258,7 @@ As it is a non-relationship the value is set to `null`, which means no path segm
 follow when `accountName` is used in a property path.
 
 ```php
-class AuthorType implements ReadableTypeInterface
+class AuthorType implements \EDT\Wrapping\Contracts\Types\TransferableTypeInterface
 {
     // ...
     
