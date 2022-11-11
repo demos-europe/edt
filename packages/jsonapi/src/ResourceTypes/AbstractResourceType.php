@@ -82,11 +82,8 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      */
     public function getTransformer(): TransformerAbstract
     {
-        return (new DynamicTransformerFactory(
-            $this->getTypeAccessor(),
-            $this->getMessageFormatter(),
-            $this->getLogger()
-        ))->createTransformer($this, $this->getWrapperFactory());
+        return (new DynamicTransformerFactory($this->getMessageFormatter(), $this->getLogger()))
+            ->createTransformer($this, $this->getWrapperFactory());
     }
 
     /**
@@ -102,11 +99,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     abstract protected function getProperties(): array;
 
     abstract protected function getWrapperFactory(): WrapperObjectFactory;
-
-    /**
-     * @return TypeAccessor<TCondition, TSorting>
-     */
-    abstract protected function getTypeAccessor(): TypeAccessor;
 
     abstract protected function getLogger(): LoggerInterface;
 
