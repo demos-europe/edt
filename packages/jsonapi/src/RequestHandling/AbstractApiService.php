@@ -11,7 +11,6 @@ use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
-use EDT\Wrapping\Contracts\Types\UpdatableTypeInterface;
 use Exception;
 use InvalidArgumentException;
 use League\Fractal\Resource\Collection;
@@ -143,7 +142,6 @@ abstract class AbstractApiService
 
         $type = $this->typeProvider->requestType($urlTypeIdentifier)
             ->instanceOf(ResourceTypeInterface::class)
-            ->instanceOf(UpdatableTypeInterface::class)
             ->getInstanceOrThrow();
         $this->assertExposureAsPrimaryResource($type);
 

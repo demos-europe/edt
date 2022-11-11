@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\OutputTransformation;
 
 use EDT\Querying\Utilities\Iterables;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\ParamBag;
@@ -32,17 +32,17 @@ class TransformerObjectWrapper
     private $callable;
 
     /**
-     * @var ReadableTypeInterface<TCondition, TSorting, TRelationship>
+     * @var TransferableTypeInterface<TCondition, TSorting, TRelationship>
      */
-    private ReadableTypeInterface $relationshipType;
+    private TransferableTypeInterface $relationshipType;
 
     private WrapperObjectFactory $wrapperFactory;
 
     /**
      * @param callable(TEntity, ParamBag): (TRelationship|iterable<TRelationship>|null) $callable
-     * @param ReadableTypeInterface<TCondition, TSorting, TRelationship>                $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>            $relationshipType
      */
-    public function __construct(callable $callable, ReadableTypeInterface $relationshipType, WrapperObjectFactory $wrapperFactory)
+    public function __construct(callable $callable, TransferableTypeInterface $relationshipType, WrapperObjectFactory $wrapperFactory)
     {
         $this->callable = $callable;
         $this->relationshipType = $relationshipType;

@@ -13,7 +13,7 @@ use EDT\Wrapping\Contracts\TypeProviderInterface;
  *
  * @template-extends TypeInterface<TCondition, TSorting, TEntity>
  */
-interface ReadableTypeInterface extends TypeInterface
+interface TransferableTypeInterface extends TypeInterface
 {
     /**
      * All properties of this type that are currently readable. May depend on authorizations of the accessing user.
@@ -21,10 +21,17 @@ interface ReadableTypeInterface extends TypeInterface
      * A restricted view on the properties of the {@link TypeInterface::getEntityClass() backing object}. Potentially
      * mapped via {@link AliasableTypeInterface::getAliases() aliases}.
      *
-     * @return array<non-empty-string, ReadableTypeInterface<TCondition, TSorting, object>|null> The keys in the returned array are the names of the
+     * @return array<non-empty-string, TransferableTypeInterface<TCondition, TSorting, object>|null> The keys in the returned array are the names of the
      *                                   properties. Each value is the target
      *                                   {@link TypeInterface} or `null` if the
      *                                   property is a non-relationship.
      */
     public function getReadableProperties(): array;
+
+    /**
+     * @param TEntity $updateTarget
+     *
+     * @return array<non-empty-string, list<TCondition>>
+     */
+    public function getUpdatableProperties(object $updateTarget): array;
 }

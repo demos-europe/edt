@@ -10,7 +10,6 @@ use EDT\JsonApi\Validation\FieldsValidator;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
-use EDT\Wrapping\Utilities\TypeAccessor;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 use Tests\data\ApiTypes\AuthorType;
