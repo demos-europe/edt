@@ -22,7 +22,7 @@ interface WrapperFactoryInterface
     /**
      * @template TEntity of object
      *
-     * @param TEntity                              $entity
+     * @param TEntity                                              $entity
      * @param ReadableTypeInterface<TCondition, TSorting, TEntity> $type
      *
      * @return array<non-empty-string, mixed>|object|null

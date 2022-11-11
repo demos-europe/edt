@@ -10,14 +10,10 @@ use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
-use EDT\Wrapping\Contracts\RelationshipAccessException;
-use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Utilities\TypeAccessors\AbstractProcessorConfig;
 use InvalidArgumentException;
-use function array_key_exists;
 
 /**
  * Instances of this class can be used to convert the property paths in a {@link PathsBasedInterface}
@@ -51,11 +47,7 @@ class PropertyPathProcessor
      *
      * @throws AccessException Thrown if any of the given paths can not be used because the path
      *                         itself is not available (not present via
-     *                         {@link AbstractProcessorConfig::getPropertyType()}) or, in case of a
-     *                         relationship, the
-     *                         type it leads to is not accessible
-     *                         ({@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}
-     *                         returned `false`).
+     *                         {@link AbstractProcessorConfig::getPropertyType()}).
      * @throws PathException Thrown if {@link AliasableTypeInterface::getAliases()} returned an invalid path.
      */
     public function processPropertyPaths(PathsBasedInterface $pathsBased): void

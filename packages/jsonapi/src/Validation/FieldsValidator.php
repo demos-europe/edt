@@ -14,8 +14,6 @@ use function is_array;
 
 class FieldsValidator
 {
-    private TypeAccessor $typeAccessor;
-
     private ValidatorInterface $validator;
 
     /**
@@ -28,9 +26,8 @@ class FieldsValidator
      */
     private array $propertiesConstraints;
 
-    public function __construct(TypeAccessor $typeAccessor, ValidatorInterface $validator)
+    public function __construct(ValidatorInterface $validator)
     {
-        $this->typeAccessor = $typeAccessor;
         $this->validator = $validator;
         $this->typeConstraints = [
             new Assert\NotNull(),
@@ -96,7 +93,7 @@ class FieldsValidator
         }
 
         $requestedProperties = explode(',', $propertiesString);
-        $readableProperties = $this->typeAccessor->getAccessibleReadableProperties($type);
+        $readableProperties = $type->getReadableProperties();
         $readablePropertyNames = array_keys($readableProperties);
 
         return array_values(array_diff($requestedProperties, $readablePropertyNames));
