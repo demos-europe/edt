@@ -34,11 +34,7 @@ class FieldsValidatorTest extends TestCase
             new BirthType($conditionFactory),
         ]);
         $lazyTypeProvider->setAllTypes($this->typeProvider);
-        $typeAccessor = new TypeAccessor($this->typeProvider);
-        $this->fieldsValidator = new FieldsValidator(
-            $typeAccessor,
-            Validation::createValidator()
-        );
+        $this->fieldsValidator = new FieldsValidator(Validation::createValidator());
     }
 
     /**

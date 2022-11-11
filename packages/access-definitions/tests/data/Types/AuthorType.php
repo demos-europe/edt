@@ -51,7 +51,6 @@ class AuthorType implements
             'pseudonym' => null,
             'books' => $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
             'birthCountry' => null,
-            'birth' => $this->typeProvider->requestType(BirthType::class)->getInstanceOrThrow(),
         ];
     }
 
