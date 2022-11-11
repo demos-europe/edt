@@ -104,8 +104,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      * If a to-many relationship is referenced each value will be checked using {@link TypeInterface::getAccessCondition()}
      * if it should be included, if so it is wrapped using this factory and included in the result.
      *
-     * @param (TransferableTypeInterface&ExposableRelationshipTypeInterface)|null                    $value If not `null` the type must return `true` in
-     *                                          {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}.
+     * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object>|null   $value
      * @param array{0: object, 1: int, 2: array<non-empty-string, non-empty-list<non-empty-string>>} $context
      *
      * @throws PathException

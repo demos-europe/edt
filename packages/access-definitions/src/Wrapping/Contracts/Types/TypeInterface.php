@@ -21,9 +21,10 @@ interface TypeInterface extends EntityBasedInterface
      * corresponding to this type.
      *
      * The returned condition is applied to the schema of this type and **not** the schema of
-     * the {@link TypeInterface::getEntityClass() entity}. To resolve aliases you need to define all
-     * properties used in these conditions in the {@link TypeInterface::getInternalProperties()}
-     * method of the types corresponding to your path segments.
+     * the {@link TypeInterface::getEntityClass() entity}. To enable the engine to resolve aliases
+     * you need to define all properties used in these conditions in the
+     * {@link TypeInterface::getInternalProperties()} method of the types corresponding to your
+     * path segments.
      *
      * This allows you to access internal properties not exposed in any way. Aliases will
      * be applied to the paths used in the returned condition, meaning you can define
