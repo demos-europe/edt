@@ -14,6 +14,7 @@
 - refactor: merge `ReadableTypeInterface` and `UpdatableTypeInterface` into `TransferableTypeInterface`
 - refactor: remove obsolete `TypeAccessor`
 - refactor: avoid type identifier in `PropertyPathProcessor`
+- feature: attempt parallel PHP 8 support
 
 ## 0.14.1 - 2022-11-11
 
