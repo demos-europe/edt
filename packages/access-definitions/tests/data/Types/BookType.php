@@ -101,7 +101,7 @@ class BookType implements
     {
         return [
             'title' => null,
-            'author' => AuthorType::class,
+            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
             'tags' => null,
         ];
     }
