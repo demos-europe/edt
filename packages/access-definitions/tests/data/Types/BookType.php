@@ -10,18 +10,18 @@ use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use Tests\data\Model\Book;
 
 /**
- * @template-implements ReadableTypeInterface<Book>
+ * @template-implements TransferableTypeInterface<Book>
  * @template-implements IdentifiableTypeInterface<Book>
  * @template-implements FilterableTypeInterface<Book>
  * @template-implements SortableTypeInterface<Book>
  */
 class BookType implements
-    ReadableTypeInterface,
+    TransferableTypeInterface,
     FilterableTypeInterface,
     SortableTypeInterface,
     IdentifiableTypeInterface,
@@ -104,5 +104,10 @@ class BookType implements
             'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
             'tags' => null,
         ];
+    }
+
+    public function getUpdatableProperties(object $updateTarget): array
+    {
+        return [];
     }
 }

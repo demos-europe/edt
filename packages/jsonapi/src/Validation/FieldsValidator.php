@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Validation;
 
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
-use EDT\Wrapping\Utilities\TypeAccessor;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -86,7 +85,7 @@ class FieldsValidator
     /**
      * @return list<string>
      */
-    public function getNonReadableProperties(string $propertiesString, ReadableTypeInterface $type): array
+    public function getNonReadableProperties(string $propertiesString, TransferableTypeInterface $type): array
     {
         if ('' === $propertiesString) {
             return [];

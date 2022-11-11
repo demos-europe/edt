@@ -9,7 +9,7 @@ use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\Property;
 use EDT\JsonApi\ResourceTypes\PropertyCollection;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
@@ -113,8 +113,8 @@ class DynamicTransformerFactory
     }
 
     /**
-     * @param non-empty-string                                                                  $propertyName
-     * @param array<non-empty-string, ReadableTypeInterface<TCondition, TSorting, object>|null> $readableProperties
+     * @param non-empty-string                                                                      $propertyName
+     * @param array<non-empty-string, TransferableTypeInterface<TCondition, TSorting, object>|null> $readableProperties
      *
      * @return ResourceTypeInterface<TCondition, TSorting, object>|null
      */

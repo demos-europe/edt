@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 
 /**
@@ -28,7 +28,7 @@ abstract class CachingResourceType extends AbstractResourceType
     protected ?array $filterablePropertiesCache = null;
 
     /**
-     * @var array<non-empty-string, ReadableTypeInterface<TCondition, TSorting, object>|null>|null
+     * @var array<non-empty-string, TransferableTypeInterface<TCondition, TSorting, object>|null>|null
      */
     protected ?array $readablePropertiesCache = null;
 
