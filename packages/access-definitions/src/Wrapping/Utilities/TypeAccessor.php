@@ -92,14 +92,4 @@ class TypeAccessor
 
         return $updatableProperties;
     }
-
-    /**
-     * @param non-empty-string $typeIdentifier
-     *
-     * @return TypeRequirement<TypeInterface<TCondition, TSorting, object>>
-     */
-    public function requestType(string $typeIdentifier): TypeRequirement
-    {
-        return $this->typeProvider->requestType($typeIdentifier);
-    }
 }
