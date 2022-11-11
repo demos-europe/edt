@@ -122,8 +122,8 @@ class AuthorType implements
     public function getInternalProperties(): array
     {
         return [
-            'books' => BookType::class,
-            'writtenBooks' => BookType::class,
+            'books' => $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
+            'writtenBooks' => $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
             'name' => null,
             'birthCountry' => null,
             'pseudonym' => null,

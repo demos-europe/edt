@@ -62,8 +62,8 @@ interface TypeInterface extends EntityBasedInterface
      * into the schema of the backing object. Any aliasing defined by {@link AliasableTypeInterface::getAliases()}
      * will be applied automatically.
      *
-     * @return array<non-empty-string, non-empty-string|null> The mapping from property name (in the schema of this type)
-     *                                   to the identifier of the target type of the relationship,
+     * @return array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null> The mapping from property name (in the schema of this type)
+     *                                   to the target type of the relationship,
      *                                   or `null` if the property is a non-relationship.
      */
     public function getInternalProperties(): array;
