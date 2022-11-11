@@ -38,32 +38,6 @@ class TypeAccessor
     }
 
     /**
-     * @param ReadableTypeInterface&TypeInterface<TCondition, TSorting, object> $type
-     *
-     * @return array<non-empty-string, (ExposableRelationshipTypeInterface&ReadableTypeInterface<TCondition, TSorting, object>)|null>
-     *
-     * @throws TypeRetrievalAccessException
-     */
-    public function getAccessibleReadableProperties(TypeInterface $type): array
-    {
-        $allowedProperties = [];
-        foreach ($type->getReadableProperties() as $propertyName => $relationshipType) {
-            if (null === $relationshipType) {
-                // access to attributes is not restricted by further considerations
-                $allowedProperties[$propertyName] = null;
-            } elseif ($relationshipType instanceof ReadableTypeInterface
-                && $relationshipType instanceof ExposableRelationshipTypeInterface
-                && $relationshipType->isExposedAsRelationship()
-            ) {
-                // access to relationships depends on readability and "exposedness"
-                $allowedProperties[$propertyName] = $relationshipType;
-            }
-        }
-
-        return $allowedProperties;
-    }
-
-    /**
      * Collects the properties of the given type that are updatable.
      *
      * @template TEntity of object

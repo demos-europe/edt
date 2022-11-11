@@ -14,7 +14,8 @@ namespace EDT\Wrapping\Contracts\Types;
 interface FilterableTypeInterface extends TypeInterface
 {
     /**
-     * All properties of this type that can be used to filter corresponding instances.
+     * All properties of this type that can be used to filter instances of this type and types that
+     * have a relationship to this type.
      *
      * In most use cases this method can return the same array as
      * {@link ReadableTypeInterface::getReadableProperties()} but you may want to limit
@@ -22,7 +23,7 @@ interface FilterableTypeInterface extends TypeInterface
      * at all. You may also want to allow more properties for filtering than you allowed for reading,
      * but be careful as this may allow guessing values of non-readable properties.
      *
-     * @return array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null> The keys in the returned array are the names of the
+     * @return array<non-empty-string, FilterableTypeInterface<TCondition, TSorting, object>|null> The keys in the returned array are the names of the
      *                                   properties. Each value is the target
      *                                   {@link TypeInterface} or `null` if the
      *                                   property is a non-relationship.

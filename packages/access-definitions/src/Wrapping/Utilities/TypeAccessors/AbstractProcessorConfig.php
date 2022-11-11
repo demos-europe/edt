@@ -6,9 +6,7 @@ namespace EDT\Wrapping\Utilities\TypeAccessors;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\PropertyAccessException;
-use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use function array_key_exists;
 
@@ -66,16 +64,7 @@ abstract class AbstractProcessorConfig
             throw PropertyAccessException::propertyNotAvailableInType($property, $type, ...$availablePropertyNames);
         }
 
-        $propertyTypeIdentifier = $availableProperties[$property];
-        if (null === $propertyTypeIdentifier) {
-            return null;
-        }
-
-        try {
-            return $this->getRelationshipType($propertyTypeIdentifier);
-        } catch (TypeRetrievalAccessException $exception) {
-            throw RelationshipAccessException::relationshipTypeAccess($type, $property, $exception);
-        }
+        return $availableProperties[$property];
     }
 
     /**
@@ -83,16 +72,7 @@ abstract class AbstractProcessorConfig
      *
      * @param TType $type
      *
-     * @return array<non-empty-string, non-empty-string|null>
+     * @return array<non-empty-string, TType|null>
      */
     abstract public function getProperties(TypeInterface $type): array;
-
-    /**
-     * @param non-empty-string $typeIdentifier
-     *
-     * @return TType
-     *
-     * @throws TypeRetrievalAccessException
-     */
-    abstract public function getRelationshipType(string $typeIdentifier): TypeInterface;
 }

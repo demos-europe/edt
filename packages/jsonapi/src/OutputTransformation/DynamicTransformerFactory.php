@@ -9,6 +9,7 @@ use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\Property;
 use EDT\JsonApi\ResourceTypes\PropertyCollection;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
@@ -112,8 +113,8 @@ class DynamicTransformerFactory
     }
 
     /**
-     * @param non-empty-string                                                          $propertyName
-     * @param array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null> $readableProperties
+     * @param non-empty-string                                                                  $propertyName
+     * @param array<non-empty-string, ReadableTypeInterface<TCondition, TSorting, object>|null> $readableProperties
      *
      * @return ResourceTypeInterface<TCondition, TSorting, object>|null
      */
@@ -124,7 +125,7 @@ class DynamicTransformerFactory
             throw new InvalidArgumentException("Property '$propertyName' marked as relationship, but no relationship type was configured as readable in resource type.");
         }
 
-        return $relationshipType instanceof ResourceTypeInterface && $relationshipType->isExposedAsRelationship()
+        return $relationshipType instanceof ResourceTypeInterface
             ? $relationshipType
             : null;
     }
