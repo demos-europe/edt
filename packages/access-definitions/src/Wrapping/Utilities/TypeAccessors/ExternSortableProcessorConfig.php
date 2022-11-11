@@ -6,6 +6,7 @@ namespace EDT\Wrapping\Utilities\TypeAccessors;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\PropertyAccessException;
+use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -32,11 +33,11 @@ class ExternSortableProcessorConfig extends AbstractProcessorConfig
 
         if (!$targetType instanceof ExposableRelationshipTypeInterface
             || !$targetType->isExposedAsRelationship()) {
-            throw PropertyAccessException::notExposedRelationship($targetType);
+            throw RelationshipAccessException::notExposedRelationship($targetType);
         }
 
         if (!$targetType instanceof SortableTypeInterface){
-            throw PropertyAccessException::typeNotSortable($type);
+            throw RelationshipAccessException::typeNotSortable($type);
         }
 
         return $targetType;

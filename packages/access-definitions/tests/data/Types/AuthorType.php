@@ -34,7 +34,7 @@ class AuthorType implements
 {
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
-    private TypeProviderInterface $typeProvider;
+    protected TypeProviderInterface $typeProvider;
 
     public function __construct(
         PathsBasedConditionFactoryInterface $conditionFactory,
@@ -49,9 +49,9 @@ class AuthorType implements
         return [
             'name' => null,
             'pseudonym' => null,
-            'books' => BookType::class,
+            'books' => $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
             'birthCountry' => null,
-            'birth' => BirthType::class,
+            'birth' => $this->typeProvider->requestType(BirthType::class)->getInstanceOrThrow(),
         ];
     }
 
