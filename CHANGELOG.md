@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.14.1 - 2022-11-11
 
 - feature: attempt parallel PHP 8 support
 
