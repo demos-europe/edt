@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.14.1 - 2022-11-11
 
 - refactor: require implementations of `AbstractResourceType` to implement `getTypeProvider`
 - refactor: assert `ExposableRelationshipTypeInterface` implementation and its `isExposedAsRelationship` for `true` in `AbstractResourceType` for `getReadableProperties`, `getSortableProperties` and `getFilterableProperties` but almost nowhere else
