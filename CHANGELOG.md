@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- refactor: require implementations of `AbstractResourceType` to implement `getTypeProvider`
+- refactor: assert `ExposableRelationshipTypeInterface` implementation and its `isExposedAsRelationship` for `true` in `AbstractResourceType` for `getReadableProperties`, `getSortableProperties` and `getFilterableProperties` but almost nowhere else
+- refactor: require `TransferableTypeInterface` to create `WrapperObject` instances
+- refactor: change methods and signatures in `AbstractProcessorConfig` and remove `PropertyPathProcessor::getPropertyTypeIdentifier`
+- refactor: return `TransferableTypeInterface` instances by `TransferableTypeInterface::getReadableProperties`
+- refactor: return `TypeInterface` instances by `TypeInterface::getInternalProperties`
+- refactor: return `SortableTypeInterface` instances by `SortableTypeInterface::getSortableProperties`
+- refactor: return `FilterableTypeInterface` instances by `FilterableTypeInterface::getFilterableProperties`
 - refactor: return conditions by `TransferableTypeInterface::getUpdatableProperties`
 - refactor: merge `ReadableTypeInterface` and `UpdatableTypeInterface` into `TransferableTypeInterface`
 - refactor: remove obsolete `TypeAccessor`
