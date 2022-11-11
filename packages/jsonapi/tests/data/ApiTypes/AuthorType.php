@@ -6,6 +6,7 @@ namespace Tests\data\ApiTypes;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use League\Fractal\TransformerAbstract;
+use Tests\data\Types\BirthType;
 
 class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInterface
 {
@@ -19,12 +20,18 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
         return new class() extends TransformerAbstract {};
     }
 
+    /**
+     * Overwrites its parent relationships with reference to resource type implementations.
+     */
     public function getReadableProperties(): array
     {
-        $properties = parent::getReadableProperties();
-        // overwrite relationships with reference to resource type implementation
-        $properties['books'] = BookType::class;
-        return $properties;
+        return [
+            'name' => null,
+            'pseudonym' => null,
+            'books' => $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
+            'birthCountry' => null,
+            'birth' => $this->typeProvider->requestType(BirthType::class)->getInstanceOrThrow(),
+        ];
     }
 
     public function isExposedAsPrimaryResource(): bool

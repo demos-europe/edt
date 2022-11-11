@@ -6,6 +6,7 @@ namespace EDT\Wrapping\Utilities\TypeAccessors;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\PropertyAccessException;
+use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -33,11 +34,11 @@ class ExternFilterableProcessorConfig extends AbstractProcessorConfig
 
         if (!$targetType instanceof ExposableRelationshipTypeInterface
             || !$targetType->isExposedAsRelationship()) {
-            throw PropertyAccessException::notExposedRelationship($targetType);
+            throw RelationshipAccessException::notExposedRelationship($targetType);
         }
 
         if (!$targetType instanceof FilterableTypeInterface){
-            throw PropertyAccessException::typeNotFilterable($type);
+            throw RelationshipAccessException::typeNotFilterable($type);
         }
 
         return $targetType;

@@ -67,6 +67,15 @@ class RelationshipAccessException extends PropertyAccessException
         return $self;
     }
 
+    public static function notExposedRelationship(TypeInterface $type): self
+    {
+        $typeClass = get_class($type);
+        $self = new self("The type class you try to access is not exposed as relationship: $typeClass");
+        $self->typeClass = $typeClass;
+
+        return $self;
+    }
+
     /**
      * @return non-empty-string|null
      */
