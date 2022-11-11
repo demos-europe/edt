@@ -13,6 +13,7 @@ use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Wrapping\Contracts\AccessException;
+use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -65,7 +66,7 @@ class PropertyReader
     public function determineToOneRelationshipValue(ReadableTypeInterface $relationshipType, ?object $value): ?object
     {
         if (!$relationshipType->isExposedAsRelationship()) {
-            throw AccessException::notExposedRelationship($relationshipType);
+            throw RelationshipAccessException::notExposedRelationship($relationshipType);
         }
 
         // if null relationship return null
@@ -113,7 +114,7 @@ class PropertyReader
     public function determineToManyRelationshipValue(ReadableTypeInterface $relationshipType, iterable $values): array
     {
         if (!$relationshipType->isExposedAsRelationship()) {
-            throw AccessException::notExposedRelationship($relationshipType);
+            throw RelationshipAccessException::notExposedRelationship($relationshipType);
         }
 
         $entities = $this->filter($relationshipType, Iterables::asArray($values));

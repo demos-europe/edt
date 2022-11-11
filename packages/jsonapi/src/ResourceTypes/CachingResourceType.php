@@ -26,7 +26,7 @@ abstract class CachingResourceType extends AbstractResourceType
     protected ?array $filterablePropertiesCache = null;
 
     /**
-     * @var array<non-empty-string, non-empty-string|null>|null
+     * @var array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null>|null
      */
     protected ?array $readablePropertiesCache = null;
 

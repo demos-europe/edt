@@ -33,7 +33,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     {
         $properties = $this->getPropertyCollection()->getReadableProperties();
 
-        return $this->getTypeIdentifiersOrNull($properties);
+        return $this->getTypesOrNull($properties);
     }
 
     public function getFilterableProperties(): array
@@ -180,25 +180,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         );
 
         return new PropertyCollection($properties);
-    }
-
-    /**
-     * @param array<non-empty-string, Property<TEntity, mixed>> $properties
-     *
-     * @return array<non-empty-string, non-empty-string|null>
-     */
-    private function getTypeIdentifiersOrNull(array $properties): array
-    {
-        $internalProperties = $this->getInternalProperties();
-
-        return array_map(function (Property $property) use ($internalProperties): ?string {
-            $propertyName = $property->getName();
-            if (!array_key_exists($propertyName, $internalProperties)) {
-                throw new InvalidArgumentException("Property `$propertyName` was not configured in resource type `{$this::getName()}`.");
-            }
-
-            return $internalProperties[$propertyName];
-        }, $properties);
     }
 
     /**

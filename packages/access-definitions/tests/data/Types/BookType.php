@@ -20,13 +20,18 @@ use Tests\data\Model\Book;
  * @template-implements FilterableTypeInterface<Book>
  * @template-implements SortableTypeInterface<Book>
  */
-class BookType implements ReadableTypeInterface, FilterableTypeInterface, SortableTypeInterface, IdentifiableTypeInterface, ExposableRelationshipTypeInterface
+class BookType implements
+    ReadableTypeInterface,
+    FilterableTypeInterface,
+    SortableTypeInterface,
+    IdentifiableTypeInterface,
+    ExposableRelationshipTypeInterface
 {
     private bool $exposedAsRelationship = true;
 
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
-    private TypeProviderInterface $typeProvider;
+    protected TypeProviderInterface $typeProvider;
 
     public function __construct(
         PathsBasedConditionFactoryInterface $conditionFactory,
@@ -40,7 +45,7 @@ class BookType implements ReadableTypeInterface, FilterableTypeInterface, Sortab
     {
         return [
             'title' => null,
-            'author' => AuthorType::class,
+            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
             'tags' => null,
         ];
     }
