@@ -9,7 +9,7 @@ use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\Property;
 use EDT\JsonApi\ResourceTypes\PropertyCollection;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Utilities\TypeAccessor;
+use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -20,24 +20,12 @@ use Psr\Log\LoggerInterface;
  */
 class DynamicTransformerFactory
 {
-    /**
-     * @var TypeAccessor<TCondition, TSorting>
-     */
-    private TypeAccessor $typeAccessor;
-
     private MessageFormatter $messageFormatter;
 
     private LoggerInterface $logger;
 
-    /**
-     * @param TypeAccessor<TCondition, TSorting> $typeAccessor
-     */
-    public function __construct(
-        TypeAccessor $typeAccessor,
-        MessageFormatter $messageFormatter,
-        LoggerInterface $logger
-    ) {
-        $this->typeAccessor = $typeAccessor;
+    public function __construct(MessageFormatter $messageFormatter, LoggerInterface $logger)
+    {
         $this->messageFormatter = $messageFormatter;
         $this->logger = $logger;
     }
@@ -94,11 +82,11 @@ class DynamicTransformerFactory
     private function transformToIncludeDefinitions(ResourceTypeInterface $type, PropertyCollection $propertyCollection, WrapperObjectFactory $wrapperFactory): array
     {
         $readableRelationships = $propertyCollection->getReadableRelationships();
-        $internalProperties = $type->getInternalProperties();
+        $readableProperties = $type->getReadableProperties();
 
         $includeDefinitions = [];
         foreach ($readableRelationships as $propertyName => $property) {
-            $relationshipType = $this->getRelationshipTypeOrNull($propertyName, $internalProperties);
+            $relationshipType = $this->getRelationshipTypeOrNull($propertyName, $readableProperties);
             if (null === $relationshipType) {
                 continue;
             }
@@ -124,21 +112,20 @@ class DynamicTransformerFactory
     }
 
     /**
-     * @param non-empty-string                               $propertyName
-     * @param array<non-empty-string, non-empty-string|null> $internalProperties
+     * @param non-empty-string                                                          $propertyName
+     * @param array<non-empty-string, TypeInterface<TCondition, TSorting, object>|null> $readableProperties
      *
      * @return ResourceTypeInterface<TCondition, TSorting, object>|null
      */
-    private function getRelationshipTypeOrNull(string $propertyName, array $internalProperties): ?ResourceTypeInterface
+    private function getRelationshipTypeOrNull(string $propertyName, array $readableProperties): ?ResourceTypeInterface
     {
-        $typeIdentifier = $internalProperties[$propertyName] ?? null;
-        if (null === $typeIdentifier) {
-            throw new InvalidArgumentException("Property '$propertyName' marked as relationship, but no relationship type configured in resource type.");
+        $relationshipType = $readableProperties[$propertyName] ?? null;
+        if (null === $relationshipType) {
+            throw new InvalidArgumentException("Property '$propertyName' marked as relationship, but no relationship type was configured as readable in resource type.");
         }
 
-        return $this->typeAccessor->requestType($typeIdentifier)
-            ->instanceOf(ResourceTypeInterface::class)
-            ->exposedAsRelationship()
-            ->getInstanceOrNull();
+        return $relationshipType instanceof ResourceTypeInterface && $relationshipType->isExposedAsRelationship()
+            ? $relationshipType
+            : null;
     }
 }
