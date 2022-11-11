@@ -6,21 +6,21 @@ namespace EDT\Wrapping\Utilities\TypeAccessors;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\Types\ReadableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
- * @template-extends AbstractProcessorConfig<ReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object>>
+ * @template-extends AbstractProcessorConfig<TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object>>
  */
 class ExternReadableProcessorConfig extends AbstractProcessorConfig
 {
     private bool $allowAttribute;
 
     /**
-     * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface>         $typeProvider
-     * @param ReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $rootType
+     * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface>             $typeProvider
+     * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $rootType
      */
-    public function __construct(TypeProviderInterface $typeProvider, ReadableTypeInterface $rootType, bool $allowAttribute)
+    public function __construct(TypeProviderInterface $typeProvider, TransferableTypeInterface $rootType, bool $allowAttribute)
     {
         parent::__construct($typeProvider, $rootType);
         $this->allowAttribute = $allowAttribute;
