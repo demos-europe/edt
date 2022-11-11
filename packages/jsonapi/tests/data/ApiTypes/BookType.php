@@ -19,12 +19,16 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
         return new class() extends TransformerAbstract {};
     }
 
+    /**
+     * Overwrites its parent relationships with reference to resource type implementations.
+     */
     public function getReadableProperties(): array
     {
-        $properties = parent::getReadableProperties();
-        // overwrite relationships with reference to resource type implementation
-        $properties['author'] = AuthorType::class;
-        return $properties;
+        return [
+            'title' => null,
+            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
+            'tags' => null,
+        ];
     }
 
     public function isExposedAsPrimaryResource(): bool

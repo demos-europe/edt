@@ -47,19 +47,16 @@ class TypeAccessor
     public function getAccessibleReadableProperties(TypeInterface $type): array
     {
         $allowedProperties = [];
-        foreach ($type->getReadableProperties() as $propertyName => $typeIdentifier) {
-            if (null === $typeIdentifier) {
+        foreach ($type->getReadableProperties() as $propertyName => $relationshipType) {
+            if (null === $relationshipType) {
                 // access to attributes is not restricted by further considerations
                 $allowedProperties[$propertyName] = null;
-            } else {
+            } elseif ($relationshipType instanceof ReadableTypeInterface
+                && $relationshipType instanceof ExposableRelationshipTypeInterface
+                && $relationshipType->isExposedAsRelationship()
+            ) {
                 // access to relationships depends on readability and "exposedness"
-                $relationshipType = $this->typeProvider->requestType($typeIdentifier)
-                    ->instanceOf(ReadableTypeInterface::class)
-                    ->exposedAsRelationship()
-                    ->getInstanceOrNull();
-                if (null !== $relationshipType) {
-                    $allowedProperties[$propertyName] = $relationshipType;
-                }
+                $allowedProperties[$propertyName] = $relationshipType;
             }
         }
 
