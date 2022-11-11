@@ -1,0 +1,34 @@
+<ruleset name="MyStandard">
+    <description>My custom coding standard.</description>
+    <rule ref="PEAR">
+        <exclude name="PEAR.NamingConventions.ValidFunctionName"/>
+        <exclude name="PEAR.NamingConventions.ValidVariableName"/>
+        <exclude name="PEAR.Commenting.ClassComment"/>
+        <exclude name="Generic.Commenting.DocComment.MissingShort"/>
+        <exclude name="PEAR.Commenting.ClassComment.Missing"/>
+        <exclude name="PEAR.Commenting.FileComment.Missing"/>
+        <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
+        <exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/>
+        <exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/>
+        <exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingCategoryTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingPackageTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingLinkTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingVersion"/>
+        <exclude name="PEAR.Commenting.InlineComment"/>
+        <exclude name="Generic.Files.LineLength.MaxExceeded"/>
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+        <exclude name="Squiz.Classes.ClassFileName"/>
+        <exclude name="Squiz.Classes.ValidClassName"/>
+        <exclude name="Squiz.Commenting.ClassComment"/>
+        <exclude name="Squiz.Commenting.FileComment"/>
+        <exclude name="Squiz.Commenting.FunctionComment"/>
+        <exclude name="Squiz.Commenting.VariableComment"/>
+        <exclude name="Squiz.ControlStructures.SwitchDeclaration"/>
+        <exclude name="Squiz.Files.FileExtension"/>
+        <exclude name="PEAR.Commenting.FunctionComment.MissingParamComment"/>
+        <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
+        <exclude name="PEAR.Commenting.FunctionComment.MissingReturn"/>
+        <exclude name="PEAR.Commenting.FunctionComment.MissingParamTag"/>
+    </rule>
+</ruleset>
