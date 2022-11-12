@@ -68,7 +68,7 @@ class ConditionEvaluator
         foreach ($propertyValueRows as $propertyValues) {
             // $propertyValues is an array of values corresponding to $propertyPaths
             // meaning the first value is the value of the property denoted by the first path
-            if ($this->assertBoolean($condition->apply($propertyValues))) {
+            if ($condition->apply($propertyValues)) {
                 return true;
             }
         }
@@ -89,7 +89,7 @@ class ConditionEvaluator
         foreach ($propertyValueRows as $propertyValues) {
             // $propertyValues is an array of values corresponding to $propertyPaths
             // meaning the first value is the value of the property denoted by the first path
-            if ($this->assertBoolean($condition->apply($propertyValues))) {
+            if ($condition->apply($propertyValues)) {
                 return false;
             }
         }
@@ -106,17 +106,5 @@ class ConditionEvaluator
 
         // accesses all values of the given path and creates the cartesian product,
         return $this->tableJoiner->getValueRows($target, $propertyPaths);
-    }
-
-    /**
-     * @param mixed $value
-     */
-    private function assertBoolean($value): bool
-    {
-        if (!is_bool($value)) {
-            throw new InvalidArgumentException('Expected function to return bool, got \''.gettype($value).'\'');
-        }
-
-        return $value;
     }
 }

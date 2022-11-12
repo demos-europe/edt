@@ -17,11 +17,11 @@ use function array_key_exists;
 class DrupalFilter
 {
     /**
-     * @var array<non-empty-string, list<DrupalFilterCondition>>
+     * @var array<non-empty-string, non-empty-list<DrupalFilterCondition>>
      */
     private array $groupedConditions = [];
     /**
-     * @var array<non-empty-string, non-empty-string>
+     * @var array<non-empty-string, DrupalFilterParser::AND|DrupalFilterParser::OR>
      */
     private array $groupNameToConjunction = [];
     /**
@@ -48,7 +48,7 @@ class DrupalFilter
             if (array_key_exists(DrupalFilterParser::GROUP, $groupOrCondition)) {
                 // If an item defines a group its structure will be simplified,
                 // and it is added to the groups with its unique name as key.
-                $group = $this->validateGroup($groupOrCondition[DrupalFilterParser::GROUP]);
+                $group = $groupOrCondition[DrupalFilterParser::GROUP];
                 $this->groupNameToConjunction[$filterName] = $group[DrupalFilterParser::CONJUNCTION];
                 $this->groupNameToMemberOf[$filterName] = $this->determineMemberOf($group);
             } elseif (array_key_exists(DrupalFilterParser::CONDITION, $groupOrCondition)) {
@@ -67,7 +67,7 @@ class DrupalFilter
     }
 
     /**
-     * @return array<non-empty-string, list<DrupalFilterCondition>>
+     * @return array<non-empty-string, non-empty-list<DrupalFilterCondition>>
      */
     public function getGroupedConditions(): array
     {
@@ -76,7 +76,7 @@ class DrupalFilter
 
     /**
      * @param non-empty-string $groupName
-     * @return non-empty-string {@link DrupalFilterParser::AND} or {@link DrupalFilterParser::OR}
+     * @return DrupalFilterParser::AND|DrupalFilterParser::OR
      */
     public function getGroupConjunction(string $groupName): string
     {
@@ -130,27 +130,5 @@ class DrupalFilter
         }
 
         return DrupalFilterParser::ROOT;
-    }
-
-    /**
-     * @param DrupalFilterGroup $group
-     * @return DrupalFilterGroup
-     * @throws DrupalFilterException
-     */
-    private function validateGroup(array $group): array
-    {
-        foreach ($group as $key => $value) {
-            if (DrupalFilterParser::CONJUNCTION !== $key && DrupalFilterParser::MEMBER_OF !== $key) {
-                throw DrupalFilterException::unknownGroupField($key);
-            }
-        }
-        $conjunctionString = $group[DrupalFilterParser::CONJUNCTION];
-        switch ($conjunctionString) {
-            case DrupalFilterParser::AND:
-            case DrupalFilterParser::OR:
-                return $group;
-            default:
-                throw DrupalFilterException::conjunctionUnavailable($conjunctionString);
-        }
     }
 }

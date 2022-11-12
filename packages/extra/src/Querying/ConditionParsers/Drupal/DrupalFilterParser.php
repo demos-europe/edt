@@ -17,7 +17,7 @@ use function in_array;
  * The data is expected to be in the format defined by the Drupal JSON:API filter specification.
  *
  * @phpstan-type DrupalFilterGroup = array{
- *            conjunction: non-empty-string,
+ *            conjunction: 'AND'|'OR',
  *            memberOf?: non-empty-string
  *          }
  * @phpstan-type DrupalFilterCondition = array{
@@ -185,7 +185,7 @@ class DrupalFilterParser implements FilterParserInterface
                     $conditionsToMerge = $conditions[$bucketName];
                     $additionalCondition = 1 === count($conditionsToMerge)
                         ? array_pop($conditionsToMerge)
-                        : $this->createGroup($conjunction, ...$conditionsToMerge);
+                        : $this->createGroup($conjunction, $conditionsToMerge);
                     $conditions[$parentGroupKey][] = $additionalCondition;
                     unset($conditions[$bucketName], $groupNameToMemberOf[$bucketName]);
                 }
@@ -196,19 +196,19 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @param TCondition $condition
-     * @param TCondition ...$conditions
+     * @param self::AND|self::OR $conjunction
+     * @param non-empty-list<TCondition> $conditions
      * @return TCondition
      *
      * @throws DrupalFilterException
      */
-    protected function createGroup(string $conjunction, PathsBasedInterface $condition, PathsBasedInterface ...$conditions): PathsBasedInterface
+    protected function createGroup(string $conjunction, array $conditions): PathsBasedInterface
     {
         switch ($conjunction) {
             case self::AND:
-                return $this->conditionGroupFactory->allConditionsApply($condition, ...$conditions);
+                return $this->conditionGroupFactory->allConditionsApply(...$conditions);
             case self::OR:
-                return $this->conditionGroupFactory->anyConditionApplies($condition, ...$conditions);
+                return $this->conditionGroupFactory->anyConditionApplies(...$conditions);
             default:
                 throw DrupalFilterException::conjunctionUnavailable($conjunction);
         }
@@ -223,9 +223,9 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @param array<non-empty-string, list<DrupalFilterCondition>> $groupedConditions
+     * @param array<non-empty-string, non-empty-list<DrupalFilterCondition>> $groupedConditions
      *
-     * @return array<non-empty-string, list<TCondition>>
+     * @return array<non-empty-string, non-empty-list<TCondition>>
      */
     protected function parseConditions(array $groupedConditions): array
     {

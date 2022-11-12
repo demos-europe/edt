@@ -23,11 +23,6 @@ class DrupalFilterException extends FilterException
         return new self("The name of a group or condition MUST NOT be '@root', this value is internally reserved.");
     }
 
-    public static function unknownGroupField(string $fieldName): self
-    {
-        return new self("The 'group' field MUST NOT contain fields other than 'conjunction' and 'memberOf', found: {$fieldName}.");
-    }
-
     public static function nullValue(): self
     {
         return new self("The 'condition' must not contain a 'value' field with a null value.");

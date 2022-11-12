@@ -109,7 +109,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
      * this level, even if the actual `$depth` is given with a greater value.
      *
      * @param mixed $target
-     * @param int $depth Passing 0 will return the given target wrapped in an array.
+     * @param int<0, max> $depth Passing 0 will return the given target wrapped in an array.
      *                   Passing 1 will keep the structure of the given target.
      *                   Passing a value greater 1 will flat the target from the top to the
      *                   bottom, meaning a target with three levels and a depth of 2 will keep the
@@ -125,9 +125,6 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
     {
         if (null === $isIterable) {
             $isIterable = 'is_iterable';
-        }
-        if (0 > $depth) {
-            throw new InvalidArgumentException("depth must be 0 or positive, is $depth instead");
         }
         if (0 === $depth || !$isIterable($target)) {
             return [$target];
