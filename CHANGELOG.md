@@ -2,15 +2,16 @@
 
 ## Unreleased
 
-- refactor: require implementations of `AbstractResourceType` to implement `getTypeProvider`
+- refactor: `getAsNames`/`getAsNamesInDotNotation` in `PropertyAutoPathTrait` and `PropertyAutoPathInterface` must not return an empty list/empty-string respectively; initializing instances with an empty property path is allowed, but ensure they are not used for anything else but further path-building
+- refactor: require implementations using `PropertyAutoPathTrait` to also implement `PropertyAutoPathInterface`
 - refactor: assert `ExposableRelationshipTypeInterface` implementation and its `isExposedAsRelationship` for `true` in `AbstractResourceType` for `getReadableProperties`, `getSortableProperties` and `getFilterableProperties` but almost nowhere else
 - refactor: require `TransferableTypeInterface` to create `WrapperObject` instances
 - refactor: change methods and signatures in `AbstractProcessorConfig` and remove `PropertyPathProcessor::getPropertyTypeIdentifier`
-- refactor: return `TransferableTypeInterface` instances by `TransferableTypeInterface::getReadableProperties`
-- refactor: return `TypeInterface` instances by `TypeInterface::getInternalProperties`
-- refactor: return `SortableTypeInterface` instances by `SortableTypeInterface::getSortableProperties`
-- refactor: return `FilterableTypeInterface` instances by `FilterableTypeInterface::getFilterableProperties`
-- refactor: return conditions by `TransferableTypeInterface::getUpdatableProperties`
+- refactor: require `TransferableTypeInterface::getReadableProperties` to return `TransferableTypeInterface` instances
+- refactor: require `TypeInterface::getInternalProperties` to return `TypeInterface` instances
+- refactor: require `SortableTypeInterface::getSortableProperties` to return `SortableTypeInterface` instances
+- refactor: require `FilterableTypeInterface::getFilterableProperties` to return `FilterableTypeInterface` instances
+- refactor: require `TransferableTypeInterface::getUpdatableProperties` to return `UpdatableRelationship` instances
 - refactor: merge `ReadableTypeInterface` and `UpdatableTypeInterface` into `TransferableTypeInterface`
 - refactor: remove obsolete `TypeAccessor`
 - refactor: avoid type identifier in `PropertyPathProcessor`
