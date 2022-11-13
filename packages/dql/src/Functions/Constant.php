@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\DqlQuerying\Functions;
 
+use Doctrine\ORM\Query\Expr\Comparison;
+use Doctrine\ORM\Query\Expr\Composite;
+use Doctrine\ORM\Query\Expr\Func;
+use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 use Webmozart\Assert\Assert;
 
