@@ -675,7 +675,8 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testInvalidConjunctionTypeNull(): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(DrupalFilterException::class);
+        $this->expectExceptionMessage('Schema validation of filter data failed.');
         $this->filterFactory->parseFilter([
             'group_a' => [
                 'group' => [
@@ -683,7 +684,6 @@ class DrupalConditionFactoryTest extends TestCase
                 ],
             ],
         ]);
-        self::fail('expected an exception');
     }
 
     public function testInvalidConjunctionValue(): void

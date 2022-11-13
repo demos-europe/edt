@@ -136,7 +136,7 @@ class DrupalFilterValidator
      */
     protected function getGroupConstraints(): array
     {
-        $conjunctionConstraint = new Assert\Choice([DrupalFilterParser::AND, DrupalFilterParser::OR]);
+        $conjunctionConstraint = $this->getGroupConjunctionConstraints();
         $filterNameConstraints = $this->getFilterNameConstraints();
 
         return [
@@ -189,6 +189,26 @@ class DrupalFilterValidator
             new Assert\Type('string'),
             // Must not be the reserved root group.
             new Assert\Regex('/\A'.DrupalFilterParser::ROOT.'\z/', null, null, false),
+        ];
+    }
+
+    /**
+     * @return non-empty-list<Constraint>
+     */
+    protected function getGroupConjunctionConstraints(): array
+    {
+        return [
+            new Assert\NotBlank(null, null, false),
+            new Assert\Type('string'),
+            new Assert\Choice(
+                [DrupalFilterParser::AND, DrupalFilterParser::OR],
+                null,
+                null,
+                false,
+                true,
+                1,
+                1
+            ),
         ];
     }
 }
