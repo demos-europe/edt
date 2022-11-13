@@ -20,8 +20,8 @@ class FooResource extends BaseFooResource
      */
     public function getAliases(): array
     {
-        return $this->toAliases(
+        return $this->toAliases([
             [$this->barTitle, $this->bar->title],
-        );
+        ]);
     }
 }
