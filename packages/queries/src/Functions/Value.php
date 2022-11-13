@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Functions;
 
 use EDT\Querying\Contracts\FunctionInterface;
-use EDT\Querying\Utilities\Iterables;
+use Webmozart\Assert\Assert;
 
 /**
  * @template TOutput
@@ -28,7 +28,7 @@ class Value implements FunctionInterface
 
     public function apply(array $propertyValues)
     {
-        Iterables::assertCount(0, $propertyValues);
+        Assert::count($propertyValues, 0);
         return $this->value;
     }
 

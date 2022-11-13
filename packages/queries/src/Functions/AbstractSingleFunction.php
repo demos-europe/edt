@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Functions;
 
 use EDT\Querying\Contracts\FunctionInterface;
-use EDT\Querying\Utilities\Iterables;
+use Webmozart\Assert\Assert;
 
 /**
  * @template TOutput
@@ -24,7 +24,7 @@ abstract class AbstractSingleFunction extends AbstractFunction
      */
     protected function getOnlyFunction(): FunctionInterface
     {
-        Iterables::assertCount(1, $this->functions);
+        Assert::count($this->functions, 1);
         return $this->functions[0];
     }
 }

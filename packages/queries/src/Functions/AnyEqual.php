@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Functions;
 
-use EDT\Querying\Utilities\Iterables;
+use Webmozart\Assert\Assert;
 use function count;
 
 /**
@@ -16,7 +16,7 @@ class AnyEqual extends AbstractFunction
     {
         $nestedPropertyValues = $this->unflatPropertyValues($propertyValues);
         $count = count($this->functions);
-        Iterables::assertCount($count, $nestedPropertyValues);
+        Assert::count($nestedPropertyValues, $count);
         $evaluations = [];
         for ($i = 0; $i < $count; $i++) {
             $function = $this->functions[$i];

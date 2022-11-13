@@ -8,6 +8,7 @@ use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
 use Throwable;
+use Webmozart\Assert\Assert;
 use function count;
 use function Safe\usort;
 
@@ -47,8 +48,10 @@ class Sorter
                      * Which of the values should be used for the comparison. See also (basically) the same problem in SQL:
                      * {@see https://www.programmerinterview.com/database-sql/sql-select-distinct-and-order-by/}
                      */
-                    $propertyValueA = Iterables::getOnlyValue($propertyValuesRowsA);
-                    $propertyValueB = Iterables::getOnlyValue($propertyValuesRowsB);
+                    Assert::count($propertyValuesRowsA, 1);
+                    Assert::count($propertyValuesRowsB, 1);
+                    $propertyValueA = array_pop($propertyValuesRowsA);
+                    $propertyValueB = array_pop($propertyValuesRowsB);
                     $result = $sortMethod->evaluate($propertyValueA, $propertyValueB);
                     if (0 !== $result) {
                         return $result;

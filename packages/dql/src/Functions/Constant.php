@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\DqlQuerying\Functions;
 
-use Doctrine\ORM\Query\Expr\Comparison;
-use Doctrine\ORM\Query\Expr\Composite;
-use Doctrine\ORM\Query\Expr\Func;
-use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
-use EDT\Querying\Utilities\Iterables;
+use Webmozart\Assert\Assert;
 
 /**
  * @template V of Composite|Math|Func|Comparison|string
@@ -44,8 +40,8 @@ class Constant extends \EDT\Querying\Functions\Value implements ClauseFunctionIn
      */
     public function asDql(array $valueReferences, array $propertyAliases)
     {
-        Iterables::assertCount(0, $valueReferences);
-        Iterables::assertCount(0, $propertyAliases);
+        Assert::count($valueReferences, 0);
+        Assert::count($propertyAliases, 0);
         return $this->dqlValue;
     }
 }

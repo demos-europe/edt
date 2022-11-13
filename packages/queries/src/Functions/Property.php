@@ -7,7 +7,7 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
-use EDT\Querying\Utilities\Iterables;
+use Webmozart\Assert\Assert;
 
 /**
  * @template-implements FunctionInterface<mixed>
@@ -23,7 +23,8 @@ class Property implements FunctionInterface
 
     public function apply(array $propertyValues)
     {
-        return Iterables::getOnlyValue($propertyValues);
+        Assert::count($propertyValues, 1);
+        return array_pop($propertyValues);
     }
 
     public function getPropertyPaths(): array

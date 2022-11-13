@@ -4,7 +4,8 @@
     "license": "MIT",
     "type": "library",
     "require": {
-        "php": "^7.4 || ^8.0"
+        "php": "^7.4 || ^8.0",
+        "webmozart/assert": "^1.11"
     },
     "authors": [
         {

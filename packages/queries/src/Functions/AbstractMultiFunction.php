@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Functions;
 
 use EDT\Querying\Contracts\FunctionInterface;
-use EDT\Querying\Utilities\Iterables;
+use Webmozart\Assert\Assert;
 use function count;
 
 /**
@@ -33,7 +33,7 @@ abstract class AbstractMultiFunction extends AbstractFunction
     {
         $functionCount = count($this->functions);
         $nestedPropertyValues = $this->unflatPropertyValues($propertyValues);
-        Iterables::assertCount($functionCount, $nestedPropertyValues);
+        Assert::count($nestedPropertyValues, $functionCount);
         $functionResults = array_map(
             static fn (FunctionInterface $function, array $functionParams) => $function->apply($functionParams),
             $this->functions,
