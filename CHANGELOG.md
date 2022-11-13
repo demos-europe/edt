@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.15.0 - 2022-11-13
 
 - feature: add JSON:API sort format validation class
 - fix: use correct property path delimiter
