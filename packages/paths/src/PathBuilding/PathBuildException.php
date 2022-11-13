@@ -24,11 +24,21 @@ class PathBuildException extends PathException
         return new self("Could not create child with parent class '$class' with property '$propertyName'.", 0, $previous);
     }
 
+    public static function startPathFailed(string $class, Exception $previous): self
+    {
+        return new self("Could not create path starting point with parent class '$class'.", 0, $previous);
+    }
+
     public static function createFromName(string $propertyName, string $className, string $tagIdentifier, string ...$tagIdentifiers): self
     {
         array_unshift($tagIdentifiers, $tagIdentifier);
         $tagIdentifiers = implode(', ', $tagIdentifiers);
 
         return new self("The property '$propertyName' is not available in the class '$className'. Looked for the following docblock tags: $tagIdentifiers");
+    }
+
+    public static function missingInterface(string $class, string $interface): self
+    {
+        return new self("The property class '$class' must implement '$interface' to start a path.");
     }
 }

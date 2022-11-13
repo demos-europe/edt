@@ -7,6 +7,7 @@ namespace Tests\PathBuilding;
 use EDT\PathBuilding\End;
 use EDT\PathBuilding\PathBuildException;
 use EDT\PathBuilding\PropertyAutoPathTrait;
+use EDT\Querying\Contracts\PathException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Tests\data\Paths\AmbiguouslyNamedResource;
@@ -280,19 +281,41 @@ class PropertyAutoPathTraitTest extends TestCase
 
     /**
      * If the path class does not specify a docblock it must be handled as if the docblock would be empty.
+     * @dataProvider getIncompleteImplementation()
      */
-    public function testIncompleteImplementationPath(): void
+    public function testIncompleteImplementationPathDots(ImplementationIncompletePath $path): void
     {
-        $path = new ImplementationIncompletePath();
-        self::assertSame('', $path->getAsNamesInDotNotation());
-        static::assertEquals([], $path->getAsNames());
-        static::assertEquals([ImplementationIncompletePath::class], $this->toClassNames($path));
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('Access to path implementation `Tests\data\Paths\ImplementationIncompletePath` resulted in a path without any segments. Make sure to only pass paths with at least one segment around.');
+        $path->getAsNamesInDotNotation();
+    }
 
-        $path = ImplementationIncompletePath::startPath();
-        self::assertSame('', $path->getAsNamesInDotNotation());
-        static::assertEquals([], $path->getAsNames());
-        static::assertEquals([ImplementationIncompletePath::class], $this->toClassNames($path));
+    /**
+     * If the path class does not specify a docblock it must be handled as if the docblock would be empty.
+     * @dataProvider getIncompleteImplementation()
+     */
+    public function testIncompleteImplementationPathNames(ImplementationIncompletePath $path): void
+    {
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('Access to path implementation `Tests\data\Paths\ImplementationIncompletePath` resulted in a path without any segments. Make sure to only pass paths with at least one segment around.');
+        $path->getAsNames();
+    }
 
+    /**
+     * If the path class does not specify a docblock it must be handled as if the docblock would be empty.
+     * @dataProvider getIncompleteImplementation()
+     */
+    public function testIncompleteImplementationPathClassNames(ImplementationIncompletePath $path): void
+    {
+        static::assertEquals([ImplementationIncompletePath::class], $this->toClassNames($path));
+    }
+
+    public function getIncompleteImplementation(): array
+    {
+        return [
+            [new ImplementationIncompletePath()],
+            [ImplementationIncompletePath::startPath()],
+        ];
     }
 
     public function testNonPathPropertyReadTag(): void
@@ -372,27 +395,47 @@ class PropertyAutoPathTraitTest extends TestCase
         self::assertEquals(['bar' => 1], [$foo->bar->getAsNamesInDotNotation() => 1]);
     }
 
+    public function testPropertyNameToStringException(): void
+    {
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('Access to path implementation `Tests\data\Paths\BarResource` resulted in a path without any segments. Make sure to only pass paths with at least one segment around.');
+        $bar = new BarResource('hello');
+        (string)$bar;
+    }
+
+    public function testSpecialPropertyNameToStringException(): void
+    {
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('Access to path implementation `Tests\data\Paths\BarResource` resulted in a path without any segments. Make sure to only pass paths with at least one segment around.');
+        $bar = BarResource::startPath('!');
+        (string)$bar;
+    }
+
+    public function testEmptyPropertyNameToStringException(): void
+    {
+        $this->expectException(PathException::class);
+        $this->expectExceptionMessage('Access to path implementation `Tests\data\Paths\BarResource` resulted in a path without any segments. Make sure to only pass paths with at least one segment around.');
+        $bar = BarResource::startPath();
+        (string)$bar;
+    }
+
     public function testPropertyReadsArrayUsageBar(): void
     {
         $bar = new BarResource('hello');
         self::assertSame('foo', $bar->foo->getAsNamesInDotNotation());
         self::assertEquals(['foo' => 1], [$bar->foo->getAsNamesInDotNotation() => 1]);
-        self::assertEquals(['|hello' => 1], [(string)$bar => 1]);
 
         $bar = BarResource::startPath('world');
         self::assertSame('foo', $bar->foo->getAsNamesInDotNotation());
         self::assertEquals(['foo' => 1], [$bar->foo->getAsNamesInDotNotation() => 1]);
-        self::assertEquals(['|world' => 1], [(string)$bar => 1]);
 
         $bar = BarResource::startPath('!');
         self::assertSame('foo', $bar->foo->getAsNamesInDotNotation());
         self::assertEquals(['foo' => 1], [$bar->foo->getAsNamesInDotNotation() => 1]);
-        self::assertEquals(['|!' => 1], [(string)$bar => 1]);
 
         $bar = BarResource::startPath();
         self::assertSame('foo', $bar->foo->getAsNamesInDotNotation());
         self::assertEquals(['foo' => 1], [$bar->foo->getAsNamesInDotNotation() => 1]);
-        self::assertEquals(['|' => 1], [(string)$bar => 1]);
     }
 
     public function testPropertyTagged(): void

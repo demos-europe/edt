@@ -6,6 +6,7 @@ namespace Tests\data\Paths;
 
 use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
 use EDT\PathBuilding\End;
+use EDT\PathBuilding\PropertyAutoPathInterface;
 use EDT\PathBuilding\PropertyAutoPathTrait;
 use EDT\PathBuilding\PropertyEvaluatorPool;
 
@@ -19,7 +20,7 @@ use EDT\PathBuilding\PropertyEvaluatorPool;
  * @property End $propertyAttribute
  * @property FooResource $propertyRelationship
  */
-class PropertyTagged
+class PropertyTagged implements PropertyAutoPathInterface
 {
     use PropertyAutoPathTrait;
 

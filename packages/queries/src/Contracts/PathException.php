@@ -31,4 +31,9 @@ class PathException extends Exception
         $prefixString = implode('.', $prefix);
         return new self("Attempted to add prefix '$prefixString' to path '{$path->getAsNamesInDotNotation()}' with context '{$path->getContext()}'");
     }
+
+    public static function emptyPathAccess(string $class): self
+    {
+        return new self("Access to path implementation `$class` resulted in a path without any segments. Make sure to only pass paths with at least one segment around.");
+    }
 }

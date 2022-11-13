@@ -18,9 +18,9 @@ use function in_array;
 class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 {
     /**
-     * @var ArrayIterator<int, non-empty-string>
+     * @var ArrayIterator<int, non-empty-string>|null
      */
-    private ArrayIterator $properties;
+    private ?ArrayIterator $iterator = null;
 
     /**
      * @see PropertyPathAccessInterface::getAccessDepth()
@@ -35,16 +35,21 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     private ?string $context;
 
     /**
+     * @var non-empty-list<non-empty-string>
+     */
+    private array $path;
+
+    /**
      * @param class-string|null                $context
-     * @param non-empty-list<non-empty-string> $properties
+     * @param non-empty-list<non-empty-string> $path
      *
      * @throws PathException
      */
-    public function __construct(?string $context, string $salt, int $accessDepth, array $properties)
+    public function __construct(?string $context, string $salt, int $accessDepth, array $path)
     {
         $this->context = $context;
         $this->accessDepth = $accessDepth;
-        $this->setPath($properties);
+        $this->path = $path;
         $this->salt = $salt;
     }
 
@@ -53,7 +58,11 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
      */
     public function getIterator(): Traversable
     {
-        return $this->properties;
+        if (null === $this->iterator) {
+            $this->iterator = new ArrayIterator($this->path);
+        }
+
+        return $this->iterator;
     }
 
     public function getAccessDepth(): int
@@ -63,7 +72,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     public function setPath(array $path): void
     {
-        $this->properties = new ArrayIterator($path);
+        $this->path = $path;
     }
 
     public function getSalt(): string
@@ -73,7 +82,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     public function __toString(): string
     {
-        $pathString = implode('.', $this->properties->getArrayCopy());
+        $pathString = implode('.', $this->path);
         return "$pathString($this->accessDepth)";
     }
 
@@ -97,7 +106,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     public function getAsNames(): array
     {
-        return $this->properties->getArrayCopy();
+        return $this->path;
     }
 
     public function getAsNamesInDotNotation(): string
@@ -108,5 +117,10 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     public function getContext(): ?string
     {
         return $this->context;
+    }
+
+    public function getCount(): int
+    {
+        return count($this->path);
     }
 }

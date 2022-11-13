@@ -111,12 +111,7 @@ class PropertyBuilder
      */
     public function aliasedPath(PropertyPathInterface $aliasedPath): self
     {
-        $aliasedPath = $aliasedPath->getAsNames();
-        if ([] === $aliasedPath) {
-            throw new InvalidArgumentException('The path must not be empty.');
-        }
-
-        $this->aliasedPath = $aliasedPath;
+        $this->aliasedPath = $aliasedPath->getAsNames();
 
         return $this;
     }

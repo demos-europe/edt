@@ -94,12 +94,6 @@ class ReflectionPropertyAccessorTest extends ModelBasedTest
         self::assertEquals($expected, $values[0]);
     }
 
-    public function testRestructureIterableWithArrayNegative(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->restructureNesting->invoke($this->propertyAccessor, [], -1);
-    }
-
     public function testRestructureIterableWithArray0(): void
     {
         $expected = [[[1, 2, 3], [4, 5, 6]]];

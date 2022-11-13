@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\data\Paths;
 
 use EDT\PathBuilding\End;
+use EDT\PathBuilding\PropertyAutoPathInterface;
 use EDT\PathBuilding\PropertyAutoPathTrait;
 use Tests\data\Model\Book;
 
@@ -25,7 +26,7 @@ use Tests\data\Model\Book;
  * @property End $propertyAttribute
  * @property FooResource $propertyRelationship
  */
-class BarResource
+class BarResource implements PropertyAutoPathInterface
 {
     use PropertyAutoPathTrait;
 

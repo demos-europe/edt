@@ -14,10 +14,15 @@ interface PropertyPathInterface extends Traversable
     /**
      * Returns the names of the properties that are part of this path.
      *
-     * @return list<non-empty-string> Empty array if this path has no parent set. Otherwise, the complete path build so far.
-     * @throws PathException Thrown if the array could not be generated.
+     * @return non-empty-list<non-empty-string> the complete path build so far
+     * @throws PathException Thrown if the array could not be generated, e.g. because this method was accessed on a path instance without any segments.
      */
     public function getAsNames(): array;
+
+    /**
+     * @return int<0, max>
+     */
+    public function getCount(): int;
 
     /**
      * Builds the path denoted by this instance using a dot notation. How the information of the path is
@@ -44,9 +49,9 @@ interface PropertyPathInterface extends Traversable
      * Starting with <em>C</em> and only denoting its property <em>baz</em> would result in
      * <code>'baz'</code>.
      *
-     * @return string The path of the filter condition in dot notation. Empty string if this path has no parent set. Otherwise, the complete path build so far.
+     * @return non-empty-string the complete path build so far in dot notation
      *
-     * @throws PathException Thrown if the string could not be generated.
+     * @throws PathException Thrown if the string could not be generated, e.g. because this method was accessed on a path instance without any segments.
      */
     public function getAsNamesInDotNotation(): string;
 }

@@ -6,13 +6,13 @@ namespace EDT\PathBuilding;
 
 use ArrayIterator;
 use EDT\Parsing\Utilities\ParseException;
+use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Exception;
-use InvalidArgumentException;
 use ReflectionClass;
-use Traversable;
+use Safe\Exceptions\ArrayException;
 use function array_key_exists;
 use function get_class;
 use function Safe\array_combine;
@@ -20,46 +20,45 @@ use function Safe\array_combine;
 /**
  * Denotes a path usable in a condition that can be finalized to a string in dot-notation.
  *
- * Using classes can define one or multiple <code>property-read</code> annotations with a
- * type using {@link PropertyAutoPathTrait}. These can be accessed from the outside like normal (public)
+ * Classes using this trait can define one or multiple <code>property-read</code> annotations with a
+ * type implementing {@link PropertyPathInterface}. These can be accessed from the outside like normal (public)
  * properties and will return an instance of their return type with the current instance set as
  * parent. This allows the user to build a path by starting with a type and descending into its
  * relationships. When the desired relationship is reached it can be converted into an array
  * {@link PropertyAutoPathTrait::getAsNames() array} or {@link PropertyAutoPathTrait::getAsNamesInDotNotation() string}.
  *
- * You can optionally implement {@link IteratorAggregate} and {@link PropertyPathInterface} (in this order)
- * in your using class without the need to add any methods.
+ * You can optionally implement {@link IteratorAggregate} in the class using this trait without the
+ * need to add any methods.
  */
 trait PropertyAutoPathTrait
 {
-    /**
-     * @var PropertyAutoPathTrait|null
-     */
-    private ?object $parent = null;
+    private ?PropertyAutoPathInterface $parent = null;
+
     /**
      * @var non-empty-string|null
      */
     private ?string $parentPropertyName = null;
+
     /**
-     * Will be used instead of {@link PropertyAutoPathTrait::createChild()} when set to non-null.
-     * @var callable(string, PropertyAutoPathTrait, string): PropertyAutoPathTrait
+     * Will be used instead of {@link PropertyAutoPathTrait::createChild()} when set to non-`null`.
+     * @var callable(string, PropertyPathInterface, string): PropertyPathInterface
      */
     private $childCreateCallback;
 
     /**
-     * Null if no parsing happened yet.
+     * `null` if no parsing happened yet.
      *
      * @var array<non-empty-string, class-string>|null
      */
     private ?array $properties = null;
 
     /**
-     * @var array<non-empty-string, PropertyAutoPathTrait>
+     * @var array<non-empty-string, PropertyPathInterface>
      */
     private array $children = [];
 
     /**
-     * Use {@link PropertyAutoPathTrait::getDocblockTraitEvaluator()} to initialize.
+     * Will be initialized when {@link PropertyAutoPathTrait::getDocblockTraitEvaluator()} is called.
      */
     private ?DocblockPropertyByTraitEvaluator $docblockTraitEvaluator = null;
 
@@ -70,18 +69,30 @@ trait PropertyAutoPathTrait
      */
     public static function startPath(...$constructorArgs): self
     {
-        return static::createChild(static::class, null, null, $constructorArgs);
+        $implementingClass = static::class;
+        if (!is_subclass_of($implementingClass, PropertyAutoPathInterface::class)) {
+            throw PathBuildException::missingInterface(static::class, PropertyAutoPathInterface::class);
+        }
+
+        try {
+            return static::createChild($implementingClass, null, null, $constructorArgs);
+        } catch (Exception $exception) {
+            throw PathBuildException::startPathFailed(static::class, $exception);
+        }
     }
 
     /**
      * @param non-empty-string $propertyName
      *
-     * @return PropertyAutoPathTrait
-     *
      * @throws PathBuildException
      */
-    public function __get(string $propertyName): object
+    public function __get(string $propertyName): PropertyPathInterface
     {
+        $implementingClass = static::class;
+        if (!is_subclass_of($implementingClass, PropertyAutoPathInterface::class)) {
+            throw PathBuildException::missingInterface(static::class, PropertyAutoPathInterface::class);
+        }
+
         // if we already created the child we avoid creating it again, as for each created child
         // the properties of the target will be parsed, even if the target type was parsed before
         if (!array_key_exists($propertyName, $this->children)) {
@@ -98,6 +109,8 @@ trait PropertyAutoPathTrait
                     : ($this->childCreateCallback)($returnType, $this, $propertyName);
             } catch (ParseException $e) {
                 throw PathBuildException::getPropertyFailed(static::class, $propertyName, $e);
+            } catch (Exception $e) {
+                throw PathBuildException::genericCreateChild(get_class($this), $propertyName, $e);
             }
         }
 
@@ -105,11 +118,9 @@ trait PropertyAutoPathTrait
     }
 
     /**
-     * @param PropertyAutoPathTrait&object $parent
-     *
      * @internal
      */
-    public function setParent($parent): void
+    public function setParent(PropertyAutoPathInterface $parent): void
     {
         $this->parent = $parent;
     }
@@ -135,7 +146,7 @@ trait PropertyAutoPathTrait
     /**
      * Returns the instances that are part of this path.
      *
-     * @return non-empty-list<object> All objects that are part of this path, including the starting object without corresponding
+     * @return non-empty-list<PropertyAutoPathInterface> All objects that are part of this path, including the starting object without corresponding
      * property name.
      */
     public function getAsValues(): array
@@ -149,18 +160,24 @@ trait PropertyAutoPathTrait
     }
 
     /**
-     * @return list<non-empty-string>
+     * @return non-empty-list<non-empty-string>
      *
      * @see PropertyPathInterface::getAsNames()
+     *
+     * @throws PathException
      */
     public function getAsNames(): array
     {
         $path = [];
-        if (null !== $this->parent) {
+        if (null !== $this->parent && 0 !== $this->parent->getCount()) {
             $path = $this->parent->getAsNames();
         }
         if (null !== $this->parentPropertyName) {
             $path[] = $this->parentPropertyName;
+        }
+
+        if ([] === $path) {
+            throw PathException::emptyPathAccess(static::class);
         }
 
         return $path;
@@ -179,7 +196,7 @@ trait PropertyAutoPathTrait
      *
      * @param non-empty-list<non-empty-string> $targetTags
      *
-     * @return array<string, class-string>
+     * @return array<string, class-string<PropertyAutoPathInterface>>
      * @throws ParseException
      */
     protected function getAutoPathProperties(array $targetTags = ['property-read']): array
@@ -191,22 +208,29 @@ trait PropertyAutoPathTrait
             );
         }
 
-        return $this->properties;
+        return array_filter(
+            $this->properties,
+            static fn (string $propertyClass): bool => is_subclass_of($propertyClass, PropertyAutoPathInterface::class)
+        );
     }
 
     /**
-     * @param array{0: PropertyPathInterface, 1: PropertyPathInterface} ...$paths The first index is the {@link PropertyPathInterface}
-     *                                   of this {@link TypeInterface} instance from which we want
-     *                                   to redirect to another property or attribute (it is thus
-     *                                   expected to have only one segment). The second index
-     *                                   is a {@link PropertyPathInterface} to which we want to
-     *                                   redirect.
+     * @param list<array{0: PropertyPathInterface, 1: PropertyPathInterface}> $paths The first index
+     *                                        in each item is the {@link PropertyPathInterface} of this
+     *                                        {@link TypeInterface} instance from which we want to
+     *                                        redirect to another property or attribute (it is thus
+     *                                        expected to have only one segment). The second index
+     *                                        is a {@link PropertyPathInterface} to which we want
+     *                                        to redirect.
+     *
      * @return array<non-empty-string, non-empty-list<non-empty-string>>
-     * @throws PathBuildException
+     *
+     * @throws PathException
+     * @throws ArrayException
      *
      * @see AliasableTypeInterface::getAliases()
      */
-    protected function toAliases(array ...$paths): array
+    protected function toAliases(array $paths): array
     {
         $keys = array_column($paths, 0);
         $keys = array_map([$this, 'getSourcePath'], $keys);
@@ -222,41 +246,37 @@ trait PropertyAutoPathTrait
      * that can be used for further path building but may not be
      * suited for other purposes.
      *
-     * @param class-string<PropertyAutoPathTrait> $className
-     * @param PropertyAutoPathTrait|null          $parent
+     * @template TImpl of \EDT\PathBuilding\PropertyAutoPathInterface
+     *
+     * @param class-string<TImpl> $className
      * @param non-empty-string|null               $parentPropertyName
      *
-     * @return PropertyAutoPathTrait
+     * @return TImpl
      *
-     * @throws PathBuildException
+     * @throws Exception
      */
-    private static function createChild(string $className, ?object $parent, ?string $parentPropertyName, array $constructorArgs = []): object
+    protected static function createChild(string $className, ?PropertyAutoPathInterface $parent, ?string $parentPropertyName, array $constructorArgs = []): PropertyPathInterface
     {
-        try {
-            $class = new ReflectionClass($className);
-            /** @var PropertyAutoPathTrait $childPathSegment */
-            if ([] === $constructorArgs) {
-                $constructor = $class->getConstructor();
-                if (null === $constructor || 0 === $constructor->getNumberOfRequiredParameters()) {
-                    $childPathSegment = $class->newInstance();
-                } else {
-                    $childPathSegment = $class->newInstanceWithoutConstructor();
-                }
+        $class = new ReflectionClass($className);
+        if ([] === $constructorArgs) {
+            $constructor = $class->getConstructor();
+            if (null === $constructor || 0 === $constructor->getNumberOfRequiredParameters()) {
+                $childPathSegment = $class->newInstance();
             } else {
-                $childPathSegment = $class->newInstanceArgs($constructorArgs);
+                $childPathSegment = $class->newInstanceWithoutConstructor();
             }
-
-            if (null !== $parent) {
-                $childPathSegment->setParent($parent);
-            }
-            if (null !== $parentPropertyName) {
-                $childPathSegment->setParentPropertyName($parentPropertyName);
-            }
-
-            return $childPathSegment;
-        } catch (Exception $e) {
-            throw PathBuildException::genericCreateChild(get_class($parent), $parentPropertyName, $e);
+        } else {
+            $childPathSegment = $class->newInstanceArgs($constructorArgs);
         }
+
+        if (null !== $parent) {
+            $childPathSegment->setParent($parent);
+        }
+        if (null !== $parentPropertyName) {
+            $childPathSegment->setParentPropertyName($parentPropertyName);
+        }
+
+        return $childPathSegment;
     }
 
     /**
@@ -278,31 +298,38 @@ trait PropertyAutoPathTrait
     /**
      * @return non-empty-string
      *
-     * @throws InvalidArgumentException
+     * @throws PathException
      */
     private function getSourcePath(PropertyPathInterface $sourcePath): string
     {
-        $path = $sourcePath->getAsNamesInDotNotation();
-
-        if ('' === $path) {
-            throw new InvalidArgumentException('No source path must be empty.');
-        }
-
-        return $path;
+        return $sourcePath->getAsNamesInDotNotation();
     }
 
     /**
      * @return non-empty-list<non-empty-string>
      *
-     * @throws InvalidArgumentException
+     * @throws PathException
      */
     private function getTargetPath(PropertyPathInterface $targetPath): array
     {
-        $path = $targetPath->getAsNames();
-        if ([] === $path) {
-            throw new InvalidArgumentException('No target path must be empty.');
+        return $targetPath->getAsNames();
+    }
+
+    /**
+     * @return int<0, max>
+     *
+     * @see PropertyPathInterface::getCount()
+     */
+    public function getCount(): int
+    {
+        $pathCount = 0;
+        if (null !== $this->parent) {
+            $pathCount += $this->parent->getCount();
+        }
+        if (null !== $this->parentPropertyName) {
+            $pathCount += 1;
         }
 
-        return $path;
+        return $pathCount;
     }
 }
