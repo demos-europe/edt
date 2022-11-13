@@ -56,4 +56,6 @@ class Patterns
      * * `foo,bar`
      */
     public const PROPERTY_PATH = self::PROPERTY_NAME.'(\.'.self::PROPERTY_NAME.')*';
+
+    public const SORT_PROPERTY = '-?'.Patterns::PROPERTY_PATH;
 }
