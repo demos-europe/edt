@@ -6,7 +6,6 @@ namespace EDT\Querying\PropertyAccessors;
 
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Utilities\Iterables;
-use InvalidArgumentException;
 use ReflectionException;
 use ReflectionProperty;
 use function get_class;
@@ -119,7 +118,6 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
      *                   Defaults to {@link is_iterable()} if `null` is given.
      *
      * @return list<mixed>
-     * @throws InvalidArgumentException If a negative value is passed as $depth
      */
     private function restructureNesting($target, int $depth, callable $isIterable = null): array
     {

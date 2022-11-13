@@ -101,6 +101,8 @@ class JsonApiSortingParser
     }
 
     /**
+     * TODO: implement proper sort validator
+     *
      * @return list<non-empty-string>
      */
     private function toPathArray(string $pathString): array

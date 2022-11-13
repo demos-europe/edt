@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Parsing\Utilities;
 
+use InvalidArgumentException;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 
@@ -19,12 +20,12 @@ class UseCollector extends NodeVisitorAbstract
             foreach ($node->uses as $use) {
                 $key = null === $use->alias ? $use->name->getLast() : $use->alias->toString();
                 if ('' === $key) {
-                    throw new \InvalidArgumentException('`use` statement key must not be empty.');
+                    throw new InvalidArgumentException('`use` statement key must not be empty.');
                 }
 
                 $useStatement = $use->name->toString();
                 if ('' === $useStatement) {
-                    throw new \InvalidArgumentException("`use` statement path for alias '$key' must not be empty.");
+                    throw new InvalidArgumentException("`use` statement path for alias '$key' must not be empty.");
                 }
 
                 $this->useStatements[$key] = $useStatement;

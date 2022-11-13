@@ -7,6 +7,7 @@ namespace Tests\Querying\Utilities;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\Utilities\TableJoiner;
+use InvalidArgumentException;
 use ReflectionMethod;
 use Tests\ModelBasedTest;
 
@@ -101,7 +102,7 @@ class TableJoinerTest extends ModelBasedTest
 
     public function testCartesianWithFirstColumnReference(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectDeprecationMessage("De-referencing '0' led to another reference '0'.");
         $input = [
             0,
@@ -114,7 +115,7 @@ class TableJoinerTest extends ModelBasedTest
 
     public function testCartesianWithMissingReference(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectDeprecationMessage("Could not de-reference: missing index '3'.");
         $input = [
             [false, true],

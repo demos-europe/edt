@@ -8,8 +8,8 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
-use InvalidArgumentException;
 use League\Fractal\ParamBag;
+use Webmozart\Assert\Assert;
 
 /**
  * Set up a specific property for accesses via the generic JSON:API implementation.
@@ -76,12 +76,8 @@ class PropertyBuilder
     public function __construct(PropertyPathInterface $path, string $entityClass)
     {
         $names = $path->getAsNames();
-        $name = array_pop($names);
-        if (null === $name) {
-            throw new InvalidArgumentException("Expected exactly one path segment, got '{$path->getAsNamesInDotNotation()}'.");
-        }
-
-        $this->name = $name;
+        Assert::count($names, 1);
+        $this->name = $names[0];
         $this->entityClass = $entityClass;
     }
 

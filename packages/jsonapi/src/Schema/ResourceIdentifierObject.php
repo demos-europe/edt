@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Schema;
 
-use InvalidArgumentException;
-use function array_key_exists;
-use function is_string;
-
 /**
  * Represents a Resource Identifier Object as specified by jsonapi.org version 1.1.
  */

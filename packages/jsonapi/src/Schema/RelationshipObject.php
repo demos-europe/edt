@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Schema;
 
-use InvalidArgumentException;
 use Exception;
-use function array_key_exists;
-use function is_array;
 
 /**
  * @phpstan-type JsonApiRelationship = array{type: non-empty-string, id: non-empty-string}

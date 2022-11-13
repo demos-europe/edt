@@ -9,7 +9,6 @@ use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\SortMethodFactories\PhpSortMethodFactory;
 use EDT\Querying\Utilities\TableJoiner;
-use InvalidArgumentException;
 use Tests\ModelBasedTest;
 
 class SorterTest extends ModelBasedTest

@@ -170,8 +170,10 @@ abstract class AbstractApiService
     }
 
     /**
-     * @param non-empty-string                                                                                                      $urlTypeIdentifier
-     * @param array{data: array{type: string, id: string, attributes?: array<string, mixed>, relationships?: JsonApiRelationships}} $requestBody
+     * TODO: implement proper $requestBody validator to be called before this method
+     *
+     * @param non-empty-string $urlTypeIdentifier
+     * @param array{data: array{type: non-empty-string, id?: non-empty-string, attributes?: array<non-empty-string, mixed>, relationships?: JsonApiRelationships}} $requestBody
      *
      * @throws Exception
      */
@@ -185,6 +187,7 @@ abstract class AbstractApiService
             throw new InvalidArgumentException('Invalid creation request. Resource type defined in URL must match resource type send in the body.');
         }
 
+        // TODO: implement resource creation with client-provided ID
         if (array_key_exists(ContentField::ID, $data)) {
             throw new InvalidArgumentException('Creating objects from IDs provided in requests is currently not implemented.');
         }

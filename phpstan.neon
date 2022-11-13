@@ -18,6 +18,24 @@ parameters:
         - packages/queries/src
     ignoreErrors:
         -
+            message: """
+                #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
+                will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadableProperties\\(\\)\\} instead$#
+            """
+            count: 2
+            path: packages/access-definitions/src/Wrapping/TypeProviders/TypeRequirement.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\CachingPropertyReader\\:\\:determineToManyRelationshipValue\\(\\) should return array\\<int, TEntity of object\\> but returns array\\<int, object\\>\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Utilities/CachingPropertyReader.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\CachingPropertyReader\\:\\:determineToOneRelationshipValue\\(\\) should return \\(TEntity of object\\)\\|null but returns object\\|null\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Utilities/CachingPropertyReader.php
+
+        -
             message: "#^Property EDT\\\\DqlQuerying\\\\Functions\\\\AbstractClauseFunction\\<TOutput\\>\\:\\:\\$clauses \\(array\\<int, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\) does not accept array\\<int\\|string, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\.$#"
             count: 1
             path: packages/dql/src/Functions/AbstractClauseFunction.php
@@ -126,16 +144,6 @@ parameters:
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
 
         -
-            message: "#^Offset 'attributes' on array\\{\\} on left side of \\?\\? does not exist\\.$#"
-            count: 1
-            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
-
-        -
-            message: "#^Offset 'relationships' on array\\{\\} on left side of \\?\\? does not exist\\.$#"
-            count: 1
-            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
-
-        -
             message: "#^Parameter \\#1 \\$resourceIdentifierObject of static method EDT\\\\JsonApi\\\\Schema\\\\ToOneResourceLinkage\\:\\:createFromArray\\(\\) expects array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|null, array\\<'id'\\|'type'\\|int, array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|non\\-empty\\-string\\>\\|null given\\.$#"
             count: 1
             path: packages/jsonapi/src/Schema/RelationshipObject.php
@@ -156,37 +164,12 @@ parameters:
             path: packages/paths/src/PathBuilding/DocblockPropertyByTraitEvaluator.php
 
         -
-            message: "#^Call to method getAsNames\\(\\) on an unknown class EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Call to method getAsValues\\(\\) on an unknown class EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Call to method setParent\\(\\) on an unknown class EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Call to method setParentPropertyName\\(\\) on an unknown class EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
+            message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> and 'EDT\\\\\\\\PathBuilding\\\\\\\\PropertyAutoPathInterface' will always evaluate to true\\.$#"
+            count: 2
             path: packages/paths/src/PathBuilding/End.php
 
         -
             message: "#^Cannot call method getTargetTags\\(\\) on EDT\\\\PathBuilding\\\\DocblockPropertyByTraitEvaluator\\|null\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:__get\\(\\) has invalid return type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:createChild\\(\\) has invalid return type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
 
@@ -201,99 +184,9 @@ parameters:
             path: packages/paths/src/PathBuilding/End.php
 
         -
-            message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:startPath\\(\\) should return static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\) but returns EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
             message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:toAliases\\(\\) should return array\\<non\\-empty\\-string, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\> but returns array\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^PHPDoc tag @var for variable \\$childPathSegment has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#1 \\$class of static method EDT\\\\PathBuilding\\\\PathBuildException\\:\\:genericCreateChild\\(\\) expects string, class\\-string\\<EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\>\\|false given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#1 \\$className of static method EDT\\\\PathBuilding\\\\End\\<T\\>\\:\\:createChild\\(\\) expects class\\-string\\<EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\>, class\\-string given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#1 \\$className of static method EDT\\\\PathBuilding\\\\End\\<T\\>\\:\\:createChild\\(\\) expects class\\-string\\<EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\>, class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#1 \\$object of function get_class expects object, EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\|null given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#2 \\$ of callable callable\\(string, EDT\\\\PathBuilding\\\\PropertyAutoPathTrait, string\\)\\: EDT\\\\PathBuilding\\\\PropertyAutoPathTrait expects EDT\\\\PathBuilding\\\\PropertyAutoPathTrait, \\$this\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\) given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#2 \\$parent of static method EDT\\\\PathBuilding\\\\End\\<T\\>\\:\\:createChild\\(\\) expects EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\|null, \\$this\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\) given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#2 \\$propertyName of static method EDT\\\\PathBuilding\\\\PathBuildException\\:\\:genericCreateChild\\(\\) expects string, string\\|null given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\$className of method EDT\\\\PathBuilding\\\\End\\:\\:createChild\\(\\) has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\$parent of method EDT\\\\PathBuilding\\\\End\\:\\:createChild\\(\\) has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\$parent of method EDT\\\\PathBuilding\\\\End\\:\\:setParent\\(\\) has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Property EDT\\\\PathBuilding\\\\End\\:\\:\\$childCreateCallback has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 2
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Property EDT\\\\PathBuilding\\\\End\\:\\:\\$children has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Property EDT\\\\PathBuilding\\\\End\\:\\:\\$parent has invalid type EDT\\\\PathBuilding\\\\PropertyAutoPathTrait\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Unsafe call to private method EDT\\\\PathBuilding\\\\End\\<T\\>\\:\\:createChild\\(\\) through static\\:\\:\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Variable \\$childPathSegment in PHPDoc tag @var does not exist\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllNestedTraits\\(\\) should return non\\-empty\\-array\\<int, non\\-empty\\-string\\> but returns non\\-empty\\-array\\<int, string\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
 
         -
             message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(string\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getAllNestedTraits'\\} given\\.$#"
@@ -350,7 +243,12 @@ parameters:
             path: packages/queries/src/ObjectProviders/PrefilledObjectProvider.php
 
         -
-            message: "#^Property EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:\\$properties \\(ArrayIterator\\<int, non\\-empty\\-string\\>\\) does not accept ArrayIterator\\<int, string\\>\\.$#"
+            message: "#^Method EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:getIterator\\(\\) should return Traversable\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, non\\-empty\\-string\\>\\|ArrayIterator\\<int, string\\>\\.$#"
+            count: 1
+            path: packages/queries/src/PropertyPaths/PropertyPath.php
+
+        -
+            message: "#^Property EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:\\$iterator \\(ArrayIterator\\<int, non\\-empty\\-string\\>\\|null\\) does not accept ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/queries/src/PropertyPaths/PropertyPath.php
 

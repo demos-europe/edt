@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Schema;
 
 use EDT\JsonApi\Schema\ResourceIdentifierObject;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class ResourceIdentifierObjectTest extends TestCase

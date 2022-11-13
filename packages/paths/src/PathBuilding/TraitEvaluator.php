@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use EDT\Querying\Utilities\Iterables;
+use Safe\Exceptions\SplException;
+use Webmozart\Assert\Assert;
 use function count;
 use function in_array;
 use function Safe\class_uses;
@@ -21,6 +23,7 @@ class TraitEvaluator
      * @param class-string $class
      *
      * @return list<string> may be empty
+     * @throws SplException
      */
     public function getAllClassTraits(string $class): array
     {
@@ -67,6 +70,7 @@ class TraitEvaluator
      * @param class-string $class
      *
      * @return list<class-string>
+     * @throws SplException
      */
     private function getAllParentClasses(string $class): array
     {
@@ -80,7 +84,10 @@ class TraitEvaluator
      * The given trait will be part of the result.
      *
      * @param non-empty-string $trait
+     *
      * @return non-empty-list<non-empty-string>
+     *
+     * @throws SplException
      */
     public function getAllNestedTraits(string $trait): array
     {
@@ -91,6 +98,8 @@ class TraitEvaluator
         $traits = Iterables::mapFlat([$this, 'getAllNestedTraits'], $traits);
         $traits[] = $trait;
 
+        Assert::allStringNotEmpty($traits);
+
         return $traits;
     }
 
@@ -98,8 +107,10 @@ class TraitEvaluator
      * Checks if the given class uses the given trait. The method will take
      * parent classes and nested traits into consideration.
      *
-     * @param class-string $class
+     * @param class-string     $class
      * @param non-empty-string $trait
+     *
+     * @throws SplException
      */
     public function isClassUsingTrait(string $class, string $trait): bool
     {

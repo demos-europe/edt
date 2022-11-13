@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- fix: disallow `null` conjunction in `DrupalFilterValidator`
 - refactor: `getAsNames`/`getAsNamesInDotNotation` in `PropertyAutoPathTrait` and `PropertyAutoPathInterface` must not return an empty list/empty-string respectively; initializing instances with an empty property path is allowed, but ensure they are not used for anything else but further path-building
 - refactor: require implementations using `PropertyAutoPathTrait` to also implement `PropertyAutoPathInterface`
 - refactor: assert `ExposableRelationshipTypeInterface` implementation and its `isExposedAsRelationship` for `true` in `AbstractResourceType` for `getReadableProperties`, `getSortableProperties` and `getFilterableProperties` but almost nowhere else

@@ -10,7 +10,6 @@ use EDT\JsonApi\ResourceTypes\Property;
 use EDT\JsonApi\ResourceTypes\PropertyCollection;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;

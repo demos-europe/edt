@@ -6,8 +6,6 @@ namespace EDT\Querying\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
-use InvalidArgumentException;
-use function is_bool;
 
 /**
  * @internal

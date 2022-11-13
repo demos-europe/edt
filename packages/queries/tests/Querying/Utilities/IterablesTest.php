@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Querying\Utilities;
 
-use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\Utilities\Iterables;
-use InvalidArgumentException;
 use Tests\data\Model\Person;
 use Tests\ModelBasedTest;
 

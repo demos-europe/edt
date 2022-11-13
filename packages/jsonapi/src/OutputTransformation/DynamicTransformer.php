@@ -157,6 +157,8 @@ class DynamicTransformer extends TransformerAbstract
      *                                       thrown.
      *
      * @return Collection|Item|NullResource
+     *
+     * @throws InvalidArgumentException
      */
     public function __call(string $methodName, array $arguments): ResourceAbstract
     {
@@ -232,7 +234,7 @@ class DynamicTransformer extends TransformerAbstract
     private function getIncludeDefinition(string $includeName): IncludeDefinitionInterface
     {
         if (!array_key_exists($includeName, $this->includeDefinitions)) {
-            throw new InvalidArgumentException("Include $includeName is not available");
+            throw new InvalidArgumentException("Include '$includeName' is not available");
         }
 
         return $this->includeDefinitions[$includeName];

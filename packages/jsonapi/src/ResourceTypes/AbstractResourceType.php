@@ -19,7 +19,6 @@ use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
 use League\Fractal\TransformerAbstract;
 use Psr\Log\LoggerInterface;
-use function array_key_exists;
 
 /**
  * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
