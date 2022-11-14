@@ -11,6 +11,7 @@ use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
+use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
@@ -31,44 +32,47 @@ abstract class AbstractResourceType implements ResourceTypeInterface
 {
     public function getReadableProperties(): array
     {
-        return array_map(
+        $properties = array_map(
             fn (Property $property): ?TypeInterface => $property instanceof Relationship
                 ? $this->getTypeProvider()
                     ->requestType($property->getTypeIdentifier())
                     ->instanceOf(TransferableTypeInterface::class)
-                    ->exposedAsRelationship()
                     ->getInstanceOrThrow()
                 : null,
             $this->getPropertyCollection()->getReadableProperties()
         );
+
+        return $this->keepExposedTypes($properties);
     }
 
     public function getFilterableProperties(): array
     {
-        return array_map(
+        $properties = array_map(
             fn (Property $property): ?TypeInterface => $property instanceof Relationship
                 ? $this->getTypeProvider()
                     ->requestType($property->getTypeIdentifier())
                     ->instanceOf(FilterableTypeInterface::class)
-                    ->exposedAsRelationship()
                     ->getInstanceOrThrow()
                 : null,
             $this->getPropertyCollection()->getFilterableProperties()
         );
+
+        return $this->keepExposedTypes($properties);
     }
 
     public function getSortableProperties(): array
     {
-        return array_map(
+        $properties = array_map(
             fn (Property $property): ?TypeInterface => $property instanceof Relationship
                 ? $this->getTypeProvider()
                     ->requestType($property->getTypeIdentifier())
                     ->instanceOf(SortableTypeInterface::class)
-                    ->exposedAsRelationship()
                     ->getInstanceOrThrow()
                 : null,
             $this->getPropertyCollection()->getSortableProperties()
         );
+
+        return $this->keepExposedTypes($properties);
     }
 
     public function getUpdatableProperties(object $updateTarget): array
@@ -199,5 +203,26 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         );
 
         return new PropertyCollection($properties);
+    }
+
+    /**
+     * Even if a relationship property was defined in this type, we do not allow its usage if the
+     * target type of the relationship is not set as exposed.
+     *
+     * @template TType of \EDT\Wrapping\Contracts\Types\TypeInterface
+     *
+     * @param array<non-empty-string, TType|null> $types
+     *
+     * @return array<non-empty-string, (TType&ExposableRelationshipTypeInterface)|null>
+     */
+    protected function keepExposedTypes(array $types): array
+    {
+        return array_filter(
+            $types,
+            static fn (?TypeInterface $type): bool =>
+                null === $type
+                || ($type instanceof ExposableRelationshipTypeInterface
+                && $type->isExposedAsRelationship())
+        );
     }
 }

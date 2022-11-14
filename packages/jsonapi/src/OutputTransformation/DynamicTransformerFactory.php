@@ -11,7 +11,6 @@ use EDT\JsonApi\ResourceTypes\PropertyCollection;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
-use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -82,12 +81,13 @@ class DynamicTransformerFactory
     private function transformToIncludeDefinitions(ResourceTypeInterface $type, PropertyCollection $propertyCollection, WrapperObjectFactory $wrapperFactory): array
     {
         $readableRelationships = $propertyCollection->getReadableRelationships();
-        $readableProperties = $type->getReadableProperties();
+        $readableProperties = $this->getReadableResourceTypeProperties($type);
 
         $includeDefinitions = [];
         foreach ($readableRelationships as $propertyName => $property) {
-            $relationshipType = $this->getRelationshipTypeOrNull($propertyName, $readableProperties);
+            $relationshipType = $readableProperties[$propertyName] ?? null;
             if (null === $relationshipType) {
+                // do not create IncludeDefinitions for non-resource/non-readable relationships
                 continue;
             }
 
@@ -112,20 +112,28 @@ class DynamicTransformerFactory
     }
 
     /**
-     * @param non-empty-string                                                                      $propertyName
-     * @param array<non-empty-string, TransferableTypeInterface<TCondition, TSorting, object>|null> $readableProperties
+     * @param ResourceTypeInterface<TCondition, TSorting, object> $type
      *
-     * @return ResourceTypeInterface<TCondition, TSorting, object>|null
+     * @return array<non-empty-string, ResourceTypeInterface<TCondition, TSorting, object>>
      */
-    private function getRelationshipTypeOrNull(string $propertyName, array $readableProperties): ?ResourceTypeInterface
+    private function getReadableResourceTypeProperties(ResourceTypeInterface $type): array
     {
-        $relationshipType = $readableProperties[$propertyName] ?? null;
-        if (null === $relationshipType) {
-            throw new InvalidArgumentException("Property '$propertyName' marked as relationship, but no relationship type was configured as readable in resource type.");
-        }
+        $readableProperties = array_map(
+            static function (?TransferableTypeInterface $relationshipType): ?ResourceTypeInterface {
+                if (null === $relationshipType) {
+                    return null;
+                }
+                if (!$relationshipType instanceof ResourceTypeInterface) {
+                    return null;
+                }
+                return $relationshipType;
+            },
+            $type->getReadableProperties()
+        );
 
-        return $relationshipType instanceof ResourceTypeInterface
-            ? $relationshipType
-            : null;
+        return array_filter(
+            $readableProperties,
+            static fn (?ResourceTypeInterface $relationshipType): bool => null !== $relationshipType
+        );
     }
 }
