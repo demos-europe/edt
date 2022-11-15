@@ -11,6 +11,8 @@ use function array_key_exists;
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  * @template-implements DrupalConditionFactoryInterface<TCondition>
+ *
+ * @phpstan-import-type DrupalValue from DrupalConditionFactoryInterface
  */
 class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterface
 {
@@ -20,7 +22,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     private PathsBasedConditionFactoryInterface $conditionFactory;
 
     /**
-     * @var array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed):TCondition>
+     * @var array<non-empty-string, callable(DrupalValue, non-empty-list<non-empty-string>):TCondition>
      */
     private array $operatorFunctions;
 
@@ -44,31 +46,32 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
             throw DrupalFilterException::unknownCondition($operatorName, ...$this->getSupportedOperators());
         }
 
-        return $this->operatorFunctions[$operatorName]($path, $value);
+        return $this->operatorFunctions[$operatorName]($value, $path);
     }
 
     /**
-     * @return array<non-empty-string, callable(non-empty-list<non-empty-string>, mixed): TCondition>
+     * @return array<non-empty-string, callable(DrupalValue, non-empty-list<non-empty-string>): TCondition>
      */
     protected function getOperatorFunctions(): array
     {
+        // TODO: validate condition-specific value types
         return [
-            '=' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasValue($conditionValue, ...$path),
-            '<>' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasNotValue($conditionValue, ...$path),
-            'STRING_CONTAINS_CASE_INSENSITIVE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($conditionValue, ...$path),
-            'IN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasAnyOfValues($conditionValue, ...$path),
-            'NOT_IN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasNotAnyOfValues($conditionValue, ...$path),
-            'BETWEEN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyBetweenValuesInclusive($conditionValue[0], $conditionValue[1], ...$path),
-            'NOT BETWEEN' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyNotBetweenValuesInclusive($conditionValue[0], $conditionValue[1], ...$path),
-            'ARRAY_CONTAINS_VALUE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyHasStringAsMember($conditionValue, ...$path),
-            'IS NULL' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyIsNull(...$path),
-            'IS NOT NULL' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull(...$path),
-            '>' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueGreaterThan($conditionValue, ...$path),
-            '>=' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueGreaterEqualsThan($conditionValue, ...$path),
-            '<' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueSmallerThan($conditionValue, ...$path),
-            '<=' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->valueSmallerEqualsThan($conditionValue, ...$path),
-            'STARTS_WITH_CASE_INSENSITIVE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyStartsWithCaseInsensitive($conditionValue, ...$path),
-            'ENDS_WITH_CASE_INSENSITIVE' => fn (array $path, $conditionValue): PathsBasedInterface => $this->conditionFactory->propertyEndsWithCaseInsensitive($conditionValue, ...$path),
+            '=' => [$this->conditionFactory, 'propertyHasValue'],
+            '<>' => [$this->conditionFactory, 'propertyHasNotValue'],
+            'STRING_CONTAINS_CASE_INSENSITIVE' => [$this->conditionFactory, 'propertyHasStringContainingCaseInsensitiveValue'],
+            'IN' => [$this->conditionFactory, 'propertyHasAnyOfValues'],
+            'NOT_IN' => [$this->conditionFactory, 'propertyHasNotAnyOfValues'],
+            'BETWEEN' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path),
+            'NOT BETWEEN' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyNotBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path),
+            'ARRAY_CONTAINS_VALUE' => [$this->conditionFactory, 'propertyHasStringAsMember'],
+            'IS NULL' => [$this->conditionFactory, 'propertyIsNull'],
+            'IS NOT NULL' => [$this->conditionFactory, 'propertyIsNotNull'],
+            '>' => [$this->conditionFactory, 'valueGreaterThan'],
+            '>=' => [$this->conditionFactory, 'valueGreaterEqualsThan'],
+            '<' => [$this->conditionFactory, 'valueSmallerThan'],
+            '<=' => [$this->conditionFactory, 'valueSmallerEqualsThan'],
+            'STARTS_WITH_CASE_INSENSITIVE' => [$this->conditionFactory, 'propertyStartsWithCaseInsensitive'],
+            'ENDS_WITH_CASE_INSENSITIVE' => [$this->conditionFactory, 'propertyEndsWithCaseInsensitive'],
         ];
     }
 }

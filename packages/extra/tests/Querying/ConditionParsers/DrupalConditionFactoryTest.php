@@ -64,8 +64,8 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
 
         $expected = $this->conditionFactory->anyConditionApplies(
-            $this->conditionFactory->propertyHasValue('ABC', 'id'),
-            $this->conditionFactory->propertyHasValue('DEF', 'id')
+            $this->conditionFactory->propertyHasValue('ABC', ['id']),
+            $this->conditionFactory->propertyHasValue('DEF', ['id'])
         );
 
         self::assertCount(1, $actual);
@@ -97,9 +97,9 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
 
         $expected = [
-            $this->conditionFactory->propertyHasValue('Stephen King', 'book', 'authorName'),
-            $this->conditionFactory->propertyHasValue('Stephen King', 'book', 'editorName'),
-            $this->conditionFactory->propertyHasValue(123, 'id'),
+            $this->conditionFactory->propertyHasValue('Stephen King', ['book', 'authorName']),
+            $this->conditionFactory->propertyHasValue('Stephen King', ['book', 'editorName']),
+            $this->conditionFactory->propertyHasValue(123, ['id']),
         ];
 
         self::assertSameSize($expected, $actual);
@@ -126,8 +126,8 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
 
         $expected = [
-            $this->conditionFactory->propertyHasValue(234, 'book', 'id'),
-            $this->conditionFactory->propertyHasValue(567, 'id'),
+            $this->conditionFactory->propertyHasValue(234, ['book', 'id']),
+            $this->conditionFactory->propertyHasValue(567, ['id']),
         ];
 
         self::assertSameSize($expected, $actual);
@@ -153,8 +153,8 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
 
         $expected = [
-            $this->conditionFactory->propertyHasValue(987, 'book', 'author', 'id'),
-            $this->conditionFactory->propertyHasValue(654, 'id'),
+            $this->conditionFactory->propertyHasValue(987, ['book', 'author', 'id']),
+            $this->conditionFactory->propertyHasValue(654, ['id']),
         ];
 
         self::assertSameSize($expected, $actual);
@@ -173,7 +173,7 @@ class DrupalConditionFactoryTest extends TestCase
             ],
         ]);
 
-        $expected = $this->conditionFactory->propertyHasValue(680, 'author', 'id');
+        $expected = $this->conditionFactory->propertyHasValue(680, ['author', 'id']);
 
         self::assertCount(1, $actual);
         self::assertSame((string)$expected, (string)$actual[0]);
@@ -190,7 +190,7 @@ class DrupalConditionFactoryTest extends TestCase
             ],
         ]);
 
-        $expected = $this->conditionFactory->propertyHasValue(123, 'author', 'books', 'author', 'books', 'author', 'books', 'author');
+        $expected = $this->conditionFactory->propertyHasValue(123, ['author', 'books', 'author', 'books', 'author', 'books', 'author']);
 
         self::assertCount(1, $actual);
         self::assertSame((string)$expected, (string)$actual[0]);
@@ -215,8 +215,8 @@ class DrupalConditionFactoryTest extends TestCase
         ]);
 
         $expected = [
-            $this->conditionFactory->propertyBetweenValuesInclusive(-2, 7, 'author', 'booksWritten'),
-            $this->conditionFactory->propertyHasValue(531, 'id'),
+            $this->conditionFactory->propertyBetweenValuesInclusive(-2, 7, ['author', 'booksWritten']),
+            $this->conditionFactory->propertyHasValue(531, ['id']),
         ];
 
         self::assertSameSize($expected, $actual);
@@ -261,7 +261,7 @@ class DrupalConditionFactoryTest extends TestCase
             ]
         );
 
-        $expected = $this->conditionFactory->propertyHasValue('Stephen King', 'book', 'author', 'name');
+        $expected = $this->conditionFactory->propertyHasValue('Stephen King', ['book', 'author', 'name']);
 
         self::assertCount(1, $actual);
         self::assertSame((string)$expected, (string)$actual[0]);
@@ -314,11 +314,11 @@ class DrupalConditionFactoryTest extends TestCase
         );
 
         $expected = $this->conditionFactory->anyConditionApplies(
-            $this->conditionFactory->propertyHasValue(234, 'id'),
+            $this->conditionFactory->propertyHasValue(234, ['id']),
             $this->conditionFactory->allConditionsApply(
-                $this->conditionFactory->propertyHasValue('Stephen King', 'book', 'author', 'name'),
-                $this->conditionFactory->propertyHasValue('Unknown', 'book', 'editor', 'name'),
-                $this->conditionFactory->propertyHasValue(123, 'id')
+                $this->conditionFactory->propertyHasValue('Stephen King', ['book', 'author', 'name']),
+                $this->conditionFactory->propertyHasValue('Unknown', ['book', 'editor', 'name']),
+                $this->conditionFactory->propertyHasValue(123, ['id'])
             )
         );
 
@@ -340,7 +340,7 @@ class DrupalConditionFactoryTest extends TestCase
             ]
         );
 
-        $expected = $this->conditionFactory->propertyHasNotValue(123, 'id');
+        $expected = $this->conditionFactory->propertyHasNotValue(123, ['id']);
 
         self::assertCount(1, $actual);
         self::assertSame((string)$expected, (string)$actual[0]);
@@ -611,7 +611,7 @@ class DrupalConditionFactoryTest extends TestCase
             ],
         ]);
 
-        $expected = $this->conditionFactory->propertyHasValue('someValue', 'some', 'path');
+        $expected = $this->conditionFactory->propertyHasValue('someValue', ['some', 'path']);
 
         self::assertCount(1, $actual);
         self::assertSame((string)$expected, (string)$actual[0]);

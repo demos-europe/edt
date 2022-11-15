@@ -41,8 +41,6 @@ class DrupalConditionParser implements ConditionParserInterface
     }
 
     /**
-     * @param array{path: non-empty-string, value?: mixed, operator?: non-empty-string, memberOf?: non-empty-string} $condition
-     *
      * @throws DrupalFilterException
      */
     public function parseCondition($condition): PathsBasedInterface

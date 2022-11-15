@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- refactor: adjust `PathTransformer::prefixPathsList` signature
+- refactor: use more specific type-hints where possible
+- refactor: switch the parameter order of the callables returned by `DrupalConditionFactoryInterface`
+- refactor: change the path parameter type to create conditions and sort methods from `non-empty-string $property, non-empty-string $properties` to `non-empty-list<non-empty-string>|PropertyPathInterface $properties`
+- feature: add minimal validation for the type of the value passed via the `value` field in a Drupal filter condition
+
 ## 0.15.0 - 2022-11-13
 
 - feature: add JSON:API sort format validation class

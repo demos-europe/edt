@@ -77,10 +77,9 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface
+    public function propertyBetweenValuesInclusive($min, $max, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathObject = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, array_values($properties));
+        $propertyPathObject = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         return new BetweenInclusive(
             new Value($min),
             new Value($max),
@@ -88,106 +87,95 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasAnyOfValues(array $values, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK,  array_values($properties));
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         return new OneOf(
             new Value($values),
             new Property($propertyPath)
         );
     }
 
-    public function propertyHasSize(int $size, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasSize(int $size, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new AllEqual(
             new Size(new Property($propertyPath)),
             new Value($size)
         );
     }
 
-    public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasStringContainingCaseInsensitiveValue(string $value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         $lowerCaseProperty = new LowerCase(new Property($propertyPathInstance));
         $lowerCaseValue = new LowerCase(new Value($value));
         return new StringContains($lowerCaseProperty, $lowerCaseValue, false);
     }
 
-    public function propertyHasValue($value, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasValue($value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new AllEqual(
             new Property($propertyPath),
             new Value($value)
         );
     }
 
-    public function propertyIsNull(string $property, string ...$properties): PathsBasedInterface
+    public function propertyIsNull($properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK,  array_values($properties));
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         return new IsNull(new Property($propertyPath));
     }
 
-    public function propertyHasStringAsMember(string $value, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasStringAsMember(string $value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new OneOf(
             new Property($propertyPathInstance),
             new Value($value)
         );
     }
 
-    public function valueGreaterThan($value, string $property, string ...$properties): PathsBasedInterface
+    public function valueGreaterThan($value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new Greater(
             new Value($value),
             new Property($propertyPathInstance)
         );
     }
 
-    public function valueGreaterEqualsThan($value, string $property, string ...$properties): PathsBasedInterface
+    public function valueGreaterEqualsThan($value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new GreaterEquals(
             new Value($value),
             new Property($propertyPathInstance)
         );
     }
 
-    public function valueSmallerThan($value, string $property, string ...$properties): PathsBasedInterface
+    public function valueSmallerThan($value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new Smaller(
             new Value($value),
             new Property($propertyPathInstance)
         );
     }
 
-    public function valueSmallerEqualsThan($value, string $property, string ...$properties): PathsBasedInterface
+    public function valueSmallerEqualsThan($value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new SmallerEquals(
             new Value($value),
             new Property($propertyPathInstance)
         );
     }
 
-    public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface
+    public function propertyStartsWithCaseInsensitive(string $value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new StringStartsWith(
             new Value($value),
             new Property($propertyPathInstance),
@@ -195,10 +183,9 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties): PathsBasedInterface
+    public function propertyEndsWithCaseInsensitive(string $value, $properties): PathsBasedInterface
     {
-        array_unshift($properties, $property);
-        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT,  array_values($properties));
+        $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new StringEndsWith(
             new Value($value),
             new Property($propertyPathInstance),
@@ -206,7 +193,7 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function allValuesPresentInMemberListProperties(array $values, array $properties): PathsBasedInterface
+    public function allValuesPresentInMemberListProperties(array $values, $properties): PathsBasedInterface
     {
         $propertyPaths = PropertyPath::createIndexSaltedPaths(count($values), PropertyPathAccessInterface::DIRECT, $properties);
         $equalityPairs = array_map(
@@ -221,33 +208,33 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         return new AllEqual(new Value(true), ...$equalityPairs);
     }
 
-    public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasNotAnyOfValues(array $values, $properties): PathsBasedInterface
     {
-        return new InvertedBoolean($this->propertyHasAnyOfValues($values, $property, ...$properties));
+        return new InvertedBoolean($this->propertyHasAnyOfValues($values, $properties));
     }
 
-    public function propertyHasNotSize(int $size, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasNotSize(int $size, $properties): PathsBasedInterface
     {
-        return new InvertedBoolean($this->propertyHasSize($size, $property, ...$properties));
+        return new InvertedBoolean($this->propertyHasSize($size, $properties));
     }
 
-    public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$properties): PathsBasedInterface
+    public function propertyNotBetweenValuesInclusive($min, $max, $properties): PathsBasedInterface
     {
-        return new InvertedBoolean($this->propertyBetweenValuesInclusive($min, $max, $property, ...$properties));
+        return new InvertedBoolean($this->propertyBetweenValuesInclusive($min, $max, $properties));
     }
 
-    public function propertyHasNotValue($value, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasNotValue($value, $properties): PathsBasedInterface
     {
-        return new InvertedBoolean($this->propertyHasValue($value, $property, ...$properties));
+        return new InvertedBoolean($this->propertyHasValue($value, $properties));
     }
 
-    public function propertyIsNotNull(string $property, string ...$properties): PathsBasedInterface
+    public function propertyIsNotNull($properties): PathsBasedInterface
     {
-        return new InvertedBoolean($this->propertyIsNull($property, ...$properties));
+        return new InvertedBoolean($this->propertyIsNull($properties));
     }
 
-    public function propertyHasNotStringAsMember(string $value, string $property, string ...$properties): PathsBasedInterface
+    public function propertyHasNotStringAsMember(string $value, $properties): PathsBasedInterface
     {
-        return new InvertedBoolean($this->propertyHasStringAsMember($value, $property, ...$properties));
+        return new InvertedBoolean($this->propertyHasStringAsMember($value, $properties));
     }
 }

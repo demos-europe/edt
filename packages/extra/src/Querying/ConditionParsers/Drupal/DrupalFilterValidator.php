@@ -109,7 +109,14 @@ class DrupalFilterValidator
             new Assert\Type('array'),
             new Assert\Collection(
                 [
-                    DrupalFilterParser::VALUE     => null,
+                    DrupalFilterParser::VALUE     => new Assert\AtLeastOneOf([
+                        new Assert\IsNull(),
+                        new Assert\Type('string'),
+                        new Assert\Type('array'),
+                        new Assert\Type('float'),
+                        new Assert\Type('bool'),
+                        new Assert\Type('int'),
+                    ]),
                     DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
                     DrupalFilterParser::PATH      => $pathConstraints,
                     DrupalFilterParser::OPERATOR  => new Assert\Choice($validOperatorNames),

@@ -59,10 +59,10 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
     {
         $fetch = $this->createFetchRequest();
         $fetch->getSortDefinition()
-            ->propertyAscending('birth', 'country');
+            ->propertyAscending(['birth', 'country']);
         $fetch->getConditionDefinition()
-            ->propertyHasValue('Bloemfontein', 'birth', 'locality')
-            ->propertyHasValue('Oranje-Freistaat', 'birth', 'country');
+            ->propertyHasValue('Bloemfontein', ['birth', 'locality'])
+            ->propertyHasValue('Oranje-Freistaat', ['birth', 'country']);
 
         $actualAuthors = $fetch->getEntities();
         $expectedAuthors = [$this->authors['tolkien']];
@@ -75,19 +75,19 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
         $fetchRequest = $this->createFetchRequest();
 
         $fetchRequest->getSortDefinition()
-            ->propertyAscending('birth', 'country');
+            ->propertyAscending(['birth', 'country']);
 
         $orCondition = $fetchRequest->getConditionDefinition()
-            ->propertyIsNotNull('birth')
+            ->propertyIsNotNull(['birth'])
             ->anyConditionApplies();
 
         $orCondition->allConditionsApply()
             ->anyConditionApplies()
-                ->propertyHasValue('Germany', 'birth', 'country')
-                ->propertyHasValue('Oranje-Freistaat', 'birth', 'country');
+                ->propertyHasValue('Germany', ['birth', 'country'])
+                ->propertyHasValue('Oranje-Freistaat', ['birth', 'country']);
         $orCondition->anyConditionApplies()
-            ->propertyHasValue('John Ronald Reuel Tolkien', 'name')
-            ->propertyHasValue('Manfred', 'name');
+            ->propertyHasValue('John Ronald Reuel Tolkien', ['name'])
+            ->propertyHasValue('Manfred', ['name']);
 
         $actualAuthors = $fetchRequest->getEntities();
         $expectedAuthors = [$this->authors['phen'], $this->authors['tolkien']];
@@ -99,10 +99,10 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
     {
         $fetch = $this->createFetchRequest();
         $fetch->getSortDefinition()
-            ->propertyAscending('birth', 'country');
+            ->propertyAscending(['birth', 'country']);
         $fetch->getConditionDefinition()
-            ->propertyHasValue('Bloemfontein', 'birth', 'locality')
-            ->propertyHasValue('Oranje-Freistaat', 'birth', 'country');
+            ->propertyHasValue('Bloemfontein', ['birth', 'locality'])
+            ->propertyHasValue('Oranje-Freistaat', ['birth', 'country']);
 
         $actualAuthor = $fetch->getUniqueEntity();
         $expectedAuthors = $this->authors['tolkien'];
@@ -114,7 +114,7 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
     {
         $fetch = $this->createFetchRequest();
         $fetch->getConditionDefinition()
-            ->propertyHasValue('xyz', 'birth', 'locality');
+            ->propertyHasValue('xyz', ['birth', 'locality']);
 
         $actualAuthor = $fetch->getUniqueEntity();
 
@@ -128,19 +128,19 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
         $fetchRequest = $this->createFetchRequest();
 
         $fetchRequest->getSortDefinition()
-            ->propertyAscending('birth', 'country');
+            ->propertyAscending(['birth', 'country']);
 
         $orCondition = $fetchRequest->getConditionDefinition()
-            ->propertyIsNotNull('birth')
+            ->propertyIsNotNull(['birth'])
             ->anyConditionApplies();
 
         $orCondition->allConditionsApply()
             ->anyConditionApplies()
-            ->propertyHasValue('Germany', 'birth', 'country')
-            ->propertyHasValue('Oranje-Freistaat', 'birth', 'country');
+            ->propertyHasValue('Germany', ['birth', 'country'])
+            ->propertyHasValue('Oranje-Freistaat', ['birth', 'country']);
         $orCondition->anyConditionApplies()
-            ->propertyHasValue('John Ronald Reuel Tolkien', 'name')
-            ->propertyHasValue('Manfred', 'name');
+            ->propertyHasValue('John Ronald Reuel Tolkien', ['name'])
+            ->propertyHasValue('Manfred', ['name']);
 
         $fetchRequest->getUniqueEntity();
 

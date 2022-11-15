@@ -129,6 +129,26 @@ parameters:
             path: packages/dql/src/Utilities/JoinFinder.php
 
         -
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalConditionFactoryInterface\\:\\:createCondition\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalConditionFactoryInterface.php
+
+        -
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\PredefinedDrupalConditionFactory\\:\\:getOperatorFunctions\\(\\) should return array\\<non\\-empty\\-string, callable\\(array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns array\\{\\=\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasValue'\\}, \\<\\>\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotValue'\\}, STRING_CONTAINS_CASE_INSENSITIVE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringCo…'\\}, IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasAnyOfVal…'\\}, NOT_IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotAnyOf…'\\}, BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, NOT BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, ARRAY_CONTAINS_VALUE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringAs…'\\}, \\.\\.\\.\\}\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
+            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface, array given\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
+            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyNotBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface, array given\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
             message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:wrapAsJsonApiResponseSchema\\(\\) has parameter \\$includedObjects with no value type specified in iterable type array\\.$#"
             count: 1
             path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
@@ -142,6 +162,14 @@ parameters:
             message: "#^Strict comparison using \\=\\=\\= between null and League\\\\Fractal\\\\Scope will always evaluate to false\\.$#"
             count: 1
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
+            message: """
+                #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
+                will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadableProperties\\(\\)\\} instead$#
+            """
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
             message: "#^Parameter \\#1 \\$resourceIdentifierObject of static method EDT\\\\JsonApi\\\\Schema\\\\ToOneResourceLinkage\\:\\:createFromArray\\(\\) expects array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|null, array\\<'id'\\|'type'\\|int, array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|non\\-empty\\-string\\>\\|null given\\.$#"
@@ -251,8 +279,3 @@ parameters:
             message: "#^Property EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:\\$iterator \\(ArrayIterator\\<int, non\\-empty\\-string\\>\\|null\\) does not accept ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/queries/src/PropertyPaths/PropertyPath.php
-
-        -
-            message: "#^Parameter \\#2 \\$callback of function array_walk expects callable\\(EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, int, array\\<int\\|string, string\\>\\)\\: mixed, array\\{\\$this\\(EDT\\\\Querying\\\\Utilities\\\\PathTransformer\\), 'prefixPaths'\\} given\\.$#"
-            count: 1
-            path: packages/queries/src/Utilities/PathTransformer.php

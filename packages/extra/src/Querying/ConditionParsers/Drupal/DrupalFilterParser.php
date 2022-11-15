@@ -16,13 +16,14 @@ use function in_array;
  *
  * The data is expected to be in the format defined by the Drupal JSON:API filter specification.
  *
+ * @phpstan-type DrupalValue = string|float|int|bool|array<int|string, mixed>|null
  * @phpstan-type DrupalFilterGroup = array{
  *            conjunction: 'AND'|'OR',
  *            memberOf?: non-empty-string
  *          }
  * @phpstan-type DrupalFilterCondition = array{
  *            path: non-empty-string,
- *            value?: mixed,
+ *            value?: DrupalValue,
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
  *          }

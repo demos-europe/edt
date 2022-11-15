@@ -8,6 +8,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @phpstan-import-type DrupalValue from DrupalFilterParser
  */
 interface DrupalConditionFactoryInterface
 {
@@ -19,8 +20,8 @@ interface DrupalConditionFactoryInterface
     public function getSupportedOperators(): array;
 
     /**
-     * @param non-empty-string                 $operatorName
-     * @param mixed|null                       $value
+     * @param non-empty-string $operatorName
+     * @param DrupalValue $value
      * @param non-empty-list<non-empty-string> $path
      *
      * @return TCondition

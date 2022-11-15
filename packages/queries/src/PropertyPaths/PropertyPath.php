@@ -7,10 +7,9 @@ namespace EDT\Querying\PropertyPaths;
 use ArrayIterator;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
-use EDT\Querying\Utilities\Iterables;
+use EDT\Querying\Contracts\PropertyPathInterface;
 use IteratorAggregate;
 use Traversable;
-use function in_array;
 
 /**
  * @template-implements IteratorAggregate<int, non-empty-string>
@@ -40,16 +39,16 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     private array $path;
 
     /**
-     * @param class-string|null                $context
-     * @param non-empty-list<non-empty-string> $path
+     * @param class-string|null $context
+     * @param non-empty-list<non-empty-string>|PropertyPathInterface $path
      *
      * @throws PathException
      */
-    public function __construct(?string $context, string $salt, int $accessDepth, array $path)
+    public function __construct(?string $context, string $salt, int $accessDepth, $path)
     {
         $this->context = $context;
         $this->accessDepth = $accessDepth;
-        $this->path = $path;
+        $this->path = $path instanceof PropertyPathInterface ? $path->getAsNames() : $path;
         $this->salt = $salt;
     }
 
@@ -87,12 +86,12 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     }
 
     /**
-     * @param non-empty-list<non-empty-string> $properties
+     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return list<PropertyPathAccessInterface>
      * @throws PathException
      */
-    public static function createIndexSaltedPaths(int $count, int $depth, array $properties): array
+    public static function createIndexSaltedPaths(int $count, int $depth, $properties): array
     {
         return array_map(
             static fn (int $pathIndex): PropertyPathAccessInterface => new PropertyPath(

@@ -26,7 +26,7 @@ class SorterTest extends ModelBasedTest
 
     public function testTitlePropertyAscending(): void
     {
-        $titleSorting = $this->sortMethodFactory->propertyAscending('title');
+        $titleSorting = $this->sortMethodFactory->propertyAscending(['title']);
         $sortedBooks = $this->sorter->sortArray($this->books, [$titleSorting]);
         $expected = [
             $this->books['beowulf'],
@@ -40,7 +40,7 @@ class SorterTest extends ModelBasedTest
 
     public function testTitlePropertyDescending(): void
     {
-        $titleSorting = $this->sortMethodFactory->propertyDescending('title');
+        $titleSorting = $this->sortMethodFactory->propertyDescending(['title']);
         $sortedBooks = $this->sorter->sortArray($this->books, [$titleSorting]);
         $expected = array_reverse([
             $this->books['beowulf'],
@@ -54,7 +54,7 @@ class SorterTest extends ModelBasedTest
 
     public function testBirthdayPropertyDescending(): void
     {
-        $birthdaySorting = $this->sortMethodFactory->propertyAscending('author', 'birth', 'day');
+        $birthdaySorting = $this->sortMethodFactory->propertyAscending(['author', 'birth', 'day']);
         $sortedBooks = $this->sorter->sortArray($this->books, [$birthdaySorting]);
         $expected = [
             $this->books['beowulf'],
@@ -68,8 +68,8 @@ class SorterTest extends ModelBasedTest
 
     public function testNullComparisonAscending(): void
     {
-        $pseudonymSorting = $this->sortMethodFactory->propertyAscending('author', 'pseudonym');
-        $titleSorting = $this->sortMethodFactory->propertyAscending('title');
+        $pseudonymSorting = $this->sortMethodFactory->propertyAscending(['author', 'pseudonym']);
+        $titleSorting = $this->sortMethodFactory->propertyAscending(['title']);
         $sortedBooks = $this->sorter->sortArray($this->books, [$pseudonymSorting, $titleSorting]);
         $expected = [
             $this->books['beowulf'],
@@ -83,8 +83,8 @@ class SorterTest extends ModelBasedTest
 
     public function testNullComparisonDescending(): void
     {
-        $pseudonymSorting = $this->sortMethodFactory->propertyDescending('author', 'pseudonym');
-        $titleSorting = $this->sortMethodFactory->propertyDescending('title');
+        $pseudonymSorting = $this->sortMethodFactory->propertyDescending(['author', 'pseudonym']);
+        $titleSorting = $this->sortMethodFactory->propertyDescending(['title']);
         $sortedBooks = $this->sorter->sortArray($this->books, [$pseudonymSorting, $titleSorting]);
         $expected = array_reverse([
             $this->books['beowulf'],
@@ -99,14 +99,14 @@ class SorterTest extends ModelBasedTest
     public function testObjectComparison(): void
     {
         $this->expectException(SortException::class);
-        $authorSorting = $this->sortMethodFactory->propertyDescending('author');
+        $authorSorting = $this->sortMethodFactory->propertyDescending(['author']);
         $this->sorter->sortArray($this->books, [$authorSorting]);
     }
 
     public function testUnsupportedPath(): void
     {
         $this->expectException(SortException::class);
-        $titleSorting = $this->sortMethodFactory->propertyAscending('books', 'title');
+        $titleSorting = $this->sortMethodFactory->propertyAscending(['books', 'title']);
         $this->sorter->sortArray($this->authors, [$titleSorting]);
     }
 }

@@ -37,7 +37,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testAllConditionsApplyWithOne(): void
     {
-        $propertyIsNull = $this->conditionFactory->propertyIsNull('author', 'pseudonym');
+        $propertyIsNull = $this->conditionFactory->propertyIsNull(['author', 'pseudonym']);
         $this->conditionFactory->allConditionsApply($propertyIsNull);
         $expectedBooks = [$this->books['beowulf']];
         $filteredBooks = array_values($this->conditionEvaluator->filterArray($this->books, $propertyIsNull));
@@ -46,8 +46,8 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testAllConditionsApplyWithTwo(): void
     {
-        $nullPseudonym = $this->conditionFactory->propertyIsNull('pseudonym');
-        $usaBirthplace = $this->conditionFactory->propertyHasValue('USA', 'birth', 'country');
+        $nullPseudonym = $this->conditionFactory->propertyIsNull(['pseudonym']);
+        $usaBirthplace = $this->conditionFactory->propertyHasValue('USA', ['birth', 'country']);
         $allConditionsApply = $this->conditionFactory->allConditionsApply($nullPseudonym, $usaBirthplace);
         $expectedBooks = [$this->authors['lee'], $this->authors['salinger']];
         $filteredBooks = array_values($this->conditionEvaluator->filterArray($this->authors, $allConditionsApply));
@@ -70,8 +70,8 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testAnyConditionApplies(): void
     {
-        $kingAuthor = $this->conditionFactory->propertyHasValue('Stephen King', 'name');
-        $tolkienAuthor = $this->conditionFactory->propertyHasValue('John Ronald Reuel Tolkien', 'name');
+        $kingAuthor = $this->conditionFactory->propertyHasValue('Stephen King', ['name']);
+        $tolkienAuthor = $this->conditionFactory->propertyHasValue('John Ronald Reuel Tolkien', ['name']);
         $kingOrTolkien = $this->conditionFactory->anyConditionApplies($kingAuthor, $tolkienAuthor);
         $expectedAuthors = [$this->authors['king'], $this->authors['tolkien']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $kingOrTolkien));
@@ -103,7 +103,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyBetweenValuesInclusive(): void
     {
-        $born19century = $this->conditionFactory->propertyBetweenValuesInclusive(1800, 1900, 'birth', 'year');
+        $born19century = $this->conditionFactory->propertyBetweenValuesInclusive(1800, 1900, ['birth', 'year']);
         $expected = [$this->authors['tolkien'], $this->authors['dickens']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $born19century));
         self::assertEquals($expected, $filteredAuthors);
@@ -111,7 +111,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasAnyOfValues(): void
     {
-        $bornJanuaryOrFebruary = $this->conditionFactory->propertyHasAnyOfValues([1, 2], 'birth', 'month');
+        $bornJanuaryOrFebruary = $this->conditionFactory->propertyHasAnyOfValues([1, 2], ['birth', 'month']);
         $expected = [$this->authors['tolkien'], $this->authors['dickens'], $this->authors['salinger']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $bornJanuaryOrFebruary));
         self::assertEquals($expected, $filteredAuthors);
@@ -119,7 +119,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasValue(): void
     {
-        $propertyHasValue = $this->conditionFactory->propertyHasValue('England', 'author', 'birth', 'country');
+        $propertyHasValue = $this->conditionFactory->propertyHasValue('England', ['author', 'birth', 'country']);
         $expectedBooks = [$this->books['pickwickPapers'], $this->books['philosopherStone'], $this->books['deathlyHallows']];
         $filteredBooks = array_values($this->conditionEvaluator->filterArray($this->books, $propertyHasValue));
         self::assertEquals($expectedBooks, $filteredBooks);
@@ -127,14 +127,14 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasValueWithNull(): void
     {
-        $propertyHasValue = $this->conditionFactory->propertyHasValue(null, 'author', 'pseudonym');
+        $propertyHasValue = $this->conditionFactory->propertyHasValue(null, ['author', 'pseudonym']);
         $filteredBooks = $this->conditionEvaluator->filterArray($this->books, $propertyHasValue);
         self::assertEquals([], $filteredBooks);
     }
 
     public function testPropertyIsNull(): void
     {
-        $propertyIsNull = $this->conditionFactory->propertyIsNull('author', 'pseudonym');
+        $propertyIsNull = $this->conditionFactory->propertyIsNull(['author', 'pseudonym']);
         $expectedBooks = [$this->books['beowulf']];
         $filteredBooks = array_values($this->conditionEvaluator->filterArray($this->books, $propertyIsNull));
         self::assertEquals($expectedBooks, $filteredBooks);
@@ -142,7 +142,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasSize(): void
     {
-        $propertyHasSize = $this->conditionFactory->propertyHasSize(2, 'books');
+        $propertyHasSize = $this->conditionFactory->propertyHasSize(2, ['books']);
         $expectedAuthors = [$this->authors['rowling']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $propertyHasSize));
         self::assertEquals($expectedAuthors, $filteredAuthors);
@@ -151,20 +151,20 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testPropertyHasSizeWithInvalidPathAndPathMerge(): void
     {
         $this->expectError();
-        $propertyHasSize = $this->conditionFactory->propertyHasSize(2, 'books', 'title');
+        $propertyHasSize = $this->conditionFactory->propertyHasSize(2, ['books', 'title']);
         $this->conditionEvaluator->filterArray($this->authors, $propertyHasSize);
     }
 
     public function testPropertyHasSizeWithInvalidPath(): void
     {
         $this->expectError();
-        $propertyHasSize = $this->conditionFactory->propertyHasSize(2, 'books', 'title');
+        $propertyHasSize = $this->conditionFactory->propertyHasSize(2, ['books', 'title']);
         $this->conditionEvaluator->filterArray($this->authors, $propertyHasSize);
     }
 
     public function testPropertyHasStringContainingCaseInsensitiveValue(): void
     {
-        $hasString = $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue('Phen', 'name');
+        $hasString = $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue('Phen', ['name']);
         $expectedAuthors = [$this->authors['king']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->authors, $hasString));
         self::assertEquals($expectedAuthors, $filteredAuthors);
@@ -172,7 +172,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasStringAsMember(): void
     {
-        $scifi = $this->conditionFactory->propertyHasStringAsMember('Novel', 'tags');
+        $scifi = $this->conditionFactory->propertyHasStringAsMember('Novel', ['tags']);
         $expectedAuthors = [$this->books['pickwickPapers']];
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->books, $scifi));
         self::assertEquals($expectedAuthors, $filteredAuthors);
@@ -180,7 +180,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasNotStringAsMember(): void
     {
-        $noScifi = $this->conditionFactory->propertyHasNotStringAsMember('Novel', 'tags');
+        $noScifi = $this->conditionFactory->propertyHasNotStringAsMember('Novel', ['tags']);
         $filteredAuthors = array_values($this->conditionEvaluator->filterArray($this->books, $noScifi));
         self::assertNotContains($this->books['pickwickPapers'], $filteredAuthors);
     }

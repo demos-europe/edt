@@ -17,10 +17,11 @@ class PathTransformer
      * prepended to all paths within the given conditions.
      *
      * @param list<PathsBasedInterface> $pathsBasedList
+     * @param list<non-empty-string> $prefix
      *
      * @throws PathException
      */
-    public function prefixPathsList(array $pathsBasedList, string ...$prefix): void
+    public function prefixPathsList(array $pathsBasedList, array $prefix): void
     {
         array_walk($pathsBasedList, [$this, 'prefixPaths'], $prefix);
     }

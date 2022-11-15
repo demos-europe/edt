@@ -24,14 +24,14 @@ class PathTransformerTest extends TestCase
 
     public function testPrefixConditionPaths()
     {
-        $conditionA = $this->conditionFactory->propertyHasValue('abc', 'x');
-        $conditionB = $this->conditionFactory->propertyHasAnyOfValues(['abc'], 'x', 'y');
+        $conditionA = $this->conditionFactory->propertyHasValue('abc', ['x']);
+        $conditionB = $this->conditionFactory->propertyHasAnyOfValues(['abc'], ['x', 'y']);
         $conditionC = $this->conditionFactory->allConditionsApply(
-            $this->conditionFactory->propertyIsNull('x', 'y', 'z'),
-            $this->conditionFactory->propertyNotBetweenValuesInclusive(1, 3, 'y', 'x')
+            $this->conditionFactory->propertyIsNull(['x', 'y', 'z']),
+            $this->conditionFactory->propertyNotBetweenValuesInclusive(1, 3, ['y', 'x'])
         );
 
-        $this->pathTransformer->prefixPathsList([$conditionA, $conditionB, $conditionC], 'foo', 'bar');
+        $this->pathTransformer->prefixPathsList([$conditionA, $conditionB, $conditionC], ['foo', 'bar']);
 
         $pathA = $conditionA->getPropertyPaths()[0]->getPath()->getAsNames();
         self::assertEquals(['foo', 'bar', 'x'], $pathA);

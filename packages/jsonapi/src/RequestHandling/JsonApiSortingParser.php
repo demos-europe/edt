@@ -76,7 +76,7 @@ class JsonApiSortingParser
     {
         $pathString = substr($sortMethodRaw, 1);
         $pathArray = $this->toPathArray($pathString);
-        return $this->sortMethodFactory->propertyDescending(...$pathArray);
+        return $this->sortMethodFactory->propertyDescending($pathArray);
     }
 
     /**
@@ -89,7 +89,7 @@ class JsonApiSortingParser
     private function parsePositiveDirection(string $sortMethodRaw): PathsBasedInterface
     {
         $pathArray = $this->toPathArray($sortMethodRaw);
-        return $this->sortMethodFactory->propertyAscending(...$pathArray);
+        return $this->sortMethodFactory->propertyAscending($pathArray);
     }
 
     /**
@@ -103,7 +103,7 @@ class JsonApiSortingParser
     /**
      * TODO: implement proper sort validator
      *
-     * @return list<non-empty-string>
+     * @return non-empty-list<non-empty-string>
      */
     private function toPathArray(string $pathString): array
     {

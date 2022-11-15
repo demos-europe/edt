@@ -31,26 +31,24 @@ class SortDefinition
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyAscending(string $property, string ...$properties): self
+    public function propertyAscending(array $properties): self
     {
-        $this->sortMethods[] = $this->sortMethodFactory->propertyAscending($property, ...$properties);
+        $this->sortMethods[] = $this->sortMethodFactory->propertyAscending($properties);
         return $this;
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyDescending(string $property, string ...$properties): self
+    public function propertyDescending(array $properties): self
     {
-        $this->sortMethods[] = $this->sortMethodFactory->propertyDescending($property, ...$properties);
+        $this->sortMethods[] = $this->sortMethodFactory->propertyDescending($properties);
         return $this;
     }
 

@@ -61,14 +61,13 @@ class ConditionDefinition
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyIsNull(string $property, string ...$properties): self
+    public function propertyIsNull(array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyIsNull($property, ...$properties));
+        return $this->add($this->conditionFactory->propertyIsNull($properties));
     }
 
     /**
@@ -83,26 +82,24 @@ class ConditionDefinition
 
     /**
      * @param list<mixed> $values
-     * @param non-empty-string  $property
-     * @param non-empty-string  ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasAnyOfValues(array $values, string $property, string ...$properties): self
+    public function propertyHasAnyOfValues(array $values, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasAnyOfValues($values, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasAnyOfValues($values, $properties));
     }
 
     /**
      * @param list<mixed> $values
-     * @param non-empty-string  $property
-     * @param non-empty-string  ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasNotAnyOfValues(array $values, string $property, string ...$properties): self
+    public function propertyHasNotAnyOfValues(array $values, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasNotAnyOfValues($values, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasNotAnyOfValues($values, $properties));
     }
 
     /**
@@ -114,25 +111,25 @@ class ConditionDefinition
     }
 
     /**
-     * @param non-empty-string  $property
-     * @param non-empty-string  ...$properties
+     * @param int<0, max> $size
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasSize(int $size, string $property, string ...$properties): self
+    public function propertyHasSize(int $size, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasSize($size, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasSize($size, $properties));
     }
 
     /**
-     * @param non-empty-string  $property
-     * @param non-empty-string  ...$properties
+     * @param int<0, max> $size
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasNotSize(int $size, string $property, string ...$properties): self
+    public function propertyHasNotSize(int $size, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasNotSize($size, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasNotSize($size, $properties));
     }
 
     public function false(): self
@@ -152,137 +149,126 @@ class ConditionDefinition
     }
 
     /**
-     * @param non-empty-string  $property
-     * @param non-empty-string  ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasStringContainingCaseInsensitiveValue(string $value, string $property, string ...$properties): self
+    public function propertyHasStringContainingCaseInsensitiveValue(string $value, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($value, $properties));
     }
 
     /**
      * @param mixed $value
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasValue($value, string $property, string ...$properties): self
+    public function propertyHasValue($value, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasValue($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasValue($value, $properties));
     }
 
     /**
-     * @param mixed $min
-     * @param mixed $max
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param numeric-string|float|int $min
+     * @param numeric-string|float|int $max
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyBetweenValuesInclusive($min, $max, string $property, string ...$properties): self
+    public function propertyBetweenValuesInclusive($min, $max, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyBetweenValuesInclusive($min, $max, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyBetweenValuesInclusive($min, $max, $properties));
     }
 
     /**
-     * @param mixed $min
-     * @param mixed $max
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param numeric-string|int|float $min
+     * @param numeric-string|int|float $max
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyNotBetweenValuesInclusive($min, $max, string $property, string ...$properties): self
+    public function propertyNotBetweenValuesInclusive($min, $max, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyNotBetweenValuesInclusive($min, $max, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyNotBetweenValuesInclusive($min, $max, $properties));
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasStringAsMember(string $value, string $property, string ...$properties): self
+    public function propertyHasStringAsMember(string $value, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasStringAsMember($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasStringAsMember($value, $properties));
     }
 
     /**
-     * @param mixed $value
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param numeric-string|int|float $value
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function valueGreaterThan($value, string $property, string ...$properties): self
+    public function valueGreaterThan($value, array $properties): self
     {
-        return $this->add($this->conditionFactory->valueGreaterThan($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->valueGreaterThan($value, $properties));
     }
 
     /**
-     * @param mixed $value
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param numeric-string|int|float $value
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function valueGreaterEqualsThan($value, string $property, string ...$properties): self
+    public function valueGreaterEqualsThan($value, array $properties): self
     {
-        return $this->add($this->conditionFactory->valueGreaterEqualsThan($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->valueGreaterEqualsThan($value, $properties));
     }
 
     /**
-     * @param mixed $value
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param numeric-string|int|float $value
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function valueSmallerThan($value, string $property, string ...$properties): self
+    public function valueSmallerThan($value, array $properties): self
     {
-        return $this->add($this->conditionFactory->valueSmallerThan($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->valueSmallerThan($value, $properties));
     }
 
     /**
-     * @param mixed $value
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param numeric-string|int|float $value
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function valueSmallerEqualsThan($value, string $property, string ...$properties): self
+    public function valueSmallerEqualsThan($value, array $properties): self
     {
-        return $this->add($this->conditionFactory->valueSmallerEqualsThan($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->valueSmallerEqualsThan($value, $properties));
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyStartsWithCaseInsensitive(string $value, string $property, string ...$properties): self
+    public function propertyStartsWithCaseInsensitive(string $value, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyStartsWithCaseInsensitive($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyStartsWithCaseInsensitive($value, $properties));
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyEndsWithCaseInsensitive(string $value, string $property, string ...$properties): self
+    public function propertyEndsWithCaseInsensitive(string $value, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyEndsWithCaseInsensitive($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyEndsWithCaseInsensitive($value, $properties));
     }
 
     /**
-     * @param non-empty-list<mixed>           $values
+     * @param non-empty-list<int|string|float|bool> $values
      * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
@@ -293,37 +279,34 @@ class ConditionDefinition
     }
 
     /**
-     * @param mixed            $value
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param int|string|float|bool $value
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasNotValue($value, string $property, string ...$properties): self
+    public function propertyHasNotValue($value, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasNotValue($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasNotValue($value, $properties));
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyIsNotNull(string $property, string ...$properties): self
+    public function propertyIsNotNull(array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyIsNotNull($property, ...$properties));
+        return $this->add($this->conditionFactory->propertyIsNotNull($properties));
     }
 
     /**
-     * @param non-empty-string $property
-     * @param non-empty-string ...$properties
+     * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasNotStringAsMember(string $value, string $property, string ...$properties): self
+    public function propertyHasNotStringAsMember(string $value, array $properties): self
     {
-        return $this->add($this->conditionFactory->propertyHasNotStringAsMember($value, $property, ...$properties));
+        return $this->add($this->conditionFactory->propertyHasNotStringAsMember($value, $properties));
     }
 
     /**
