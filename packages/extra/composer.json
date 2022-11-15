@@ -25,9 +25,9 @@
         }
     },
     "conflict": {
-        "demos-europe/edt-access-definitions": "<0.15.1",
-        "demos-europe/edt-dql": "<0.15.1",
-        "demos-europe/edt-paths": "<0.15.1",
-        "demos-europe/edt-queries": "<0.15.1"
+        "demos-europe/edt-access-definitions": "<0.16.0",
+        "demos-europe/edt-dql": "<0.16.0",
+        "demos-europe/edt-paths": "<0.16.0",
+        "demos-europe/edt-queries": "<0.16.0"
     }
 }

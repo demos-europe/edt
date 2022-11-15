@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.16.0 - 2022-11-15
 
 - refactor: adjust `PathTransformer::prefixPathsList` signature
 - refactor: use more specific type-hints where possible
