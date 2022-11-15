@@ -1,11 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- feature: allow the usage of `PropertyPathInterface` to create sort methods
+
 ## 0.16.0 - 2022-11-15
 
 - refactor: adjust `PathTransformer::prefixPathsList` signature
 - refactor: use more specific type-hints where possible
 - refactor: switch the parameter order of the callables returned by `DrupalConditionFactoryInterface`
-- refactor: change the path parameter type to create conditions and sort methods from `non-empty-string $property, non-empty-string $properties` to `non-empty-list<non-empty-string>|PropertyPathInterface $properties`
+- refactor: change the path parameter type to create conditions from `non-empty-string $property, non-empty-string $properties` to `non-empty-list<non-empty-string>|PropertyPathInterface $properties`
+- refactor: change the path parameter type to create sort methods from `non-empty-string $property, non-empty-string $properties` to `non-empty-list<non-empty-string> $properties`
 - feature: add minimal validation for the type of the value passed via the `value` field in a Drupal filter condition
 
 ## 0.15.0 - 2022-11-13

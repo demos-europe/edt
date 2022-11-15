@@ -18,13 +18,13 @@ use EDT\Querying\SortMethods\Descending;
  */
 class PhpSortMethodFactory implements SortMethodFactoryInterface
 {
-    public function propertyAscending(array $properties): PathsBasedInterface
+    public function propertyAscending($properties): PathsBasedInterface
     {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK_RECURSIVE, $properties);
         return new Ascending(new Property($propertyPathInstance));
     }
 
-    public function propertyDescending(array $properties): PathsBasedInterface
+    public function propertyDescending($properties): PathsBasedInterface
     {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK_RECURSIVE, $properties);
         return new Descending(new Property($propertyPathInstance));
