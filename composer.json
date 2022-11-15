@@ -9,7 +9,7 @@
         "league/fractal": "^0.19",
         "nette/php-generator": "^3.5",
         "nikic/php-parser": "^4.14",
-        "pagerfanta/pagerfanta": "^2.7",
+        "pagerfanta/pagerfanta": "^3.6",
         "php": "^7.4 || ^8.0",
         "phpdocumentor/reflection-docblock": "^5.1.0",
         "psr/log": "^1.1.4",
