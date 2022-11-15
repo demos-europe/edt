@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.16.1 - 2022-11-15
 
 - feature: allow the usage of `PropertyPathInterface` to create sort methods
 
