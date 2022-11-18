@@ -265,7 +265,7 @@ class PropertyBuilder
             $this->customReadCallback,
             $this->allowingInconsistencies,
             $this->initializable,
-            $this->requiredForCreation,
+            $this->requiredForCreation
         );
     }
 

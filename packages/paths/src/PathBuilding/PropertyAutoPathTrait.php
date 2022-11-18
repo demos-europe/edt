@@ -249,7 +249,7 @@ trait PropertyAutoPathTrait
      * @template TImpl of \EDT\PathBuilding\PropertyAutoPathInterface
      *
      * @param class-string<TImpl> $className
-     * @param non-empty-string|null               $parentPropertyName
+     * @param non-empty-string|null $parentPropertyName
      *
      * @return TImpl
      *
