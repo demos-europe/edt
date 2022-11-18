@@ -46,7 +46,7 @@ class PropertyEvaluatorPool
             $this->evaluators[$key] = new DocblockPropertyByTraitEvaluator(
                 $this->traitEvaluator,
                 $targetTrait,
-                $targetTags,
+                $targetTags
             );
         }
 
