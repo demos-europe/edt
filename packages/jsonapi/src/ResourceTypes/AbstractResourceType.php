@@ -4,18 +4,24 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\OutputTransformation\DynamicTransformerFactory;
-use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\Querying\Contracts\EntityBasedInterface;
-use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
-use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\JsonApi\Properties\AbstractConfig;
+use EDT\JsonApi\Properties\AttributeConfig;
+use EDT\JsonApi\Properties\ConfigCollection;
+use EDT\JsonApi\Properties\ToManyRelationshipConfig;
+use EDT\JsonApi\Properties\ToOneRelationshipConfig;
+use EDT\JsonApi\Properties\TypedPathConfigCollection;
+use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
-use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
+use EDT\Wrapping\Properties\AbstractRelationshipReadability;
+use EDT\Wrapping\Properties\AttributeReadability;
+use EDT\Wrapping\Properties\Initializability;
+use EDT\Wrapping\Properties\RelationshipUpdatability;
+use EDT\Wrapping\Properties\ToManyRelationshipReadability;
+use EDT\Wrapping\Properties\ToOneRelationshipReadability;
+use EDT\Wrapping\Properties\Updatability;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
 use League\Fractal\TransformerAbstract;
@@ -32,92 +38,168 @@ abstract class AbstractResourceType implements ResourceTypeInterface
 {
     public function getReadableProperties(): array
     {
-        $properties = array_map(
-            fn (Property $property): ?TypeInterface => $property instanceof Relationship
-                ? $this->getTypeProvider()
-                    ->requestType($property->getTypeIdentifier())
-                    ->instanceOf(TransferableTypeInterface::class)
-                    ->getInstanceOrThrow()
-                : null,
-            $this->getPropertyCollection()->getReadableProperties()
-        );
+        $configCollection = $this->getInitializedConfiguration();
 
-        return $this->keepExposedTypes($properties);
+        // phpstan will raise an error for this return because the template parameter
+        // `TransferableTypeInterface` should get returned, but actually returned will be
+        // `ResourceTypeInterface`.
+        return [
+            array_filter(
+                array_map(
+                    static fn (AttributeConfig $config): ?AttributeReadability => $config->getReadability(),
+                    $configCollection->getAttributes()
+                ),
+                static fn (?AttributeReadability $readability): bool => null !== $readability
+            ),
+            array_filter(
+                array_map(
+                    static fn (ToOneRelationshipConfig $config): ?ToOneRelationshipReadability => $config->getReadability(),
+                    $configCollection->getToOneRelationships()
+                ),
+                fn (?ToOneRelationshipReadability $readability): bool => null !== $readability && $this->isExposedReadability($readability)
+            ),
+            array_filter(
+                array_map(
+                    static fn (ToManyRelationshipConfig $config): ?ToManyRelationshipReadability => $config->getReadability(),
+                    $configCollection->getToManyRelationships()
+                ),
+                fn (?ToManyRelationshipReadability $readability): bool => null !== $readability && $this->isExposedReadability($readability)
+            ),
+        ];
+    }
+
+    public function getReadableResourceTypeProperties(): array
+    {
+        $configCollection = $this->getInitializedConfiguration();
+
+        return [
+            array_filter(
+                array_map(
+                    static fn (AttributeConfig $config): ?AttributeReadability => $config->getReadability(),
+                    $configCollection->getAttributes()
+                ),
+                static fn (?AttributeReadability $readability): bool => null !== $readability
+            ),
+            array_filter(
+                array_map(
+                    static fn (ToOneRelationshipConfig $config): ?ToOneRelationshipReadability => $config->getReadability(),
+                    $configCollection->getToOneRelationships()
+                ),
+                fn (?ToOneRelationshipReadability $readability): bool => null !== $readability && $this->isExposedReadability($readability)
+            ),
+            array_filter(
+                array_map(
+                    static fn (ToManyRelationshipConfig $config): ?ToManyRelationshipReadability => $config->getReadability(),
+                    $configCollection->getToManyRelationships()
+                ),
+                fn (?ToManyRelationshipReadability $readability): bool => null !== $readability && $this->isExposedReadability($readability)
+            ),
+        ];
+    }
+
+    public function getUpdatableProperties(): array
+    {
+        $configCollection = $this->getInitializedConfiguration();
+
+        return [
+            array_filter(
+                array_map(
+                    static fn (AttributeConfig $config): ?Updatability => $config->getUpdatability(),
+                    $configCollection->getAttributes()
+                ),
+                static fn (?Updatability $updatability): bool => null !== $updatability
+            ),
+            array_filter(
+                array_map(
+                    static fn (ToOneRelationshipConfig $config): ?RelationshipUpdatability => $config->getUpdatability(),
+                    $configCollection->getToOneRelationships()
+                ),
+                static fn (?RelationshipUpdatability $updatability): bool => null !== $updatability
+            ),
+            array_filter(
+                array_map(
+                    static fn (ToManyRelationshipConfig $config): ?RelationshipUpdatability => $config->getUpdatability(),
+                    $configCollection->getToManyRelationships()
+                ),
+                static fn (?RelationshipUpdatability $updatability): bool => null !== $updatability
+            ),
+        ];
+    }
+
+    protected function isExposedReadability(AbstractRelationshipReadability $readability): bool
+    {
+        $relationshipType = $readability->getRelationshipType();
+
+        return $relationshipType instanceof ExposableRelationshipTypeInterface
+            && $relationshipType->isExposedAsRelationship();
     }
 
     public function getFilterableProperties(): array
     {
-        $properties = array_map(
-            fn (Property $property): ?TypeInterface => $property instanceof Relationship
-                ? $this->getTypeProvider()
-                    ->requestType($property->getTypeIdentifier())
-                    ->instanceOf(FilterableTypeInterface::class)
-                    ->getInstanceOrThrow()
-                : null,
-            $this->getPropertyCollection()->getFilterableProperties()
+        return $this->toRelationshipTypes(
+            fn (AbstractConfig $config): bool => $config->isFilteringEnabled()
         );
-
-        return $this->keepExposedTypes($properties);
     }
 
     public function getSortableProperties(): array
     {
-        $properties = array_map(
-            fn (Property $property): ?TypeInterface => $property instanceof Relationship
-                ? $this->getTypeProvider()
-                    ->requestType($property->getTypeIdentifier())
-                    ->instanceOf(SortableTypeInterface::class)
-                    ->getInstanceOrThrow()
-                : null,
-            $this->getPropertyCollection()->getSortableProperties()
+        return $this->toRelationshipTypes(
+            fn (AbstractConfig $config): bool => $config->isSortingEnabled()
         );
-
-        return $this->keepExposedTypes($properties);
-    }
-
-    public function getUpdatableProperties(object $updateTarget): array
-    {
-        return [];
     }
 
     /**
-     * @return array<non-empty-string, list<TCondition>>
+     * @return array<non-empty-string, Initializability<TCondition>>
      *
      * @see CreatableTypeInterface::getInitializableProperties()
      */
     public function getInitializableProperties(): array
     {
-        $properties = $this->getPropertyCollection()->getInitializableProperties();
-
-        return array_map(
-            // TODO: implement support for initialization conditions
-            static fn (Property $property): array => [],
-            $properties
+        $configCollection = $this->getInitializedConfiguration();
+        $configs = array_merge(
+            $configCollection->getAttributes(),
+            $configCollection->getToOneRelationships(),
+            $configCollection->getToManyRelationships()
         );
-    }
 
-    /**
-     * @return list<non-empty-string>
-     *
-     * @see CreatableTypeInterface::getPropertiesRequiredForCreation()
-     */
-    public function getPropertiesRequiredForCreation(): array
-    {
-        return $this->getPropertyCollection()->getPropertyNamesRequiredForCreation();
+        return array_filter(
+            array_map(
+                static fn (AbstractConfig $config): ?Initializability => $config->getInitializability(),
+                $configs
+            ),
+            static fn (?Initializability $initializability): bool => null !== $initializability
+        );
     }
 
     public function getAliases(): array
     {
-        return $this->getPropertyCollection()->getAliasPaths();
+        $configCollection = $this->getInitializedConfiguration();
+        $configs = array_merge(
+            $configCollection->getAttributes(),
+            $configCollection->getToOneRelationships(),
+            $configCollection->getToManyRelationships()
+        );
+
+        return array_filter(
+            array_map(
+                static fn (AbstractConfig $config): ?array => $config->getAliasedPath(),
+                $configs
+            ),
+            static fn (?array $path): bool => null !== $path
+        );
     }
 
     /**
-     * @return DynamicTransformer<TEntity>
+     * @return DynamicTransformer<TCondition, TSorting, TEntity>
      */
     public function getTransformer(): TransformerAbstract
     {
-        return (new DynamicTransformerFactory($this->getMessageFormatter(), $this->getLogger()))
-            ->createTransformer($this, $this->getWrapperFactory());
+        return new DynamicTransformer(
+            $this,
+            $this->getWrapperFactory(),
+            $this->getMessageFormatter(),
+            $this->getLogger()
+        );
     }
 
     /**
@@ -125,85 +207,15 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * effect (e.g. determining the order of properties in JSON:API responses) you can not rely on
      * these effects; they may be changed in the future.
      *
-     * @return list<PropertyBuilder>
+     * @param TypedPathConfigCollection<TCondition, TSorting, TEntity> $propertiesConfigBuilder
      */
-    abstract protected function getProperties(): array;
+    abstract protected function configureProperties(TypedPathConfigCollection $propertiesConfigBuilder): void;
 
     abstract protected function getWrapperFactory(): WrapperObjectFactory;
 
     abstract protected function getLogger(): LoggerInterface;
 
     abstract protected function getMessageFormatter(): MessageFormatter;
-
-    /**
-     * @param list<PropertyBuilder<TEntity, mixed>> $properties
-     *
-     * @return list<PropertyBuilder<TEntity, mixed>>
-     */
-    protected function processProperties(array $properties): array
-    {
-        return $properties;
-    }
-
-    /**
-     * @return PropertyBuilder<TEntity, mixed>
-     */
-    protected function createAttribute(PropertyPathInterface $path): PropertyBuilder
-    {
-        return new PropertyBuilder($path, $this->getEntityClass());
-    }
-
-    /**
-     * @template TRelationship of object
-     *
-     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface $path
-     *
-     * @return RelationshipBuilder<TEntity, TRelationship>
-     */
-    protected function createToOneRelationship(
-        PropertyPathInterface $path,
-        bool $defaultInclude = false
-    ): RelationshipBuilder {
-        return new RelationshipBuilder($path, $this->getEntityClass(), $defaultInclude);
-    }
-
-    /**
-     * @template TRelationship of object
-     *
-     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface $path
-     *
-     * @return RelationshipBuilder<TEntity, TRelationship>
-     */
-    protected function createToManyRelationship(
-        PropertyPathInterface $path,
-        bool $defaultInclude = false
-    ): RelationshipBuilder {
-        return new RelationshipBuilder($path, $this->getEntityClass(), $defaultInclude);
-    }
-
-    /**
-     * @return TypeProviderInterface<TCondition, TSorting>
-     */
-    abstract protected function getTypeProvider(): TypeProviderInterface;
-
-    /**
-     * @return PropertyCollection<TEntity>
-     *
-     * @throws InvalidArgumentException
-     *
-     * @see PropertyBuilder::readable()
-     */
-    public function getPropertyCollection(): PropertyCollection
-    {
-        $properties = $this->getProperties();
-        $properties = $this->processProperties($properties);
-        $properties = array_map(
-            static fn (PropertyBuilder $propertyBuilder): Property => $propertyBuilder->build(),
-            $properties
-        );
-
-        return new PropertyCollection($properties);
-    }
 
     /**
      * Even if a relationship property was defined in this type, we do not allow its usage if the
@@ -224,5 +236,90 @@ abstract class AbstractResourceType implements ResourceTypeInterface
                 || ($type instanceof ExposableRelationshipTypeInterface
                 && $type->isExposedAsRelationship())
         );
+    }
+
+    /**
+     * @param AttributeConfig|ToOneRelationshipConfig|ToManyRelationshipConfig $config
+     * @param non-empty-string $propertyName
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function validateConsistency(AbstractConfig $config, string $propertyName): void
+    {
+        $readability = $config->getReadability();
+        if (null === $readability
+            || $readability->isAllowingInconsistencies()
+            || null === $readability->getCustomValueFunction()
+        ) {
+            return;
+        }
+
+        $problems = [];
+        if ($config->isFilteringEnabled()) {
+            $problems[] = 'filterable';
+        }
+
+        if ($config->isSortingEnabled()) {
+            $problems[] = 'sortable';
+        }
+
+        if (null !== $config->getAliasedPath()) {
+            $problems[] = 'being an alias';
+        }
+
+        if ([] !== $problems) {
+            $problems = implode(' and ', $problems);
+
+            throw new InvalidArgumentException("The property '$propertyName' is set as $problems while having a custom read function set. This will likely result in inconsistencies and is not allowed by default.");
+        }
+    }
+
+    /**
+     * @param callable(AbstractConfig): bool $filter
+     *
+     * @return array<non-empty-string, ResourceTypeInterface<TCondition, TSorting, object>|null>
+     */
+    private function toRelationshipTypes(callable $filter): array
+    {
+        $configCollection = $this->getInitializedConfiguration();
+
+        $attributes = array_map(
+            static fn (AttributeConfig $config): ?ResourceTypeInterface => null,
+            array_filter($configCollection->getAttributes(), $filter)
+        );
+        $toOneRelationships = array_map(
+            static fn (ToOneRelationshipConfig $config): ResourceTypeInterface => $config->getRelationshipType(),
+            array_filter($configCollection->getToOneRelationships(), $filter)
+        );
+        $toManyRelationships = array_map(
+            static fn (ToManyRelationshipConfig $config): ResourceTypeInterface => $config->getRelationshipType(),
+            array_filter($configCollection->getToManyRelationships(), $filter)
+        );
+
+        $properties = array_merge($attributes, $toOneRelationships, $toManyRelationships);
+
+        return $this->keepExposedTypes($properties);
+    }
+
+    /**
+     * TODO: make protected?
+     *
+     * @return ConfigCollection<TCondition, TSorting, TEntity>
+     */
+    public function getInitializedConfiguration(): ConfigCollection
+    {
+        $baseConfigCollection = new ConfigCollection($this);
+        $configCollection = new TypedPathConfigCollection($baseConfigCollection);
+        $this->configureProperties($configCollection);
+        $configs = array_merge(
+            $baseConfigCollection->getAttributes(),
+            $baseConfigCollection->getToOneRelationships(),
+            $baseConfigCollection->getToManyRelationships()
+        );
+        foreach ($configs as $propertyName => $config) {
+            $this->validateConsistency($config, $propertyName);
+        }
+
+        return $baseConfigCollection;
     }
 }

@@ -7,19 +7,34 @@ namespace EDT\Wrapping\Properties;
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  */
-class UpdatableRelationship
+class Updatability
 {
+    /**
+     * @var list<TCondition>
+     */
+    private array $entityConditions;
+
     /**
      * @var list<TCondition>
      */
     private array $valueConditions;
 
     /**
+     * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
      */
-    public function __construct(array $valueConditions)
+    public function __construct(array $entityConditions, array $valueConditions)
     {
+        $this->entityConditions = $entityConditions;
         $this->valueConditions = $valueConditions;
+    }
+
+    /**
+     * @return list<TCondition>
+     */
+    public function getEntityConditions(): array
+    {
+        return $this->entityConditions;
     }
 
     /**
@@ -30,7 +45,7 @@ class UpdatableRelationship
      *
      * @return list<TCondition>
      */
-    public function getRelationshipConditions(): array
+    public function getValueConditions(): array
     {
         return $this->valueConditions;
     }

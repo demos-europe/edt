@@ -10,8 +10,10 @@ use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+use EDT\Wrapping\Properties\AttributeReadability;
+use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 use Tests\data\Model\Book;
 
 /**
@@ -44,9 +46,15 @@ class BookType implements
     public function getReadableProperties(): array
     {
         return [
-            'title' => null,
-            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
-            'tags' => null,
+            [
+                'title' => new AttributeReadability(false, false, null),
+                'tags' => new AttributeReadability(false, false, null),
+            ], [
+                'author' => new ToOneRelationshipReadability(false, false, false, null,
+                    $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
+                ),
+            ],
+            [],
         ];
     }
 
@@ -106,7 +114,7 @@ class BookType implements
         ];
     }
 
-    public function getUpdatableProperties(object $updateTarget): array
+    public function getUpdatableProperties(): array
     {
         return [];
     }

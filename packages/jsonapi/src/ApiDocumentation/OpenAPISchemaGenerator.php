@@ -17,14 +17,16 @@ use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use Throwable;
-use function count;
+use EDT\Wrapping\Properties\AbstractReadability;
+use EDT\Wrapping\Properties\AbstractRelationshipReadability;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Throwable;
 use UnexpectedValueException;
+use function count;
 
 final class OpenAPISchemaGenerator
 {
@@ -272,7 +274,13 @@ final class OpenAPISchemaGenerator
      */
     private function createSchema(ResourceTypeInterface $type): Schema
     {
-        $properties = $type->getReadableProperties();
+        $properties = array_merge(...$type->getReadableProperties());
+        $properties = array_map(
+            static fn (AbstractReadability $readability): ?TypeInterface => $readability instanceof AbstractRelationshipReadability
+                ? $readability->getRelationshipType()
+                : null,
+            $properties
+        );
         $properties = array_filter(
             $properties,
             fn (?TypeInterface $relationshipType): bool => null === $relationshipType

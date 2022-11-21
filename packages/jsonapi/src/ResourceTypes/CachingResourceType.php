@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
+use EDT\JsonApi\Properties\ConfigCollection;
 
 /**
  * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
@@ -18,58 +16,16 @@ use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 abstract class CachingResourceType extends AbstractResourceType
 {
     /**
-     * @var array<non-empty-string, non-empty-list<non-empty-string>>|null
+     * @var ConfigCollection<TCondition, TSorting, TEntity>|null
      */
-    protected ?array $aliasesCache = null;
+    private ?ConfigCollection $initializedConfiguration = null;
 
-    /**
-     * @var array<non-empty-string, FilterableTypeInterface<TCondition, TSorting, object>|null>|null
-     */
-    protected ?array $filterablePropertiesCache = null;
-
-    /**
-     * @var array<non-empty-string, TransferableTypeInterface<TCondition, TSorting, object>|null>|null
-     */
-    protected ?array $readablePropertiesCache = null;
-
-    /**
-     * @var array<non-empty-string, SortableTypeInterface<TCondition, TSorting, object>|null>|null
-     */
-    protected ?array $sortablePropertiesCache = null;
-
-    public function getReadableProperties(): array
+    public function getInitializedConfiguration(): ConfigCollection
     {
-        if (null === $this->readablePropertiesCache) {
-            $this->readablePropertiesCache = parent::getReadableProperties();
+        if (null === $this->initializedConfiguration) {
+            $this->initializedConfiguration = parent::getInitializedConfiguration();
         }
 
-        return $this->readablePropertiesCache;
-    }
-
-    public function getFilterableProperties(): array
-    {
-        if (null === $this->filterablePropertiesCache) {
-            $this->filterablePropertiesCache = parent::getFilterableProperties();
-        }
-
-        return $this->filterablePropertiesCache;
-    }
-
-    public function getSortableProperties(): array
-    {
-        if (null === $this->sortablePropertiesCache) {
-            $this->sortablePropertiesCache = parent::getSortableProperties();
-        }
-
-        return $this->sortablePropertiesCache;
-    }
-
-    public function getAliases(): array
-    {
-        if (null === $this->aliasesCache) {
-            $this->aliasesCache = parent::getAliases();
-        }
-
-        return $this->aliasesCache;
+        return $this->initializedConfiguration;
     }
 }

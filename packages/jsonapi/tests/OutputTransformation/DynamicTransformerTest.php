@@ -5,28 +5,45 @@ declare(strict_types=1);
 namespace Tests\OutputTransformation;
 
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
-use EDT\JsonApi\OutputTransformation\PropertyDefinitionInterface;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
+use EDT\Querying\ConditionFactories\PhpConditionFactory;
+use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
+use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\Sorter;
+use EDT\Querying\Utilities\TableJoiner;
+use EDT\Wrapping\TypeProviders\LazyTypeProvider;
+use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
+use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
+use EDT\Wrapping\Utilities\PropertyReader;
+use EDT\Wrapping\Utilities\SchemaPathProcessor;
+use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\Manager;
-use League\Fractal\ParamBag;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\JsonApiSerializer;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use stdClass;
+use Tests\data\ApiTypes\EmptyType;
+use Tests\data\EmptyEntity;
+use Tests\data\Types\AuthorType;
+use Tests\data\Types\BirthType;
+use Tests\data\Types\BookType;
 
 class DynamicTransformerTest extends TestCase
 {
     private Manager $fractal;
 
+    private WrapperObjectFactory $wrapperFactory;
+
+    private PhpConditionFactory $conditionFactory;
+
+    private MessageFormatter $messageFormatter;
+
     public function testEmpty(): void
     {
-        $attributes = [
-            'id' => $this->createIdPropertyDefinition(),
-        ];
         $transformer = new DynamicTransformer(
-            'Foobar',
-            $attributes,
-            [],
+            new EmptyType($this->wrapperFactory, $this->conditionFactory, new NullLogger(), $this->messageFormatter),
+            $this->wrapperFactory,
             new MessageFormatter(),
             null
         );
@@ -34,7 +51,7 @@ class DynamicTransformerTest extends TestCase
         self::assertEmpty($transformer->getAvailableIncludes());
         self::assertEmpty($transformer->getDefaultIncludes());
 
-        $item = new Item($this->getInputData(), $transformer, 'Foobar');
+        $item = new Item(new EmptyEntity(), $transformer, 'Foobar');
 
         $outputData = $this->fractal->createData($item, 'Foobar');
         self::assertEquals(
@@ -50,36 +67,6 @@ class DynamicTransformerTest extends TestCase
         self::assertTrue(true);
     }
 
-    private function createIdPropertyDefinition(): PropertyDefinitionInterface
-    {
-        return new class() implements PropertyDefinitionInterface {
-            public function determineData($entity, ParamBag $params)
-            {
-                return $entity->id;
-            }
-
-            public function isToBeUsedAsDefaultField(): bool
-            {
-                return true;
-            }
-        };
-    }
-
-    protected function getInputData(): object
-    {
-        $relationship = new stdClass();
-        $relationship->id = '987';
-
-        $inputData = new stdClass();
-        $inputData->id = 'abc';
-        $inputData->a = 1;
-        $inputData->b = 2;
-        $inputData->c = 3;
-        $inputData->foo = $relationship;
-
-        return $inputData;
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -93,5 +80,30 @@ class DynamicTransformerTest extends TestCase
         $this->fractal->parseIncludes([]);
         $this->fractal->parseFieldsets([]);
         $this->fractal->parseExcludes([]);
+
+        $this->messageFormatter = new MessageFormatter();
+        $conditionFactory = new PhpConditionFactory();
+        $this->conditionFactory = $conditionFactory;
+        $lazyTypeProvider = new LazyTypeProvider();
+        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider);
+        $typeProvider = new PrefilledTypeProvider([
+            $this->authorType,
+            new BookType($conditionFactory, $lazyTypeProvider),
+            new BirthType($conditionFactory),
+        ]);
+        $lazyTypeProvider->setAllTypes($typeProvider);
+        $propertyAccessor = new ReflectionPropertyAccessor();
+        $tableJoiner = new TableJoiner($propertyAccessor);
+        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $sorter = new Sorter($tableJoiner);
+        $this->wrapperFactory = new WrapperObjectFactory(
+            new PropertyReader(
+                new SchemaPathProcessor(new PropertyPathProcessorFactory(), $typeProvider),
+                $conditionEvaluator,
+                $sorter
+            ),
+            $propertyAccessor,
+            $conditionEvaluator
+        );
     }
 }
