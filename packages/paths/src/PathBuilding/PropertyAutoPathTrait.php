@@ -6,12 +6,13 @@ namespace EDT\PathBuilding;
 
 use ArrayIterator;
 use EDT\Parsing\Utilities\ParseException;
+use EDT\PathBuilding\SegmentFactories\ReflectionSegmentFactory;
+use EDT\PathBuilding\SegmentFactories\SegmentFactoryInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Exception;
-use ReflectionClass;
 use Safe\Exceptions\ArrayException;
 use function array_key_exists;
 use function get_class;
@@ -20,7 +21,7 @@ use function Safe\array_combine;
 /**
  * Denotes a path usable in a condition that can be finalized to a string in dot-notation.
  *
- * Classes using this trait can define one or multiple <code>property-read</code> annotations with a
+ * Classes using this trait can define one or multiple &#x00040;`property-read` docblock tags with a
  * type implementing {@link PropertyPathInterface}. These can be accessed from the outside like normal (public)
  * properties and will return an instance of their return type with the current instance set as
  * parent. This allows the user to build a path by starting with a type and descending into its
@@ -32,38 +33,59 @@ use function Safe\array_combine;
  */
 trait PropertyAutoPathTrait
 {
+    /**
+     * Set this property to use a different factory than {@link ReflectionSegmentFactory}.
+     *
+     * As an alternative, you can also override {@link self::getSegmentFactory()}.
+     *
+     * Changing it will have no effect on {@link self::startPath()}, which is hardcoded to use
+     * {@link ReflectionSegmentFactory::createSegment()}.
+     */
+    protected ?SegmentFactoryInterface $segmentFactory = null;
+
+    /**
+     * @internal
+     */
     private ?PropertyAutoPathInterface $parent = null;
 
     /**
      * @var non-empty-string|null
+     *
+     * @internal
      */
     private ?string $parentPropertyName = null;
-
-    /**
-     * Will be used instead of {@link PropertyAutoPathTrait::createChild()} when set to non-`null`.
-     * @var callable(string, PropertyPathInterface, string): PropertyPathInterface
-     */
-    private $childCreateCallback;
 
     /**
      * `null` if no parsing happened yet.
      *
      * @var array<non-empty-string, class-string>|null
+     *
+     * @internal
      */
     private ?array $properties = null;
 
     /**
      * @var array<non-empty-string, PropertyPathInterface>
+     *
+     * @internal
      */
     private array $children = [];
 
     /**
      * Will be initialized when {@link PropertyAutoPathTrait::getDocblockTraitEvaluator()} is called.
+     *
+     * @internal
      */
     private ?DocblockPropertyByTraitEvaluator $docblockTraitEvaluator = null;
 
     /**
+     * Warning: even if {@link self::$segmentFactory} allows to create fully initialized
+     * path segments it still can't be used here. Instead, this method will always rely on
+     * instantiation via reflection ({@link ReflectionSegmentFactory::createSegment()}), thus
+     * potentially creating an instance not set-up correctly.
+     *
      * @param mixed ...$constructorArgs
+     *
      * @return static
      * @throws PathBuildException
      */
@@ -71,13 +93,13 @@ trait PropertyAutoPathTrait
     {
         $implementingClass = static::class;
         if (!is_subclass_of($implementingClass, PropertyAutoPathInterface::class)) {
-            throw PathBuildException::missingInterface(static::class, PropertyAutoPathInterface::class);
+            throw PathBuildException::missingInterface($implementingClass, PropertyAutoPathInterface::class);
         }
 
         try {
-            return static::createChild($implementingClass, null, null, $constructorArgs);
+            return ReflectionSegmentFactory::createSegment($implementingClass, null, null, array_values($constructorArgs));
         } catch (Exception $exception) {
-            throw PathBuildException::startPathFailed(static::class, $exception);
+            throw PathBuildException::startPathFailed($implementingClass, $exception);
         }
     }
 
@@ -90,7 +112,7 @@ trait PropertyAutoPathTrait
     {
         $implementingClass = static::class;
         if (!is_subclass_of($implementingClass, PropertyAutoPathInterface::class)) {
-            throw PathBuildException::missingInterface(static::class, PropertyAutoPathInterface::class);
+            throw PathBuildException::missingInterface($implementingClass, PropertyAutoPathInterface::class);
         }
 
         // if we already created the child we avoid creating it again, as for each created child
@@ -99,16 +121,14 @@ trait PropertyAutoPathTrait
             try {
                 $properties = $this->getAutoPathProperties();
                 if (!array_key_exists($propertyName, $properties)) {
-                    throw PathBuildException::createFromName($propertyName, static::class, ...$this->docblockTraitEvaluator->getTargetTags());
+                    throw PathBuildException::createFromName($propertyName, $implementingClass, ...$this->docblockTraitEvaluator->getTargetTags());
                 }
 
                 $returnType = $properties[$propertyName];
-
-                $this->children[$propertyName] = null === $this->childCreateCallback
-                    ? self::createChild($returnType, $this, $propertyName)
-                    : ($this->childCreateCallback)($returnType, $this, $propertyName);
+                $this->children[$propertyName] = $this->getSegmentFactory()
+                    ->createNextSegment($returnType, $this, $propertyName);
             } catch (ParseException $e) {
-                throw PathBuildException::getPropertyFailed(static::class, $propertyName, $e);
+                throw PathBuildException::getPropertyFailed($implementingClass, $propertyName, $e);
             } catch (Exception $e) {
                 throw PathBuildException::genericCreateChild(get_class($this), $propertyName, $e);
             }
@@ -194,12 +214,12 @@ trait PropertyAutoPathTrait
     /**
      * Provides all property-read tags from the docblock of the class this method was invoked on and its parent classes/interfaces.
      *
-     * @param non-empty-list<non-empty-string> $targetTags
+     * @param non-empty-list<value-of<PropertyAutoPathInterface::SUPPORTED_TARGET_TAGS>> $targetTags
      *
-     * @return array<string, class-string<PropertyAutoPathInterface>>
+     * @return array<non-empty-string, class-string<PropertyAutoPathInterface>>
      * @throws ParseException
      */
-    protected function getAutoPathProperties(array $targetTags = ['property-read']): array
+    protected function getAutoPathProperties(array $targetTags = [PropertyAutoPathInterface::TAG_PROPERTY_READ]): array
     {
         if (null === $this->properties) {
             $this->properties = $this->getDocblockTraitEvaluator($targetTags)->parseProperties(
@@ -241,42 +261,19 @@ trait PropertyAutoPathTrait
     }
 
     /**
-     * Creates an instance via reflection. The constructor of the
-     * given class will be circumvented, which results in an instance
-     * that can be used for further path building but may not be
-     * suited for other purposes.
+     * Override this method or set {@link self::$segmentFactory} to use a different factory than
+     * {@link ReflectionSegmentFactory}.
      *
-     * @template TImpl of \EDT\PathBuilding\PropertyAutoPathInterface
-     *
-     * @param class-string<TImpl> $className
-     * @param non-empty-string|null $parentPropertyName
-     *
-     * @return TImpl
-     *
-     * @throws Exception
+     * This will have no effect on {@link self::startPath()}, which is hardcoded to use
+     * {@link ReflectionSegmentFactory::createSegment()}.
      */
-    protected static function createChild(string $className, ?PropertyAutoPathInterface $parent, ?string $parentPropertyName, array $constructorArgs = []): PropertyPathInterface
+    protected function getSegmentFactory(): SegmentFactoryInterface
     {
-        $class = new ReflectionClass($className);
-        if ([] === $constructorArgs) {
-            $constructor = $class->getConstructor();
-            if (null === $constructor || 0 === $constructor->getNumberOfRequiredParameters()) {
-                $childPathSegment = $class->newInstance();
-            } else {
-                $childPathSegment = $class->newInstanceWithoutConstructor();
-            }
-        } else {
-            $childPathSegment = $class->newInstanceArgs($constructorArgs);
+        if (null === $this->segmentFactory) {
+            $this->segmentFactory = new ReflectionSegmentFactory();
         }
 
-        if (null !== $parent) {
-            $childPathSegment->setParent($parent);
-        }
-        if (null !== $parentPropertyName) {
-            $childPathSegment->setParentPropertyName($parentPropertyName);
-        }
-
-        return $childPathSegment;
+        return $this->segmentFactory;
     }
 
     /**
