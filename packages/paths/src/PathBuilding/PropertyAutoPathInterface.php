@@ -9,6 +9,27 @@ use IteratorAggregate;
 
 interface PropertyAutoPathInterface extends PropertyPathInterface, IteratorAggregate
 {
+    public const TAG_PROPERTY = 'property';
+
+    public const TAG_PROPERTY_READ = 'property-read';
+
+    /**
+     * Usage is discouraged, as accesses will be reading, not writing.
+     */
+    public const TAG_PROPERTY_WRITE = 'property-write';
+
+    public const TAG_PARAM = 'param';
+
+    public const TAG_VAR = 'var';
+
+    public const SUPPORTED_TARGET_TAGS = [
+        self::TAG_PROPERTY,
+        self::TAG_PROPERTY_READ,
+        self::TAG_PROPERTY_WRITE,
+        self::TAG_PARAM,
+        self::TAG_VAR,
+    ];
+
     public function setParent(PropertyAutoPathInterface $parent): void;
 
     /**
