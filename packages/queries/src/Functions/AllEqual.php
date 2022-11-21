@@ -18,9 +18,9 @@ class AllEqual extends AbstractFunction
         $count = count($this->functions);
         Assert::count($nestedPropertyValues, $count);
         $evaluations = [];
-        for ($i = 0; $i < $count; $i++) {
-            $function = $this->functions[$i];
-            $propertyValues = $nestedPropertyValues[$i];
+        for ($functionIndex = 0; $functionIndex < $count; $functionIndex++) {
+            $function = $this->functions[$functionIndex];
+            $propertyValues = $nestedPropertyValues[$functionIndex];
             $newEvaluation = $function->apply($propertyValues);
             if (null === $newEvaluation) {
                 return false;

@@ -169,8 +169,8 @@ class JoinFinder
             }
 
             return $classMetadata;
-        } catch (OrmMappingException | PersistenceMappingException | ReflectionException $e) {
-            throw MappingException::relationshipUnavailable($relationshipName, $metadata->getName(), $e);
+        } catch (OrmMappingException | PersistenceMappingException | ReflectionException $exception) {
+            throw MappingException::relationshipUnavailable($relationshipName, $metadata->getName(), $exception);
         }
     }
 

@@ -197,9 +197,9 @@ class AttributeTypeResolver
     ): array {
         try {
             $functionReflection = $this->reflectCustomValueFunction($customReadCallback);
-        } catch (Throwable $e) {
+        } catch (Throwable $exception) {
             // This catch purely exists to have a convenient breakpoint if an unhandled variant of callables appears
-            throw $e;
+            throw $exception;
         }
 
         if (!$functionReflection->hasReturnType()) {

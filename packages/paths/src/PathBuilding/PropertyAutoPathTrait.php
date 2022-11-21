@@ -127,10 +127,10 @@ trait PropertyAutoPathTrait
                 $returnType = $properties[$propertyName];
                 $this->children[$propertyName] = $this->getSegmentFactory()
                     ->createNextSegment($returnType, $this, $propertyName);
-            } catch (ParseException $e) {
-                throw PathBuildException::getPropertyFailed($implementingClass, $propertyName, $e);
-            } catch (Exception $e) {
-                throw PathBuildException::genericCreateChild(get_class($this), $propertyName, $e);
+            } catch (ParseException $exception) {
+                throw PathBuildException::getPropertyFailed($implementingClass, $propertyName, $exception);
+            } catch (Exception $exception) {
+                throw PathBuildException::genericCreateChild(get_class($this), $propertyName, $exception);
             }
         }
 

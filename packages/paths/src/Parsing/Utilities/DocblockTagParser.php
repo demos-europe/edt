@@ -58,8 +58,8 @@ class DocblockTagParser
             $this->reflectionClass = new ReflectionClass($class);
             $this->docBlock = self::createDocblock($this->reflectionClass);
             $this->useStatements = $this->getUseStatements();
-        } catch (Exception $e) {
-            throw ParseException::docblockParsingFailed($class, $e);
+        } catch (Exception $exception) {
+            throw ParseException::docblockParsingFailed($class, $exception);
         }
     }
 
