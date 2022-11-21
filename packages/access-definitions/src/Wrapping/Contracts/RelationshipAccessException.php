@@ -73,6 +73,22 @@ class RelationshipAccessException extends PropertyAccessException
     }
 
     /**
+     * @param non-empty-string $propertyName
+     */
+    public static function toManyNotIterable(string $propertyName): self
+    {
+        return new self("Attempted to use non-iterable data for a to-many relationship property '$propertyName'.");
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     */
+    public static function toOneNeitherObjectNorNull(string $propertyName): self
+    {
+        return new self("Attempted to use a value that was neither `null` nor the expected entity type for a relationship property '$propertyName'.");
+    }
+
+    /**
      * @return non-empty-string|null
      */
     public function getRelationshipTypeIdentifier(): ?string

@@ -56,8 +56,8 @@ class TypeRequirement
     {
         $problems = $this->problems;
         $instance = $this->typedInstance;
-        if (null !== $instance && !is_a($instance, $testTypeFqn)) {
-            if (null !== $this->plainInstance && !is_a($this->plainInstance, $testTypeFqn)) {
+        if (null !== $instance && !$instance instanceof $testTypeFqn) {
+            if (null !== $this->plainInstance && !$this->plainInstance instanceof $testTypeFqn) {
                 $problems = $this->addProblem("does not implement '$testTypeFqn'");
             }
             $instance = null;

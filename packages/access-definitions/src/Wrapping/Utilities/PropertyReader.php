@@ -53,19 +53,14 @@ class PropertyReader
      * @template TEntity of object
      *
      * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $relationshipType
-     * @param TEntity|null                                                                     $value
+     * @param TEntity $value
      *
      * @return TEntity|null
      *
      * @throws PathException
      */
-    public function determineToOneRelationshipValue(TransferableTypeInterface $relationshipType, ?object $value): ?object
+    public function determineToOneRelationshipValue(TransferableTypeInterface $relationshipType, object $value): ?object
     {
-        // if null relationship return null
-        if (null === $value) {
-            return null;
-        }
-
         $condition = $this->schemaPathProcessor->processAccessCondition($relationshipType);
 
         // if to-one relationship: if available return the value to wrap, otherwise return null

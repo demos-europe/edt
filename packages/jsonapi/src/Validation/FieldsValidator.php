@@ -92,7 +92,7 @@ class FieldsValidator
         }
 
         $requestedProperties = explode(',', $propertiesString);
-        $readableProperties = $type->getReadableProperties();
+        $readableProperties = array_merge(...$type->getReadableProperties());
         $readablePropertyNames = array_keys($readableProperties);
 
         return array_values(array_diff($requestedProperties, $readablePropertyNames));

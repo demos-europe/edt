@@ -11,9 +11,12 @@ use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
-use EDT\Wrapping\Properties\UpdatableRelationship;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+use EDT\Wrapping\Properties\AttributeReadability;
+use EDT\Wrapping\Properties\RelationshipUpdatability;
+use EDT\Wrapping\Properties\ToManyRelationshipReadability;
+use EDT\Wrapping\Properties\Updatability;
 use Tests\data\Model\Person;
 
 /**
@@ -45,10 +48,21 @@ class AuthorType implements
     public function getReadableProperties(): array
     {
         return [
-            'name' => null,
-            'pseudonym' => null,
-            'books' => $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
-            'birthCountry' => null,
+            [
+                'name' => new AttributeReadability(false, false, null),
+                'pseudonym' => new AttributeReadability(false, false, null),
+                'birthCountry' => new AttributeReadability(false, false, null),
+            ],
+            [],
+            [
+                'books' => new ToManyRelationshipReadability(
+                    false,
+                    false,
+                    false,
+                    null,
+                    $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
+                ),
+            ],
         ];
     }
 
@@ -107,16 +121,21 @@ class AuthorType implements
         return [];
     }
 
-    public function getUpdatableProperties(object $updateTarget): array
+    public function getUpdatableProperties(): array
     {
+        $bookType = $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow();
+
         return [
-            'name' => null,
-            'birthCountry' => null,
-            'books' => new UpdatableRelationship([
-                $this->typeProvider->requestType(BookType::class)
-                    ->getInstanceOrThrow()
-                    ->getAccessCondition()
-            ]),
+            [
+                'name' => new Updatability([], []),
+                'birthCountry' => new Updatability([], []),
+            ],
+            [],
+            [
+                'books' => new RelationshipUpdatability([], [
+                    $bookType->getAccessCondition()
+                ], $bookType->getEntityClass()),
+            ],
         ];
     }
 

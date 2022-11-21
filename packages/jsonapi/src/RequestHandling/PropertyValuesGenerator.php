@@ -59,6 +59,7 @@ class PropertyValuesGenerator
             $relationships
         );
 
+        // TODO: validate request (especially cardinalities) using type schema
         $relationships = array_map(function (RelationshipObject $relationshipObject) {
             $resourceLinkage = $relationshipObject->getData();
 

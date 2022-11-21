@@ -6,7 +6,6 @@ namespace EDT\JsonApi\ApiDocumentation;
 
 use Closure;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
-use EDT\JsonApi\ResourceTypes\PropertyCollection;
 use EDT\Parsing\Utilities\DocblockTagParser;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
@@ -29,19 +28,15 @@ use function strlen;
 
 /**
  * Map Doctrine or native types to OpenAPI types.
+ *
+ * TODO: abstract this class away from the doctrine parts and move doctrine parts into separate class in separate package (service or subclass)
  */
-// TODO: determine if this class can be abstracted away from doctrine. If not, decide if it should remain in the jsonapi package
 class AttributeTypeResolver
 {
     /**
      * @var array<class-string, ReflectionClass>
      */
     private array $classReflectionCache = [];
-
-    /**
-     * @var array<class-string, PropertyCollection>
-     */
-    private array $propertiesCache = [];
 
     /**
      * Return a valid `cebe\OpenApi` type declaration.
@@ -58,13 +53,16 @@ class AttributeTypeResolver
         string $propertyName
     ): array {
         $resourceClass = get_class($resourceType);
-        if (!array_key_exists($resourceClass, $this->propertiesCache)) {
-            $this->propertiesCache[$resourceClass] = $resourceType->getPropertyCollection();
-        }
 
-        $resourceProperties = $this->propertiesCache[$resourceClass];
-        if ($resourceProperties->has($propertyName)) {
-            $customReadCallback = $resourceProperties->get($propertyName)->getCustomReadCallback();
+        $resourceProperties = $resourceType->getInitializedConfiguration();
+        $property = array_merge(
+            $resourceProperties->getAttributes(),
+            $resourceProperties->getToOneRelationships(),
+            $resourceProperties->getToManyRelationships()
+        )[$propertyName];
+        $readability = $property->getReadability();
+        if (null !== $readability) {
+            $customReadCallback = $readability->getCustomValueFunction();
             if (null !== $customReadCallback) {
                 return $this->resolveTypeFromCallable($customReadCallback, $resourceClass, $propertyName);
             }
@@ -198,7 +196,7 @@ class AttributeTypeResolver
         string $propertyName
     ): array {
         try {
-            $functionReflection = $this->reflectCustomReadCallback($customReadCallback);
+            $functionReflection = $this->reflectCustomValueFunction($customReadCallback);
         } catch (Throwable $e) {
             // This catch purely exists to have a convenient breakpoint if an unhandled variant of callables appears
             throw $e;
@@ -228,7 +226,7 @@ class AttributeTypeResolver
      *
      * @throws ReflectionException
      */
-    private function reflectCustomReadCallback($customReadCallback): ReflectionFunctionAbstract
+    private function reflectCustomValueFunction($customReadCallback): ReflectionFunctionAbstract
     {
         if (is_array($customReadCallback)) {
             return (new ReflectionClass($customReadCallback[0]))->getMethod(

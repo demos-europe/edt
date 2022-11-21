@@ -1,5 +1,8 @@
 # TODO: search for `array_values` and refactor where only needed due to `...` usage
 # TODO: use a flat hierarchy for type interfaces where possible
+# TODO: evaluate https://phpstan.org/user-guide/stub-files
+# TODO: search for single character variables/parameters and rename them
+
 includes:
     #- vendor/ergebnis/phpstan-rules/rules.neon
     - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
@@ -16,6 +19,7 @@ parameters:
         - packages/jsonapi/src
         - packages/paths/src
         - packages/queries/src
+    # Note: use `\w+(\\\w+)+\\(\w+)` to `$2` replacement to remove namespaces in phpstan error messages, making it a bit more readable
     ignoreErrors:
         -
             message: """
@@ -129,11 +133,6 @@ parameters:
             path: packages/dql/src/Utilities/JoinFinder.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalConditionFactoryInterface\\:\\:createCondition\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalConditionFactoryInterface.php
-
-        -
             message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\PredefinedDrupalConditionFactory\\:\\:getOperatorFunctions\\(\\) should return array\\<non\\-empty\\-string, callable\\(array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns array\\{\\=\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasValue'\\}, \\<\\>\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotValue'\\}, STRING_CONTAINS_CASE_INSENSITIVE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringCo…'\\}, IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasAnyOfVal…'\\}, NOT_IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotAnyOf…'\\}, BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, NOT BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, ARRAY_CONTAINS_VALUE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringAs…'\\}, \\.\\.\\.\\}\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
@@ -154,6 +153,16 @@ parameters:
             path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
 
         -
+            message: "#^Call to static method Webmozart\\\\Assert\\\\Assert\\:\\:count\\(\\) with array\\{TEntity of object, League\\\\Fractal\\\\ParamBag\\} and 2 will always evaluate to true\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
+            message: "#^Call to static method Webmozart\\\\Assert\\\\Assert\\:\\:isInstanceOf\\(\\) with League\\\\Fractal\\\\ParamBag and 'League\\\\\\\\Fractal\\\\\\\\ParamBag' will always evaluate to true\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
             message: "#^Method EDT\\\\JsonApi\\\\OutputTransformation\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) return type has no value type specified in iterable type array\\.$#"
             count: 1
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
@@ -164,10 +173,25 @@ parameters:
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
 
         -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:getOrCreateToManyRelationship\\(\\) should return EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object, TRelationshipType of EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TRelationship of object\\>\\> but returns EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, object, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ConfigCollection.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:getOrCreateToOneRelationship\\(\\) should return EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object, TRelationshipType of EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TRelationship of object\\>\\> but returns EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, object, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ConfigCollection.php
+
+        -
             message: """
                 #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
                 will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadableProperties\\(\\)\\} instead$#
             """
+            count: 2
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getReadableProperties\\(\\) should return array\\{array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\AttributeReadability\\<TEntity of object\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToOneRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToManyRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>\\} but returns array\\{array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\AttributeReadability\\<TEntity of object\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToOneRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToManyRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>\\}\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
@@ -198,11 +222,6 @@ parameters:
 
         -
             message: "#^Cannot call method getTargetTags\\(\\) on EDT\\\\PathBuilding\\\\DocblockPropertyByTraitEvaluator\\|null\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:createChild\\(\\) has parameter \\$constructorArgs with no value type specified in iterable type array\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
 
