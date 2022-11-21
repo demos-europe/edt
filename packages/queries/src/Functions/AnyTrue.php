@@ -17,9 +17,9 @@ class AnyTrue extends AbstractFunction
         $nestedPropertyValues = $this->unflatPropertyValues($propertyValues);
         $count = count($nestedPropertyValues);
         Assert::count($this->functions, $count);
-        for ($i = 0; $i < $count; $i++) {
-            $condition = $this->functions[$i];
-            $propertyValues = $nestedPropertyValues[$i];
+        for ($functionIndex = 0; $functionIndex < $count; $functionIndex++) {
+            $condition = $this->functions[$functionIndex];
+            $propertyValues = $nestedPropertyValues[$functionIndex];
             if ($condition->apply($propertyValues)) {
                 return true;
             }

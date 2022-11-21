@@ -2,6 +2,7 @@
 # TODO: use a flat hierarchy for type interfaces where possible
 # TODO: evaluate https://phpstan.org/user-guide/stub-files
 # TODO: search for single character variables/parameters and rename them
+# TODO: rename `WrapperObject::getObject` to `getEntity`
 
 includes:
     #- vendor/ergebnis/phpstan-rules/rules.neon

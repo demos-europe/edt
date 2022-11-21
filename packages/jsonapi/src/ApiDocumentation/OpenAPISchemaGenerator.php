@@ -389,8 +389,8 @@ final class OpenAPISchemaGenerator
                 $resource,
                 $propertyName
             );
-        } catch (UnexpectedValueException $e) {
-            $this->logger->warning("Could not determine attribute type of resource property {$resource::getName()}::$propertyName", [$e]);
+        } catch (UnexpectedValueException $exception) {
+            $this->logger->warning("Could not determine attribute type of resource property {$resource::getName()}::$propertyName", [$exception]);
 
             return ['type' => 'undetermined'];
         }
