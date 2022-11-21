@@ -1,5 +1,49 @@
 # Changelog
 
+## Unreleased
+
+* feature: rework resource property configuration
+  * `CreatableTypeInterface`:
+      * remove `getPropertiesRequiredForCreation`
+      * change return type of `getInitializableProperties`
+  * `TransferableTypeInterface`
+      * change signature and return type of `getUpdatableProperties`
+      * change return type of `getReadableProperties`
+  * `UpdatableRelationship`:
+      * rename class to `Updatability`
+      * change constructor parameters
+      * rename `getValueConditions()` method
+  * disallow `null` as `$value` in `CachingPropertyReader::determineToOneRelationshipValue`
+  * partially validate values read from entities in `WrapperArrayFactory` and `WrapperObject` against configuration retrieved from type instances, if they don't match expectations an exception is thrown
+  * respect `Updatability` entity conditions when updating values in `WrapperObject`
+  * respect `Updatability` value conditions when updating relationship values (conditions for attribute values are not yet supported and will be ignored)
+  * `DynamicTransformer`
+      * couple to `ResourceTypeInterface`, to reduce complexity
+      * change constructor parameters
+      * validate `transform` `$entity` parameter
+      * partially validate attribute and relationship values read from `$entity`
+      * validate `include…` parameters
+  * `AbstractResourceType`
+      * change `getUpdatableProperties` default implementation from returning an empty array to respecting the settings one via `configureProperties`
+      * replace `getProperties` and `processProperties` with `configureProperties` and `getInitializedConfiguration`
+      * remove `createAttribute`, `createToOneRelationship` and `createToManyRelationship`
+      * remove `getTypeProvider`
+      * remove `getPropertyCollection`
+  * reduce caching done in `CachingResourceType`
+  * remove classes:
+    * `DynamicTransformerFactory`
+    * `IncludeDefinition`
+    * `IncludeDefinitionInterface`
+    * `PropertyDefinition`
+    * `PropertyDefinitionInterface`
+    * `TransformerObjectWrapper`
+    * `Property`
+    * `PropertyBuilder`
+    * `PropertyCollection`
+    * `Relationship`
+    * `RelationshipBuilder`
+* ease initialization of valid path segments with factories
+
 ## 0.16.1 - 2022-11-15
 
 - feature: allow the usage of `PropertyPathInterface` to create sort methods
