@@ -97,7 +97,7 @@ class WrapperArrayFactory implements WrapperFactoryInterface
         $readableProperties = $type->getReadableProperties();
         $aliases = $type instanceof AliasableTypeInterface ? $type->getAliases() : [];
 
-        // TODO: respect $readability settings if possible
+        // TODO: respect $readability settings if possible (e.g. custom read function)
 
         $wrapperArray = [];
         foreach ($readableProperties[0] as $propertyName => $readability) {

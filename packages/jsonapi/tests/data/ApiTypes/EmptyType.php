@@ -37,9 +37,9 @@ class EmptyType extends AbstractResourceType
         $this->messageFormatter = $messageFormatter;
     }
 
-    protected function configureProperties(TypedPathConfigCollection $propertiesConfigBuilder): void
+    protected function configureProperties(TypedPathConfigCollection $configCollection): void
     {
-        $propertiesConfigBuilder->configureAttribute(
+        $configCollection->configureAttribute(
             new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, ['id'])
         )->enableReadability(true);
     }
