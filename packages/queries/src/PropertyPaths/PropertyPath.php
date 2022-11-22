@@ -10,6 +10,7 @@ use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use IteratorAggregate;
 use Traversable;
+use function is_string;
 
 /**
  * @template-implements IteratorAggregate<int, non-empty-string>
@@ -40,7 +41,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
 
     /**
      * @param class-string|null $context
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $path
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $path
      *
      * @throws PathException
      */
@@ -48,6 +49,9 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     {
         $this->context = $context;
         $this->accessDepth = $accessDepth;
+        if (is_string($path)) {
+            $path = [$path];
+        }
         $this->path = $path instanceof PropertyPathInterface ? $path->getAsNames() : $path;
         $this->salt = $salt;
     }
@@ -86,7 +90,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     }
 
     /**
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return list<PropertyPathAccessInterface>
      * @throws PathException

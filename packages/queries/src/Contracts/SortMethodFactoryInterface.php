@@ -10,7 +10,7 @@ namespace EDT\Querying\Contracts;
 interface SortMethodFactoryInterface
 {
     /**
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TSorting
      *
@@ -19,7 +19,7 @@ interface SortMethodFactoryInterface
     public function propertyAscending($properties): PathsBasedInterface;
 
     /**
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TSorting
      *
