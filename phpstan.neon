@@ -139,12 +139,12 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
-            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface, array given\\.$#"
+            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
-            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyNotBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface, array given\\.$#"
+            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyNotBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
@@ -185,6 +185,14 @@ parameters:
 
         -
             message: """
+                #^Call to deprecated method getProperties\\(\\) of class EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:
+                implement \\{@link self\\:\\:configureProperties\\(\\)\\} instead$#
+            """
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: """
                 #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
                 will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadableProperties\\(\\)\\} instead$#
             """
@@ -195,6 +203,31 @@ parameters:
             message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getReadableProperties\\(\\) should return array\\{array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\AttributeReadability\\<TEntity of object\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToOneRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToManyRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>\\} but returns array\\{array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\AttributeReadability\\<TEntity of object\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToOneRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>, array\\<non\\-empty\\-string, EDT\\\\Wrapping\\\\Properties\\\\ToManyRelationshipReadability\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object, object, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>\\>\\>\\}\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Parameter \\#1 \\$configCollection of method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<object,mixed\\>\\:\\:addToConfigCollection\\(\\) expects EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Parameter \\#2 \\$customValueFunction of method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Parameter \\#3 \\$customRead of method EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,object,EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: iterable\\<object\\>\\)\\|\\(callable\\(TEntity of object\\)\\: object\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Unable to resolve the template type TRelationshipType in call to method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object\\>\\:\\:configureToManyRelationship\\(\\)$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Unable to resolve the template type TRelationshipType in call to method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object\\>\\:\\:configureToOneRelationship\\(\\)$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
             message: "#^Parameter \\#1 \\$resourceIdentifierObject of static method EDT\\\\JsonApi\\\\Schema\\\\ToOneResourceLinkage\\:\\:createFromArray\\(\\) expects array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|null, array\\<'id'\\|'type'\\|int, array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|non\\-empty\\-string\\>\\|null given\\.$#"
