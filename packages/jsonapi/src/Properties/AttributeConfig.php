@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Properties;
 
+use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\AttributeReadability;
@@ -17,6 +19,16 @@ use EDT\Wrapping\Properties\Updatability;
  */
 class AttributeConfig extends AbstractConfig
 {
+    protected ResourceTypeInterface $type;
+
+    /**
+     * @param ResourceTypeInterface<TCondition, PathsBasedInterface, TEntity> $type
+     */
+    public function __construct(ResourceTypeInterface $type)
+    {
+        $this->type = $type;
+    }
+
     /**
      * @param null|callable(TEntity): (string|int|float|bool|array<int|string, mixed>|null) $customValueFunction
      *
