@@ -6,6 +6,7 @@ namespace EDT\JsonApi\OutputTransformation;
 
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\Utilities\Iterables;
@@ -62,8 +63,6 @@ use Psr\Log\LoggerInterface;
  */
 class DynamicTransformer extends TransformerAbstract
 {
-    private const ID = 'id';
-
     /**
      * @var ResourceTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
      */
@@ -109,7 +108,7 @@ class DynamicTransformer extends TransformerAbstract
         $this->logger = $logger;
         $this->messageFormatter = $messageFormatter;
 
-        if (!array_key_exists(self::ID, $this->attributeReadabilities)) {
+        if (!array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
             throw new InvalidArgumentException('An attribute definition for the `id` is required, as it is needed by Fractal');
         }
 
@@ -407,7 +406,7 @@ class DynamicTransformer extends TransformerAbstract
                 $attributeReadabilities,
                 static fn (AttributeReadability $readability, string $attributeName): bool =>
                     // always keep the 'id` attribute, it is required by Fractal
-                    self::ID === $attributeName
+                    ContentField::ID === $attributeName
                     // keep the attributes that are to be returned by default
                     || $readability->isDefaultField(),
                 ARRAY_FILTER_USE_BOTH
@@ -419,7 +418,7 @@ class DynamicTransformer extends TransformerAbstract
                 $attributeReadabilities,
                 fn (string $attributeName): bool =>
                     // always keep the 'id` attribute, it is required by Fractal
-                    self::ID === $attributeName
+                    ContentField::ID === $attributeName
                     // keep the attributes that were requested
                     || in_array($attributeName, $fieldset, true),
                 ARRAY_FILTER_USE_KEY
