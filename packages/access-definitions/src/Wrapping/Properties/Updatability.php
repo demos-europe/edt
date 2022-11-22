@@ -30,6 +30,8 @@ class Updatability
     }
 
     /**
+     * The entity to update with some value must match these conditions.
+     *
      * @return list<TCondition>
      */
     public function getEntityConditions(): array
