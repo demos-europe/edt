@@ -129,6 +129,14 @@ class ConfigCollection
     }
 
     /**
+     * @return ResourceTypeInterface<TCondition, TSorting, TEntity>
+     */
+    public function getType(): ResourceTypeInterface
+    {
+        return $this->type;
+    }
+
+    /**
      * @param non-empty-string $propertyName
      *
      * @throws ResourcePropertyConfigException
@@ -186,8 +194,7 @@ class ConfigCollection
         if (array_key_exists($propertyName, $this->attributes)) {
             $property = $this->attributes[$propertyName];
         } else {
-            /** @var AttributeConfig<TCondition, TEntity> $property the template parameters are set by definition */
-            $property = new AttributeConfig();
+            $property = new AttributeConfig($this->type);
             $this->attributes[$propertyName] = $property;
         }
 

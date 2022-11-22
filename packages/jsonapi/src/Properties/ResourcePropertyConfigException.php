@@ -76,6 +76,14 @@ class ResourcePropertyConfigException extends Exception
     }
 
     /**
+     * @param non-empty-string $expectedStart
+     */
+    public static function invalidStart(string $expectedStart): self
+    {
+        return new self("The given path has a different starting point than expected. Expected '$expectedStart'.");
+    }
+
+    /**
      * @param non-empty-string $propertyName
      * @param non-empty-string $actual
      * @param non-empty-string $attempt

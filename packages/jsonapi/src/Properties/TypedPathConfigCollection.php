@@ -38,6 +38,7 @@ class TypedPathConfigCollection
      */
     public function configureAttribute($propertyPath, bool $replace = false): AttributeConfig
     {
+        $this->validatePathStart($propertyPath);
         return $this->configCollection->configureAttribute($propertyPath, $replace);
     }
 
@@ -54,6 +55,7 @@ class TypedPathConfigCollection
      */
     public function configureToOneRelationship(ResourceTypeInterface $relationship, bool $replace = false): ToOneRelationshipConfig
     {
+        $this->validatePathStart($relationship);
         return $this->configCollection->configureToOneRelationship($relationship, $relationship, $replace);
     }
 
@@ -70,6 +72,28 @@ class TypedPathConfigCollection
      */
     public function configureToManyRelationship(ResourceTypeInterface $relationship, bool $replace = false): ToManyRelationshipConfig
     {
+        $this->validatePathStart($relationship);
         return $this->configCollection->configureToManyRelationship($relationship, $relationship, $replace);
+    }
+
+    /**
+     * @param PropertyPathInterface $path
+     *
+     * @throws ResourcePropertyConfigException
+     */
+    protected function validatePathStart(PropertyPathInterface $path): void
+    {
+        if (!is_subclass_of($path, '\EDT\PathBuilding\PropertyAutoPathInterface')) {
+            return;
+        }
+
+        $expectedType = $this->configCollection->getType();
+        $actualType = $path->getAsValues()[0];
+
+        if ($expectedType === $actualType) {
+            return;
+        }
+
+        throw ResourcePropertyConfigException::invalidStart($expectedType->getIdentifier());
     }
 }
