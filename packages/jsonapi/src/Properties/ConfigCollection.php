@@ -267,7 +267,7 @@ class ConfigCollection
     ): void {
         $currentRelationshipType = $propertyConfig->getRelationshipType();
         if ($currentRelationshipType !== $newRelationshipType) {
-            throw ResourcePropertyConfigException::relationshipType($propertyName, $currentRelationshipType::getName(), $newRelationshipType::getName());
+            throw ResourcePropertyConfigException::relationshipType($propertyName, $currentRelationshipType->getIdentifier(), $newRelationshipType->getIdentifier());
         }
     }
 

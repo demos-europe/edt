@@ -33,11 +33,9 @@ interface ResourceTypeInterface extends
     AliasableTypeInterface
 {
     /**
-     * TODO: refactor to non-static `getIdentifier` method
-     *
      * @return non-empty-string
      */
-    public static function getName(): string;
+    public function getIdentifier(): string;
 
     /**
      * Provides the transformer to convert instances of

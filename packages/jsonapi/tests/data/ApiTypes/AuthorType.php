@@ -11,7 +11,7 @@ use League\Fractal\TransformerAbstract;
 
 class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInterface
 {
-    public static function getName(): string
+    public function getIdentifier(): string
     {
         return self::class;
     }

@@ -11,7 +11,7 @@ use League\Fractal\TransformerAbstract;
 
 class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterface
 {
-    public static function getName(): string
+    public function getIdentifier(): string
     {
         return self::class;
     }

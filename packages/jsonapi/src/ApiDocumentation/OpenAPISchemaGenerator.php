@@ -94,7 +94,7 @@ final class OpenAPISchemaGenerator
         $tags = array_map(function (ResourceTypeInterface $type): ResourceTypeInterface {
             // create schema information for all resource types
 
-            $typeIdentifier = $type::getName();
+            $typeIdentifier = $type->getIdentifier();
             if (!$this->schemaStore->has($typeIdentifier)) {
                 $schema = $this->createSchema($type);
                 $this->schemaStore->set($typeIdentifier, $schema);
@@ -114,7 +114,7 @@ final class OpenAPISchemaGenerator
 
             $baseUrl = $this->router->generate(
                 'api_resource_list',
-                ['resourceType' => $type::getName()]
+                ['resourceType' => $type->getIdentifier()]
             );
 
             $openApi->paths[$baseUrl] = $listMethodPathItem;
@@ -139,7 +139,7 @@ final class OpenAPISchemaGenerator
             [
                 'name'         => $this->trans(
                     'resource.section',
-                    ['type' => $type::getName()]
+                    ['type' => $type->getIdentifier()]
                 ),
             ]
         );
@@ -162,7 +162,7 @@ final class OpenAPISchemaGenerator
                             [
                                 'type'  => 'array',
                                 'items' => [
-                                    '$ref' => $this->schemaStore->getSchemaReference($resource::getName()),
+                                    '$ref' => $this->schemaStore->getSchemaReference($resource->getIdentifier()),
                                 ],
                             ],
                             [],
@@ -177,7 +177,7 @@ final class OpenAPISchemaGenerator
             [
                 'description' => $this->trans(
                     'method.list.description',
-                    ['type' => $resource::getName()]
+                    ['type' => $resource->getIdentifier()]
                 ),
                 'parameters'  => array_merge(
                     $this->getDefaultQueryParameters(),
@@ -207,7 +207,7 @@ final class OpenAPISchemaGenerator
                         'schema' => $this->wrapAsJsonApiResponseSchema(
                             $resource,
                             [
-                                '$ref' => $this->schemaStore->getSchemaReference($resource::getName()),
+                                '$ref' => $this->schemaStore->getSchemaReference($resource->getIdentifier()),
                             ],
                             [],
                             false
@@ -221,7 +221,7 @@ final class OpenAPISchemaGenerator
             [
                 'description' => $this->trans(
                     'method.get.description',
-                    ['type' => $resource::getName()]
+                    ['type' => $resource->getIdentifier()]
                 ),
                 'responses'   => [
                     SymfonyResponse::HTTP_OK => $okResponse,
@@ -286,7 +286,7 @@ final class OpenAPISchemaGenerator
             fn (?TypeInterface $relationshipType): bool => null === $relationshipType
                 || $relationshipType instanceof ResourceTypeInterface
         );
-        $properties = array_map(static fn (?ResourceTypeInterface $type): ?string => null === $type ? null : $type::getName(), $properties);
+        $properties = array_map(static fn (?ResourceTypeInterface $type): ?string => null === $type ? null : $type->getIdentifier(), $properties);
 
         $properties = array_map(function (?string $typeIdentifier, string $propertyName) use ($type): array {
             // TODO: this is probably incorrect for all aliases with a path longer than 1 element
@@ -314,7 +314,7 @@ final class OpenAPISchemaGenerator
         $data = [
             'type'       => 'object',
             'properties' => [
-                'type'       => ['type' => 'string', 'default' => $resource::getName()],
+                'type'       => ['type' => 'string', 'default' => $resource->getIdentifier()],
                 'attributes' => $dataObjects,
             ],
         ];
@@ -328,7 +328,7 @@ final class OpenAPISchemaGenerator
 
         $selfLink = $this->router->generate(
             'api_resource_list',
-            ['resourceType' => $resource::getName()]
+            ['resourceType' => $resource->getIdentifier()]
         );
 
         if (!$isList) {
@@ -382,7 +382,7 @@ final class OpenAPISchemaGenerator
     ): array {
         try {
             if (!$resource instanceof AbstractResourceType) {
-                throw new UnexpectedValueException("Cannot resolve attribute type of property {$resource::getName()}::$propertyName, resource type does not implement AbstractResourceType");
+                throw new UnexpectedValueException("Cannot resolve attribute type of property {$resource->getIdentifier()}::$propertyName, resource type does not implement AbstractResourceType");
             }
 
             return $this->typeResolver->getPropertyType(
@@ -390,7 +390,7 @@ final class OpenAPISchemaGenerator
                 $propertyName
             );
         } catch (UnexpectedValueException $exception) {
-            $this->logger->warning("Could not determine attribute type of resource property {$resource::getName()}::$propertyName", [$exception]);
+            $this->logger->warning("Could not determine attribute type of resource property {$resource->getIdentifier()}::$propertyName", [$exception]);
 
             return ['type' => 'undetermined'];
         }

@@ -74,7 +74,7 @@ class EmptyType extends AbstractResourceType
         return ['id'];
     }
 
-    public static function getName(): string
+    public function getIdentifier(): string
     {
         return 'Foobar';
     }
