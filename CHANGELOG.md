@@ -2,15 +2,12 @@
 
 ## Unreleased
 
-* feature: allow non-empty-string as path param (usable in condition and sort-method factories)
 * remove static `ResourceTypeInterface::getName()` method, the non-static `getIdentifier()` method needs to be implemented instead
 * feature: rework resource property configuration
   * `CreatableTypeInterface`:
-      * remove `getPropertiesRequiredForCreation`
+      * remove `getPropertiesRequiredForCreation`, its information is now available via `getInitializableProperties`
       * change return type of `getInitializableProperties`
-  * `TransferableTypeInterface`
-      * change signature and return type of `getUpdatableProperties`
-      * change return type of `getReadableProperties`
+  * change signature and return type of `TransferableTypeInterface::getUpdatableProperties`; when extending from `AbstractResourceType`, updatability should be configured via `configureProperties()` now instead of overriding `getUpdatableProperties` 
   * `UpdatableRelationship`:
       * rename class to `Updatability`
       * change constructor parameters
@@ -27,24 +24,10 @@
       * validate `include…` parameters
   * `AbstractResourceType`
       * change `getUpdatableProperties` default implementation from returning an empty array to respecting the settings one via `configureProperties`
-      * replace `getProperties` and `processProperties` with `configureProperties` and `getInitializedConfiguration`
-      * remove `createAttribute`, `createToOneRelationship` and `createToManyRelationship`
+      * change return type and signature of `processProperties`
       * remove `getTypeProvider`
-      * remove `getPropertyCollection`
   * reduce caching done in `CachingResourceType`
-  * remove classes:
-    * `DynamicTransformerFactory`
-    * `IncludeDefinition`
-    * `IncludeDefinitionInterface`
-    * `PropertyDefinition`
-    * `PropertyDefinitionInterface`
-    * `TransformerObjectWrapper`
-    * `Property`
-    * `PropertyBuilder`
-    * `PropertyCollection`
-    * `Relationship`
-    * `RelationshipBuilder`
-* ease initialization of valid path segments with factories
+* ease initialization of valid path segments with factories by accepting `PropertyPathInterface` instances, a single non-empty-string or a list of non-empty-strings
 
 ## 0.16.1 - 2022-11-15
 

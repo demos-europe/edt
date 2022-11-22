@@ -12,6 +12,8 @@ use EDT\JsonApi\Properties\ToManyRelationshipConfig;
 use EDT\JsonApi\Properties\ToOneRelationshipConfig;
 use EDT\JsonApi\Properties\TypedPathConfigCollection;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
+use EDT\Querying\Contracts\EntityBasedInterface;
+use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -97,6 +99,20 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         ];
     }
 
+    public function getFilterableProperties(): array
+    {
+        return $this->toRelationshipTypes(
+            fn (AbstractConfig $config): bool => $config->isFilteringEnabled()
+        );
+    }
+
+    public function getSortableProperties(): array
+    {
+        return $this->toRelationshipTypes(
+            fn (AbstractConfig $config): bool => $config->isSortingEnabled()
+        );
+    }
+
     public function getUpdatableProperties(): array
     {
         $configCollection = $this->getInitializedConfiguration();
@@ -124,28 +140,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
                 static fn (?RelationshipUpdatability $updatability): bool => null !== $updatability
             ),
         ];
-    }
-
-    protected function isExposedReadability(AbstractRelationshipReadability $readability): bool
-    {
-        $relationshipType = $readability->getRelationshipType();
-
-        return $relationshipType instanceof ExposableRelationshipTypeInterface
-            && $relationshipType->isExposedAsRelationship();
-    }
-
-    public function getFilterableProperties(): array
-    {
-        return $this->toRelationshipTypes(
-            fn (AbstractConfig $config): bool => $config->isFilteringEnabled()
-        );
-    }
-
-    public function getSortableProperties(): array
-    {
-        return $this->toRelationshipTypes(
-            fn (AbstractConfig $config): bool => $config->isSortingEnabled()
-        );
     }
 
     /**
@@ -207,15 +201,115 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * effect (e.g. determining the order of properties in JSON:API responses) you can not rely on
      * these effects; they may be changed in the future.
      *
-     * @param TypedPathConfigCollection<TCondition, TSorting, TEntity> $propertiesConfigBuilder
+     * @param TypedPathConfigCollection<TCondition, TSorting, TEntity> $configCollection
+     *
+     * @return list<PropertyBuilder>
+     *
+     * @deprecated implement {@link self::configureProperties()} instead
      */
-    abstract protected function configureProperties(TypedPathConfigCollection $propertiesConfigBuilder): void;
+    protected function getProperties(TypedPathConfigCollection $configCollection): array
+    {
+        return [];
+    }
+
+    /**
+     * @param TypedPathConfigCollection<TCondition, TSorting, TEntity> $configCollection
+     */
+    abstract protected function configureProperties(TypedPathConfigCollection $configCollection): void;
 
     abstract protected function getWrapperFactory(): WrapperObjectFactory;
 
     abstract protected function getLogger(): LoggerInterface;
 
     abstract protected function getMessageFormatter(): MessageFormatter;
+
+    /**
+     * @param ConfigCollection<TCondition, TSorting, TEntity> $configCollection
+     */
+    protected function processProperties(ConfigCollection $configCollection): void
+    {
+        // do nothing by default
+    }
+
+    /**
+     * @return PropertyBuilder<TEntity, mixed>
+     *
+     * @deprecated use {@link TypedPathConfigCollection::configureAttribute()} instead
+     */
+    protected function createAttribute(PropertyPathInterface $path): PropertyBuilder
+    {
+        return new PropertyBuilder($path, $this->getEntityClass());
+    }
+
+    /**
+     * @template TRelationship of object
+     *
+     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface $path
+     *
+     * @return PropertyBuilder<TEntity, TRelationship>
+     *
+     * @deprecated use {@link TypedPathConfigCollection::configureToOneRelationship()} instead
+     */
+    protected function createToOneRelationship(
+        PropertyPathInterface $path,
+        bool $defaultInclude = false
+    ): PropertyBuilder {
+        return new PropertyBuilder($path, $this->getEntityClass(), [
+            'relationshipType' => $path,
+            'defaultInclude' => $defaultInclude,
+            'toMany' => false,
+        ]);
+    }
+
+    /**
+     * @template TRelationship of object
+     *
+     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface $path
+     *
+     * @return PropertyBuilder<TEntity, TRelationship>
+     *
+     * @deprecated use {@link TypedPathConfigCollection::configureToManyRelationship()} instead
+     */
+    protected function createToManyRelationship(
+        PropertyPathInterface $path,
+        bool $defaultInclude = false
+    ): PropertyBuilder {
+        return new PropertyBuilder($path, $this->getEntityClass(), [
+            'relationshipType' => $path,
+            'defaultInclude' => $defaultInclude,
+            'toMany' => true,
+        ]);
+    }
+
+    /**
+     * TODO: make protected?
+     *
+     * @return ConfigCollection<TCondition, TSorting, TEntity>
+     */
+    public function getInitializedConfiguration(): ConfigCollection
+    {
+        $baseConfigCollection = new ConfigCollection($this);
+        $configCollection = new TypedPathConfigCollection($baseConfigCollection);
+        $this->configureProperties($configCollection);
+
+        $properties = $this->getProperties($configCollection);
+        foreach ($properties as $property) {
+            $property->addToConfigCollection($baseConfigCollection);
+        }
+
+        $this->processProperties($baseConfigCollection);
+
+        $configs = array_merge(
+            $baseConfigCollection->getAttributes(),
+            $baseConfigCollection->getToOneRelationships(),
+            $baseConfigCollection->getToManyRelationships()
+        );
+        foreach ($configs as $propertyName => $config) {
+            $this->validateConsistency($config, $propertyName);
+        }
+
+        return $baseConfigCollection;
+    }
 
     /**
      * Even if a relationship property was defined in this type, we do not allow its usage if the
@@ -301,25 +395,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         return $this->keepExposedTypes($properties);
     }
 
-    /**
-     * TODO: make protected?
-     *
-     * @return ConfigCollection<TCondition, TSorting, TEntity>
-     */
-    public function getInitializedConfiguration(): ConfigCollection
+    protected function isExposedReadability(AbstractRelationshipReadability $readability): bool
     {
-        $baseConfigCollection = new ConfigCollection($this);
-        $configCollection = new TypedPathConfigCollection($baseConfigCollection);
-        $this->configureProperties($configCollection);
-        $configs = array_merge(
-            $baseConfigCollection->getAttributes(),
-            $baseConfigCollection->getToOneRelationships(),
-            $baseConfigCollection->getToManyRelationships()
-        );
-        foreach ($configs as $propertyName => $config) {
-            $this->validateConsistency($config, $propertyName);
-        }
+        $relationshipType = $readability->getRelationshipType();
 
-        return $baseConfigCollection;
+        return $relationshipType instanceof ExposableRelationshipTypeInterface
+            && $relationshipType->isExposedAsRelationship();
     }
 }
