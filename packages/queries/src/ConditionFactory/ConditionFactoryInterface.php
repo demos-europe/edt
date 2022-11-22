@@ -13,7 +13,7 @@ use EDT\Querying\Contracts\PropertyPathInterface;
 interface ConditionFactoryInterface
 {
     /**
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -27,7 +27,7 @@ interface ConditionFactoryInterface
      * array of values.
      *
      * @param list<mixed> $values
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -37,7 +37,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param list<mixed> $values
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -52,7 +52,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param int<0, max> $size
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -62,7 +62,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param int<0, max> $size
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -86,7 +86,7 @@ interface ConditionFactoryInterface
     public function propertiesEqual(array $leftProperties, array $rightProperties);
 
     /**
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -96,7 +96,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param string|int|float|bool $value
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -107,7 +107,7 @@ interface ConditionFactoryInterface
     /**
      * @param string|int|float $min
      * @param string|int|float $max
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -118,7 +118,7 @@ interface ConditionFactoryInterface
     /**
      * @param numeric-string|int|float $min
      * @param numeric-string|int|float $max
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -127,7 +127,7 @@ interface ConditionFactoryInterface
     public function propertyNotBetweenValuesInclusive($min, $max, $properties);
 
     /**
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -137,7 +137,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param numeric-string|int|float $value
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -147,7 +147,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param numeric-string|int|float $value
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -157,7 +157,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param numeric-string|int|float $value
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -167,7 +167,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param numeric-string|int|float $value
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -177,7 +177,7 @@ interface ConditionFactoryInterface
 
     /**
      * @return TCondition
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @throws PathException
      */
@@ -185,7 +185,7 @@ interface ConditionFactoryInterface
 
     /**
      * @return TCondition
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @throws PathException
      */
@@ -203,7 +203,7 @@ interface ConditionFactoryInterface
      * and `'books'` and `'title'` (the path to the titles).
      *
      * @param non-empty-list<mixed>            $values
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -213,7 +213,7 @@ interface ConditionFactoryInterface
 
     /**
      * @param string|int|float|bool $value
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -222,7 +222,7 @@ interface ConditionFactoryInterface
     public function propertyHasNotValue($value, $properties);
 
     /**
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
@@ -234,7 +234,7 @@ interface ConditionFactoryInterface
      * The returned condition will match if the property the given path denotes
      * does not contain the given string value as an entry.
      *
-     * @param non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *

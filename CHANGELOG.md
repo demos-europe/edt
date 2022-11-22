@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* feature: allow non-empty-string as path param (usable in condition and sort-method factories)
 * remove static `ResourceTypeInterface::getName()` method, the non-static `getIdentifier()` method needs to be implemented instead
 * feature: rework resource property configuration
   * `CreatableTypeInterface`:
