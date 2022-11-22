@@ -85,7 +85,7 @@ abstract class AbstractApiService
 
         $entity = $this->getObject($type, $urlId);
 
-        return new Item($entity, $type->getTransformer(), $type::getName());
+        return new Item($entity, $type->getTransformer(), $type->getIdentifier());
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class AbstractApiService
         $apiList = $this->getObjects($type, $filters, $sortMethods, $urlParams);
 
         $transformer = $type->getTransformer();
-        $collection = new Collection($apiList->getList(), $transformer, $type::getName());
+        $collection = new Collection($apiList->getList(), $transformer, $type->getIdentifier());
         $collection->setMeta($apiList->getMeta());
         $paginator = $apiList->getPaginator();
         if (null !== $paginator) {
@@ -150,7 +150,7 @@ abstract class AbstractApiService
             return null;
         }
 
-        return new Item($updatedEntity, $type->getTransformer(), $type::getName());
+        return new Item($updatedEntity, $type->getTransformer(), $type->getIdentifier());
     }
 
     /**
@@ -207,7 +207,7 @@ abstract class AbstractApiService
             return null;
         }
 
-        return new Item($createdEntity, $type->getTransformer(), $type::getName());
+        return new Item($createdEntity, $type->getTransformer(), $type->getIdentifier());
     }
 
     /**

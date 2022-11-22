@@ -232,7 +232,7 @@ class DynamicTransformer extends TransformerAbstract
 
         return null === $value
             ? $this->null()
-            : new Item($value, $relationshipType->getTransformer(), $relationshipType::getName());
+            : new Item($value, $relationshipType->getTransformer(), $relationshipType->getIdentifier());
     }
 
     /**
@@ -272,7 +272,7 @@ class DynamicTransformer extends TransformerAbstract
             );
         }
 
-        return new Collection($values, $relationshipType->getTransformer(), $relationshipType::getName());
+        return new Collection($values, $relationshipType->getTransformer(), $relationshipType->getIdentifier());
     }
 
     /**
@@ -375,7 +375,7 @@ class DynamicTransformer extends TransformerAbstract
     private function createIncludeErrorMessage(array $notAvailableIncludes): string
     {
         $notAvailableIncludesString = $this->messageFormatter->propertiesToString($notAvailableIncludes);
-        $message = "The following requested includes are not available in the resource type '{$this->type::getName()}': $notAvailableIncludesString.";
+        $message = "The following requested includes are not available in the resource type '{$this->type->getIdentifier()}': $notAvailableIncludesString.";
 
         if ([] !== $this->availableIncludes) {
             $availableIncludesString = $this->messageFormatter->propertiesToString($this->availableIncludes);
@@ -400,7 +400,7 @@ class DynamicTransformer extends TransformerAbstract
         if (null === $scope) {
             throw TransformException::nullScope();
         }
-        $fieldsetBag = $scope->getManager()->getFieldset($this->type::getName());
+        $fieldsetBag = $scope->getManager()->getFieldset($this->type->getIdentifier());
         if (null === $fieldsetBag) {
             // default attribute fields
             return array_filter(

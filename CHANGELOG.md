@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* remove static `ResourceTypeInterface::getName()` method, the non-static `getIdentifier()` method needs to be implemented instead
 * feature: rework resource property configuration
   * `CreatableTypeInterface`:
       * remove `getPropertiesRequiredForCreation`
