@@ -12,7 +12,7 @@ use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\AbstractReadability;
 use EDT\Wrapping\Properties\Initializability;
-use EDT\Wrapping\Properties\Updatability;
+use EDT\Wrapping\Properties\AbstractUpdatability;
 
 /**
  * Set up a specific property for accesses via the generic JSON:API implementation.
@@ -34,8 +34,8 @@ use EDT\Wrapping\Properties\Updatability;
  *
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  * @template TEntity of object
- * @template TReadability of AbstractReadability
- * @template TUpdatability of Updatability
+ * @template TReadability of \EDT\Wrapping\Properties\AbstractReadability
+ * @template TUpdatability of \EDT\Wrapping\Properties\AbstractUpdatability
  */
 abstract class AbstractConfig
 {
@@ -61,7 +61,7 @@ abstract class AbstractConfig
     /**
      * @var TUpdatability|null
      */
-    protected ?Updatability $updatability = null;
+    protected ?AbstractUpdatability $updatability = null;
 
     /**
      * Mark this property as usable when filtering resources. It can then be used to filter
@@ -178,27 +178,6 @@ abstract class AbstractConfig
     }
 
     /**
-     * @param list<TCondition> $entityConditions
-     * @param list<TCondition> $valueConditions
-     *
-     * @return $this
-     */
-    public function enableUpdatability(array $entityConditions, array $valueConditions): AbstractConfig
-    {
-        $this->updatability = $this->createUpdatability($entityConditions, $valueConditions);
-
-        return $this;
-    }
-
-    /**
-     * @param list<TCondition> $entityConditions
-     * @param list<TCondition> $valueConditions
-     *
-     * @return TUpdatability
-     */
-    abstract protected function createUpdatability(array $entityConditions, array $valueConditions): Updatability;
-
-    /**
      * Set an alias to follow when this property is accessed.
      *
      * Beside {@link PropertyBuilder::readable() custom read functions},
@@ -304,7 +283,7 @@ abstract class AbstractConfig
     /**
      * @return TUpdatability|null
      */
-    public function getUpdatability(): ?Updatability
+    public function getUpdatability(): ?AbstractUpdatability
     {
         return $this->updatability;
     }

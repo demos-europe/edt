@@ -7,7 +7,7 @@ namespace EDT\Wrapping\Properties;
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  */
-class Updatability
+abstract class AbstractUpdatability
 {
     /**
      * @var list<TCondition>

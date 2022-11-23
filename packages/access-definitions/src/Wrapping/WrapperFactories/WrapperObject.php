@@ -20,8 +20,10 @@ use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Properties\RelationshipUpdatability;
-use EDT\Wrapping\Properties\Updatability;
+use EDT\Wrapping\Properties\AttributeUpdatability;
+use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
+use EDT\Wrapping\Properties\ToOneRelationshipUpdatability;
+use EDT\Wrapping\Properties\AbstractUpdatability;
 use EDT\Wrapping\Utilities\PropertyReader;
 use InvalidArgumentException;
 use function array_key_exists;
@@ -202,9 +204,9 @@ class WrapperObject
     }
 
     /**
-     * @param Updatability<FunctionInterface<bool>> $updatability
+     * @param AbstractUpdatability<FunctionInterface<bool>> $updatability
      */
-    protected function isAllowedByEntityConditions(Updatability $updatability): bool
+    protected function isAllowedByEntityConditions(AbstractUpdatability $updatability): bool
     {
         return $this->conditionEvaluator->evaluateConditions(
             $this->entity,
@@ -234,19 +236,9 @@ class WrapperObject
             throw PropertyAccessException::propertyNotAvailableInUpdatableType($propertyName, $this->type, ...array_keys($updatabilities));
         }
 
-        $propertyPath = $this->mapProperty($propertyName);
-
-        // follow the path to get the actual target in which a property is to be set
-        $deAliasedPropertyName = array_pop($propertyPath);
-
         // at this point we ensured the relationship type is available and referencable but still
         // need to check the access conditions
-        $this->throwIfNotSetable($nestedUpdatabilities, $propertyName, $deAliasedPropertyName, $value);
-
-        $target = [] === $propertyPath
-            ? $this->entity
-            : $this->propertyAccessor->getValueByPropertyPath($this->entity, ...$propertyPath);
-        $this->setUnrestricted($deAliasedPropertyName, $target, $value);
+        $this->setOrThrowIfNotSetable($nestedUpdatabilities, $propertyName, $value);
     }
 
     /**
@@ -293,17 +285,6 @@ class WrapperObject
     }
 
     /**
-     * Set the value into the given object
-     *
-     * @param non-empty-string $propertyName
-     * @param mixed|null       $value
-     */
-    protected function setUnrestricted(string $propertyName, object $target, $value): void
-    {
-        $this->propertyAccessor->setValue($target, $value, $propertyName);
-    }
-
-    /**
      * This method will prevent access to relationship values that should not be accessible.
      *
      * The type of the relationship is provided via `$relationship`. The value will be deemed setable if one of the following is true:
@@ -323,25 +304,28 @@ class WrapperObject
      * information like {@link TransferableTypeInterface::getReadableProperties() readable} or
      * {@link TransferableTypeInterface::getUpdatableProperties() updatable} properties.
      *
-     * @param array{0: array<non-empty-string, Updatability<FunctionInterface<bool>>>, 1: array<non-empty-string, RelationshipUpdatability<FunctionInterface<bool>, object>>, 2: array<non-empty-string, RelationshipUpdatability<FunctionInterface<bool>, object>>} $updatabilities
-     * @param non-empty-string              $propertyName
-     * @param non-empty-string              $deAliasedPropertyName
-     * @param mixed                         $propertyValue         A single value of some type or an iterable.
+     * @param array{0: array<non-empty-string, AttributeUpdatability<FunctionInterface<bool>, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object, TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object>>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object, TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object>>>} $updatabilities
+     * @param non-empty-string                                                                                                                                                                                                                                                         $propertyName
+     * @param mixed                                                                                                                                                                                                                                                                    $propertyValue         A single value of some type or an iterable.
      *
      * @throws AccessException
      */
-    protected function throwIfNotSetable(
+    protected function setOrThrowIfNotSetable(
         array $updatabilities,
         string $propertyName,
-        string $deAliasedPropertyName,
         $propertyValue
     ): void {
+        $propertyPath = $this->mapProperty($propertyName);
+
+        // follow the path to get the actual target in which a property is to be set
+        $deAliasedPropertyName = array_pop($propertyPath);
+
         if (array_key_exists($propertyName, $updatabilities[2])) {
             $updatability = $updatabilities[2][$propertyName];
             if (!is_iterable($propertyValue)) {
                 throw RelationshipAccessException::toManyNotIterable($propertyName);
             }
-            $entityClass = $updatability->getRelationshipEntityClass();
+            $entityClass = $updatability->getRelationshipType()->getEntityClass();
             // if to-many relationship prevent setting restricted items
             foreach (Iterables::asArray($propertyValue) as $key => $value) {
                 if (!$value instanceof $entityClass) {
@@ -351,26 +335,54 @@ class WrapperObject
                     throw RelationshipAccessException::toManyWithRestrictedItemNotSetable($this->type, $propertyName, $deAliasedPropertyName, $key);
                 }
             }
+
+            $customWrite = $updatability->getCustomWriteFunction();
+            if (null !== $customWrite) {
+                $customWrite($this->entity, $propertyValue);
+
+                return;
+            }
         }
 
         if (array_key_exists($propertyName, $updatabilities[1])) {
             $updatability = $updatabilities[1][$propertyName];
-            $entityClass = $updatability->getRelationshipEntityClass();
+            $entityClass = $updatability->getRelationshipType()->getEntityClass();
             if (!$propertyValue instanceof $entityClass) {
                 throw new InvalidArgumentException('Tried setting a value with the wrong entity type into a to-one relationship property.');
             } elseif (!$this->conditionEvaluator->evaluateConditions($propertyValue, $updatability->getValueConditions())) {
                 // if restricted to-one relationship
                 throw RelationshipAccessException::toOneWithRestrictedItemNotSetable($this->type, $propertyName, $deAliasedPropertyName);
             }
+
+            $customWrite = $updatability->getCustomWriteFunction();
+            if (null !== $customWrite) {
+                $customWrite($this->entity, $propertyValue);
+
+                return;
+            }
         }
 
         if (array_key_exists($propertyName, $updatabilities[0])) {
             $updatability = $updatabilities[0][$propertyName];
+            // TODO: add value type validation
             // TODO: add support for value conditions evaluating non-objects
             if (is_object($propertyValue) && !$this->conditionEvaluator->evaluateConditions($propertyValue, $updatability->getValueConditions())) {
                 throw new InvalidArgumentException('Value to set into attribute is not allowed by value conditions.');
             }
+
+            $customWrite = $updatability->getCustomWriteFunction();
+            if (null !== $customWrite) {
+                $customWrite($this->entity, $propertyValue);
+
+                return;
+            }
         }
+
+        // set via propertyAccessor if there was no custom-write function
+        $target = [] === $propertyPath
+            ? $this->entity
+            : $this->propertyAccessor->getValueByPropertyPath($this->entity, ...$propertyPath);
+        $this->propertyAccessor->setValue($target, $propertyValue, $deAliasedPropertyName);
     }
 
     /**

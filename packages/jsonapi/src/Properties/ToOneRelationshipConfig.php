@@ -7,7 +7,7 @@ namespace EDT\JsonApi\Properties;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Properties\RelationshipUpdatability;
+use EDT\Wrapping\Properties\ToOneRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 
 /**
@@ -17,7 +17,7 @@ use EDT\Wrapping\Properties\ToOneRelationshipReadability;
  * @template TRelationship of object
  * @template TRelationshipType of ResourceTypeInterface<TCondition, TSorting, TRelationship>
  *
- * @template-extends AbstractConfig<TCondition, TEntity, ToOneRelationshipReadability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>, RelationshipUpdatability<TCondition, TRelationship>>
+ * @template-extends AbstractConfig<TCondition, TEntity, ToOneRelationshipReadability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>>
  */
 class ToOneRelationshipConfig extends AbstractConfig
 {
@@ -75,9 +75,28 @@ class ToOneRelationshipConfig extends AbstractConfig
         return $this;
     }
 
-    protected function createUpdatability(array $entityConditions, array $valueConditions): RelationshipUpdatability
-    {
-        return new RelationshipUpdatability($entityConditions, $valueConditions, $this->relationshipType->getEntityClass());
+    /**
+     * @param list<TCondition>                                 $entityConditions
+     * @param list<TCondition>                                 $valueConditions
+     * @param null|callable(TEntity, TRelationship|null): void $customWrite
+     *
+     * @return $this
+     */
+    public function enableUpdatability(
+        array $entityConditions = [],
+        array $valueConditions = [],
+        callable $customWrite = null
+    ): ToOneRelationshipConfig {
+        $this->assertNullOrImplements(TransferableTypeInterface::class, 'readable');
+
+        $this->updatability = new ToOneRelationshipUpdatability(
+            $entityConditions,
+            $valueConditions,
+            $this->relationshipType,
+            $customWrite
+        );
+
+        return $this;
     }
 
     protected function getType(): ?TypeInterface
