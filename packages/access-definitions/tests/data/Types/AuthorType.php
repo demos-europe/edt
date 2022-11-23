@@ -14,9 +14,9 @@ use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AttributeReadability;
-use EDT\Wrapping\Properties\RelationshipUpdatability;
+use EDT\Wrapping\Properties\AttributeUpdatability;
+use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
-use EDT\Wrapping\Properties\Updatability;
 use Tests\data\Model\Person;
 
 /**
@@ -127,14 +127,14 @@ class AuthorType implements
 
         return [
             [
-                'name' => new Updatability([], []),
-                'birthCountry' => new Updatability([], []),
+                'name' => new AttributeUpdatability([], [], null),
+                'birthCountry' => new AttributeUpdatability([], [], null),
             ],
             [],
             [
-                'books' => new RelationshipUpdatability([], [
+                'books' => new ToManyRelationshipUpdatability([], [
                     $bookType->getAccessCondition()
-                ], $bookType->getEntityClass()),
+                ], $bookType, null),
             ],
         ];
     }

@@ -19,11 +19,12 @@ use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\AbstractRelationshipReadability;
 use EDT\Wrapping\Properties\AttributeReadability;
+use EDT\Wrapping\Properties\AttributeUpdatability;
 use EDT\Wrapping\Properties\Initializability;
-use EDT\Wrapping\Properties\RelationshipUpdatability;
+use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
+use EDT\Wrapping\Properties\ToOneRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 use EDT\Wrapping\Properties\ToOneRelationshipReadability;
-use EDT\Wrapping\Properties\Updatability;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
 use League\Fractal\TransformerAbstract;
@@ -120,24 +121,24 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         return [
             array_filter(
                 array_map(
-                    static fn (AttributeConfig $config): ?Updatability => $config->getUpdatability(),
+                    static fn (AttributeConfig $config): ?AttributeUpdatability => $config->getUpdatability(),
                     $configCollection->getAttributes()
                 ),
-                static fn (?Updatability $updatability): bool => null !== $updatability
+                static fn (?AttributeUpdatability $updatability): bool => null !== $updatability
             ),
             array_filter(
                 array_map(
-                    static fn (ToOneRelationshipConfig $config): ?RelationshipUpdatability => $config->getUpdatability(),
+                    static fn (ToOneRelationshipConfig $config): ?ToOneRelationshipUpdatability => $config->getUpdatability(),
                     $configCollection->getToOneRelationships()
                 ),
-                static fn (?RelationshipUpdatability $updatability): bool => null !== $updatability
+                static fn (?ToOneRelationshipUpdatability $updatability): bool => null !== $updatability
             ),
             array_filter(
                 array_map(
-                    static fn (ToManyRelationshipConfig $config): ?RelationshipUpdatability => $config->getUpdatability(),
+                    static fn (ToManyRelationshipConfig $config): ?ToManyRelationshipUpdatability => $config->getUpdatability(),
                     $configCollection->getToManyRelationships()
                 ),
-                static fn (?RelationshipUpdatability $updatability): bool => null !== $updatability
+                static fn (?ToManyRelationshipUpdatability $updatability): bool => null !== $updatability
             ),
         ];
     }

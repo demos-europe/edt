@@ -9,13 +9,13 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\AttributeReadability;
-use EDT\Wrapping\Properties\Updatability;
+use EDT\Wrapping\Properties\AttributeUpdatability;
 
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends AbstractConfig<TCondition, TEntity, AttributeReadability<TEntity>, Updatability<TCondition>>
+ * @template-extends AbstractConfig<TCondition, TEntity, AttributeReadability<TEntity>, AttributeUpdatability<TCondition, TEntity>>
  */
 class AttributeConfig extends AbstractConfig
 {
@@ -52,9 +52,27 @@ class AttributeConfig extends AbstractConfig
         return $this;
     }
 
-    protected function createUpdatability(array $entityConditions, array $valueConditions): Updatability
-    {
-        return new Updatability($entityConditions, $valueConditions);
+    /**
+     * @param list<TCondition>                                 $entityConditions
+     * @param list<TCondition>                                 $valueConditions
+     * @param null|callable(TEntity, string|int|float|bool|array<int|string, mixed>|null): void $customWrite
+     *
+     * @return $this
+     */
+    public function enableUpdatability(
+        array $entityConditions = [],
+        array $valueConditions = [],
+        callable $customWrite = null
+    ): AttributeConfig {
+        $this->assertNullOrImplements(TransferableTypeInterface::class, 'readable');
+
+        $this->updatability = new AttributeUpdatability(
+            $entityConditions,
+            $valueConditions,
+            $customWrite
+        );
+
+        return $this;
     }
 
     protected function getType(): ?TypeInterface

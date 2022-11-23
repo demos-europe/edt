@@ -7,7 +7,8 @@ namespace EDT\JsonApi\Properties;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Properties\RelationshipUpdatability;
+use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
+use EDT\Wrapping\Properties\ToOneRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 
 /**
@@ -17,7 +18,7 @@ use EDT\Wrapping\Properties\ToManyRelationshipReadability;
  * @template TRelationship of object
  * @template TRelationshipType of \EDT\JsonApi\ResourceTypes\ResourceTypeInterface<TCondition, TSorting, TRelationship>
  *
- * @template-extends AbstractConfig<TCondition, TEntity, ToManyRelationshipReadability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>, RelationshipUpdatability<TCondition, TRelationship>>
+ * @template-extends AbstractConfig<TCondition, TEntity, ToManyRelationshipReadability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>>
  */
 class ToManyRelationshipConfig extends AbstractConfig
 {
@@ -75,9 +76,28 @@ class ToManyRelationshipConfig extends AbstractConfig
         return $this;
     }
 
-    protected function createUpdatability(array $entityConditions, array $valueConditions): RelationshipUpdatability
-    {
-        return new RelationshipUpdatability($entityConditions, $valueConditions, $this->relationshipType->getEntityClass());
+    /**
+     * @param list<TCondition>                                 $entityConditions
+     * @param list<TCondition>                                 $valueConditions
+     * @param null|callable(TEntity, iterable<TRelationship>): void $customWrite
+     *
+     * @return $this
+     */
+    public function enableUpdatability(
+        array $entityConditions = [],
+        array $valueConditions = [],
+        callable $customWrite = null
+    ): ToManyRelationshipConfig {
+        $this->assertNullOrImplements(TransferableTypeInterface::class, 'readable');
+
+        $this->updatability = new ToManyRelationshipUpdatability(
+            $entityConditions,
+            $valueConditions,
+            $this->relationshipType,
+            $customWrite
+        );
+
+        return $this;
     }
 
     protected function getType(): ?TypeInterface

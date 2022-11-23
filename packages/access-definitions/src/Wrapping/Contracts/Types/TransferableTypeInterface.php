@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Contracts\Types;
 
 use EDT\Wrapping\Properties\AttributeReadability;
-use EDT\Wrapping\Properties\RelationshipUpdatability;
+use EDT\Wrapping\Properties\AttributeUpdatability;
+use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
+use EDT\Wrapping\Properties\ToOneRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 use EDT\Wrapping\Properties\ToOneRelationshipReadability;
-use EDT\Wrapping\Properties\Updatability;
 
 /**
  * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
@@ -34,7 +35,7 @@ interface TransferableTypeInterface extends TypeInterface
     public function getReadableProperties(): array;
 
     /**
-     * @return array{0: array<non-empty-string, Updatability<TCondition>>, 1: array<non-empty-string, RelationshipUpdatability<TCondition, object>>, 2: array<non-empty-string, RelationshipUpdatability<TCondition, object>>}
+     * @return array{0: array<non-empty-string, AttributeUpdatability<TCondition, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>}
      */
     public function getUpdatableProperties(): array;
 }
