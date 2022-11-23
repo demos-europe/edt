@@ -9,9 +9,10 @@
       * change return type of `getInitializableProperties`
   * change signature and return type of `TransferableTypeInterface::getUpdatableProperties`; when extending from `AbstractResourceType`, updatability should be configured via `configureProperties()` now instead of overriding `getUpdatableProperties` 
   * `UpdatableRelationship`:
-      * rename class to `Updatability`
+      * split class into `AttributeUpdatability`/`ToOneRelationshipUpdatability`/`ToManyRelationshipUpdatability` depending on the context
       * change constructor parameters
       * rename `getValueConditions()` method
+      * allow to use custom write functions
   * disallow `null` as `$value` in `CachingPropertyReader::determineToOneRelationshipValue`
   * partially validate values read from entities in `WrapperArrayFactory` and `WrapperObject` against configuration retrieved from type instances, if they don't match expectations an exception is thrown
   * respect `Updatability` entity conditions when updating values in `WrapperObject`
