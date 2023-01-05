@@ -1,3 +1,5 @@
+Tools to create paths between entities and entity properties.
+
 Provides PHP classes to enable you to use phpdoc tags to annotate classes
 as path segment and reference other path segments to define a directed graph, which can be
 used to build property paths for conditions and sort methods with IDE support.

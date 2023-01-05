@@ -3,6 +3,7 @@
 # TODO: evaluate https://phpstan.org/user-guide/stub-files
 # TODO: search for single character variables/parameters and rename them
 # TODO: rename `WrapperObject::getObject` to `getEntity`
+# TODO: https://phpstan.org/config-reference#stricter-analysis
 
 includes:
     #- vendor/ergebnis/phpstan-rules/rules.neon
