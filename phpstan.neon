@@ -251,11 +251,6 @@ parameters:
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
 
         -
-            message: "#^Property EDT\\\\PathBuilding\\\\DocblockPropertyByTraitEvaluator\\:\\:\\$parsedClasses \\(array\\<class\\-string, array\\<non\\-empty\\-string, class\\-string\\>\\>\\) does not accept non\\-empty\\-array\\<class\\-string, array\\<class\\-string\\>\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/DocblockPropertyByTraitEvaluator.php
-
-        -
             message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> and 'EDT\\\\\\\\PathBuilding\\\\\\\\PropertyAutoPathInterface' will always evaluate to true\\.$#"
             count: 2
             path: packages/paths/src/PathBuilding/End.php
@@ -267,11 +262,6 @@ parameters:
 
         -
             message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:getIterator\\(\\) should return ArrayIterator\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, string\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:toAliases\\(\\) should return array\\<non\\-empty\\-string, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\> but returns array\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
 
@@ -313,11 +303,6 @@ parameters:
 
         -
             message: "#^Empty array passed to foreach\\.$#"
-            count: 1
-            path: packages/queries/src/Functions/AnyEqual.php
-
-        -
-            message: "#^Strict comparison using \\=\\=\\= between \\*NEVER\\* and mixed will always evaluate to false\\.$#"
             count: 1
             path: packages/queries/src/Functions/AnyEqual.php
 
