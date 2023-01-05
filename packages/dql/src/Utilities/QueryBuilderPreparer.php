@@ -190,7 +190,7 @@ class QueryBuilderPreparer
     }
 
     /**
-     * @param mixed $orderByDql
+     * @param Composite|Math|Func|Comparison|string $orderByDql
      *
      * @throws MappingException
      */
@@ -246,8 +246,13 @@ class QueryBuilderPreparer
      * @throws \Doctrine\Persistence\Mapping\MappingException
      * @throws ReflectionException
      */
-    protected function processPath(bool $isToManyAllowed, string $salt, int $accessDepth, ?string $context, array $properties): string
-    {
+    protected function processPath(
+        bool $isToManyAllowed,
+        string $salt,
+        int $accessDepth,
+        ?string $context,
+        array $properties
+    ): string {
         $originalPathLength = count($properties);
 
         /**
