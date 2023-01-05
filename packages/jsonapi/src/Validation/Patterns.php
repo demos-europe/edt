@@ -13,7 +13,8 @@ class Patterns
      * A property name must consist of letters, digits or underscores, but not start with a digit,
      * underscore or upper-case letter.
      *
-     * This is the intersection of valid PHP property names and valid JSON:API member names.
+     * This is the intersection of valid PHP property names and
+     * {@link https://jsonapi.org/format/1.1/#document-member-names valid JSON:API member names}.
      *
      * For example matches:
      *

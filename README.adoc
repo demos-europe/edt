@@ -1,0 +1,23 @@
+= EDT
+
+This is the EDT monorepo, containing the development of multiple composer packages.
+In conjunction these packages can be used in PHP applications (if they already use Doctrine as ORM framework) to define a functional web-API contract, adhering to the https://jsonapi.org/format/1.0/[JSON:API] specification.
+
+Even though the packages are already used in production, they're not recommended for general usage yet. While development has settled down in some parts, in others large refactorings are common, resulting in frequent deprecations and backward compatibility breaking changes.
+The objective is to get the project to a more stable state over the course of the year 2023, ideally releasing a 1.0.0 version with a more reliable API and proper documentation before 2024.
+
+== Releasing
+
+This repository uses https://github.com/symplify/monorepo-builder[symplify/monorepo-builder] to
+release several packages.
+
+To create a new release, `bin/monorepo-builder release &lt;major|minor|patch&gt;` can be used after all changes have been done.
+
+=== Changelog management
+
+The monorepo builder release flow kinda expects a `## Unreleased` headline to be at the top of the Changelog
+but does not currently create a new one after a release. So please remember to manually add it after releases.
+
+== Credits and acknowledgements
+
+Conception and implementation by Christian Dressler with many thanks to https://github.com/eFrane[eFrane].
