@@ -12,6 +12,9 @@ use function in_array;
 use function Safe\class_uses;
 use function Safe\class_parents;
 
+/**
+ * TODO: prevent endless loops (traits using each other directly or indirectly)
+ */
 class TraitEvaluator
 {
     /**
@@ -44,7 +47,8 @@ class TraitEvaluator
      *
      * The classes/interfaces in the returned array are sorted by their "nearness" to the given class.
      *
-     * Classes take preference and are sorted deterministically, meaning when a class A extends a class B and implements an interface D, then B will be returned
+     * Classes take preference and are sorted deterministically, meaning when a class A extends a
+     * class B and implements an interface D, then B will be returned
      * before D. If B extends C then C will be returned between B and D.
      *
      * Interfaces are sorted after all classes with the attempt to sort interfaces closer to the given
