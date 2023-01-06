@@ -341,7 +341,7 @@ class QueryBuilderPreparer
     protected function addToParameters($value): string
     {
         $parameterIndex = array_push($this->parameters, $value) - 1;
-        return "?{$parameterIndex}";
+        return "?$parameterIndex";
     }
 
     /**
