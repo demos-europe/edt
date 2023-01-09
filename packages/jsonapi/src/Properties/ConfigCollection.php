@@ -6,12 +6,13 @@ namespace EDT\JsonApi\Properties;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use function array_key_exists;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 class ConfigCollection
@@ -45,6 +46,8 @@ class ConfigCollection
     }
 
     /**
+     * Remove a configured property from this collection, if it exists as attribute or to-one/to-many relationship.
+     *
      * @param non-empty-string $propertyName
      *
      * @return bool `true` if the call actually removed an existing property configuration, `false` otherwise
@@ -137,60 +140,25 @@ class ConfigCollection
     }
 
     /**
-     * @param non-empty-string $propertyName
-     *
-     * @throws ResourcePropertyConfigException
-     */
-    protected function checkAttributeName(string $propertyName, bool $replace): void
-    {
-        if ($replace) {
-            $this->removeProperty($propertyName);
-        } elseif (array_key_exists($propertyName, $this->toOneRelationships)) {
-            throw ResourcePropertyConfigException::attributeAlreadyToOneRelationship($propertyName);
-        } elseif (array_key_exists($propertyName, $this->toManyRelationships)) {
-            throw ResourcePropertyConfigException::attributeAlreadyToManyRelationship($propertyName);
-        }
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     *
-     * @throws ResourcePropertyConfigException
-     */
-    protected function checkToOneRelationshipName(string $propertyName, bool $replace): void
-    {
-        if ($replace) {
-            $this->removeProperty($propertyName);
-        } elseif (array_key_exists($propertyName, $this->attributes)) {
-            throw ResourcePropertyConfigException::toOneRelationshipAlreadyAttribute($propertyName);
-        } elseif (array_key_exists($propertyName, $this->toManyRelationships)) {
-            throw ResourcePropertyConfigException::toOneRelationshipAlreadyToManyRelationship($propertyName);
-        }
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     *
-     * @throws ResourcePropertyConfigException
-     */
-    protected function checkToManyRelationshipName(string $propertyName, bool $replace): void
-    {
-        if ($replace) {
-            $this->removeProperty($propertyName);
-        } elseif (array_key_exists($propertyName, $this->attributes)) {
-            throw ResourcePropertyConfigException::toManyRelationshipAlreadyAttribute($propertyName);
-        } elseif (array_key_exists($propertyName, $this->toOneRelationships)) {
-            throw ResourcePropertyConfigException::toManyRelationshipAlreadyToOneRelationship($propertyName);
-        }
-    }
-
-    /**
-     * @param non-empty-string $propertyName
+     * @param non-empty-string|PropertyPathInterface $propertyPath
      *
      * @return AttributeConfig<TCondition, TEntity>
+     *
+     * @throws ResourcePropertyConfigException
+     * @throws PathException
      */
-    protected function getOrCreateAttribute(string $propertyName): AttributeConfig
+    public function configureAttribute($propertyPath): AttributeConfig
     {
+        [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
+
+        if (array_key_exists($propertyName, $this->toOneRelationships)) {
+            throw ResourcePropertyConfigException::attributeAlreadyToOneRelationship($propertyName);
+        }
+
+        if (array_key_exists($propertyName, $this->toManyRelationships)) {
+            throw ResourcePropertyConfigException::attributeAlreadyToManyRelationship($propertyName);
+        }
+
         if (array_key_exists($propertyName, $this->attributes)) {
             $property = $this->attributes[$propertyName];
         } else {
@@ -198,133 +166,20 @@ class ConfigCollection
             $this->attributes[$propertyName] = $property;
         }
 
-        return $property;
-    }
-
-    /**
-     * @template TRelationship of object
-     * @template TRelationshipType of \EDT\JsonApi\ResourceTypes\ResourceTypeInterface<TCondition, TSorting, TRelationship>
-     *
-     * @param non-empty-string  $propertyName
-     * @param TRelationshipType $relationshipType
-     *
-     * @return ToOneRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>
-     *
-     * @throws ResourcePropertyConfigException
-     */
-    protected function getOrCreateToOneRelationship(string $propertyName, ResourceTypeInterface $relationshipType): ToOneRelationshipConfig
-    {
-        if (array_key_exists($propertyName, $this->toOneRelationships)) {
-            $property = $this->toOneRelationships[$propertyName];
-            $this->getWithValidatedRelationshipType($propertyName, $property, $relationshipType);
-        } else {
-            $property = new ToOneRelationshipConfig($this->type, $relationshipType);
-            $this->toOneRelationships[$propertyName] = $property;
-        }
-
-        return $property;
-    }
-
-    /**
-     * @template TRelationship of object
-     * @template TRelationshipType of \EDT\JsonApi\ResourceTypes\ResourceTypeInterface<TCondition, TSorting, TRelationship>
-     *
-     * @param non-empty-string  $propertyName
-     * @param TRelationshipType $relationshipType
-     *
-     * @return ToManyRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>
-     *
-     * @throws ResourcePropertyConfigException
-     */
-    protected function getOrCreateToManyRelationship(string $propertyName, ResourceTypeInterface $relationshipType): ToManyRelationshipConfig
-    {
-        if (array_key_exists($propertyName, $this->toManyRelationships)) {
-            $property = $this->toManyRelationships[$propertyName];
-            $this->getWithValidatedRelationshipType($propertyName, $property, $relationshipType);
-        } else {
-            $property = new ToManyRelationshipConfig($this->type, $relationshipType);
-            $this->toManyRelationships[$propertyName] = $property;
-        }
-
-        return $property;
-    }
-
-    /**
-     * This method tries to work around the type-hint problems of the calling methods.
-     *
-     * A first call to {@link getOrCreateToOneRelationship} or {@link getOrCreateToManyRelationship}
-     * may create the instance and set a custom read function via the return. A second call to the
-     * methods may use the same `$propertyName` but a different `$relationshipType`, which may make
-     * the custom read return type invalid without being detected.
-     *
-     * By checking if the new relationship type is the same as the old one and otherwise throwing
-     * an exception, we get at least at run-time some kind of validation, though there may be
-     * problems with the template parameter types of the relationship type too.
-     *
-     * @param non-empty-string                                 $propertyName
-     * @param ToOneRelationshipConfig|ToManyRelationshipConfig $propertyConfig
-     * @param ResourceTypeInterface                            $newRelationshipType
-     *
-     * @throws ResourcePropertyConfigException
-     */
-    protected function getWithValidatedRelationshipType(
-        string $propertyName,
-        AbstractConfig $propertyConfig,
-        ResourceTypeInterface $newRelationshipType
-    ): void {
-        $currentRelationshipType = $propertyConfig->getRelationshipType();
-        if ($currentRelationshipType !== $newRelationshipType) {
-            throw ResourcePropertyConfigException::relationshipType($propertyName, $currentRelationshipType->getIdentifier(), $newRelationshipType->getIdentifier());
-        }
-    }
-
-    /**
-     * @param non-empty-list<non-empty-string> $propertyPath
-     *
-     * @return non-empty-string
-     */
-    protected function getLastName(array $propertyPath): string
-    {
-        return array_pop($propertyPath);
-    }
-
-    /**
-     * @param non-empty-list<non-empty-string> $propertyPath
-     */
-    protected function maybeSetAlias(?array $propertyPath, AbstractConfig $property): void
-    {
-        if (null !== $propertyPath && 1 < count($propertyPath)) {
-            $property->enableAliasing($propertyPath);
-        }
-    }
-
-    /**
-     * @param non-empty-string|PropertyPathInterface $propertyName
-     *
-     * @return AttributeConfig<TCondition, TEntity>
-     *
-     * @throws ResourcePropertyConfigException
-     * @throws PathException
-     */
-    public function configureAttribute($propertyName, bool $replace = false): AttributeConfig
-    {
-        if ($propertyName instanceof PropertyPathInterface) {
-            $propertyPath = $propertyName->getAsNames();
-            $propertyName = $this->getLastName($propertyPath);
-        } else {
-            $propertyPath = null;
-        }
-
-        $this->checkAttributeName($propertyName, $replace);
-        $property = $this->getOrCreateAttribute($propertyName);
         $this->maybeSetAlias($propertyPath, $property);
 
         return $property;
     }
 
     /**
+     * Configure a to-one relationship.
+     *
+     * If a to-one relationship config already exists for the given property name, then that
+     * config will be returned. Otherwise, a new to-one relationship config will be created and
+     * returned.
+     *
      * @template TRelationship of object
-     * @template TRelationshipType of \EDT\JsonApi\ResourceTypes\ResourceTypeInterface<TCondition, TSorting, TRelationship>
+     * @template TRelationshipType of ResourceTypeInterface<TCondition, TSorting, TRelationship>
      *
      * @param non-empty-string|PropertyPathInterface $propertyPath
      * @param TRelationshipType $relationshipType
@@ -334,47 +189,141 @@ class ConfigCollection
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function configureToOneRelationship($propertyPath, ResourceTypeInterface $relationshipType, bool $replace = false): ToOneRelationshipConfig
-    {
-        if ($propertyPath instanceof PropertyPathInterface) {
-            $propertyPathArray = $propertyPath->getAsNames();
-            $propertyPath = $this->getLastName($propertyPathArray);
-        } else {
-            $propertyPathArray = null;
+    public function configureToOneRelationship(
+        $propertyPath,
+        ResourceTypeInterface $relationshipType
+    ): ToOneRelationshipConfig {
+        [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
+
+        if (array_key_exists($propertyName, $this->attributes)) {
+            throw ResourcePropertyConfigException::toOneRelationshipAlreadyAttribute($propertyName);
         }
 
-        $this->checkToOneRelationshipName($propertyPath, $replace);
-        $property = $this->getOrCreateToOneRelationship($propertyPath, $relationshipType);
-        $this->maybeSetAlias($propertyPathArray, $property);
+        if (array_key_exists($propertyName, $this->toManyRelationships)) {
+            throw ResourcePropertyConfigException::toOneRelationshipAlreadyToManyRelationship($propertyName);
+        }
+
+        if (array_key_exists($propertyName, $this->toOneRelationships)) {
+            $property = $this->toOneRelationships[$propertyName];
+            $this->assertSameRelationshipType($propertyName, $property, $relationshipType);
+        } else {
+            $property = new ToOneRelationshipConfig($this->type, $relationshipType);
+            $this->toOneRelationships[$propertyName] = $property;
+        }
+
+        $this->maybeSetAlias($propertyPath, $property);
 
         return $property;
     }
 
     /**
-     * @template TRelationship of object
-     * @template TRelationshipType of \EDT\JsonApi\ResourceTypes\ResourceTypeInterface<TCondition, TSorting, TRelationship>
+     * Configure a to-many relationship.
      *
-     * @param non-empty-string|PropertyPathInterface $propertyName
+     * If a to-many relationship config already exists for the given property name, then that
+     * config will be returned. Otherwise, a new to-many relationship config will be created and
+     * returned.
+     *
+     * @template TRelationship of object
+     * @template TRelationshipType of ResourceTypeInterface<TCondition, TSorting, TRelationship>
+     *
+     * @param non-empty-string|PropertyPathInterface $propertyPath
      * @param TRelationshipType $relationshipType
      *
      * @return ToManyRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>
      *
-     * @throws ResourcePropertyConfigException
+     * @throws ResourcePropertyConfigException if the property name is already used for an attribute
+     *                                         nshconfig or to-one relationship config
      * @throws PathException
      */
-    public function configureToManyRelationship($propertyName, ResourceTypeInterface $relationshipType, bool $replace = false): ToManyRelationshipConfig
+    public function configureToManyRelationship($propertyPath, $relationshipType): ToManyRelationshipConfig
     {
-        if ($propertyName instanceof PropertyPathInterface) {
-            $propertyPath = $propertyName->getAsNames();
-            $propertyName = $this->getLastName($propertyPath);
-        } else {
-            $propertyPath = null;
+        [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
+
+        if (array_key_exists($propertyName, $this->attributes)) {
+            throw ResourcePropertyConfigException::toManyRelationshipAlreadyAttribute($propertyName);
         }
 
-        $this->checkToManyRelationshipName($propertyName, $replace);
-        $property = $this->getOrCreateToManyRelationship($propertyName, $relationshipType);
+        if (array_key_exists($propertyName, $this->toOneRelationships)) {
+            throw ResourcePropertyConfigException::toManyRelationshipAlreadyToOneRelationship($propertyName);
+        }
+
+        if (array_key_exists($propertyName, $this->toManyRelationships)) {
+            $property = $this->toManyRelationships[$propertyName];
+            $this->assertSameRelationshipType($propertyName, $property, $relationshipType);
+        } else {
+            $property = new ToManyRelationshipConfig($this->type, $relationshipType);
+            $this->toManyRelationships[$propertyName] = $property;
+        }
+
         $this->maybeSetAlias($propertyPath, $property);
 
         return $property;
+    }
+
+    /**
+     * @param non-empty-list<non-empty-string> $propertyPath
+     *
+     * @throws ResourcePropertyConfigException
+     * @throws PathException
+     */
+    protected function maybeSetAlias(?array $propertyPath, AbstractConfig $property): void
+    {
+        if (null !== $propertyPath && 1 < count($propertyPath)) {
+            $property->enableAliasing($propertyPath);
+        }
+    }
+
+    /**
+     * Assert that the relationship type of the given config is the same as the relationship type given.
+     *
+     * A first call to {@link self::configureToOneRelationship()} or {@link self::configureToManyRelationship()}
+     * will create the config instance and a custom read function may be set, corresponding to the
+     * target-relationship type used in the calls. A second call to the methods may use the same property
+     * name but a different target-relationship type, which may make the custom read return type invalid
+     * without being detected.
+     *
+     * By checking if the new target-relationship type is the same as the old one and otherwise throwing
+     * an exception, we verify the correctness at runtime. The same is done for the entity class
+     * of the relationship types.
+     *
+     * @param non-empty-string                                 $propertyName
+     * @param ToOneRelationshipConfig|ToManyRelationshipConfig $propertyConfig
+     * @param ResourceTypeInterface                            $newRelationshipType
+     *
+     * @throws ResourcePropertyConfigException if the property name is already used for a relationship config and the relationship type differs
+     */
+    protected function assertSameRelationshipType(
+        string $propertyName,
+        AbstractConfig $propertyConfig,
+        ResourceTypeInterface $newRelationshipType
+    ): void {
+        $currentRelationshipType = $propertyConfig->getRelationshipType();
+        if ($currentRelationshipType !== $newRelationshipType) {
+            throw ResourcePropertyConfigException::relationshipType(
+                $propertyName,
+                $currentRelationshipType->getIdentifier(),
+                $newRelationshipType->getIdentifier()
+            );
+        }
+    }
+
+    /**
+     * Splits the given path into the actual property name (the last path segment) and its full path.
+     *
+     * @param non-empty-string|PropertyPathInterface $propertyPath
+     *
+     * @return array{0: non-empty-string, 1: non-empty-list<non-empty-string>}
+     *
+     * @throws PathException
+     */
+    protected function getNameAndPath($propertyPath): array
+    {
+        if ($propertyPath instanceof PropertyPathInterface) {
+            $propertyPath = $propertyPath->getAsNames();
+
+            return [$propertyPath[array_key_last($propertyPath)], $propertyPath];
+        }
+
+        return [$propertyPath, [$propertyPath]];
     }
 }
