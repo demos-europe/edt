@@ -8,12 +8,16 @@ use Exception;
 
 class ResourcePropertyConfigException extends Exception
 {
+    private const PHRASE_ATTRIBUTE = 'an attribute';
+    private const PHRASE_TO_ONE = 'a to-one relationship';
+    private const PHRASE_TO_MANY = 'a to-many relationship';
+    
     /**
      * @param non-empty-string $propertyName
      */
     public static function attributeAlreadyToOneRelationship(string $propertyName): self
     {
-        return new self(self::buildMessage($propertyName, 'a to-one relationship', 'an attribute'));
+        return new self(self::buildMessage($propertyName, self::PHRASE_TO_ONE, self::PHRASE_ATTRIBUTE));
     }
 
     /**
@@ -21,7 +25,7 @@ class ResourcePropertyConfigException extends Exception
      */
     public static function attributeAlreadyToManyRelationship(string $propertyName): self
     {
-        return new self(self::buildMessage($propertyName, 'a to-many relationship', 'an attribute'));
+        return new self(self::buildMessage($propertyName, self::PHRASE_TO_MANY, self::PHRASE_ATTRIBUTE));
     }
 
     /**
@@ -29,7 +33,7 @@ class ResourcePropertyConfigException extends Exception
      */
     public static function toOneRelationshipAlreadyAttribute(string $propertyName): self
     {
-        return new self(self::buildMessage($propertyName, 'an attribute', 'a to-one relationship'));
+        return new self(self::buildMessage($propertyName, self::PHRASE_ATTRIBUTE, self::PHRASE_TO_ONE));
     }
 
     /**
@@ -37,7 +41,7 @@ class ResourcePropertyConfigException extends Exception
      */
     public static function toOneRelationshipAlreadyToManyRelationship(string $propertyName): self
     {
-        return new self(self::buildMessage($propertyName, 'a to-many relationship', 'a to-one relationship'));
+        return new self(self::buildMessage($propertyName, self::PHRASE_TO_MANY, self::PHRASE_TO_ONE));
     }
 
     /**
@@ -45,7 +49,7 @@ class ResourcePropertyConfigException extends Exception
      */
     public static function toManyRelationshipAlreadyAttribute(string $propertyName): self
     {
-        return new self(self::buildMessage($propertyName, 'an attribute', 'a to-many relationship'));
+        return new self(self::buildMessage($propertyName, self::PHRASE_ATTRIBUTE, self::PHRASE_TO_MANY));
     }
 
     /**
@@ -53,7 +57,7 @@ class ResourcePropertyConfigException extends Exception
      */
     public static function toManyRelationshipAlreadyToOneRelationship(string $propertyName): self
     {
-        return new self(self::buildMessage($propertyName, 'a to-one relationship', 'a to-many relationship'));
+        return new self(self::buildMessage($propertyName, self::PHRASE_TO_ONE, self::PHRASE_TO_MANY));
     }
 
     /**
