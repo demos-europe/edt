@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\TypeProviders;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
 use function get_class;
@@ -16,8 +17,8 @@ use const ARRAY_FILTER_USE_KEY;
  * method. By default, the fully qualified class name is chosen as identifier. To use something different
  * override {@link PrefilledTypeProvider::getIdentifier()}.
  *
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  *
  * @template-extends AbstractTypeProvider<TCondition, TSorting>
  */

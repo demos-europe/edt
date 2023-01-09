@@ -10,13 +10,14 @@ use EDT\JsonApi\Schema\RelationshipObject;
 use EDT\JsonApi\Schema\ResourceIdentifierObject;
 use EDT\JsonApi\Schema\ToManyResourceLinkage;
 use EDT\JsonApi\Schema\ToOneResourceLinkage;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use InvalidArgumentException;
 use function count;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  *
  * @phpstan-import-type JsonApiRelationship from RelationshipObject
  * @phpstan-import-type JsonApiRelationships from RelationshipObject

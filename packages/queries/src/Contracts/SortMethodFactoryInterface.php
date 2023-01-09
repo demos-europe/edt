@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 interface SortMethodFactoryInterface
 {

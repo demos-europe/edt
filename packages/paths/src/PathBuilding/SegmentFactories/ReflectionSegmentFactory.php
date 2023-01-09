@@ -28,7 +28,7 @@ class ReflectionSegmentFactory implements SegmentFactoryInterface
      * If `$constructorArgs` are given the method will assume that a constructor exists that is
      * satisfied with the given arguments and invoke it with them.
      *
-     * @template TImpl of \EDT\PathBuilding\PropertyAutoPathInterface
+     * @template TImpl of PropertyAutoPathInterface
      *
      * @param class-string<TImpl> $className
      * @param non-empty-string|null $parentPropertyName

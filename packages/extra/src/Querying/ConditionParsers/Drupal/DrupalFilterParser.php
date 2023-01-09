@@ -27,7 +27,7 @@ use function in_array;
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
  *          }
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  * @template-implements FilterParserInterface<array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, TCondition>
  */
 class DrupalFilterParser implements FilterParserInterface

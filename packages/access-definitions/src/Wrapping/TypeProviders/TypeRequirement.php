@@ -10,7 +10,7 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 use function in_array;
 
 /**
- * @template TType of \EDT\Wrapping\Contracts\Types\TypeInterface
+ * @template TType of TypeInterface
  */
 class TypeRequirement
 {

@@ -12,7 +12,7 @@ use EDT\Wrapping\Properties\AttributeReadability;
 use EDT\Wrapping\Properties\AttributeUpdatability;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
  * @template-extends AbstractConfig<TCondition, TEntity, AttributeReadability<TEntity>, AttributeUpdatability<TCondition, TEntity>>

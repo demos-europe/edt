@@ -8,6 +8,7 @@ use EDT\Querying\Contracts\ObjectProviderInterface;
 use EDT\Querying\Contracts\FluentQueryException;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PaginationException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortException;
 
 /**
@@ -19,8 +20,8 @@ use EDT\Querying\Contracts\SortException;
  * You may want to implement a factory to create instances of this class instead of using
  * its constructor, to avoid manually providing the same parameters on every usage.
  *
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 class FluentQuery

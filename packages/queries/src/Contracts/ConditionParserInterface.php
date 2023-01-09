@@ -6,7 +6,7 @@ namespace EDT\Querying\Contracts;
 
 /**
  * @template TFilterCondition
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  */
 interface ConditionParserInterface
 {

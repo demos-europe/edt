@@ -10,7 +10,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use function count;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  */
 class ConditionDefinition
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
@@ -11,8 +12,8 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 interface EntityFetcherInterface
 {

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\EntityAccess;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use Pagerfanta\Pagerfanta;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TPagination of object
  * @template TEntity of object
  */

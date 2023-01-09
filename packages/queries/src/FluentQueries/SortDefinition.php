@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
-use EDT\Querying\Contracts\SortMethodInterface;
 
 /**
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 class SortDefinition
 {
