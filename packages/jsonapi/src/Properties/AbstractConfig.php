@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Properties;
 
+use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
@@ -32,10 +34,10 @@ use EDT\Wrapping\Properties\AbstractUpdatability;
  * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} to be usable as
  * relationship via the JSON:API.
  *
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  * @template TEntity of object
- * @template TReadability of \EDT\Wrapping\Properties\AbstractReadability
- * @template TUpdatability of \EDT\Wrapping\Properties\AbstractUpdatability
+ * @template TReadability of AbstractReadability
+ * @template TUpdatability of AbstractUpdatability
  */
 abstract class AbstractConfig
 {
@@ -204,6 +206,7 @@ abstract class AbstractConfig
      * @return $this
      *
      * @throws ResourcePropertyConfigException
+     * @throws PathException
      */
     public function enableAliasing($aliasedPath): self
     {
@@ -298,7 +301,7 @@ abstract class AbstractConfig
     {
         $type = $this->getType();
 
-        if (null !== $type && !$type instanceof $implementation)  {
+        if (null !== $type && !$type instanceof $implementation) {
             throw ResourcePropertyConfigException::missingImplementation($implementation, $adjective);
         }
     }

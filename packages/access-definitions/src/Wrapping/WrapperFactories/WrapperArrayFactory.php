@@ -117,7 +117,9 @@ class WrapperArrayFactory implements WrapperFactoryInterface
                     throw RelationshipAccessException::toOneNeitherObjectNorNull($propertyName);
                 }
                 $verifiedEntity = $this->propertyReader->determineToOneRelationshipValue($relationshipType, $propertyValue);
-                $newValue = null === $verifiedEntity ? null : $wrapperFactory->createWrapper($verifiedEntity, $relationshipType);
+                $newValue = null === $verifiedEntity
+                    ? null
+                    : $wrapperFactory->createWrapper($verifiedEntity, $relationshipType);
             }
 
             $wrapperArray[$propertyName] = $newValue;
