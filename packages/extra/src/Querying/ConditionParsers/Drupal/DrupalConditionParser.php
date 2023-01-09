@@ -13,7 +13,7 @@ use function array_key_exists;
  *
  * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser
  *
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  * @template-implements ConditionParserInterface<DrupalFilterCondition, TCondition>
  */
 class DrupalConditionParser implements ConditionParserInterface

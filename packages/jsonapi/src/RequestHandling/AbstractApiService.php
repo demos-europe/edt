@@ -8,6 +8,8 @@ use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Schema\ContentField;
 use EDT\JsonApi\Schema\RelationshipObject;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
+use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
@@ -19,8 +21,8 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use function array_key_exists;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of FunctionInterface<bool>
+ * @template TSorting of PathsBasedInterface
  *
  * @phpstan-import-type JsonApiRelationship from RelationshipObject
  * @phpstan-import-type JsonApiRelationships from RelationshipObject

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\Querying\EntityProviders;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Contracts\SortException;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
  * @template-extends EntityProviderInterface<TCondition, TSorting, OffsetPagination, TEntity>

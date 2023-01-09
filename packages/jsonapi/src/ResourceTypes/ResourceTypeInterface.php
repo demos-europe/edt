@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
@@ -15,8 +16,8 @@ use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 use League\Fractal\TransformerAbstract;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
  * @template-extends TransferableTypeInterface<TCondition, TSorting, TEntity>

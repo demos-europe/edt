@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\JsonApi\Properties\ConfigCollection;
+use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\SortMethodInterface;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
- * @template TSorting of \EDT\Querying\Contracts\SortMethodInterface
+ * @template TCondition of FunctionInterface<bool>
+ * @template TSorting of SortMethodInterface
  * @template TEntity of object
  *
  * @template-extends AbstractResourceType<TCondition, TSorting, TEntity>

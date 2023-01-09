@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Properties;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  * @template TRelationshipType of TransferableTypeInterface
  *
  * @template-extends AbstractUpdatability<TCondition>

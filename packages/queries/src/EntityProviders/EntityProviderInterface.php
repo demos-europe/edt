@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace EDT\Querying\EntityProviders;
 
 use EDT\Querying\Contracts\PaginationException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortException;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TPagination of object
  * @template TEntity of object
  */

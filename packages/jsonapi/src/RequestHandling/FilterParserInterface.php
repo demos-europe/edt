@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
+
 /**
  * @template TFilter
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  */
 interface FilterParserInterface
 {

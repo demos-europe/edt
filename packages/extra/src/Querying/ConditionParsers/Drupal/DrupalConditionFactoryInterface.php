@@ -7,7 +7,7 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  * @phpstan-import-type DrupalValue from DrupalFilterParser
  */
 interface DrupalConditionFactoryInterface

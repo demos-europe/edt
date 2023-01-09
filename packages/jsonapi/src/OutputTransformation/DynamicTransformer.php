@@ -57,8 +57,8 @@ use Psr\Log\LoggerInterface;
  * If the given {@link ResourceTypeInterface} is mis-configured, e.g. contains readable properties
  * that do not exist in the entity to be transformed, then the behavior is undefined.
  *
- * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
- * @template TSorting of \EDT\Querying\Contracts\SortMethodInterface
+ * @template TCondition of FunctionInterface<bool>
+ * @template TSorting of SortMethodInterface
  * @template TEntity of object
  */
 class DynamicTransformer extends TransformerAbstract

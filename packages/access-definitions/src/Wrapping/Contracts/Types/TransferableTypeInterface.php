@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Contracts\Types;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Properties\AttributeReadability;
 use EDT\Wrapping\Properties\AttributeUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
@@ -12,8 +13,8 @@ use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
  * @template-extends TypeInterface<TCondition, TSorting, TEntity>

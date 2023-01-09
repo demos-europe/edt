@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace EDT\JsonApi\Properties;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
-use EDT\Wrapping\Properties\ToOneRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
- * @template TRelationshipType of \EDT\JsonApi\ResourceTypes\ResourceTypeInterface<TCondition, TSorting, TRelationship>
+ * @template TRelationshipType of ResourceTypeInterface<TCondition, TSorting, TRelationship>
  *
  * @template-extends AbstractConfig<TCondition, TEntity, ToManyRelationshipReadability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>>
  */

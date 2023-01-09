@@ -7,8 +7,8 @@ namespace EDT\Querying\Contracts;
 use EDT\Querying\EntityProviders\EntityProviderInterface;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
  * @deprecated use {@link EntityProviderInterface} instead

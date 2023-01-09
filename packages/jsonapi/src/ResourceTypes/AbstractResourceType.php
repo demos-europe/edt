@@ -13,7 +13,9 @@ use EDT\JsonApi\Properties\ToOneRelationshipConfig;
 use EDT\JsonApi\Properties\TypedPathConfigCollection;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Contracts\EntityBasedInterface;
+use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
@@ -31,8 +33,8 @@ use League\Fractal\TransformerAbstract;
 use Psr\Log\LoggerInterface;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\FunctionInterface<bool>
- * @template TSorting of \EDT\Querying\Contracts\SortMethodInterface
+ * @template TCondition of FunctionInterface<bool>
+ * @template TSorting of SortMethodInterface
  * @template TEntity of object
  *
  * @template-implements ResourceTypeInterface<TCondition, TSorting, TEntity>
@@ -316,7 +318,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * Even if a relationship property was defined in this type, we do not allow its usage if the
      * target type of the relationship is not set as exposed.
      *
-     * @template TType of \EDT\Wrapping\Contracts\Types\TypeInterface
+     * @template TType of TypeInterface
      *
      * @param array<non-empty-string, TType|null> $types
      *

@@ -14,7 +14,7 @@ use function in_array;
 use function Safe\substr;
 
 /**
- * @template TSorting of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 class JsonApiSortingParser
 {

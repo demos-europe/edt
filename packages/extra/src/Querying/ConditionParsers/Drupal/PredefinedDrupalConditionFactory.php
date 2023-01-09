@@ -9,7 +9,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use function array_key_exists;
 
 /**
- * @template TCondition of \EDT\Querying\Contracts\PathsBasedInterface
+ * @template TCondition of PathsBasedInterface
  * @template-implements DrupalConditionFactoryInterface<TCondition>
  *
  * @phpstan-import-type DrupalValue from DrupalConditionFactoryInterface
