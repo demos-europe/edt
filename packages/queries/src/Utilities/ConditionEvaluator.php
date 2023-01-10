@@ -24,7 +24,7 @@ class ConditionEvaluator
      * @template TKey of int|string
      *
      * @param array<TKey, TEntity> $arrayToFilter must not contain `null` values
-     * @param FunctionInterface<bool> $condition
+     * @param FunctionInterface<bool> $condition TODO: refactor to non-empty-list<FunctionInterface<bool>>
      * @param FunctionInterface<bool> ...$conditions
      * @return array<TKey, TEntity> Will not contain `null` values.
      */

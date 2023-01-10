@@ -1,4 +1,3 @@
-# TODO: search for `array_values` and refactor where only needed due to `...` usage
 # TODO: use a flat hierarchy for type interfaces where possible
 # TODO: evaluate https://phpstan.org/user-guide/stub-files
 # TODO: search for single character variables/parameters and rename them
