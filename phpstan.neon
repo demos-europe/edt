@@ -1,6 +1,5 @@
 # TODO: use a flat hierarchy for type interfaces where possible
 # TODO: evaluate https://phpstan.org/user-guide/stub-files
-# TODO: rename `WrapperObject::getObject` to `getEntity`
 # TODO: https://phpstan.org/config-reference#stricter-analysis
 
 includes:
