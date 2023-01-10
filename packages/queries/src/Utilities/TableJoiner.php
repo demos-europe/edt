@@ -288,14 +288,14 @@ class TableJoiner
     private function setReferencesGeneric(callable $equalityComparison, array $values): array
     {
         $count = count($values);
-        for ($i = 0; $i < $count; $i++) {
-            $valueToCheckIfToUseAsIndex = $values[$i];
+        for ($fullLoopIndex = 0; $fullLoopIndex < $count; $fullLoopIndex++) {
+            $valueToCheckIfToUseAsIndex = $values[$fullLoopIndex];
             if (!is_int($valueToCheckIfToUseAsIndex)) {
-                for ($j = $i + 1; $j < $count; $j++) {
-                    $valueToCheckAgainst = $values[$j];
+                for ($remainLoopIndex = $fullLoopIndex + 1; $remainLoopIndex < $count; $remainLoopIndex++) {
+                    $valueToCheckAgainst = $values[$remainLoopIndex];
                     if (!is_int($valueToCheckAgainst)
                         && $equalityComparison($valueToCheckIfToUseAsIndex, $valueToCheckAgainst)) {
-                        $values[$j] = $i;
+                        $values[$remainLoopIndex] = $fullLoopIndex;
                     }
                 }
             }
