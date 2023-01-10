@@ -160,7 +160,7 @@ abstract class AbstractConfig
      *
      * @return $this
      */
-    public function enableInitializability(array $conditions, bool $optionalProperty = false): self
+    public function enableInitializability(array $conditions = [], bool $optionalProperty = false): self
     {
         $this->assertNullOrImplements(CreatableTypeInterface::class, 'initializable');
 
