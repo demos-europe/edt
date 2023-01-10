@@ -22,7 +22,7 @@ abstract class CachingResourceType extends AbstractResourceType
      */
     private ?ConfigCollection $initializedConfiguration = null;
 
-    public function getInitializedConfiguration(): ConfigCollection
+    protected function getInitializedConfiguration(): ConfigCollection
     {
         if (null === $this->initializedConfiguration) {
             $this->initializedConfiguration = parent::getInitializedConfiguration();

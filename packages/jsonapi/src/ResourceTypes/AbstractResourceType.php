@@ -285,11 +285,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * TODO: make protected?
-     *
      * @return ConfigCollection<TCondition, TSorting, TEntity>
      */
-    public function getInitializedConfiguration(): ConfigCollection
+    protected function getInitializedConfiguration(): ConfigCollection
     {
         $baseConfigCollection = new ConfigCollection($this);
         $configCollection = new TypedPathConfigCollection($baseConfigCollection);
