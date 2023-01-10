@@ -390,8 +390,21 @@ class WrapperObject
      *
      * @internal Warning: exposing the backing object is dangerous, as it allows to read values
      * unrestricted not only from the returned object but all its relationships.
+     *
+     * @deprecated use {@link self::getEntity} instead
      */
     public function getObject(): object
+    {
+        return $this->entity;
+    }
+
+    /**
+     * @return TEntity
+     *
+     * @internal Warning: exposing the backing object is dangerous, as it allows to read values
+     * unrestricted not only from the returned object but all its relationships.
+     */
+    public function getEntity(): object
     {
         return $this->entity;
     }
