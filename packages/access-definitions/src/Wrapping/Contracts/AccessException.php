@@ -7,6 +7,7 @@ namespace EDT\Wrapping\Contracts;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
+use Throwable;
 use function get_class;
 
 class AccessException extends InvalidArgumentException
@@ -20,6 +21,14 @@ class AccessException extends InvalidArgumentException
      * @var non-empty-string|null
      */
     protected ?string $typeIdentifier = null;
+
+    /**
+     * @param non-empty-string $message
+     */
+    protected function __construct(string $message, int $code = 0, Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+    }
 
     /**
      * @param TypeInterface $type
