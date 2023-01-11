@@ -1,16 +1,35 @@
 # TODO: use a flat hierarchy for type interfaces where possible
 # TODO: evaluate https://phpstan.org/user-guide/stub-files
-# TODO: https://phpstan.org/config-reference#stricter-analysis
 
 includes:
     #- vendor/ergebnis/phpstan-rules/rules.neon
     - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
+    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan-webmozart-assert/extension.neon
+    # https://phpstan.org/blog/what-is-bleeding-edge
+    #- phar://phpstan.phar/conf/bleedingEdge.neon
+    #- vendor/phpstan/phpstan/conf/bleedingEdge.neon
 parameters:
     treatPhpDocTypesAsCertain: false
     checkGenericClassInNonGenericObjectType: false
+
+    # https://phpstan.org/config-reference#stricter-analysis
+    #checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    rememberPossiblyImpureFunctionValues: false
+    #checkImplicitMixed: true
+    checkBenevolentUnionTypes: true
+    checkMissingCallableSignature: true
+
+    # https://phpstan.org/blog/bring-your-exceptions-under-control
+    #exceptions:
+    #    check:
+    #        missingCheckedExceptionInThrows: true
+
+    #typeAliases:
+
     paths:
         - packages/access-definitions/src
         - packages/dql/src
@@ -18,6 +37,7 @@ parameters:
         - packages/jsonapi/src
         - packages/paths/src
         - packages/queries/src
+
     # Note: use `\w+(\\\w+)+\\(\w+)` to `$2` replacement to remove namespaces in phpstan error messages, making it a bit more readable
     ignoreErrors:
         -
@@ -246,6 +266,36 @@ parameters:
             message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
             count: 1
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+
+        -
+            message: "#^Parameter \\#1 \\$renderedProperty of static method EDT\\\\Parsing\\\\Utilities\\\\TagNameParseException\\:\\:createForEmptyVariableName\\(\\) expects non\\-empty\\-string, string given\\.$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+
+        -
+            message: "#^Parameter \\#2 \\$type of static method EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:createForTagType\\(\\) expects non\\-empty\\-string, string given\\.$#"
+            count: 3
+            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+
+        -
+            message: "#^Parameter \\#1 \\$tagName of static method EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:createBaseMessage\\(\\) expects non\\-empty\\-string, string given\\.$#"
+            count: 2
+            path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
+
+        -
+            message: "#^Parameter \\#2 \\$tagName of class EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException constructor expects non\\-empty\\-string, string given\\.$#"
+            count: 2
+            path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
+
+        -
+            message: "#^Parameter \\#2 \\$type of static method EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:createBaseMessage\\(\\) expects non\\-empty\\-string, string given\\.$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
+
+        -
+            message: "#^Parameter \\#3 \\$type of class EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException constructor expects non\\-empty\\-string, string given\\.$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
 
         -
             message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> and 'EDT\\\\\\\\PathBuilding\\\\\\\\PropertyAutoPathInterface' will always evaluate to true\\.$#"
