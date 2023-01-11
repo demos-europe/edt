@@ -48,5 +48,5 @@ abstract class AbstractMultiFunction extends AbstractFunction
      *
      * @return TOutput
      */
-    protected abstract function reduce(array $functionResults);
+    abstract protected function reduce(array $functionResults);
 }

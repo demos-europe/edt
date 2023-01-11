@@ -100,8 +100,8 @@ class ToManyRelationshipConfig extends AbstractConfig
         return $this;
     }
 
-    protected function getType(): ?TypeInterface
+    protected function getType(): TypeInterface
     {
-        return $this->relationshipType;
+        return $this->type;
     }
 }
