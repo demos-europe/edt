@@ -223,7 +223,7 @@ class DynamicTransformer extends TransformerAbstract
             $entityClass = $relationshipType->getEntityClass();
 
             if ($value instanceof WrapperObject) {
-                $value = $value->getObject();
+                $value = $value->getEntity();
             } elseif (null !== $value && !$value instanceof $entityClass) {
                 throw TransformException::nonToOneType(gettype($value), $entityClass);
             }
@@ -260,7 +260,7 @@ class DynamicTransformer extends TransformerAbstract
             $entityClass = $relationshipType->getEntityClass();
             $values = array_map(
                 static function (WrapperObject $object) use ($entityClass): object {
-                    $value = $object->getObject();
+                    $value = $object->getEntity();
                     if (!$value instanceof $entityClass) {
                         throw TransformException::nonToManyNestedType(get_class($value), $entityClass);
                     }
