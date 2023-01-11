@@ -101,7 +101,7 @@ class DocblockTagParser
     {
         $variableName = $tag->getVariableName();
         if (null === $variableName || '' === $variableName) {
-            throw TagNameParseException::createForEmptyVariableName($tag, $this->reflectionClass->getName());
+            throw TagNameParseException::createForEmptyVariableName($tag->render(), $this->reflectionClass->getName());
         }
 
         return $variableName;

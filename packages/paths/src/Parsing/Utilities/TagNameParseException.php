@@ -4,27 +4,44 @@ declare(strict_types=1);
 
 namespace EDT\Parsing\Utilities;
 
-use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
+use Throwable;
 
 class TagNameParseException extends ParseException
 {
-    private string $property;
+    /**
+     * @var non-empty-string
+     */
+    private string $propertyName;
 
     /**
+     * @param non-empty-string $propertyName
      * @param class-string $className
+     * @param non-empty-string $message
      */
-    public static function createForEmptyVariableName(TagWithType $property, string $className): self
-    {
-        $renderedProperty = $property->render();
-        $self = new self("Empty property name parsed in $className from @property-read: '$renderedProperty', please check if you used a '$' directly in front of the property name, otherwise what you intended to set as property name might has been interpreted as description.");
-        $self->className = $className;
-        $self->property = $renderedProperty;
-
-        return $self;
+    protected function __construct(
+        string $propertyName,
+        string $className,
+        string $message,
+        int $code = 0,
+        Throwable $previous = null
+    ) {
+        parent::__construct($className, $message, $code, $previous);
+        $this->propertyName = $propertyName;
     }
 
-    public function getProperty(): string
+    /**
+     * @param non-empty-string $renderedProperty
+     * @param class-string $className
+     */
+    public static function createForEmptyVariableName(string $renderedProperty, string $className): self
     {
-        return $this->property;
+        $message = "Empty property name parsed in $className from @property-read: '$renderedProperty', please check if you used a '$' directly in front of the property name, otherwise what you intended to set as property name might has been interpreted as description.";
+
+        return new self($renderedProperty, $className, $message);
+    }
+
+    public function getPropertyName(): string
+    {
+        return $this->propertyName;
     }
 }
