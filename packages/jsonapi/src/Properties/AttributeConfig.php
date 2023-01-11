@@ -75,8 +75,8 @@ class AttributeConfig extends AbstractConfig
         return $this;
     }
 
-    protected function getType(): ?TypeInterface
+    protected function getType(): TypeInterface
     {
-        return null;
+        return $this->type;
     }
 }

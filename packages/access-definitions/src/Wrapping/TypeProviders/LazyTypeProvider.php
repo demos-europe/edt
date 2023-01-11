@@ -23,7 +23,7 @@ class LazyTypeProvider extends AbstractTypeProvider
 
     protected function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface
     {
-        return $this->types[$typeIdentifier];
+        return $this->types[$typeIdentifier] ?? null;
     }
 
     public function getTypeIdentifiers(): array

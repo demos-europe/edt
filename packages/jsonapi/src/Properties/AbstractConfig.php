@@ -301,10 +301,10 @@ abstract class AbstractConfig
     {
         $type = $this->getType();
 
-        if (null !== $type && !$type instanceof $implementation) {
+        if (!$type instanceof $implementation) {
             throw ResourcePropertyConfigException::missingImplementation($implementation, $adjective);
         }
     }
 
-    abstract protected function getType(): ?TypeInterface;
+    abstract protected function getType(): TypeInterface;
 }
