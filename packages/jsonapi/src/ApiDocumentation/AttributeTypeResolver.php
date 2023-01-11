@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ApiDocumentation;
 
 use Closure;
-use EDT\JsonApi\ResourceTypes\AbstractResourceType;
+use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Parsing\Utilities\DocblockTagParser;
+use EDT\Wrapping\Properties\AbstractReadability;
+use EDT\Wrapping\Properties\AttributeReadability;
+use EDT\Wrapping\Properties\ToManyRelationshipReadability;
+use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -42,6 +46,7 @@ class AttributeTypeResolver
      * Return a valid `cebe\OpenApi` type declaration.
      *
      * @param non-empty-string $propertyName
+     * @param AttributeReadability|ToOneRelationshipReadability|ToManyRelationshipReadability $propertyReadability
      *
      * @return array{type: string, format?: non-empty-string, description?: string}
      *
@@ -49,23 +54,14 @@ class AttributeTypeResolver
      * @throws Throwable
      */
     public function getPropertyType(
-        AbstractResourceType $resourceType,
-        string $propertyName
+        ResourceTypeInterface $resourceType,
+        string $propertyName,
+        AbstractReadability $propertyReadability
     ): array {
         $resourceClass = get_class($resourceType);
-
-        $resourceProperties = $resourceType->getInitializedConfiguration();
-        $property = array_merge(
-            $resourceProperties->getAttributes(),
-            $resourceProperties->getToOneRelationships(),
-            $resourceProperties->getToManyRelationships()
-        )[$propertyName];
-        $readability = $property->getReadability();
-        if (null !== $readability) {
-            $customReadCallback = $readability->getCustomValueFunction();
-            if (null !== $customReadCallback) {
-                return $this->resolveTypeFromCallable($customReadCallback, $resourceClass, $propertyName);
-            }
+        $customReadCallback = $propertyReadability->getCustomValueFunction();
+        if (null !== $customReadCallback) {
+            return $this->resolveTypeFromCallable($customReadCallback, $resourceClass, $propertyName);
         }
 
         return $this->resolveTypeFromEntityClass($resourceType->getEntityClass(), $propertyName);
