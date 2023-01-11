@@ -7,8 +7,8 @@ namespace EDT\Querying\Contracts;
 interface SortMethodInterface extends PathsBasedInterface
 {
     /**
-     * @param mixed[] $propertyValuesA
-     * @param mixed[] $propertyValuesB
+     * @param list<mixed> $propertyValuesA
+     * @param list<mixed> $propertyValuesB
      */
     public function evaluate(array $propertyValuesA, array $propertyValuesB): int;
 

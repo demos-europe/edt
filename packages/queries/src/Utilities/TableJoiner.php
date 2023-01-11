@@ -335,10 +335,12 @@ class TableJoiner
      * Will iterate through the given array and inserts the given value into each of its values
      * (which are expected to be an array too).
      *
-     * @param array<string|int, list<mixed>> $array
-     * @param mixed $value
+     * @template TValue
+     *
+     * @param array<string|int, list<TValue>> $array
+     * @param TValue $value
      */
-    private function insertValue(array &$array, int $index, $value): void
+    private function insertValue(array $array, int $index, $value): void
     {
         array_walk($array, static function (&$arrayValue) use ($index, $value): void {
             array_splice($arrayValue, $index, 0, [$value]);

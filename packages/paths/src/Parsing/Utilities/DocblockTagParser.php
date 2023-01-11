@@ -87,7 +87,7 @@ class DocblockTagParser
             return [];
         }
 
-        return $this->docBlock->getTagsByName($tagName);
+        return array_values($this->docBlock->getTagsByName($tagName));
     }
 
     /**
