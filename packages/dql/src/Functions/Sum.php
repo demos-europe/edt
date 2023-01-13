@@ -11,7 +11,7 @@ use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 
 /**
- * @template-extends AbstractClauseFunction<numeric>
+ * @template-extends AbstractClauseFunction<int|float>
  */
 class Sum extends AbstractClauseFunction
 {

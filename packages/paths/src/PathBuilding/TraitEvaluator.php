@@ -25,7 +25,7 @@ class TraitEvaluator
      *
      * @param class-string $class
      *
-     * @return list<string> may be empty
+     * @return list<class-string>
      * @throws SplException
      */
     public function getAllClassTraits(string $class): array

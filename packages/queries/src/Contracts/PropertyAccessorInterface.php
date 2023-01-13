@@ -11,8 +11,8 @@ interface PropertyAccessorInterface
 {
     /**
      * Will get a single value following the given path. To get multiple values refer to
-     * {@link PropertyAccessorInterface::getValuesByPropertyPath()}. 
-     * 
+     * {@link PropertyAccessorInterface::getValuesByPropertyPath()}.
+     *
      * The final target of the path can be any type (primitive, object, array, ...) but the
      * preceding path parts must be single values (i.e. not lists, not arrays, not collections).
      *

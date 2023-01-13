@@ -170,8 +170,8 @@ class ConditionDefinition
     }
 
     /**
-     * @param numeric-string|float|int $min
-     * @param numeric-string|float|int $max
+     * @param numeric-string|int|float $min
+     * @param numeric-string|int|float $max
      * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
