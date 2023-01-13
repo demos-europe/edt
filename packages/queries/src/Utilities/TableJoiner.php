@@ -131,9 +131,8 @@ class TableJoiner
         }
 
         // Building the cartesian product of the other columns is left to the
-        // recursion, we only deal with the right column here.
-        $rightColumn = array_pop($nonEmptyColumns);
-        $product = $this->cartesianProductRecursive($rightColumn, $nonEmptyColumns);
+        // recursion.
+        $product = $this->cartesianProductRecursive($nonEmptyColumns);
 
         // TODO: remove type-hint when phpstan can detect that `array_keys(list<X>)` results in` list<int<0, max>>`
         /** @var list<Ref> $emptyColumnIndices */
@@ -162,13 +161,14 @@ class TableJoiner
     /**
      * No given column must be empty, as empty columns need to be handled in a special way.
      *
-     * @param NonEmptyColumn|Ref       $rightColumn
-     * @param list<NonEmptyColumn|Ref> $leftColumns
+     * @param non-empty-list<NonEmptyColumn|Ref> $leftColumns
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    protected function cartesianProductRecursive($rightColumn, array $leftColumns): array
+    protected function cartesianProductRecursive(array $leftColumns): array
     {
+        $rightColumn = array_pop($leftColumns);
+
         // This is not just a shortcut but the place where the result table is
         // initially filled to be expanded in other recursion steps.
         if ([] === $leftColumns) {
@@ -183,8 +183,7 @@ class TableJoiner
         }
 
         // we do have more columns to step into
-        $nextRightColumn = array_pop($leftColumns);
-        $wipTable = $this->cartesianProductRecursive($nextRightColumn, $leftColumns);
+        $wipTable = $this->cartesianProductRecursive($leftColumns);
 
         return $this->rebuildTable($rightColumn, $wipTable);
     }
