@@ -1,5 +1,5 @@
 includes:
-    #- vendor/ergebnis/phpstan-rules/rules.neon
+    #- vendor/ergebnis/phpstan-rules/rules.neon # TODO
     - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
     - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
@@ -9,11 +9,9 @@ includes:
     #- phar://phpstan.phar/conf/bleedingEdge.neon
     #- vendor/phpstan/phpstan/conf/bleedingEdge.neon
 parameters:
-    level: 8
-    #level: 9
-
+    level: 8 # TODO: 9
     treatPhpDocTypesAsCertain: false
-    checkGenericClassInNonGenericObjectType: false
+    checkGenericClassInNonGenericObjectType: false # TODO: true
     #errorFormat: json
     #tipsOfTheDay: false
 
@@ -21,7 +19,7 @@ parameters:
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     checkUninitializedProperties: true
     rememberPossiblyImpureFunctionValues: false
-    #checkImplicitMixed: true
+    checkImplicitMixed: false # TODO: true
     checkBenevolentUnionTypes: true
     checkMissingCallableSignature: true
 
