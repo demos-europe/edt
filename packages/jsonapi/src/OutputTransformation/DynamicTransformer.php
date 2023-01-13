@@ -357,6 +357,7 @@ class DynamicTransformer extends TransformerAbstract
             }
             $requestedIncludePath = explode('.', $requestedInclude);
             $firstSegment = array_shift($requestedIncludePath);
+            Assert::stringNotEmpty($firstSegment);
             if (!in_array($firstSegment, $this->availableIncludes, true)) {
                 $notAvailableIncludes[] = $firstSegment;
             }
@@ -369,7 +370,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param list<string> $notAvailableIncludes
+     * @param non-empty-list<non-empty-string> $notAvailableIncludes
      */
     private function createIncludeErrorMessage(array $notAvailableIncludes): string
     {
