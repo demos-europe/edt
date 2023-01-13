@@ -1,6 +1,3 @@
-# TODO: use a flat hierarchy for type interfaces where possible
-# TODO: evaluate https://phpstan.org/user-guide/stub-files
-
 includes:
     #- vendor/ergebnis/phpstan-rules/rules.neon
     - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
@@ -12,11 +9,16 @@ includes:
     #- phar://phpstan.phar/conf/bleedingEdge.neon
     #- vendor/phpstan/phpstan/conf/bleedingEdge.neon
 parameters:
+    level: 8
+    #level: 9
+
     treatPhpDocTypesAsCertain: false
     checkGenericClassInNonGenericObjectType: false
+    #errorFormat: json
+    #tipsOfTheDay: false
 
     # https://phpstan.org/config-reference#stricter-analysis
-    #checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
     checkUninitializedProperties: true
     rememberPossiblyImpureFunctionValues: false
     #checkImplicitMixed: true
@@ -99,7 +101,7 @@ parameters:
             path: packages/dql/src/Functions/IsNull.php
 
         -
-            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<array\\<int, V\\>\\|V\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<array\\<V\\>\\> given\\.$#"
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<array\\<int, TValue\\>\\|TValue\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<array\\<TValue\\>\\> given\\.$#"
             count: 1
             path: packages/dql/src/Functions/OneOf.php
 
@@ -109,7 +111,7 @@ parameters:
             path: packages/dql/src/Functions/OneOf.php
 
         -
-            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<array\\<int, V\\>\\|V\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<V\\> given\\.$#"
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<array\\<int, TValue\\>\\|TValue\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<TValue\\> given\\.$#"
             count: 1
             path: packages/dql/src/Functions/OneOf.php
 
@@ -311,11 +313,6 @@ parameters:
             message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:getIterator\\(\\) should return ArrayIterator\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(string\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getAllNestedTraits'\\} given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
 
         -
             message: "#^Parameter \\#1 \\$contains of class EDT\\\\Querying\\\\Functions\\\\StringEndsWith constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<string\\|null\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<string\\> given\\.$#"
