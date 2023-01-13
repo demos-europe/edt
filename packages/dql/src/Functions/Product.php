@@ -7,7 +7,7 @@ namespace EDT\DqlQuerying\Functions;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 
 /**
- * @template-extends AbstractClauseFunction<numeric>
+ * @template-extends AbstractClauseFunction<int|float>
  */
 class Product extends AbstractClauseFunction
 {

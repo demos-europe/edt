@@ -23,6 +23,8 @@ use function count;
  */
 abstract class AbstractClauseFunction implements ClauseFunctionInterface
 {
+    use ClauseTrait;
+
     /**
      * @var FunctionInterface<TOutput>
      */
@@ -112,17 +114,6 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
         );
 
         return array_map('array_values', Iterables::split($valueReferences, ...$clauseValueCountables));
-    }
-
-    /**
-     * Can be used if a single clause was passed to {@link AbstractClauseFunction::setClauses()} to
-     * get its DQL directly. If not exactly one clause was passed in the setter then this
-     * function call will throw an exception.
-     */
-    protected function getOnlyClause(): ClauseInterface
-    {
-        Assert::count($this->clauses, 1);
-        return $this->clauses[0];
     }
 
     /**

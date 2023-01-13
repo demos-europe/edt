@@ -51,14 +51,22 @@ class TagTypeParseException extends ParseException
     public static function createForTagType(TagWithType $tag, string $type, string $className): self
     {
         $tagName = $tag->getName();
-        $variableName = method_exists($tag, 'getVariableName')
-            ? $tag->getVariableName()
-            : null;
+        $variableName = self::getVariableNameOfTag($tag);
         $message = self::createBaseMessage($tagName, $type, $className, $variableName);
         $self = new self($className, $tagName, $type, $message);
         $self->variableName = $variableName;
 
         return $self;
+    }
+
+    /**
+     * @return non-empty-string|null
+     */
+    protected static function getVariableNameOfTag(TagWithType $tag): ?string
+    {
+        return method_exists($tag, 'getVariableName')
+            ? $tag->getVariableName()
+            : null;
     }
 
     /**
