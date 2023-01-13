@@ -9,7 +9,7 @@ class MessageFormatter
     /**
      * Wraps each given property between backticks and concatenates them with a comma.
      *
-     * @param list<string> $properties
+     * @param non-empty-list<non-empty-string> $properties
      */
     public function propertiesToString(array $properties): string
     {
