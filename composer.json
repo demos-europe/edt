@@ -87,6 +87,6 @@
     },
     "scripts": {
         "sniffer:php8": "phpcs -p ./packages/ --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0",
-        "phpstan": "phpstan analyse -l 8"
+        "phpstan": "phpstan analyse"
     }
 }

@@ -27,6 +27,7 @@
       * change `getUpdatableProperties` default implementation from returning an empty array to respecting the settings one via `configureProperties`
       * change return type and signature of `processProperties`
       * remove `getTypeProvider`
+      * remove `getPropertyCollection`, implement `configureProperties` instead
   * reduce caching done in `CachingResourceType`
 * ease initialization of valid path segments with factories by accepting `PropertyPathInterface` instances, a single non-empty-string or a list of non-empty-strings
 
