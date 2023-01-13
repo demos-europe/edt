@@ -340,7 +340,7 @@ class TableJoiner
      * @param array<string|int, list<TValue>> $array
      * @param TValue $value
      */
-    private function insertValue(array $array, int $index, $value): void
+    private function insertValue(array &$array, int $index, $value): void
     {
         array_walk($array, static function (&$arrayValue) use ($index, $value): void {
             array_splice($arrayValue, $index, 0, [$value]);
