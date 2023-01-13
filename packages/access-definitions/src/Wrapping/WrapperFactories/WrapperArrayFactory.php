@@ -126,13 +126,12 @@ class WrapperArrayFactory implements WrapperFactoryInterface
         }
         foreach ($readableProperties[2] as $propertyName => $readability) {
             $propertyValue = $this->getValue($propertyName, $entity, $aliases);
-            if (!is_iterable($propertyValue)) {
-                throw RelationshipAccessException::toManyNotIterable($propertyName);
-            }
 
             $wrapperFactory = $this->getNextWrapperFactory();
             $relationshipType = $readability->getRelationshipType();
-            $verifiedEntities = $this->propertyReader->determineToManyRelationshipValue($relationshipType, $propertyValue);
+
+            $relationshipValues = $this->propertyReader->verifyToManyIterable($propertyValue, $propertyName, $relationshipType->getEntityClass());
+            $verifiedEntities = $this->propertyReader->determineToManyRelationshipValue($relationshipType, $relationshipValues);
 
             // wrap the entities
             $wrapperArray[$propertyName] = array_map(

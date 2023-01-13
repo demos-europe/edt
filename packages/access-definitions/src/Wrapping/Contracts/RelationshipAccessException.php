@@ -77,6 +77,15 @@ class RelationshipAccessException extends PropertyAccessException
     }
 
     /**
+     * @param non-empty-string $propertyName
+     * @param class-string $entityClass
+     */
+    public static function toManyIterableInvalidEntity(string $propertyName, string $entityClass): self
+    {
+        return new self($propertyName, "Iterable in to-many relationship '$propertyName' does not contain '$entityClass' instances only.");
+    }
+
+    /**
      * @return non-empty-string|null
      */
     public function getRelationshipTypeIdentifier(): ?string
