@@ -132,7 +132,11 @@ class TableJoiner
 
         // Building the cartesian product of the other columns is left to the
         // recursion.
-        $product = $this->cartesianProductRecursive($nonEmptyColumns);
+        $mostLeftColumn = array_shift($nonEmptyColumns);
+        if (!is_array($mostLeftColumn)) {
+            throw new InvalidArgumentException("Most left column must not be a reference, was: '$mostLeftColumn'.");
+        }
+        $product = $this->cartesianProductRecursive($mostLeftColumn, $nonEmptyColumns);
 
         // TODO: remove type-hint when phpstan can detect that `array_keys(list<X>)` results in` list<int<0, max>>`
         /** @var list<Ref> $emptyColumnIndices */
@@ -161,29 +165,22 @@ class TableJoiner
     /**
      * No given column must be empty, as empty columns need to be handled in a special way.
      *
-     * @param non-empty-list<NonEmptyColumn|Ref> $leftColumns
+     * @param NonEmptyColumn $mostLeftColumn
+     * @param list<NonEmptyColumn|Ref> $leftColumns
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    protected function cartesianProductRecursive(array $leftColumns): array
+    protected function cartesianProductRecursive(array $mostLeftColumn, array $leftColumns): array
     {
-        $rightColumn = array_pop($leftColumns);
-
         // This is not just a shortcut but the place where the result table is
-        // initially filled to be expanded in other recursion steps.
+        // initially filled to be expanded in previous recursion steps.
         if ([] === $leftColumns) {
-            if (!is_array($rightColumn)) {
-                throw new InvalidArgumentException("Most left column must not be a reference, was: '$rightColumn'.");
-            }
-
-            return array_map(
-                static fn ($value): array => [$value],
-                $rightColumn
-            );
+            return array_map(static fn ($value): array => [$value], $mostLeftColumn);
         }
 
-        // we do have more columns to step into
-        $wipTable = $this->cartesianProductRecursive($leftColumns);
+        // we do have at least one more columns to step into
+        $rightColumn = array_pop($leftColumns);
+        $wipTable = $this->cartesianProductRecursive($mostLeftColumn, $leftColumns);
 
         return $this->rebuildTable($rightColumn, $wipTable);
     }
