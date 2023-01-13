@@ -184,10 +184,8 @@ class WrapperObject
             $propertyValue = $this->propertyAccessor->getValueByPropertyPath($this->entity, ...$propertyPath);
             $relationshipType = $readability->getRelationshipType();
 
-            if (!is_iterable($propertyValue)) {
-                throw RelationshipAccessException::toManyNotIterable($propertyName);
-            }
-            $entities = $this->propertyReader->determineToManyRelationshipValue($relationshipType, $propertyValue);
+            $relationshipValues = $this->propertyReader->verifyToManyIterable($propertyValue, $propertyName, $relationshipType->getEntityClass());
+            $entities = $this->propertyReader->determineToManyRelationshipValue($relationshipType, $relationshipValues);
 
             // wrap the entities
             return array_map(

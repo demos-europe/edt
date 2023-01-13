@@ -36,7 +36,7 @@ class CachingPropertyReader extends PropertyReader
         return $this->toOneValueCache[$hash];
     }
 
-    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, iterable $values): array
+    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, array $values): array
     {
         $hash = $this->createHash($relationshipType, $values);
         if (!array_key_exists($hash, $this->toManyValueCache)) {

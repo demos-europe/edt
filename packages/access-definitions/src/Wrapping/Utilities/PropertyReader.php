@@ -11,11 +11,10 @@ use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Querying\Utilities\Sorter;
+use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Contracts\WrapperFactoryInterface;
-use Exception;
-use function count;
 
 /**
  * Provides helper methods to determine the access rights to properties of an entity based on the implementation of a given {@link TypeInterface}.
@@ -84,16 +83,16 @@ class PropertyReader
      * @template TEntity of object
      *
      * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $relationshipType
-     * @param iterable<TEntity>                                                                $values
+     * @param list<TEntity> $values
      *
      * @return list<TEntity>
      *
      * @throws PathException
      * @throws SortException
      */
-    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, iterable $values): array
+    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, array $values): array
     {
-        $entities = $this->filter($relationshipType, Iterables::asArray($values));
+        $entities = $this->filter($relationshipType, $values);
 
         $sortMethods = $this->schemaPathProcessor->processDefaultSortMethods($relationshipType);
         if ([] !== $sortMethods) {
@@ -101,6 +100,33 @@ class PropertyReader
         }
 
         return $entities;
+    }
+
+    /**
+     * @template TEntity of object
+     *
+     * @param mixed|null       $supposedIterable
+     * @param non-empty-string $propertyName
+     * @param class-string<TEntity> $entityClass
+     *
+     * @return list<TEntity>
+     */
+    public function verifyToManyIterable($supposedIterable, string $propertyName, string $entityClass): array
+    {
+        if (!is_iterable($supposedIterable)) {
+            throw RelationshipAccessException::toManyNotIterable($propertyName);
+        }
+
+        return array_map(
+            static function ($relationshipValue) use ($propertyName, $entityClass): object {
+                if (!$relationshipValue instanceof $entityClass) {
+                    throw RelationshipAccessException::toManyIterableInvalidEntity($propertyName, $entityClass);
+                }
+
+                return $relationshipValue;
+            },
+            array_values(Iterables::asArray($supposedIterable))
+        );
     }
 
     /**
