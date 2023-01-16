@@ -47,7 +47,7 @@ class OffsetPaginationParser implements PaginationParserInterface
     /**
      * @param mixed $page
      *
-     * @return array{offset: non-empty-string, limit: non-empty-string}
+     * @return array{offset: numeric-string, limit: numeric-string}
      *
      * @throws ValidationFailedException
      */

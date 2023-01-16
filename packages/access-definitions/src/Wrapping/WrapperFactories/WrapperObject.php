@@ -99,8 +99,8 @@ class WrapperObject
     }
 
     /**
-     * @param non-empty-string         $methodName
-     * @param array<int|string, mixed> $arguments
+     * @param non-empty-string $methodName
+     * @param array<int|string, array<int|string, mixed>|simple_primitive|object|null> $arguments
      *
      * @return mixed|null|void If no parameters given:<ul>
      *   <li>In case of a relationship: an array, {@link WrapperObject} or <code>null</code>.
@@ -213,7 +213,7 @@ class WrapperObject
     }
     /**
      * @param non-empty-string $propertyName
-     * @param mixed $value The value to set. Will only be allowed if the property name matches with an allowed property
+     * @param array<int|string, mixed>|simple_primitive|object|null $value The value to set. Will only be allowed if the property name matches with an allowed property
      *                     (must be {@link TransferableTypeInterface::getUpdatableProperties() updatable} and
      *                     (if it is a relationship) the target type of the relationship returns `true` in
      *                     {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}.
@@ -303,8 +303,8 @@ class WrapperObject
      * {@link TransferableTypeInterface::getUpdatableProperties() updatable} properties.
      *
      * @param array{0: array<non-empty-string, AttributeUpdatability<FunctionInterface<bool>, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object, TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object>>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object, TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object>>>} $updatabilities
-     * @param non-empty-string                                                                                                                                                                                                                                                         $propertyName
-     * @param mixed                                                                                                                                                                                                                                                                    $propertyValue         A single value of some type or an iterable.
+     * @param non-empty-string $propertyName
+     * @param array<int|string, mixed>|simple_primitive|object|null $propertyValue A single value of some type or an iterable.
      *
      * @throws AccessException
      */
