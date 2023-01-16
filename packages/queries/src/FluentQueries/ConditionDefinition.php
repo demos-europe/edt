@@ -279,7 +279,7 @@ class ConditionDefinition
     }
 
     /**
-     * @param int|string|float|bool $value
+     * @param simple_primitive $value
      * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this

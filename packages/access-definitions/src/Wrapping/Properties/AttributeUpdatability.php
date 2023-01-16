@@ -15,14 +15,14 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 class AttributeUpdatability extends AbstractUpdatability
 {
     /**
-     * @var null|callable(TEntity, string|int|float|bool|array<int|string, mixed>|null): void
+     * @var null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): void
      */
     private $customWriteFunction;
 
     /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
-     * @param null|callable(TEntity, string|int|float|bool|array<int|string, mixed>|null): void $customWriteFunction
+     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): void $customWriteFunction
      */
     public function __construct(
         array $entityConditions,
@@ -34,7 +34,7 @@ class AttributeUpdatability extends AbstractUpdatability
     }
 
     /**
-     * @return null|callable(TEntity, string|int|float|bool|array<int|string, mixed>|null): void
+     * @return null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): void
      */
     public function getCustomWriteFunction(): ?callable
     {

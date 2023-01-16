@@ -10,12 +10,12 @@ namespace EDT\Wrapping\Properties;
 class AttributeReadability extends AbstractReadability
 {
     /**
-     * @var null|callable(TEntity): (string|int|float|bool|array<int|string, mixed>|null)
+     * @var null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null)
      */
     private $customValueFunction;
 
     /**
-     * @param null|callable(TEntity): (string|int|float|bool|array<int|string, mixed>|null) $customValueFunction to be set if this property needs special handling when read
+     * @param null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null) $customValueFunction to be set if this property needs special handling when read
      */
     public function __construct(
         bool $defaultField,
@@ -27,7 +27,7 @@ class AttributeReadability extends AbstractReadability
     }
 
     /**
-     * @return null|callable(TEntity): (string|int|float|bool|array<int|string, mixed>|null)
+     * @return null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null)
      */
     public function getCustomValueFunction(): ?callable
     {

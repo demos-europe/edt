@@ -182,7 +182,7 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param array{0: object, 1: string}|callable(object): (string|int|float|bool|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
+     * @param array{0: object, 1: string}|callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
      *
      * @return array{type: string}
      *
@@ -218,7 +218,7 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param array{0: object, 1: string}|callable(object): (string|int|float|bool|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
+     * @param array{0: object, 1: string}|callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
      *
      * @return ReflectionMethod|ReflectionFunction
      *

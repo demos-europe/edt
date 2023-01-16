@@ -95,7 +95,7 @@ interface ConditionFactoryInterface
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, $properties);
 
     /**
-     * @param string|int|float|bool $value
+     * @param simple_primitive $value
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
@@ -212,7 +212,7 @@ interface ConditionFactoryInterface
     public function allValuesPresentInMemberListProperties(array $values, $properties);
 
     /**
-     * @param string|int|float|bool $value
+     * @param simple_primitive $value
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
