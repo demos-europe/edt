@@ -31,6 +31,8 @@ abstract class AbstractFunction implements FunctionInterface
     protected array $functions = [];
 
     /**
+     * TODO: change parameters to single non-empty-list
+     *
      * @param FunctionInterface<TInput> $function
      * @param FunctionInterface<TInput> ...$functions
      */

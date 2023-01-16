@@ -20,18 +20,12 @@ use Webmozart\Assert\Assert;
 class Constant extends \EDT\Querying\Functions\Value implements ClauseFunctionInterface
 {
     /**
-     * @var V
-     */
-    private $dqlValue;
-
-    /**
      * @param TOutput $phpValue
      * @param V $dqlValue
      */
-    public function __construct($phpValue, $dqlValue)
+    public function __construct($phpValue, private $dqlValue)
     {
         parent::__construct($phpValue);
-        $this->dqlValue = $dqlValue;
     }
 
     public function getClauseValues(): array

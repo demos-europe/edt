@@ -23,37 +23,27 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
     private ?ArrayIterator $iterator = null;
 
     /**
-     * @see PropertyPathAccessInterface::getAccessDepth()
-     */
-    private int $accessDepth;
-
-    private string $salt;
-
-    /**
-     * @var class-string|null
-     */
-    private ?string $context;
-
-    /**
      * @var non-empty-list<non-empty-string>
      */
     private array $path;
 
     /**
      * @param class-string|null $context
+     * @param int $accessDepth {@link PropertyPathAccessInterface::getAccessDepth()}
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $path
      *
      * @throws PathException
      */
-    public function __construct(?string $context, string $salt, int $accessDepth, $path)
-    {
-        $this->context = $context;
-        $this->accessDepth = $accessDepth;
+    public function __construct(
+        private ?string $context,
+        private string $salt,
+        private int $accessDepth,
+        $path
+    ) {
         if (is_string($path)) {
             $path = [$path];
         }
         $this->path = $path instanceof PropertyPathInterface ? $path->getAsNames() : $path;
-        $this->salt = $salt;
     }
 
     /**

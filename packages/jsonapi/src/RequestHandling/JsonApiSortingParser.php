@@ -19,17 +19,11 @@ use function Safe\substr;
 class JsonApiSortingParser
 {
     /**
-     * @var SortMethodFactoryInterface<TSorting>
-     */
-    private SortMethodFactoryInterface $sortMethodFactory;
-
-    /**
      * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
-    public function __construct(SortMethodFactoryInterface $sortMethodFactory)
-    {
-        $this->sortMethodFactory = $sortMethodFactory;
-    }
+    public function __construct(
+        private SortMethodFactoryInterface $sortMethodFactory
+    ) {}
 
     /**
      * Create an array of {@link SortMethodInterface} objects from the sort query parameter given if not null.

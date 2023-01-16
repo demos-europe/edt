@@ -27,38 +27,16 @@ use EDT\Querying\Contracts\SortException;
 class FluentQuery
 {
     /**
-     * @var ObjectProviderInterface<TCondition, TSorting, TEntity>
-     */
-    protected ObjectProviderInterface $objectProvider;
-
-    /**
-     * @var ConditionDefinition<TCondition>
-     */
-    private ConditionDefinition $conditionDefinition;
-
-    private SliceDefinition $sliceDefinition;
-
-    /**
-     * @var SortDefinition<TSorting>
-     */
-    private SortDefinition $sortDefinition;
-
-    /**
      * @param ObjectProviderInterface<TCondition, TSorting, TEntity> $objectProvider
-     * @param ConditionDefinition<TCondition>        $conditionDefinition
-     * @param SortDefinition<TSorting>             $sortDefinition
+     * @param ConditionDefinition<TCondition> $conditionDefinition
+     * @param SortDefinition<TSorting> $sortDefinition
      */
     public function __construct(
-        ObjectProviderInterface $objectProvider,
-        ConditionDefinition $conditionDefinition,
-        SortDefinition $sortDefinition,
-        SliceDefinition $sliceDefinition
-    ) {
-        $this->objectProvider = $objectProvider;
-        $this->conditionDefinition = $conditionDefinition;
-        $this->sortDefinition = $sortDefinition;
-        $this->sliceDefinition = $sliceDefinition;
-    }
+        protected ObjectProviderInterface $objectProvider,
+        private ConditionDefinition $conditionDefinition,
+        private SortDefinition $sortDefinition,
+        private SliceDefinition $sliceDefinition
+    ) {}
 
     /**
      * @return iterable<TEntity>

@@ -7,24 +7,13 @@ namespace EDT\Querying\Pagination;
 class PagePagination
 {
     /**
-     * @var positive-int
-     */
-    private int $size;
-
-    /**
-     * @var positive-int
-     */
-    private int $number;
-
-    /**
      * @param positive-int $size
      * @param positive-int $number
      */
-    public function __construct(int $size, int $number)
-    {
-        $this->size = $size;
-        $this->number = $number;
-    }
+    public function __construct(
+        private int $size,
+        private int $number
+    ) {}
 
     /**
      * @return positive-int

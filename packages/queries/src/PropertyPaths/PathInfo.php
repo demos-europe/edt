@@ -12,15 +12,10 @@ use EDT\Querying\Contracts\PropertyPathAccessInterface;
  */
 class PathInfo
 {
-    private PropertyPathAccessInterface $path;
-
-    private bool $toManyAllowed;
-
-    public function __construct(PropertyPathAccessInterface $path, bool $toManyAllowed)
-    {
-        $this->path = $path;
-        $this->toManyAllowed = $toManyAllowed;
-    }
+    public function __construct(
+        private PropertyPathAccessInterface $path,
+        private bool $toManyAllowed
+    ) {}
 
     /**
      * Copies the given instance into a new one if the `$toManyAllowed` property is

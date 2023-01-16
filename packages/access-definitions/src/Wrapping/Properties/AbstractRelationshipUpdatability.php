@@ -16,11 +16,6 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 class AbstractRelationshipUpdatability extends AbstractUpdatability
 {
     /**
-     * @var TRelationshipType
-     */
-    private TransferableTypeInterface $relationshipType;
-
-    /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
      * @param TRelationshipType $relationshipType
@@ -28,10 +23,9 @@ class AbstractRelationshipUpdatability extends AbstractUpdatability
     public function __construct(
         array $entityConditions,
         array $valueConditions,
-        TransferableTypeInterface $relationshipType
+        private TransferableTypeInterface $relationshipType
     ) {
         parent::__construct($entityConditions, $valueConditions);
-        $this->relationshipType = $relationshipType;
     }
 
     /**

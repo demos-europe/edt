@@ -17,11 +17,6 @@ use function array_key_exists;
 class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterface
 {
     /**
-     * @var PathsBasedConditionFactoryInterface<TCondition>
-     */
-    private PathsBasedConditionFactoryInterface $conditionFactory;
-
-    /**
      * @var array<non-empty-string, callable(DrupalValue, non-empty-list<non-empty-string>):TCondition>
      */
     private array $operatorFunctions;
@@ -29,9 +24,9 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     /**
      * @param PathsBasedConditionFactoryInterface<TCondition> $conditionFactory
      */
-    public function __construct(PathsBasedConditionFactoryInterface $conditionFactory)
-    {
-        $this->conditionFactory = $conditionFactory;
+    public function __construct(
+        private PathsBasedConditionFactoryInterface $conditionFactory
+    ) {
         $this->operatorFunctions = $this->getOperatorFunctions();
     }
 

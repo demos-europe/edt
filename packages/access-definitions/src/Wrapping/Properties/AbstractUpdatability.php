@@ -12,24 +12,13 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 abstract class AbstractUpdatability
 {
     /**
-     * @var list<TCondition>
-     */
-    private array $entityConditions;
-
-    /**
-     * @var list<TCondition>
-     */
-    private array $valueConditions;
-
-    /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
      */
-    public function __construct(array $entityConditions, array $valueConditions)
-    {
-        $this->entityConditions = $entityConditions;
-        $this->valueConditions = $valueConditions;
-    }
+    public function __construct(
+        private array $entityConditions,
+        private array $valueConditions
+    ) {}
 
     /**
      * The entity to update with some value must match these conditions.

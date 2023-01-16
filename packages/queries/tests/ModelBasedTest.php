@@ -58,7 +58,7 @@ abstract class ModelBasedTest extends TestCase
 
         $doctorSleep = new Book('Doctor Sleep', $king);
         $beowulf = new Book('Beowulf: The Monsters and the Critics', $tolkien);
-        $pickwickPapers = new Book('The Pickwick Papers', $dickens, 'Novel');
+        $pickwickPapers = new Book('The Pickwick Papers', $dickens, ['Novel']);
         $philosopherStone = new Book('Harry Potter and the Philosopher\'s Stone', $rowling);
         $deathlyHallows = new Book('Harry Potter and the Deathly Hallows', $rowling);
 

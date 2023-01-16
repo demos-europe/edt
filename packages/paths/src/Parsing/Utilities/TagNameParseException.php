@@ -9,24 +9,18 @@ use Throwable;
 class TagNameParseException extends ParseException
 {
     /**
-     * @var non-empty-string
-     */
-    private string $propertyName;
-
-    /**
      * @param non-empty-string $propertyName
      * @param class-string $className
      * @param non-empty-string $message
      */
     protected function __construct(
-        string $propertyName,
+        private string $propertyName,
         string $className,
         string $message,
         int $code = 0,
         Throwable $previous = null
     ) {
         parent::__construct($className, $message, $code, $previous);
-        $this->propertyName = $propertyName;
     }
 
     /**

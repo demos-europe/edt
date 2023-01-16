@@ -8,21 +8,14 @@ use Tests\data\Model\Person;
 
 class Book
 {
-    protected string $title;
-
-    protected Person $author;
-
     /**
-     * @var string[]
+     * @param list<non-empty-string> $tags
      */
-    protected array $tags;
-
-    public function __construct(string $title, Person $author, string ...$tags)
-    {
-        $this->title = $title;
-        $this->author = $author;
-        $this->tags = $tags;
-    }
+    public function __construct(
+        protected string $title,
+        protected Person $author,
+        protected string $tags
+    ) {}
 
     public function getTitle(): string
     {

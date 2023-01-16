@@ -19,11 +19,6 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 class ToManyRelationshipUpdatability extends AbstractRelationshipUpdatability
 {
     /**
-     * @var null|callable(TEntity, iterable<TRelationship>): void
-     */
-    private $customWriteFunction;
-
-    /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
      * @param TRelationshipType $relationshipType
@@ -33,10 +28,9 @@ class ToManyRelationshipUpdatability extends AbstractRelationshipUpdatability
         array $entityConditions,
         array $valueConditions,
         TransferableTypeInterface $relationshipType,
-        ?callable $customWriteFunction
+        private $customWriteFunction
     ) {
         parent::__construct($entityConditions, $valueConditions, $relationshipType);
-        $this->customWriteFunction = $customWriteFunction;
     }
 
     /**

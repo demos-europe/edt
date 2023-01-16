@@ -19,11 +19,6 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 class ToOneRelationshipReadability extends AbstractRelationshipReadability
 {
     /**
-     * @var null|callable(TEntity): (TRelationship|null)
-     */
-    private $customValueFunction;
-
-    /**
      * @param null|callable(TEntity): (TRelationship|null) $customValueFunction
      * @param TRelationshipType $relationshipType
      */
@@ -31,11 +26,10 @@ class ToOneRelationshipReadability extends AbstractRelationshipReadability
         bool $defaultField,
         bool $allowingInconsistencies,
         bool $defaultInclude,
-        ?callable $customValueFunction,
+        private $customValueFunction,
         TransferableTypeInterface $relationshipType
     ) {
         parent::__construct($defaultField, $allowingInconsistencies, $defaultInclude, $relationshipType);
-        $this->customValueFunction = $customValueFunction;
     }
 
     /**

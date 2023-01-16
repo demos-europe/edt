@@ -16,16 +16,16 @@ use EDT\Wrapping\Properties\AbstractRelationshipReadability;
  */
 class ExternReadableProcessorConfig extends AbstractProcessorConfig
 {
-    private bool $allowAttribute;
-
     /**
      * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface>             $typeProvider
      * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $rootType
      */
-    public function __construct(TypeProviderInterface $typeProvider, TransferableTypeInterface $rootType, bool $allowAttribute)
-    {
+    public function __construct(
+        TypeProviderInterface $typeProvider,
+        TransferableTypeInterface $rootType,
+        private bool $allowAttribute
+    ) {
         parent::__construct($typeProvider, $rootType);
-        $this->allowAttribute = $allowAttribute;
     }
 
     public function getProperties(TypeInterface $type): array

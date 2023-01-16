@@ -18,20 +18,12 @@ use function array_key_exists;
 class PagePaginationParser implements PaginationParserInterface
 {
     /**
-     * @var positive-int
-     */
-    private int $defaultSize;
-
-    private ValidatorInterface $validator;
-
-    /**
      * @param positive-int $defaultSize
      */
-    public function __construct(int $defaultSize, ValidatorInterface $validator)
-    {
-        $this->defaultSize = $defaultSize;
-        $this->validator = $validator;
-    }
+    public function __construct(
+        private int $defaultSize,
+        private ValidatorInterface $validator
+    ) {}
 
     /**
      * @throws ValidationFailedException

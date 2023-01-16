@@ -30,37 +30,15 @@ use function count;
 
 final class OpenAPISchemaGenerator
 {
-    private RouterInterface $router;
-
-    private AttributeTypeResolver $typeResolver;
-
-    private TypeProviderInterface $typeProvider;
-
-    private TranslatorInterface $translator;
-
-    private SchemaStore $schemaStore;
-
-    private LoggerInterface $logger;
-
-    private int $defaultPageSize;
-
     public function __construct(
-        AttributeTypeResolver $typeResolver,
-        LoggerInterface $logger,
-        TypeProviderInterface $typeProvider,
-        RouterInterface $router,
-        SchemaStore $schemaStore,
-        TranslatorInterface $translator,
-        int $defaultPageSize
-    ) {
-        $this->typeResolver = $typeResolver;
-        $this->typeProvider = $typeProvider;
-        $this->router = $router;
-        $this->translator = $translator;
-        $this->schemaStore = $schemaStore;
-        $this->logger = $logger;
-        $this->defaultPageSize = $defaultPageSize;
-    }
+        private AttributeTypeResolver $typeResolver,
+        private LoggerInterface $logger,
+        private TypeProviderInterface $typeProvider,
+        private RouterInterface $router,
+        private SchemaStore $schemaStore,
+        private TranslatorInterface $translator,
+        private int $defaultPageSize
+    ) {}
 
     /**
      * @throws TypeErrorException

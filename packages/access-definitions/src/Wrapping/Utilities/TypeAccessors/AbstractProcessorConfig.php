@@ -20,24 +20,13 @@ use function array_key_exists;
 abstract class AbstractProcessorConfig
 {
     /**
-     * @var TypeProviderInterface<PathsBasedInterface, PathsBasedInterface>
-     */
-    protected TypeProviderInterface $typeProvider;
-
-    /**
-     * @var TType
-     */
-    private TypeInterface $rootType;
-
-    /**
      * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
      * @param TType                                                           $rootType
      */
-    public function __construct(TypeProviderInterface $typeProvider, TypeInterface $rootType)
-    {
-        $this->typeProvider = $typeProvider;
-        $this->rootType = $rootType;
-    }
+    public function __construct(
+        protected TypeProviderInterface $typeProvider,
+        private TypeInterface $rootType
+    ) {}
 
     /**
      * @return TType

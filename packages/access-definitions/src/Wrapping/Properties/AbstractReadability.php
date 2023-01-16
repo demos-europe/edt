@@ -16,10 +16,6 @@ namespace EDT\Wrapping\Properties;
  */
 abstract class AbstractReadability
 {
-    private bool $defaultField;
-
-    private bool $allowingInconsistencies;
-
     /**
      * Mark this property as readable, i.e. allow its value to be read.
      *
@@ -67,11 +63,10 @@ abstract class AbstractReadability
      *
      * @see https://jsonapi.org/format/#fetching-sparse-fieldsets JSON:API sparse fieldsets
      */
-    public function __construct(bool $defaultField, bool $allowingInconsistencies)
-    {
-        $this->defaultField = $defaultField;
-        $this->allowingInconsistencies = $allowingInconsistencies;
-    }
+    public function __construct(
+        private bool $defaultField,
+        private bool $allowingInconsistencies
+    ) {}
 
     public function isDefaultField(): bool
     {

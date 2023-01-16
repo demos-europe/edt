@@ -11,21 +11,13 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  */
 class Initializability
 {
-    protected bool $requiredForEntityCreation;
-
-    /**
-     * @var list<TCondition>
-     */
-    private array $conditions;
-
     /**
      * @param list<TCondition> $conditions
      */
-    public function __construct(array $conditions, bool $requiredForCreation)
-    {
-        $this->conditions = $conditions;
-        $this->requiredForEntityCreation = $requiredForCreation;
-    }
+    public function __construct(
+        private array $conditions,
+        private bool $requiredForEntityCreation
+    ) {}
 
     public function isRequiredForEntityCreation(): bool
     {

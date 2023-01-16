@@ -24,12 +24,9 @@ use function is_int;
  */
 class TableJoiner
 {
-    private PropertyAccessorInterface $propertyAccessor;
-
-    public function __construct(PropertyAccessorInterface $propertyAccessor)
-    {
-        $this->propertyAccessor = $propertyAccessor;
-    }
+    public function __construct(
+        private PropertyAccessorInterface $propertyAccessor
+    ) {}
 
     /**
      * Gets the values from the given object the property paths point to.

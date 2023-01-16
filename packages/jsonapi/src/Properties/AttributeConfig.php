@@ -19,15 +19,12 @@ use EDT\Wrapping\Properties\AttributeUpdatability;
  */
 class AttributeConfig extends AbstractConfig
 {
-    protected ResourceTypeInterface $type;
-
     /**
      * @param ResourceTypeInterface<TCondition, PathsBasedInterface, TEntity> $type
      */
-    public function __construct(ResourceTypeInterface $type)
-    {
-        $this->type = $type;
-    }
+    public function __construct(
+        protected ResourceTypeInterface $type
+    ) {}
 
     /**
      * @param null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null) $customValueFunction

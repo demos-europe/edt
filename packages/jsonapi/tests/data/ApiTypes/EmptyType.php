@@ -17,25 +17,12 @@ use Tests\data\EmptyEntity;
 
 class EmptyType extends AbstractResourceType
 {
-    private WrapperObjectFactory $wrapperFactory;
-
-    private ConditionFactoryInterface $conditionFactory;
-
-    private LoggerInterface $logger;
-
-    private MessageFormatter $messageFormatter;
-
     public function __construct(
-        WrapperObjectFactory $wrapperFactory,
-        ConditionFactoryInterface $conditionFactory,
-        LoggerInterface $logger,
-        MessageFormatter $messageFormatter
-    ) {
-        $this->wrapperFactory = $wrapperFactory;
-        $this->conditionFactory = $conditionFactory;
-        $this->logger = $logger;
-        $this->messageFormatter = $messageFormatter;
-    }
+        private WrapperObjectFactory $wrapperFactory,
+        private ConditionFactoryInterface $conditionFactory,
+        private LoggerInterface $logger,
+        private MessageFormatter $messageFormatter
+    ) {}
 
     protected function configureProperties(TypedPathConfigCollection $configCollection): void
     {

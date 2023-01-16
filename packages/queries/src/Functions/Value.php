@@ -14,17 +14,11 @@ use Webmozart\Assert\Assert;
 class Value implements FunctionInterface
 {
     /**
-     * @var TOutput
-     */
-    protected $value;
-
-    /**
      * @param TOutput $value
      */
-    public function __construct($value)
-    {
-        $this->value = $value;
-    }
+    public function __construct(
+        protected $value
+    ) {}
 
     public function apply(array $propertyValues)
     {

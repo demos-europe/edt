@@ -25,17 +25,10 @@ use EDT\Querying\Contracts\PropertyPathInterface;
  */
 class TemplateSegmentFactory implements SegmentFactoryInterface
 {
-    private SegmentFactoryInterface $fallbackFactory;
-
-    private SegmentTemplateProviderInterface $segmentTemplateProvider;
-
     public function __construct(
-        SegmentFactoryInterface $fallbackFactory,
-        SegmentTemplateProviderInterface $segmentTemplateProvider
-    ) {
-        $this->fallbackFactory = $fallbackFactory;
-        $this->segmentTemplateProvider = $segmentTemplateProvider;
-    }
+        private SegmentFactoryInterface $fallbackFactory,
+        private SegmentTemplateProviderInterface $segmentTemplateProvider
+    ) {}
 
     public function createNextSegment(
         string $returnType,

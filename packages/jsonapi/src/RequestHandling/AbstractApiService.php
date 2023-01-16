@@ -30,46 +30,18 @@ use function array_key_exists;
 abstract class AbstractApiService
 {
     /**
-     * @var PropertyValuesGenerator<TCondition, TSorting>
-     */
-    protected PropertyValuesGenerator $propertyValuesGenerator;
-
-    /**
-     * @var TypeProviderInterface<TCondition, TSorting>
-     */
-    protected TypeProviderInterface $typeProvider;
-
-    /**
-     * @var FilterParserInterface<mixed, TCondition>
-     */
-    private FilterParserInterface $filterParser;
-
-    /**
-     * @var JsonApiSortingParser<TSorting>
-     */
-    private JsonApiSortingParser $sortingParser;
-
-    private PaginatorFactory $paginatorFactory;
-
-    /**
      * @param FilterParserInterface<mixed, TCondition> $filterParser
-     * @param JsonApiSortingParser<TSorting>         $sortingParser
-     * @param PropertyValuesGenerator<TCondition, TSorting>   $propertyValuesGenerator
-     * @param TypeProviderInterface<TCondition, TSorting>     $typeProvider
+     * @param JsonApiSortingParser<TSorting> $sortingParser
+     * @param PropertyValuesGenerator<TCondition, TSorting> $propertyValuesGenerator
+     * @param TypeProviderInterface<TCondition, TSorting> $typeProvider
      */
     public function __construct(
-        FilterParserInterface $filterParser,
-        JsonApiSortingParser $sortingParser,
-        PaginatorFactory $paginatorFactory,
-        PropertyValuesGenerator $propertyValuesGenerator,
-        TypeProviderInterface $typeProvider
-    ) {
-        $this->propertyValuesGenerator = $propertyValuesGenerator;
-        $this->typeProvider = $typeProvider;
-        $this->filterParser = $filterParser;
-        $this->sortingParser = $sortingParser;
-        $this->paginatorFactory = $paginatorFactory;
-    }
+        private FilterParserInterface $filterParser,
+        private JsonApiSortingParser $sortingParser,
+        private PaginatorFactory $paginatorFactory,
+        protected PropertyValuesGenerator $propertyValuesGenerator,
+        protected TypeProviderInterface $typeProvider
+    ) {}
 
     /**
      * @param non-empty-string $urlTypeIdentifier

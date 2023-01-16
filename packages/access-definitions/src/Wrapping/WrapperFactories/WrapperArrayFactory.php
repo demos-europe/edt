@@ -24,29 +24,16 @@ use InvalidArgumentException;
  */
 class WrapperArrayFactory implements WrapperFactoryInterface
 {
-    private PropertyAccessorInterface $propertyAccessor;
-
-    /**
-     * @var int<0, max>
-     */
-    private int $depth;
-
-    private PropertyReader $propertyReader;
-
     /**
      * @param int<0, max> $depth
      *
      * @throws InvalidArgumentException Thrown if the given depth is negative.
      */
     public function __construct(
-        PropertyAccessorInterface $propertyAccessor,
-        PropertyReader $propertyReader,
-        int $depth
-    ) {
-        $this->propertyAccessor = $propertyAccessor;
-        $this->depth = $depth;
-        $this->propertyReader = $propertyReader;
-    }
+        private PropertyAccessorInterface $propertyAccessor,
+        private PropertyReader $propertyReader,
+        private int $depth
+    ) {}
 
     /**
      * Converts the given object into an array with the object's property names as array keys and the

@@ -15,11 +15,6 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 class AttributeUpdatability extends AbstractUpdatability
 {
     /**
-     * @var null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): void
-     */
-    private $customWriteFunction;
-
-    /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
      * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): void $customWriteFunction
@@ -27,10 +22,9 @@ class AttributeUpdatability extends AbstractUpdatability
     public function __construct(
         array $entityConditions,
         array $valueConditions,
-        ?callable $customWriteFunction
+        private $customWriteFunction
     ) {
         parent::__construct($entityConditions, $valueConditions);
-        $this->customWriteFunction = $customWriteFunction;
     }
 
     /**

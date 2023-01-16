@@ -29,23 +29,13 @@ use function array_slice;
 class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginatingEntityProviderInterface
 {
     /**
-     * @var array<TKey, TEntity>
-     */
-    private array $prefilledArray;
-
-    private ConditionEvaluator $conditionEvaluator;
-
-    private Sorter $sorter;
-
-    /**
      * @param array<TKey, TEntity> $prefilledArray
      */
-    public function __construct(ConditionEvaluator $conditionEvaluator, Sorter $sorter, array $prefilledArray)
-    {
-        $this->prefilledArray = $prefilledArray;
-        $this->conditionEvaluator = $conditionEvaluator;
-        $this->sorter = $sorter;
-    }
+    public function __construct(
+        private ConditionEvaluator $conditionEvaluator,
+        private Sorter $sorter,
+        private array $prefilledArray
+    ) {}
 
     /**
      * @return array<TKey, TEntity>
