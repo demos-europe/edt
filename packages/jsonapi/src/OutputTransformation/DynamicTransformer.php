@@ -19,7 +19,6 @@ use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\ParamBag;
 use Safe\Exceptions\StringsException;
 use Webmozart\Assert\Assert;
-use function get_class;
 use function gettype;
 use function is_array;
 use function is_bool;
@@ -247,7 +246,7 @@ class DynamicTransformer extends TransformerAbstract
                 static function (WrapperObject $object) use ($entityClass): object {
                     $value = $object->getEntity();
                     if (!$value instanceof $entityClass) {
-                        throw TransformException::nonToManyNestedType(get_class($value), $entityClass);
+                        throw TransformException::nonToManyNestedType($value::class, $entityClass);
                     }
 
                     return $value;

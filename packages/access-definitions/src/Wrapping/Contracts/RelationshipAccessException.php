@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Contracts;
 
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use function get_class;
 
 class RelationshipAccessException extends PropertyAccessException
 {
@@ -24,7 +23,7 @@ class RelationshipAccessException extends PropertyAccessException
      */
     public static function relationshipTypeAccess(TypeInterface $type, string $property, TypeRetrievalAccessException $previous): self
     {
-        $typeClass = get_class($type);
+        $typeClass = $type::class;
         $relationshipTypeIdentifier = $previous->getTypeClass();
         $self = new self($property, "Property '$property' is available and a relationship in the type class '$typeClass', but its destination type '$relationshipTypeIdentifier' is not accessible.", 0, $previous);
         $self->typeClass = $typeClass;
@@ -39,7 +38,7 @@ class RelationshipAccessException extends PropertyAccessException
      */
     public static function toManyWithRestrictedItemNotSetable(TypeInterface $type, string $propertyName, string $deAliasedPropertyName, int|string $key): self
     {
-        $typeClass = get_class($type);
+        $typeClass = $type::class;
         $self = new self($propertyName, "Can't set a list into the to-many relationship '$propertyName' (de-aliased to '$deAliasedPropertyName') in type class '$typeClass' if said list contains a non-accessible (due to their type class '$typeClass') items stored under the key '$key'.");
         $self->typeClass = $typeClass;
 
@@ -52,7 +51,7 @@ class RelationshipAccessException extends PropertyAccessException
      */
     public static function toOneWithRestrictedItemNotSetable(TypeInterface $type, string $propertyName, string $deAliasedPropertyName): self
     {
-        $typeClass = get_class($type);
+        $typeClass = $type::class;
         $self = new self($propertyName, "Can't set an object into the to-one relationship '$propertyName' (de-aliased to '$deAliasedPropertyName') in type class '$typeClass' if said object is non-accessible due to its type class '$typeClass'.");
         $self->typeClass = $typeClass;
 

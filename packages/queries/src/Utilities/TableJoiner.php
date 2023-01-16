@@ -8,7 +8,6 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use InvalidArgumentException;
-use Webmozart\Assert\Assert;
 use function array_key_exists;
 use function count;
 use function is_array;

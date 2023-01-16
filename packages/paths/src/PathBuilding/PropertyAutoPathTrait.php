@@ -15,7 +15,6 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Exception;
 use Safe\Exceptions\ArrayException;
 use function array_key_exists;
-use function get_class;
 use function Safe\array_combine;
 
 /**
@@ -129,7 +128,7 @@ trait PropertyAutoPathTrait
             } catch (ParseException $exception) {
                 throw PathBuildException::getPropertyFailed($implementingClass, $propertyName, $exception);
             } catch (Exception $exception) {
-                throw PathBuildException::genericCreateChild(get_class($this), $propertyName, $exception);
+                throw PathBuildException::genericCreateChild($this::class, $propertyName, $exception);
             }
         }
 

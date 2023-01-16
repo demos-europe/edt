@@ -9,7 +9,6 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\Proxy;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use ReflectionException;
-use function get_class;
 
 class ProxyPropertyAccessor extends ReflectionPropertyAccessor
 {
@@ -33,7 +32,7 @@ class ProxyPropertyAccessor extends ReflectionPropertyAccessor
             // If the instance is wrapped in a proxy we need to get the actual class name out of it
             $classMetadata = $this->objectManager->getClassMetadata($class);
             if (!$classMetadata instanceof ClassMetadataInfo) {
-                $metadataClass = get_class($classMetadata);
+                $metadataClass = $classMetadata::class;
                 throw new ReflectionException("Unable to determine actual class of target for reflection access. Target is a doctrine proxy object but the corresponding metadata class ($metadataClass) did not the necessary 'rootEntityName' field.");
             }
             $class = $classMetadata->rootEntityName;
