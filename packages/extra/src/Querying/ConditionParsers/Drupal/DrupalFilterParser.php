@@ -16,7 +16,7 @@ use function in_array;
  *
  * The data is expected to be in the format defined by the Drupal JSON:API filter specification.
  *
- * @phpstan-type DrupalValue = string|int|float|bool|array<int|string, mixed>|null
+ * @phpstan-type DrupalValue = simple_primitive|array<int|string, mixed>|null
  * @phpstan-type DrupalFilterGroup = array{
  *            conjunction: 'AND'|'OR',
  *            memberOf?: non-empty-string

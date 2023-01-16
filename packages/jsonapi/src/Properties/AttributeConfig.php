@@ -30,7 +30,7 @@ class AttributeConfig extends AbstractConfig
     }
 
     /**
-     * @param null|callable(TEntity): (string|int|float|bool|array<int|string, mixed>|null) $customValueFunction
+     * @param null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null) $customValueFunction
      *
      * @return $this
      *
@@ -55,7 +55,7 @@ class AttributeConfig extends AbstractConfig
     /**
      * @param list<TCondition>                                 $entityConditions
      * @param list<TCondition>                                 $valueConditions
-     * @param null|callable(TEntity, string|int|float|bool|array<int|string, mixed>|null): void $customWrite
+     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): void $customWrite
      *
      * @return $this
      */
