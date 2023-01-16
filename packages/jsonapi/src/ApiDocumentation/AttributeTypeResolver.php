@@ -28,6 +28,7 @@ use Throwable;
 use UnexpectedValueException;
 use function is_array;
 use function is_callable;
+use function is_string;
 use function strlen;
 
 /**
@@ -104,7 +105,7 @@ class AttributeTypeResolver
         }
 
         if ($column instanceof Column) {
-            $dqlTypeMapping = $this->mapDqlType($column->type);
+            $dqlTypeMapping = $this->mapDqlType($column);
             $dqlTypeMapping['description'] = $this->formatDescriptionFromDocblock($propertyReflection);
 
             return $dqlTypeMapping;
@@ -143,9 +144,10 @@ class AttributeTypeResolver
     /**
      * @return array{type: non-empty-string, format?: non-empty-string}
      */
-    private function mapDqlType(string $dqlType): array
+    private function mapDqlType(Column $column): array
     {
         $format = null;
+        $dqlType = $column->type;
 
         switch ($dqlType) {
             case 'string':
@@ -168,7 +170,7 @@ class AttributeTypeResolver
                 break;
 
             default:
-                $type = 'unknown: '.$dqlType;
+                $type = 'unknown: '.(is_string($dqlType) ? $dqlType : 'non-string');
         }
 
         $result = ['type' => $type];
