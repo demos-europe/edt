@@ -14,8 +14,12 @@ class PropertyAccessException extends AccessException
      * @param non-empty-string $propertyName
      * @param non-empty-string $message
      */
-    protected function __construct(protected string $propertyName, string $message, int $code = 0, Throwable $previous = null)
-    {
+    protected function __construct(
+        protected string $propertyName,
+        string $message,
+        int $code = 0,
+        Throwable $previous = null
+    ) {
         parent::__construct($message, $code, $previous);
     }
 

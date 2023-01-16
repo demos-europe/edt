@@ -49,7 +49,7 @@ class TypedPathConfigCollection
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function configureToOneRelationship(ResourceTypeInterface $relationship): ToOneRelationshipConfig
+    public function configureToOneRelationship(PropertyPathInterface&ResourceTypeInterface $relationship): ToOneRelationshipConfig
     {
         $this->validatePathStart($relationship);
         return $this->configCollection->configureToOneRelationship($relationship, $relationship);
@@ -66,7 +66,7 @@ class TypedPathConfigCollection
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function configureToManyRelationship(ResourceTypeInterface $relationship): ToManyRelationshipConfig
+    public function configureToManyRelationship(PropertyPathInterface&ResourceTypeInterface $relationship): ToManyRelationshipConfig
     {
         $this->validatePathStart($relationship);
         return $this->configCollection->configureToManyRelationship($relationship, $relationship);
