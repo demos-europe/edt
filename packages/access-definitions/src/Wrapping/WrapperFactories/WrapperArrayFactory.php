@@ -145,10 +145,8 @@ class WrapperArrayFactory implements WrapperFactoryInterface
     /**
      * @param non-empty-string $propertyName
      * @param array<non-empty-string, non-empty-list<non-empty-string>> $aliases
-     *
-     * @return mixed|null
      */
-    protected function getValue(string $propertyName, object $target, array $aliases)
+    protected function getValue(string $propertyName, object $target, array $aliases): mixed
     {
         $propertyPath = $aliases[$propertyName] ?? [$propertyName];
 

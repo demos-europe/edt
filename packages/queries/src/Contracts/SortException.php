@@ -24,11 +24,7 @@ class SortException extends Exception
         return new self("Sorting of $count items with the following methods failed: $sortMethodsString", 0, $throwable);
     }
 
-    /**
-     * @param mixed $propertyValueA
-     * @param mixed $propertyValueB
-     */
-    public static function unsupportedTypeCombination($propertyValueA, $propertyValueB): self
+    public static function unsupportedTypeCombination(mixed $propertyValueA, mixed $propertyValueB): self
     {
         $typeA = gettype($propertyValueA);
         $typeB = gettype($propertyValueB);

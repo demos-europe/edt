@@ -8,6 +8,7 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use InvalidArgumentException;
+use Webmozart\Assert\Assert;
 use function array_key_exists;
 use function count;
 use function is_array;
@@ -84,7 +85,7 @@ class TableJoiner
 
         // this is an array of arrays as each property path results in an array as it may access a
         // to-many property with UNPACK enabled
-        $valuesOfPropertyPaths = array_map(function ($propertyPath) use ($target) {
+        $valuesOfPropertyPaths = array_map(function (PropertyPathAccessInterface|int $propertyPath) use ($target): array|int {
             if (is_int($propertyPath)) {
                 return $propertyPath;
             }
@@ -217,11 +218,10 @@ class TableJoiner
      * Appends the given value to all rows in the given table.
      *
      * @param non-empty-list<NonEmptyRow> $rows
-     * @param mixed                       $value
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    private function addValueToRows(array $rows, $value): array
+    private function addValueToRows(array $rows, mixed $value): array
     {
         array_walk($rows, static function (array &$row) use ($value): void {
             $row[] = $value;
@@ -333,7 +333,7 @@ class TableJoiner
      * @param array<string|int, list<TValue>> $array
      * @param TValue $value
      */
-    private function insertValue(array &$array, int $index, $value): void
+    private function insertValue(array &$array, int $index, mixed $value): void
     {
         array_walk($array, static function (&$arrayValue) use ($index, $value): void {
             array_splice($arrayValue, $index, 0, [$value]);
@@ -349,7 +349,7 @@ class TableJoiner
      */
     private function setDeReferencing(array $columns): array
     {
-        return array_map(static function ($column) use ($columns) {
+        return array_map(static function (array|int $column) use ($columns) {
             if (!is_int($column)) {
                 return $column;
             }

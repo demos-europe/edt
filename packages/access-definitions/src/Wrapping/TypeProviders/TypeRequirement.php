@@ -55,15 +55,13 @@ class TypeRequirement
     {
         $self = $this->instanceOf(ExposableRelationshipTypeInterface::class);
 
-        if (null !== $self->typedInstance) {
-            if (!$self->typedInstance->isExposedAsRelationship()) {
-                if ($self->plainInstance instanceof ExposableRelationshipTypeInterface
-                    && !$self->plainInstance->isExposedAsRelationship()
-                ) {
-                    $self->problems = $self->addProblem('not set as exposable');
-                }
-                $self->typedInstance = null;
+        if (null !== $self->typedInstance && !$self->typedInstance->isExposedAsRelationship()) {
+            if ($self->plainInstance instanceof ExposableRelationshipTypeInterface
+                && !$self->plainInstance->isExposedAsRelationship()
+            ) {
+                $self->problems = $self->addProblem('not set as exposable');
             }
+            $self->typedInstance = null;
         }
 
         return $self;

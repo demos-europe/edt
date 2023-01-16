@@ -23,7 +23,7 @@ class Constant extends \EDT\Querying\Functions\Value implements ClauseFunctionIn
      * @param TOutput $phpValue
      * @param V $dqlValue
      */
-    public function __construct($phpValue, private $dqlValue)
+    public function __construct(mixed $phpValue, private $dqlValue)
     {
         parent::__construct($phpValue);
     }
@@ -36,7 +36,7 @@ class Constant extends \EDT\Querying\Functions\Value implements ClauseFunctionIn
     /**
      * @return V
      */
-    public function asDql(array $valueReferences, array $propertyAliases)
+    public function asDql(array $valueReferences, array $propertyAliases): Composite|Math|Func|Comparison|string
     {
         Assert::count($valueReferences, 0);
         Assert::count($propertyAliases, 0);

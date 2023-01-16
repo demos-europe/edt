@@ -226,11 +226,13 @@ class ConfigCollection
      * @return ToManyRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>
      *
      * @throws ResourcePropertyConfigException if the property name is already used for an attribute
-     *                                         nshconfig or to-one relationship config
+     *                                         config or to-one relationship config
      * @throws PathException
      */
-    public function configureToManyRelationship($propertyPath, $relationshipType): ToManyRelationshipConfig
-    {
+    public function configureToManyRelationship(
+        string|PropertyPathInterface $propertyPath,
+        ResourceTypeInterface $relationshipType
+    ): ToManyRelationshipConfig {
         [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
 
         if (array_key_exists($propertyName, $this->attributes)) {

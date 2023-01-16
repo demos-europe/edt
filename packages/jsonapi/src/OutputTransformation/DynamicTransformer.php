@@ -272,10 +272,8 @@ class DynamicTransformer extends TransformerAbstract
      *
      * @param TEntity $entity
      * @param non-empty-string $propertyName
-     *
-     * @return mixed|null
      */
-    protected function getValueViaWrapper(object $entity, string $propertyName)
+    protected function getValueViaWrapper(object $entity, string $propertyName): mixed
     {
         $entity = $this->wrapperFactory->createWrapper($entity, $this->type);
         return $entity->getPropertyValue($propertyName);
@@ -295,7 +293,7 @@ class DynamicTransformer extends TransformerAbstract
      *
      * @throws ExcludeException
      */
-    public function processIncludedResources(Scope $scope, $data)
+    public function processIncludedResources(Scope $scope, mixed $data)
     {
         $this->validateExcludes($scope);
         $this->validateIncludes($scope);

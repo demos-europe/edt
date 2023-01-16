@@ -184,22 +184,18 @@ class QueryBuilderPreparer
     }
 
     /**
-     * @param Composite|Math|Func|Comparison|string $orderByDql
-     *
      * @throws MappingException
      */
-    protected function createOrderBy($orderByDql, OrderByInterface $sortClause): OrderBy
+    protected function createOrderBy(Composite|Math|Func|Comparison|string $orderByDql, OrderByInterface $sortClause): OrderBy
     {
         $direction = $sortClause->getDirection();
         return new OrderBy((string)$orderByDql, $direction);
     }
 
     /**
-     * @return Composite|Math|Func|Comparison|string
-     *
      * @throws MappingException
      */
-    protected function processClause(ClauseInterface $clause)
+    protected function processClause(ClauseInterface $clause): Composite|Math|Func|Comparison|string
     {
         $valueIndices = array_map([$this, 'addToParameters'], $clause->getClauseValues());
         $columnNames = array_map(function (PathInfo $pathInfo): string {
@@ -328,11 +324,9 @@ class QueryBuilderPreparer
      * Adds the given value to the end of the {@see parameters} array and
      * returns the int index of the added value.
      *
-     * @param mixed $value
-     *
      * @return string Index reference ("?1", "?2", ...) of the added parameter in the array.
      */
-    protected function addToParameters($value): string
+    protected function addToParameters(mixed $value): string
     {
         $parameterIndex = array_push($this->parameters, $value) - 1;
         return "?$parameterIndex";

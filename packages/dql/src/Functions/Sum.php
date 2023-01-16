@@ -28,7 +28,7 @@ class Sum extends AbstractClauseFunction
         );
     }
 
-    public function asDql(array $valueReferences, array $propertyAliases)
+    public function asDql(array $valueReferences, array $propertyAliases): Composite|Math|Func|Comparison|string
     {
         $dqlClauses = $this->getDqls($valueReferences, $propertyAliases);
         $initial = array_shift($dqlClauses);
@@ -39,13 +39,10 @@ class Sum extends AbstractClauseFunction
         return $sumDql;
     }
 
-    /**
-     * @param Composite|Math|Func|Comparison|string $carry
-     * @param Composite|Math|Func|Comparison|string $dqlClause
-     */
-    // do not typehint the function parameters as strings, as we must not implicitly invoke __toString
-    private function sumReduce($carry, $dqlClause): Math
-    {
+    private function sumReduce(
+        Composite|Math|Func|Comparison|string $carry,
+        Composite|Math|Func|Comparison|string $dqlClause
+    ): Math {
         return $this->expr->sum($carry, $dqlClause);
     }
 }

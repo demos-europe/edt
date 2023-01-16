@@ -16,7 +16,7 @@ interface SortMethodFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyAscending($properties): PathsBasedInterface;
+    public function propertyAscending(string|array|PropertyPathInterface $properties): PathsBasedInterface;
 
     /**
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
@@ -25,5 +25,5 @@ interface SortMethodFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyDescending($properties): PathsBasedInterface;
+    public function propertyDescending(string|array|PropertyPathInterface $properties): PathsBasedInterface;
 }

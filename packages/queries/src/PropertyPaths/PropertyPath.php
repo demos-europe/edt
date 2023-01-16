@@ -38,7 +38,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
         private ?string $context,
         private string $salt,
         private int $accessDepth,
-        $path
+        string|array|PropertyPathInterface $path
     ) {
         if (is_string($path)) {
             $path = [$path];
@@ -85,7 +85,7 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
      * @return list<PropertyPathAccessInterface>
      * @throws PathException
      */
-    public static function createIndexSaltedPaths(int $count, int $depth, $properties): array
+    public static function createIndexSaltedPaths(int $count, int $depth, string|array|PropertyPathInterface $properties): array
     {
         return array_map(
             static fn (int $pathIndex): PropertyPathAccessInterface => new PropertyPath(
