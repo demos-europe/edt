@@ -28,7 +28,8 @@ parameters:
     #    check:
     #        missingCheckedExceptionInThrows: true
 
-    #typeAliases:
+    typeAliases:
+        simple_primitive: 'bool|float|int|string'
 
     paths:
         - packages/access-definitions/src
