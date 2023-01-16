@@ -86,10 +86,9 @@ trait PropertyAutoPathTrait
      *
      * @param mixed ...$constructorArgs
      *
-     * @return static
      * @throws PathBuildException
      */
-    public static function startPath(...$constructorArgs): self
+    public static function startPath(...$constructorArgs): static
     {
         $implementingClass = static::class;
         if (!is_subclass_of($implementingClass, PropertyAutoPathInterface::class)) {
