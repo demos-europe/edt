@@ -17,17 +17,11 @@ namespace EDT\JsonApi\Schema;
 class Cardinality
 {
     /**
-     * @var non-empty-string
+     * @param 'toOne'|'toMany' $cardinalityType
      */
-    private string $type;
-
-    /**
-     * @param non-empty-string $cardinalityType
-     */
-    private function __construct(string $cardinalityType)
-    {
-        $this->type = $cardinalityType;
-    }
+    private function __construct(
+        private string $cardinalityType
+    ) {}
 
     public static function getToMany(): Cardinality
     {
@@ -41,11 +35,11 @@ class Cardinality
 
     public function isToOne(): bool
     {
-        return 'toOne' === $this->type;
+        return 'toOne' === $this->cardinalityType;
     }
 
     public function isToMany(): bool
     {
-        return 'toMany' === $this->type;
+        return 'toMany' === $this->cardinalityType;
     }
 }

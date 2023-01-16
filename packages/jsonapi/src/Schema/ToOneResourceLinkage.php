@@ -6,12 +6,9 @@ namespace EDT\JsonApi\Schema;
 
 class ToOneResourceLinkage implements ResourceLinkageInterface
 {
-    private ?ResourceIdentifierObject $resourceIdentifierObject;
-
-    private function __construct(?ResourceIdentifierObject $resourceIdentifierObject)
-    {
-        $this->resourceIdentifierObject = $resourceIdentifierObject;
-    }
+    private function __construct(
+        private ?ResourceIdentifierObject $resourceIdentifierObject
+    ) {}
 
     /**
      * Accepts the "resource identifier object" specified by the JSON:API 1.0 in its array

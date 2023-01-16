@@ -21,21 +21,11 @@ use EDT\Wrapping\Contracts\WrapperFactoryInterface;
  */
 class PropertyReader
 {
-    private SchemaPathProcessor $schemaPathProcessor;
-
-    private ConditionEvaluator $conditionEvaluator;
-
-    private Sorter $sorter;
-
     public function __construct(
-        SchemaPathProcessor $schemaPathProcessor,
-        ConditionEvaluator $conditionEvaluator,
-        Sorter $sorter
-    ) {
-        $this->schemaPathProcessor = $schemaPathProcessor;
-        $this->conditionEvaluator = $conditionEvaluator;
-        $this->sorter = $sorter;
-    }
+        private SchemaPathProcessor $schemaPathProcessor,
+        private ConditionEvaluator $conditionEvaluator,
+        private Sorter $sorter
+    ) {}
 
     /**
      * The given {@link WrapperFactoryInterface} will be used on the given `$value` and the result

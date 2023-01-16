@@ -23,24 +23,13 @@ use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 class ToOneRelationshipConfig extends AbstractConfig
 {
     /**
-     * @var TRelationshipType
-     */
-    private ResourceTypeInterface $relationshipType;
-
-    /**
-     * @var ResourceTypeInterface<TCondition, TSorting, TEntity>
-     */
-    protected ResourceTypeInterface $type;
-
-    /**
      * @param ResourceTypeInterface<TCondition, TSorting, TEntity> $type
      * @param TRelationshipType $relationshipType
      */
-    public function __construct(ResourceTypeInterface $type, ResourceTypeInterface $relationshipType)
-    {
-        $this->type = $type;
-        $this->relationshipType = $relationshipType;
-    }
+    public function __construct(
+        protected ResourceTypeInterface $type,
+        private ResourceTypeInterface $relationshipType
+    ) {}
 
     /**
      * @return TRelationshipType

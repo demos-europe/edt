@@ -33,17 +33,11 @@ class ConfigCollection
     protected array $toManyRelationships = [];
 
     /**
-     * @var ResourceTypeInterface<TCondition, TSorting, TEntity>
-     */
-    protected ResourceTypeInterface $type;
-
-    /**
      * @param ResourceTypeInterface<TCondition, TSorting, TEntity> $type
      */
-    public function __construct(ResourceTypeInterface $type)
-    {
-        $this->type = $type;
-    }
+    public function __construct(
+        protected ResourceTypeInterface $type
+    ) {}
 
     /**
      * Remove a configured property from this collection, if it exists as attribute or to-one/to-many relationship.

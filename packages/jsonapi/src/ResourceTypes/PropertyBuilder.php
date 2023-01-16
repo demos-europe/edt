@@ -73,16 +73,6 @@ class PropertyBuilder
     protected bool $requiredForCreation = true;
 
     /**
-     * @var array{relationshipType: ResourceTypeInterface, defaultInclude: bool, toMany: bool}|null
-     */
-    private ?array $relationship;
-
-    /**
-     * @var class-string<TEntity>
-     */
-    protected string $entityClass;
-
-    /**
      * @param class-string<TEntity> $entityClass
      * @param array{relationshipType: ResourceTypeInterface, defaultInclude: bool, toMany: bool}|null $relationship
      *
@@ -90,14 +80,12 @@ class PropertyBuilder
      */
     public function __construct(
         PropertyPathInterface $path,
-        string $entityClass,
-        ?array $relationship = null
+        protected string $entityClass,
+        private ?array $relationship = null
     ) {
         $names = $path->getAsNames();
         Assert::count($names, 1);
         $this->name = $names[0];
-        $this->entityClass = $entityClass;
-        $this->relationship = $relationship;
     }
 
     /**

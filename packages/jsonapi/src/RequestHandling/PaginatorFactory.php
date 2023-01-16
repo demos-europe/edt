@@ -13,18 +13,10 @@ use Symfony\Component\Routing\RouterInterface;
 
 class PaginatorFactory
 {
-    /**
-     * @var RequestStack
-     */
-    private RequestStack $requestStack;
-
-    private RouterInterface $router;
-
-    public function __construct(RequestStack $requestStack, RouterInterface $router)
-    {
-        $this->requestStack = $requestStack;
-        $this->router = $router;
-    }
+    public function __construct(
+        private RequestStack $requestStack,
+        private RouterInterface $router
+    ) {}
 
     public function createPaginatorAdapter(Pagerfanta $paginator): PaginatorInterface
     {

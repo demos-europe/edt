@@ -53,42 +53,17 @@ class WrapperObject
     private const METHOD_PATTERN = '/(get|set)([A-Z_]\w*)/';
 
     /**
-     * @var TEntity
-     */
-    private object $entity;
-
-    /**
-     * @var TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
-     */
-    private TransferableTypeInterface $type;
-
-    private PropertyAccessorInterface $propertyAccessor;
-
-    private PropertyReader $propertyReader;
-
-    private ConditionEvaluator $conditionEvaluator;
-
-    private WrapperObjectFactory $wrapperFactory;
-
-    /**
-     * @param TEntity                                                                          $object
+     * @param TEntity $entity
      * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $type
      */
     public function __construct(
-        object                    $object,
-        PropertyReader            $propertyReader,
-        TransferableTypeInterface $type,
-        PropertyAccessorInterface $propertyAccessor,
-        ConditionEvaluator        $conditionEvaluator,
-        WrapperObjectFactory      $wrapperFactory
-    ) {
-        $this->entity = $object;
-        $this->type = $type;
-        $this->propertyAccessor = $propertyAccessor;
-        $this->propertyReader = $propertyReader;
-        $this->conditionEvaluator = $conditionEvaluator;
-        $this->wrapperFactory = $wrapperFactory;
-    }
+        private object $entity,
+        private PropertyReader $propertyReader,
+        private TransferableTypeInterface $type,
+        private PropertyAccessorInterface $propertyAccessor,
+        private ConditionEvaluator $conditionEvaluator,
+        private WrapperObjectFactory $wrapperFactory
+    ) {}
 
     /**
      * @return TypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>

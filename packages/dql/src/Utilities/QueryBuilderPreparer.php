@@ -28,8 +28,6 @@ use function count;
  */
 class QueryBuilderPreparer
 {
-    private JoinFinder $joinFinder;
-
     /**
      * The alias of each join must be unique in the array.
      *
@@ -73,8 +71,6 @@ class QueryBuilderPreparer
      */
     private array $sortMethods = [];
 
-    private ClassMetadataFactory $metadataFactory;
-
     /**
      * @var array<string, ClauseInterface> keys are used as aliases
      */
@@ -92,11 +88,9 @@ class QueryBuilderPreparer
      */
     public function __construct(
         string $mainEntityClass,
-        ClassMetadataFactory $metadataFactory,
-        JoinFinder $joinFinder
+        private ClassMetadataFactory $metadataFactory,
+        private JoinFinder $joinFinder
     ) {
-        $this->joinFinder = $joinFinder;
-        $this->metadataFactory = $metadataFactory;
         $this->mainClassMetadata = $metadataFactory->getMetadataFor($mainEntityClass);
     }
 

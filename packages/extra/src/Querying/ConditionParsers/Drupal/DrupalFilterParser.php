@@ -98,30 +98,13 @@ class DrupalFilterParser implements FilterParserInterface
     public const VALUE = 'value';
 
     /**
-     * @var PathsBasedConditionGroupFactoryInterface<TCondition>
-     */
-    protected PathsBasedConditionGroupFactoryInterface $conditionGroupFactory;
-
-    /**
-     * @var ConditionParserInterface<DrupalFilterCondition, TCondition>
-     */
-    private ConditionParserInterface $conditionParser;
-
-    private DrupalFilterValidator $filterValidator;
-
-    /**
-     * @param PathsBasedConditionGroupFactoryInterface<TCondition>        $conditionGroupFactory
      * @param ConditionParserInterface<DrupalFilterCondition, TCondition> $conditionParser
      */
     public function __construct(
-        PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
-        ConditionParserInterface $conditionParser,
-        DrupalFilterValidator $filterValidator
-    ) {
-        $this->conditionGroupFactory = $conditionGroupFactory;
-        $this->conditionParser = $conditionParser;
-        $this->filterValidator = $filterValidator;
-    }
+        protected PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
+        private ConditionParserInterface $conditionParser,
+        private DrupalFilterValidator $filterValidator
+    ) {}
 
     /**
      * The returned conditions are to be applied in an `AND` manner, i.e. all conditions must

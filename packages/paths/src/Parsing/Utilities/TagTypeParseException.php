@@ -11,19 +11,9 @@ use Throwable;
 class TagTypeParseException extends ParseException
 {
     /**
-     * @var non-empty-string
-     */
-    private string $tagName;
-
-    /**
      * @var non-empty-string|null
      */
     private ?string $variableName = null;
-
-    /**
-     * @var non-empty-string
-     */
-    private string $type;
 
     /**
      * @param class-string $className
@@ -33,15 +23,13 @@ class TagTypeParseException extends ParseException
      */
     protected function __construct(
         string $className,
-        string $tagName,
-        string $type,
+        private string $tagName,
+        private string $type,
         string $message,
         int $code = 0,
         Throwable $previous = null
     ) {
         parent::__construct($className, $message, $code, $previous);
-        $this->tagName = $tagName;
-        $this->type = $type;
     }
 
     /**

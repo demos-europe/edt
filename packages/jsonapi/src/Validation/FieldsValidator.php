@@ -13,8 +13,6 @@ use function is_array;
 
 class FieldsValidator
 {
-    private ValidatorInterface $validator;
-
     /**
      * @var non-empty-list<Constraint>
      */
@@ -25,9 +23,9 @@ class FieldsValidator
      */
     private array $propertiesConstraints;
 
-    public function __construct(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
+    public function __construct(
+        private ValidatorInterface $validator
+    ) {
         $this->typeConstraints = [
             new Assert\NotNull(),
             new Assert\Type('array'),

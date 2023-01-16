@@ -18,17 +18,11 @@ class SortDefinition
     private array $sortMethods = [];
 
     /**
-     * @var SortMethodFactoryInterface<TSorting>
-     */
-    private SortMethodFactoryInterface $sortMethodFactory;
-
-    /**
      * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
-    public function __construct(SortMethodFactoryInterface $sortMethodFactory)
-    {
-        $this->sortMethodFactory = $sortMethodFactory;
-    }
+    public function __construct(
+        private SortMethodFactoryInterface $sortMethodFactory
+    ) {}
 
     /**
      * @param non-empty-list<non-empty-string> $properties

@@ -11,25 +11,16 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
  */
 abstract class AbstractRelationshipReadability extends AbstractReadability
 {
-    protected bool $defaultInclude;
-
-    /**
-     * @var TRelationshipType
-     */
-    private TransferableTypeInterface $relationshipType;
-
     /**
      * @param TRelationshipType $relationshipType
      */
     public function __construct(
         bool $defaultField,
         bool $allowingInconsistencies,
-        bool $defaultInclude,
-        TransferableTypeInterface $relationshipType
+        private bool $defaultInclude,
+        private TransferableTypeInterface $relationshipType
     ) {
         parent::__construct($defaultField, $allowingInconsistencies);
-        $this->defaultInclude = $defaultInclude;
-        $this->relationshipType = $relationshipType;
     }
 
     public function isDefaultInclude(): bool

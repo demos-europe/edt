@@ -25,20 +25,12 @@ class ConditionDefinition
     protected array $subDefinitions = [];
 
     /**
-     * @var PathsBasedConditionFactoryInterface<TCondition>&PathsBasedConditionGroupFactoryInterface<TCondition>
-     */
-    protected object $conditionFactory;
-
-    protected bool $andConjunction;
-
-    /**
      * @param PathsBasedConditionFactoryInterface<TCondition>&PathsBasedConditionGroupFactoryInterface<TCondition> $conditionFactory
      */
-    public function __construct(PathsBasedConditionFactoryInterface $conditionFactory, bool $andConjunction)
-    {
-        $this->conditionFactory = $conditionFactory;
-        $this->andConjunction = $andConjunction;
-    }
+    public function __construct(
+        protected PathsBasedConditionFactoryInterface $conditionFactory,
+        protected bool $andConjunction
+    ) {}
 
     /**
      * @return ConditionDefinition<TCondition>

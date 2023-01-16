@@ -12,18 +12,12 @@ use function get_class;
 class PropertyAccessException extends AccessException
 {
     /**
-     * @var non-empty-string
-     */
-    protected string $propertyName;
-
-    /**
      * @param non-empty-string $propertyName
      * @param non-empty-string $message
      */
-    protected function __construct(string $propertyName, string $message, int $code = 0, Throwable $previous = null)
+    protected function __construct(protected string $propertyName, string $message, int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
-        $this->propertyName = $propertyName;
     }
 
     /**

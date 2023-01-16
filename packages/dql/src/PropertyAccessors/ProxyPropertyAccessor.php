@@ -13,12 +13,9 @@ use function get_class;
 
 class ProxyPropertyAccessor extends ReflectionPropertyAccessor
 {
-    private ObjectManager $objectManager;
-
-    public function __construct(ObjectManager $objectManager)
-    {
-        $this->objectManager = $objectManager;
-    }
+    public function __construct(
+        private ObjectManager $objectManager
+    ) {}
 
     /**
      * Will determine the correct class, even if the `$target` is wrapped into a Doctrine {@link Proxy} instance.

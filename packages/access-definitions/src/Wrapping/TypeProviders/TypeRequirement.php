@@ -15,35 +15,17 @@ use function in_array;
 class TypeRequirement
 {
     /**
-     * @var TType|null
-     */
-    private ?TypeInterface $typedInstance;
-
-    /**
-     * @var non-empty-string
-     */
-    private string $identifier;
-
-    /**
-     * @var list<non-empty-string>
-     */
-    private array $problems;
-
-    private ?TypeInterface $plainInstance;
-
-    /**
      * @param TType|null             $typedInstance
      * @param TypeInterface|null     $plainInstance
      * @param non-empty-string       $identifier
      * @param list<non-empty-string> $problems
      */
-    public function __construct(?TypeInterface $typedInstance, ?TypeInterface $plainInstance, string $identifier, array $problems)
-    {
-        $this->typedInstance = $typedInstance;
-        $this->identifier = $identifier;
-        $this->problems = $problems;
-        $this->plainInstance = $plainInstance;
-    }
+    public function __construct(
+        private ?TypeInterface $typedInstance,
+        private ?TypeInterface $plainInstance,
+        private string $identifier,
+        private array $problems
+    ) {}
 
     /**
      * @template TTestType

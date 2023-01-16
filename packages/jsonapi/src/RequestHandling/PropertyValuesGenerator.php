@@ -25,24 +25,13 @@ use function count;
 class PropertyValuesGenerator
 {
     /**
-     * @var TypeProviderInterface<TCondition, TSorting>
-     */
-    private TypeProviderInterface $typeProvider;
-
-    /**
-     * @var EntityFetcherInterface<TCondition, TSorting>
-     */
-    private EntityFetcherInterface $entityFetcher;
-
-    /**
      * @param EntityFetcherInterface<TCondition, TSorting> $entityFetcher
-     * @param TypeProviderInterface<TCondition, TSorting>  $typeProvider
+     * @param TypeProviderInterface<TCondition, TSorting> $typeProvider
      */
-    public function __construct(EntityFetcherInterface $entityFetcher, TypeProviderInterface $typeProvider)
-    {
-        $this->typeProvider = $typeProvider;
-        $this->entityFetcher = $entityFetcher;
-    }
+    public function __construct(
+        private EntityFetcherInterface $entityFetcher,
+        private TypeProviderInterface $typeProvider
+    ) {}
 
     /**
      * Converts the attributes and relationships from the JSON:API request format into

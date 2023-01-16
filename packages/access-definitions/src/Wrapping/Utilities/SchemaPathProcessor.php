@@ -26,17 +26,12 @@ use EDT\Wrapping\Utilities\TypeAccessors\InternProcessorConfig;
 class SchemaPathProcessor
 {
     /**
-     * @var TypeProviderInterface<PathsBasedInterface, PathsBasedInterface>
+     * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
      */
-    private TypeProviderInterface $typeProvider;
-
-    private PropertyPathProcessorFactory $propertyPathProcessorFactory;
-
-    public function __construct(PropertyPathProcessorFactory $propertyPathProcessorFactory, TypeProviderInterface $typeProvider)
-    {
-        $this->typeProvider = $typeProvider;
-        $this->propertyPathProcessorFactory = $propertyPathProcessorFactory;
-    }
+    public function __construct(
+        private PropertyPathProcessorFactory $propertyPathProcessorFactory,
+        private TypeProviderInterface $typeProvider
+    ) {}
 
     /**
      * Check the paths of the given conditions for availability and applies aliases using the given type.

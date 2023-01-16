@@ -10,18 +10,12 @@ use Throwable;
 class ParseException extends Exception
 {
     /**
-     * @var class-string
-     */
-    protected string $className;
-
-    /**
      * @param class-string $className
      * @param non-empty-string $message
      */
-    protected function __construct(string $className, string $message, int $code = 0, Throwable $previous = null)
+    protected function __construct(protected string $className, string $message, int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
-        $this->className = $className;
     }
 
     /**

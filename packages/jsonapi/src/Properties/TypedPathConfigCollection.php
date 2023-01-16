@@ -18,17 +18,11 @@ use EDT\PathBuilding\PropertyAutoPathInterface;
 class TypedPathConfigCollection
 {
     /**
-     * @var ConfigCollection<TCondition, TSorting, TEntity>
-     */
-    protected ConfigCollection $configCollection;
-
-    /**
      * @param ConfigCollection<TCondition, TSorting, TEntity> $configCollection
      */
-    public function __construct(ConfigCollection $configCollection)
-    {
-        $this->configCollection = $configCollection;
-    }
+    public function __construct(
+        protected ConfigCollection $configCollection
+    ) {}
 
     /**
      * @param PropertyPathInterface $propertyPath

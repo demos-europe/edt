@@ -19,26 +19,13 @@ use function array_key_exists;
 class DrupalConditionParser implements ConditionParserInterface
 {
     /**
-     * @var non-empty-string
-     */
-    protected string $defaultOperator;
-
-    /**
-     * @var DrupalConditionFactoryInterface<TCondition>
-     */
-    private DrupalConditionFactoryInterface $drupalConditionFactory;
-
-    /**
      * @param DrupalConditionFactoryInterface<TCondition> $drupalConditionFactory
-     * @param non-empty-string                            $defaultOperator
+     * @param non-empty-string $defaultOperator
      */
     public function __construct(
-        DrupalConditionFactoryInterface $drupalConditionFactory,
-        string $defaultOperator = '='
-    ) {
-        $this->defaultOperator = $defaultOperator;
-        $this->drupalConditionFactory = $drupalConditionFactory;
-    }
+        private DrupalConditionFactoryInterface $drupalConditionFactory,
+        protected string $defaultOperator = '='
+    ) {}
 
     /**
      * @throws DrupalFilterException

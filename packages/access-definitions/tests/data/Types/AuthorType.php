@@ -33,17 +33,10 @@ class AuthorType implements
     ExposableRelationshipTypeInterface,
     AliasableTypeInterface
 {
-    private PathsBasedConditionFactoryInterface $conditionFactory;
-
-    protected TypeProviderInterface $typeProvider;
-
     public function __construct(
-        PathsBasedConditionFactoryInterface $conditionFactory,
-        TypeProviderInterface $typeProvider
-    ) {
-        $this->conditionFactory = $conditionFactory;
-        $this->typeProvider = $typeProvider;
-    }
+        private PathsBasedConditionFactoryInterface $conditionFactory,
+        protected TypeProviderInterface $typeProvider
+    ) {}
 
     public function getReadableProperties(): array
     {

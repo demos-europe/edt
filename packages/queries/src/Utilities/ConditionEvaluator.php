@@ -12,12 +12,9 @@ use EDT\Querying\PropertyPaths\PathInfo;
  */
 class ConditionEvaluator
 {
-    private TableJoiner $tableJoiner;
-
-    public function __construct(TableJoiner $tableJoiner)
-    {
-        $this->tableJoiner = $tableJoiner;
-    }
+    public function __construct(
+        private TableJoiner $tableJoiner
+    ) {}
 
     /**
      * @template TEntity of object

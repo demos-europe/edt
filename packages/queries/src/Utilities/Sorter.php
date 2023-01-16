@@ -17,12 +17,9 @@ use function Safe\usort;
  */
 class Sorter
 {
-    private TableJoiner $tableJoiner;
-
-    public function __construct(TableJoiner $tableJoiner)
-    {
-        $this->tableJoiner = $tableJoiner;
-    }
+    public function __construct(
+        private TableJoiner $tableJoiner
+    ) {}
 
     /**
      * @template TKey of int|string

@@ -19,19 +19,6 @@ use function Safe\array_combine;
 class DocblockPropertyByTraitEvaluator
 {
     /**
-     * @var non-empty-string
-     */
-    private string $targetTrait;
-    /**
-     * The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
-     *
-     * @var non-empty-list<non-empty-string>
-     */
-    private array $targetTags;
-
-    private TraitEvaluator $traitEvaluator;
-
-    /**
      * Cache of already parsed classes
      *
      * @var array<class-string, array<non-empty-string, class-string>>
@@ -39,15 +26,14 @@ class DocblockPropertyByTraitEvaluator
     private array $parsedClasses = [];
 
     /**
-     * @param non-empty-string                 $targetTrait
-     * @param non-empty-list<non-empty-string> $targetTags
+     * @param non-empty-string $targetTrait
+     * @param non-empty-list<non-empty-string> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      */
-    public function __construct(TraitEvaluator $traitEvaluator, string $targetTrait, array $targetTags)
-    {
-        $this->targetTrait = $targetTrait;
-        $this->targetTags = $targetTags;
-        $this->traitEvaluator = $traitEvaluator;
-    }
+    public function __construct(
+        private TraitEvaluator $traitEvaluator,
+        private string $targetTrait,
+        private array $targetTags
+    ) {}
 
     /**
      * @param class-string $class

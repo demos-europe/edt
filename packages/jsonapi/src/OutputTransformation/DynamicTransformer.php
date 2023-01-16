@@ -64,20 +64,9 @@ use Psr\Log\LoggerInterface;
 class DynamicTransformer extends TransformerAbstract
 {
     /**
-     * @var ResourceTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity>
-     */
-    private ResourceTypeInterface $type;
-
-    /**
      * @var array<non-empty-string, AttributeReadability<TEntity>>
      */
     private array $attributeReadabilities;
-
-    private ?LoggerInterface $logger;
-
-    private MessageFormatter $messageFormatter;
-
-    private WrapperObjectFactory $wrapperFactory;
 
     /**
      * @var array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>
@@ -93,20 +82,17 @@ class DynamicTransformer extends TransformerAbstract
      * @param ResourceTypeInterface<TCondition, TSorting, TEntity> $type
      */
     public function __construct(
-        ResourceTypeInterface $type,
-        WrapperObjectFactory $wrapperFactory,
-        MessageFormatter $messageFormatter,
-        ?LoggerInterface $logger
+        private ResourceTypeInterface $type,
+        private WrapperObjectFactory $wrapperFactory,
+        private MessageFormatter $messageFormatter,
+        private ?LoggerInterface $logger
     ) {
-        $this->type = $type;
         $readableProperties = $type->getReadableResourceTypeProperties();
         [
             $this->attributeReadabilities,
             $this->toOneRelationshipReadabilities,
             $this->toManyRelationshipReadabilities
         ] = $readableProperties;
-        $this->logger = $logger;
-        $this->messageFormatter = $messageFormatter;
 
         if (!array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
             throw new InvalidArgumentException('An attribute definition for the `id` is required, as it is needed by Fractal');
@@ -122,7 +108,6 @@ class DynamicTransformer extends TransformerAbstract
             $relationshipReadabilities,
             static fn (AbstractRelationshipReadability $readability): bool => $readability->isDefaultInclude()))
         );
-        $this->wrapperFactory = $wrapperFactory;
     }
 
     /**

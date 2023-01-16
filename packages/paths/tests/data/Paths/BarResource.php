@@ -30,12 +30,9 @@ class BarResource implements PropertyAutoPathInterface
 {
     use PropertyAutoPathTrait;
 
-    private string $paramNeededForUnitTests = '';
-
-    public function __construct(string $paramNeededForUnitTests)
-    {
-        $this->paramNeededForUnitTests = $paramNeededForUnitTests;
-    }
+    public function __construct(
+        private string $paramNeededForUnitTests = ''
+    ) {}
 
     public function __toString(): string
     {

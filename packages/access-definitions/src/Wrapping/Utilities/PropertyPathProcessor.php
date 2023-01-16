@@ -25,17 +25,11 @@ use EDT\Wrapping\Utilities\TypeAccessors\AbstractProcessorConfig;
 class PropertyPathProcessor
 {
     /**
-     * @var AbstractProcessorConfig<TType>
-     */
-    private AbstractProcessorConfig $processorConfig;
-
-    /**
      * @param AbstractProcessorConfig<TType> $processorConfig
      */
-    public function __construct(AbstractProcessorConfig $processorConfig)
-    {
-        $this->processorConfig = $processorConfig;
-    }
+    public function __construct(
+        private AbstractProcessorConfig $processorConfig
+    ) {}
 
     /**
      * Check if all properties used by the given property paths are accessible

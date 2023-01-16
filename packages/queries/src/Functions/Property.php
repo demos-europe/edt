@@ -14,12 +14,9 @@ use Webmozart\Assert\Assert;
  */
 class Property implements FunctionInterface
 {
-    private PropertyPathAccessInterface $propertyPath;
-
-    public function __construct(PropertyPathAccessInterface $propertyPath)
-    {
-        $this->propertyPath = $propertyPath;
-    }
+    public function __construct(
+        private PropertyPathAccessInterface $propertyPath
+    ) {}
 
     public function apply(array $propertyValues)
     {

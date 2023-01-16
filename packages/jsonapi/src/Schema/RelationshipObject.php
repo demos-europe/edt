@@ -12,12 +12,9 @@ use Exception;
  */
 class RelationshipObject
 {
-    private ResourceLinkageInterface $data;
-
-    private function __construct(ResourceLinkageInterface $data)
-    {
-        $this->data = $data;
-    }
+    private function __construct(
+        private ResourceLinkageInterface $data
+    ) {}
 
     /**
      * This constructor function takes the format defined by the JSON:API specification

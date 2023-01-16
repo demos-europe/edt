@@ -21,12 +21,9 @@ use function get_class;
  */
 class JoinFinder
 {
-    private ClassMetadataFactory $metadataFactory;
-
-    public function __construct(ClassMetadataFactory $metadataFactory)
-    {
-        $this->metadataFactory = $metadataFactory;
-    }
+    public function __construct(
+        private ClassMetadataFactory $metadataFactory
+    ) {}
 
     /**
      * Find the joins needed for the actual 'where' expression from the property path.

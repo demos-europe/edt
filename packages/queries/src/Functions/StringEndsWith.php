@@ -11,16 +11,13 @@ use EDT\Querying\Contracts\FunctionInterface;
  */
 class StringEndsWith extends AbstractMultiFunction
 {
-    private bool $caseSensitive;
-
     /**
      * @param FunctionInterface<string|null> $contains
      * @param FunctionInterface<string|null> $contained
      */
-    public function __construct(FunctionInterface $contains, FunctionInterface $contained, bool $caseSensitive)
+    public function __construct(FunctionInterface $contains, FunctionInterface $contained, private bool $caseSensitive)
     {
         parent::__construct($contains, $contained);
-        $this->caseSensitive = $caseSensitive;
     }
 
     protected function reduce(array $functionResults)

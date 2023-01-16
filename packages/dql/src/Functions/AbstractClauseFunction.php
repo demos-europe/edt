@@ -26,11 +26,6 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
     use ClauseTrait;
 
     /**
-     * @var FunctionInterface<TOutput>
-     */
-    private FunctionInterface $function;
-
-    /**
      * @var list<ClauseInterface>
      */
     protected array $clauses = [];
@@ -46,9 +41,8 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
      *
      * @param FunctionInterface<TOutput> $function
      */
-    public function __construct(FunctionInterface $function, ClauseInterface ...$clauses)
+    public function __construct(private FunctionInterface $function, ClauseInterface ...$clauses)
     {
-        $this->function = $function;
         $this->clauses = $clauses;
         $this->expr = new Expr();
     }
