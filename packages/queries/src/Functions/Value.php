@@ -17,7 +17,7 @@ class Value implements FunctionInterface
      * @param TOutput $value
      */
     public function __construct(
-        protected $value
+        protected  $value
     ) {}
 
     public function apply(array $propertyValues)

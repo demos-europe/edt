@@ -260,9 +260,9 @@ class TableJoinerTest extends ModelBasedTest
 
         self::assertEquals($expected, $references);
 
-        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, $references);
+        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, [['a'], ['b'], ['c'], 0]);
 
-        self::assertEquals($input, $deReferenced);
+        self::assertEquals([['a'], ['b'], ['c'], ['a']], $deReferenced);
     }
 
     public function testSetReferencesMulti(): void
@@ -278,9 +278,9 @@ class TableJoinerTest extends ModelBasedTest
 
         self::assertEquals($expected, $references);
 
-        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, $references);
+        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, [['a'], 0, ['c'], 0]);
 
-        self::assertEquals($input, $deReferenced);
+        self::assertEquals([['a'], ['a'], ['c'], ['a']], $deReferenced);
     }
 
     public function testSetReferencesAll(): void
@@ -296,9 +296,9 @@ class TableJoinerTest extends ModelBasedTest
 
         self::assertEquals($expected, $references);
 
-        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, $references);
+        $deReferenced = $this->setDeReferencing->invoke($this->tableJoiner, [['a'], 0, 0, 0]);
 
-        self::assertEquals($input, $deReferenced);
+        self::assertEquals([['a'], ['a'], ['a'], ['a']], $deReferenced);
     }
 
     public function testInsertValue(): void

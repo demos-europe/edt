@@ -52,11 +52,9 @@ class CachingPropertyReader extends PropertyReader
     /**
      * Create cache hash from 3 values that need to be distinct to be cached.
      *
-     * @param mixed|null $propertyValue
-     *
      * @return non-empty-string
      */
-    private function createHash(TransferableTypeInterface $relationship, $propertyValue): string
+    private function createHash(TransferableTypeInterface $relationship, mixed $propertyValue): string
     {
         $hashRelationship = spl_object_hash($relationship);
 

@@ -28,5 +28,5 @@ interface DrupalConditionFactoryInterface
      *
      * @throws DrupalFilterException if the given operator name is not supported
      */
-    public function createCondition(string $operatorName, $value, array $path): PathsBasedInterface;
+    public function createCondition(string $operatorName, array|string|int|float|bool|null $value, array $path): PathsBasedInterface;
 }

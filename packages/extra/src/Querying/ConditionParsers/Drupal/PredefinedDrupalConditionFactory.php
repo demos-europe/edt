@@ -35,7 +35,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
         return array_keys($this->operatorFunctions);
     }
 
-    public function createCondition(string $operatorName, $value, array $path): PathsBasedInterface
+    public function createCondition(string $operatorName, array|string|int|float|bool|null $value, array $path): PathsBasedInterface
     {
         if (!array_key_exists($operatorName, $this->operatorFunctions)) {
             throw DrupalFilterException::unknownCondition($operatorName, ...$this->getSupportedOperators());

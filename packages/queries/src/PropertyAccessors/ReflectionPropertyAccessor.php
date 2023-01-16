@@ -20,7 +20,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
     /**
      * @throws ReflectionException
      */
-    public function getValueByPropertyPath(?object $target, string $property, string ...$properties)
+    public function getValueByPropertyPath(?object $target, string $property, string ...$properties): mixed
     {
         if (null === $target) {
             return null;
@@ -69,7 +69,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         }, $target);
     }
 
-    public function setValue(object $target, $value, string $propertyName): void
+    public function setValue(object $target, mixed $value, string $propertyName): void
     {
         $reflectionProperty = new ReflectionProperty($this->getClass($target), $propertyName);
         $reflectionProperty->setAccessible(true);

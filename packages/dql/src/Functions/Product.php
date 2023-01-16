@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\DqlQuerying\Functions;
 
+use Doctrine\ORM\Query\Expr\Comparison;
+use Doctrine\ORM\Query\Expr\Composite;
+use Doctrine\ORM\Query\Expr\Func;
+use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 
 /**
@@ -24,7 +28,7 @@ class Product extends AbstractClauseFunction
         );
     }
 
-    public function asDql(array $valueReferences, array $propertyAliases)
+    public function asDql(array $valueReferences, array $propertyAliases): Composite|Math|Func|Comparison|string
     {
         $dqlClauses = $this->getDqls($valueReferences, $propertyAliases);
         $initial = array_shift($dqlClauses);

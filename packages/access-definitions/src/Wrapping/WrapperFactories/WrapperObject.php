@@ -195,7 +195,7 @@ class WrapperObject
      *
      * @throws AccessException
      */
-    public function __set(string $propertyName, $value): void
+    public function __set(string $propertyName, array|string|int|float|bool|object|null $value): void
     {
         // we allow writing of properties that are actually accessible
         $nestedUpdatabilities = $this->type->getUpdatableProperties();
@@ -217,11 +217,9 @@ class WrapperObject
     /**
      * @param non-empty-string $propertyName
      *
-     * @return mixed|null
-     *
      * @throws AccessException
      */
-    public function getPropertyValue(string $propertyName)
+    public function getPropertyValue(string $propertyName): mixed
     {
         return $this->__get($propertyName);
     }

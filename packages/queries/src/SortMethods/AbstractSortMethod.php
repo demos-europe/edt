@@ -44,7 +44,7 @@ abstract class AbstractSortMethod implements SortMethodInterface
      *
      * @return int
      */
-    protected function evaluateSinglePath($propertyValueA, $propertyValueB): int
+    protected function evaluateSinglePath(string|int|float|null $propertyValueA, string|int|float|null $propertyValueB): int
     {
         if (null === $propertyValueA && null === $propertyValueB) {
             return 0;

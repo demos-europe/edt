@@ -36,9 +36,8 @@ class RelationshipAccessException extends PropertyAccessException
 
     /**
      * @param non-empty-string $propertyName
-     * @param int|string       $key
      */
-    public static function toManyWithRestrictedItemNotSetable(TypeInterface $type, string $propertyName, string $deAliasedPropertyName, $key): self
+    public static function toManyWithRestrictedItemNotSetable(TypeInterface $type, string $propertyName, string $deAliasedPropertyName, int|string $key): self
     {
         $typeClass = get_class($type);
         $self = new self($propertyName, "Can't set a list into the to-many relationship '$propertyName' (de-aliased to '$deAliasedPropertyName') in type class '$typeClass' if said list contains a non-accessible (due to their type class '$typeClass') items stored under the key '$key'.");

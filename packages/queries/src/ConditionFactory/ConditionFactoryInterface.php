@@ -19,7 +19,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyIsNull($properties);
+    public function propertyIsNull(string|array|PropertyPathInterface $properties);
 
     /**
      * The returned condition will evaluate to `true` if the property denoted by
@@ -33,7 +33,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasAnyOfValues(array $values, $properties);
+    public function propertyHasAnyOfValues(array $values, string|array|PropertyPathInterface $properties);
 
     /**
      * @param list<mixed> $values
@@ -43,7 +43,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasNotAnyOfValues(array $values, $properties);
+    public function propertyHasNotAnyOfValues(array $values, string|array|PropertyPathInterface $properties);
 
     /**
      * @return TCondition
@@ -58,7 +58,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasSize(int $size, $properties);
+    public function propertyHasSize(int $size, string|array|PropertyPathInterface $properties);
 
     /**
      * @param int<0, max> $size
@@ -68,7 +68,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasNotSize(int $size, $properties);
+    public function propertyHasNotSize(int $size, string|array|PropertyPathInterface $properties);
 
     /**
      * @return TCondition
@@ -92,28 +92,16 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasStringContainingCaseInsensitiveValue(string $value, $properties);
+    public function propertyHasStringContainingCaseInsensitiveValue(string $value, string|array|PropertyPathInterface $properties);
 
     /**
-     * @param simple_primitive $value
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
      * @throws PathException
      */
-    public function propertyHasValue($value, $properties);
-
-    /**
-     * @param string|int|float $min
-     * @param string|int|float $max
-     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
-     *
-     * @return TCondition
-     *
-     * @throws PathException
-     */
-    public function propertyBetweenValuesInclusive($min, $max, $properties);
+    public function propertyHasValue(string|int|float|bool $value, string|array|PropertyPathInterface $properties);
 
     /**
      * @param numeric-string|int|float $min
@@ -124,7 +112,26 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyNotBetweenValuesInclusive($min, $max, $properties);
+    public function propertyBetweenValuesInclusive(
+        string|int|float $min,
+        string|int|float $max,
+        string|array|PropertyPathInterface $properties
+    );
+
+    /**
+     * @param numeric-string|int|float $min
+     * @param numeric-string|int|float $max
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     *
+     * @return TCondition
+     *
+     * @throws PathException
+     */
+    public function propertyNotBetweenValuesInclusive(
+        string|int|float $min,
+        string|int|float $max,
+        string|array|PropertyPathInterface $properties
+    );
 
     /**
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
@@ -133,37 +140,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasStringAsMember(string $value, $properties);
-
-    /**
-     * @param numeric-string|int|float $value
-     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
-     *
-     * @return TCondition
-     *
-     * @throws PathException
-     */
-    public function valueGreaterThan($value, $properties);
-
-    /**
-     * @param numeric-string|int|float $value
-     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
-     *
-     * @return TCondition
-     *
-     * @throws PathException
-     */
-    public function valueGreaterEqualsThan($value, $properties);
-
-    /**
-     * @param numeric-string|int|float $value
-     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
-     *
-     * @return TCondition
-     *
-     * @throws PathException
-     */
-    public function valueSmallerThan($value, $properties);
+    public function propertyHasStringAsMember(string $value, string|array|PropertyPathInterface $properties);
 
     /**
      * @param numeric-string|int|float $value
@@ -173,7 +150,37 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function valueSmallerEqualsThan($value, $properties);
+    public function valueGreaterThan(string|int|float $value, string|array|PropertyPathInterface $properties);
+
+    /**
+     * @param numeric-string|int|float $value
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     *
+     * @return TCondition
+     *
+     * @throws PathException
+     */
+    public function valueGreaterEqualsThan(string|int|float $value, string|array|PropertyPathInterface $properties);
+
+    /**
+     * @param numeric-string|int|float $value
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     *
+     * @return TCondition
+     *
+     * @throws PathException
+     */
+    public function valueSmallerThan(string|int|float $value, string|array|PropertyPathInterface$properties);
+
+    /**
+     * @param numeric-string|int|float $value
+     * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
+     *
+     * @return TCondition
+     *
+     * @throws PathException
+     */
+    public function valueSmallerEqualsThan(string|int|float $value, string|array|PropertyPathInterface $properties);
 
     /**
      * @return TCondition
@@ -181,7 +188,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyStartsWithCaseInsensitive(string $value, $properties);
+    public function propertyStartsWithCaseInsensitive(string $value, string|array|PropertyPathInterface $properties);
 
     /**
      * @return TCondition
@@ -189,7 +196,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyEndsWithCaseInsensitive(string $value, $properties);
+    public function propertyEndsWithCaseInsensitive(string $value, string|array|PropertyPathInterface $properties);
 
     /**
      * It is expected that the given property path contains a to-many relationship and thus will
@@ -202,14 +209,14 @@ interface ConditionFactoryInterface
      * use this method with the parameters `['A', 'B']` (the required titles as array),
      * and `'books'` and `'title'` (the path to the titles).
      *
-     * @param non-empty-list<mixed>            $values
+     * @param non-empty-list<mixed> $values
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
      * @throws PathException
      */
-    public function allValuesPresentInMemberListProperties(array $values, $properties);
+    public function allValuesPresentInMemberListProperties(array $values, string|array|PropertyPathInterface $properties);
 
     /**
      * Creates a condition that matches all entities that have a value set in the target of the
@@ -223,14 +230,16 @@ interface ConditionFactoryInterface
      * will correctly match a book written by Bob and some other person. Such a book matches the
      * condition, because there _is_ an author with a name that is _not_ `Bob`.
      *
-     * @param simple_primitive $value
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
      *
      * @throws PathException
      */
-    public function propertyHasNotValue($value, $properties);
+    public function propertyHasNotValue(
+        string|int|float|bool $value,
+        string|array|PropertyPathInterface $properties
+    );
 
     /**
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
@@ -239,7 +248,7 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyIsNotNull($properties);
+    public function propertyIsNotNull(string|array|PropertyPathInterface $properties);
 
     /**
      * The returned condition will match if the property the given path denotes
@@ -251,5 +260,5 @@ interface ConditionFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyHasNotStringAsMember(string $value, $properties);
+    public function propertyHasNotStringAsMember(string $value, string|array|PropertyPathInterface $properties);
 }

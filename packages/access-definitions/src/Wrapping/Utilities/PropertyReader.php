@@ -95,13 +95,12 @@ class PropertyReader
     /**
      * @template TEntity of object
      *
-     * @param mixed|null       $supposedIterable
      * @param non-empty-string $propertyName
      * @param class-string<TEntity> $entityClass
      *
      * @return list<TEntity>
      */
-    public function verifyToManyIterable($supposedIterable, string $propertyName, string $entityClass): array
+    public function verifyToManyIterable(mixed $supposedIterable, string $propertyName, string $entityClass): array
     {
         if (!is_iterable($supposedIterable)) {
             throw RelationshipAccessException::toManyNotIterable($propertyName);

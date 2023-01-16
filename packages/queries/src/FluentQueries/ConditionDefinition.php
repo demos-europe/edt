@@ -151,12 +151,11 @@ class ConditionDefinition
     }
 
     /**
-     * @param mixed $value
      * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
      */
-    public function propertyHasValue($value, array $properties): self
+    public function propertyHasValue(string|int|float|bool $value, array $properties): self
     {
         return $this->add($this->conditionFactory->propertyHasValue($value, $properties));
     }
@@ -168,7 +167,7 @@ class ConditionDefinition
      *
      * @return $this
      */
-    public function propertyBetweenValuesInclusive($min, $max, array $properties): self
+    public function propertyBetweenValuesInclusive(string|int|float $min, string|int|float $max, array $properties): self
     {
         return $this->add($this->conditionFactory->propertyBetweenValuesInclusive($min, $max, $properties));
     }
@@ -180,7 +179,7 @@ class ConditionDefinition
      *
      * @return $this
      */
-    public function propertyNotBetweenValuesInclusive($min, $max, array $properties): self
+    public function propertyNotBetweenValuesInclusive(string|int|float $min, string|int|float $max, array $properties): self
     {
         return $this->add($this->conditionFactory->propertyNotBetweenValuesInclusive($min, $max, $properties));
     }
@@ -201,7 +200,7 @@ class ConditionDefinition
      *
      * @return $this
      */
-    public function valueGreaterThan($value, array $properties): self
+    public function valueGreaterThan(string|int|float $value, array $properties): self
     {
         return $this->add($this->conditionFactory->valueGreaterThan($value, $properties));
     }
@@ -212,7 +211,7 @@ class ConditionDefinition
      *
      * @return $this
      */
-    public function valueGreaterEqualsThan($value, array $properties): self
+    public function valueGreaterEqualsThan(string|int|float $value, array $properties): self
     {
         return $this->add($this->conditionFactory->valueGreaterEqualsThan($value, $properties));
     }
@@ -223,7 +222,7 @@ class ConditionDefinition
      *
      * @return $this
      */
-    public function valueSmallerThan($value, array $properties): self
+    public function valueSmallerThan(string|int|float $value, array $properties): self
     {
         return $this->add($this->conditionFactory->valueSmallerThan($value, $properties));
     }
@@ -234,7 +233,7 @@ class ConditionDefinition
      *
      * @return $this
      */
-    public function valueSmallerEqualsThan($value, array $properties): self
+    public function valueSmallerEqualsThan(string|int|float $value, array $properties): self
     {
         return $this->add($this->conditionFactory->valueSmallerEqualsThan($value, $properties));
     }
@@ -276,7 +275,7 @@ class ConditionDefinition
      *
      * @return $this
      */
-    public function propertyHasNotValue($value, array $properties): self
+    public function propertyHasNotValue(string|int|float|bool $value, array $properties): self
     {
         return $this->add($this->conditionFactory->propertyHasNotValue($value, $properties));
     }

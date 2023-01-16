@@ -229,7 +229,7 @@ class WrapperArrayFactoryTest extends ModelBasedTest
         return new WrapperArrayFactory($this->propertyAccessor, $this->propertyReader, $depth);
     }
 
-    private function createArrayWrappers(array $entities, $type, int $depth): array
+    private function createArrayWrappers(array $entities, TransferableTypeInterface $type, int $depth): array
     {
         $wrapper = $this->createWrapperArrayFactory($depth);
         return array_values(array_map(

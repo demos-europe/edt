@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Querying\Evaluators;
 
+use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\Functions\InvertedBoolean;
 use EDT\Querying\Functions\StringContains;
 use EDT\Querying\Functions\AllEqual;
@@ -127,7 +128,18 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasValueWithNull(): void
     {
+        $this->expectException(\TypeError::class);
         $propertyHasValue = $this->conditionFactory->propertyHasValue(null, ['author', 'pseudonym']);
+    }
+
+    public function testPropertyHasValueWithNullManually(): void
+    {
+        $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, ['author', 'pseudonym']);
+        $propertyHasValue = new AllEqual(
+            new Property($propertyPath),
+            new Value(null)
+        );
+
         $filteredBooks = $this->conditionEvaluator->filterArray($this->books, $propertyHasValue);
         self::assertEquals([], $filteredBooks);
     }

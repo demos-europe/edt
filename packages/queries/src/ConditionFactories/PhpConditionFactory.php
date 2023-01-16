@@ -9,6 +9,7 @@ use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
+use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Querying\Functions\AllEqual;
 use EDT\Querying\Functions\AnyTrue;
 use EDT\Querying\Functions\BetweenInclusive;
@@ -77,8 +78,11 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyBetweenValuesInclusive($min, $max, $properties): PathsBasedInterface
-    {
+    public function propertyBetweenValuesInclusive(
+        string|int|float $min,
+        string|int|float $max,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         $propertyPathObject = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         return new BetweenInclusive(
             new Value($min),
@@ -87,7 +91,7 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyHasAnyOfValues(array $values, $properties): PathsBasedInterface
+    public function propertyHasAnyOfValues(array $values, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         return new OneOf(
@@ -96,7 +100,7 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyHasSize(int $size, $properties): PathsBasedInterface
+    public function propertyHasSize(int $size, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new AllEqual(
@@ -105,16 +109,20 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyHasStringContainingCaseInsensitiveValue(string $value, $properties): PathsBasedInterface
-    {
+    public function propertyHasStringContainingCaseInsensitiveValue(
+        string $value,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         $lowerCaseProperty = new LowerCase(new Property($propertyPathInstance));
         $lowerCaseValue = new LowerCase(new Value($value));
         return new StringContains($lowerCaseProperty, $lowerCaseValue, false);
     }
 
-    public function propertyHasValue($value, $properties): PathsBasedInterface
-    {
+    public function propertyHasValue(
+        string|int|float|bool $value,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new AllEqual(
             new Property($propertyPath),
@@ -122,14 +130,16 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyIsNull($properties): PathsBasedInterface
+    public function propertyIsNull(string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         $propertyPath = new PropertyPath(null, '', PropertyPathAccessInterface::UNPACK, $properties);
         return new IsNull(new Property($propertyPath));
     }
 
-    public function propertyHasStringAsMember(string $value, $properties): PathsBasedInterface
-    {
+    public function propertyHasStringAsMember(
+        string $value,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new OneOf(
             new Property($propertyPathInstance),
@@ -137,8 +147,10 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function valueGreaterThan($value, $properties): PathsBasedInterface
-    {
+    public function valueGreaterThan(
+        string|int|float $value,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new Greater(
             new Value($value),
@@ -146,8 +158,10 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function valueGreaterEqualsThan($value, $properties): PathsBasedInterface
-    {
+    public function valueGreaterEqualsThan(
+        string|int|float $value,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new GreaterEquals(
             new Value($value),
@@ -155,8 +169,10 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function valueSmallerThan($value, $properties): PathsBasedInterface
-    {
+    public function valueSmallerThan(
+        string|int|float $value,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new Smaller(
             new Value($value),
@@ -164,7 +180,7 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function valueSmallerEqualsThan($value, $properties): PathsBasedInterface
+    public function valueSmallerEqualsThan(string|int|float $value, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new SmallerEquals(
@@ -173,7 +189,7 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyStartsWithCaseInsensitive(string $value, $properties): PathsBasedInterface
+    public function propertyStartsWithCaseInsensitive(string $value, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new StringStartsWith(
@@ -183,7 +199,7 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function propertyEndsWithCaseInsensitive(string $value, $properties): PathsBasedInterface
+    public function propertyEndsWithCaseInsensitive(string $value, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         $propertyPathInstance = new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, $properties);
         return new StringEndsWith(
@@ -193,7 +209,7 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         );
     }
 
-    public function allValuesPresentInMemberListProperties(array $values, $properties): PathsBasedInterface
+    public function allValuesPresentInMemberListProperties(array $values, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         $propertyPaths = PropertyPath::createIndexSaltedPaths(count($values), PropertyPathAccessInterface::DIRECT, $properties);
         $equalityPairs = array_map(
@@ -208,32 +224,35 @@ class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsB
         return new AllEqual(new Value(true), ...$equalityPairs);
     }
 
-    public function propertyHasNotAnyOfValues(array $values, $properties): PathsBasedInterface
+    public function propertyHasNotAnyOfValues(array $values, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         return new InvertedBoolean($this->propertyHasAnyOfValues($values, $properties));
     }
 
-    public function propertyHasNotSize(int $size, $properties): PathsBasedInterface
+    public function propertyHasNotSize(int $size, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         return new InvertedBoolean($this->propertyHasSize($size, $properties));
     }
 
-    public function propertyNotBetweenValuesInclusive($min, $max, $properties): PathsBasedInterface
-    {
+    public function propertyNotBetweenValuesInclusive(
+        string|int|float $min,
+        string|int|float $max,
+        string|array|PropertyPathInterface $properties
+    ): PathsBasedInterface {
         return new InvertedBoolean($this->propertyBetweenValuesInclusive($min, $max, $properties));
     }
 
-    public function propertyHasNotValue($value, $properties): PathsBasedInterface
+    public function propertyHasNotValue(string|int|float|bool $value, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         return new InvertedBoolean($this->propertyHasValue($value, $properties));
     }
 
-    public function propertyIsNotNull($properties): PathsBasedInterface
+    public function propertyIsNotNull(string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         return new InvertedBoolean($this->propertyIsNull($properties));
     }
 
-    public function propertyHasNotStringAsMember(string $value, $properties): PathsBasedInterface
+    public function propertyHasNotStringAsMember(string $value, string|array|PropertyPathInterface $properties): PathsBasedInterface
     {
         return new InvertedBoolean($this->propertyHasStringAsMember($value, $properties));
     }
