@@ -212,6 +212,17 @@ interface ConditionFactoryInterface
     public function allValuesPresentInMemberListProperties(array $values, $properties);
 
     /**
+     * Creates a condition that matches all entities that have a value set in the target of the
+     * given path, that is not equal to the given value.
+     *
+     * While the result is intuitive when the path follows to-one relationships only, it becomes more
+     * complex for to-many relationships.
+     *
+     * Suppose `Book` entities are fetched, with each book
+     * having many authors, then `propertyHasNotValue('Bob', ['authors', 'firstName'])`
+     * will correctly match a book written by Bob and some other person. Such a book matches the
+     * condition, because there _is_ an author with a name that is _not_ `Bob`.
+     *
      * @param simple_primitive $value
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
