@@ -40,7 +40,7 @@ class ConditionEvaluator
     /**
      * @param list<FunctionInterface<bool>> $conditions
      */
-    public function evaluateConditions(?object $target, array $conditions): bool
+    public function evaluateConditions(object $target, array $conditions): bool
     {
         foreach ($conditions as $condition) {
             if (!$this->evaluateCondition($target, $condition)) {
