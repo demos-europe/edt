@@ -254,7 +254,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * @deprecated use {@link TypedPathConfigCollection::configureToOneRelationship()} instead
      */
     protected function createToOneRelationship(
-        PropertyPathInterface $path,
+        PropertyPathInterface&ResourceTypeInterface $path,
         bool $defaultInclude = false
     ): PropertyBuilder {
         return new PropertyBuilder($path, $this->getEntityClass(), [
@@ -274,7 +274,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * @deprecated use {@link TypedPathConfigCollection::configureToManyRelationship()} instead
      */
     protected function createToManyRelationship(
-        PropertyPathInterface $path,
+        PropertyPathInterface&ResourceTypeInterface $path,
         bool $defaultInclude = false
     ): PropertyBuilder {
         return new PropertyBuilder($path, $this->getEntityClass(), [
