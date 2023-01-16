@@ -18,7 +18,6 @@ use function array_key_exists;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
-use function get_class;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -59,10 +58,9 @@ class AttributeTypeResolver
         string $propertyName,
         AbstractReadability $propertyReadability
     ): array {
-        $resourceClass = get_class($resourceType);
         $customReadCallback = $propertyReadability->getCustomValueFunction();
         if (null !== $customReadCallback) {
-            return $this->resolveTypeFromCallable($customReadCallback, $resourceClass, $propertyName);
+            return $this->resolveTypeFromCallable($customReadCallback, $resourceType::class, $propertyName);
         }
 
         return $this->resolveTypeFromEntityClass($resourceType->getEntityClass(), $propertyName);

@@ -8,7 +8,6 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Utilities\Iterables;
 use ReflectionException;
 use ReflectionProperty;
-use function get_class;
 use function array_slice;
 use function is_array;
 
@@ -81,7 +80,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
      */
     protected function getClass(object $target): string
     {
-        return get_class($target);
+        return $target::class;
     }
 
     /**

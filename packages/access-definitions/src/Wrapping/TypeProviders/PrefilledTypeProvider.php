@@ -7,9 +7,7 @@ namespace EDT\Wrapping\TypeProviders;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
-use function get_class;
 use function array_key_exists;
-use const ARRAY_FILTER_USE_KEY;
 
 /**
  * Takes something iterable containing {@link TypeInterface}s on initialization
@@ -40,8 +38,8 @@ class PrefilledTypeProvider extends AbstractTypeProvider
         foreach ($types as $type) {
             $typeIdentifier = $this->getIdentifier($type);
             if (array_key_exists($typeIdentifier, $this->typesByIdentifier)) {
-                $typeClassA = get_class($this->typesByIdentifier[$typeIdentifier]);
-                $typeClassB = get_class($type);
+                $typeClassA = $this->typesByIdentifier[$typeIdentifier]::class;
+                $typeClassB = $type::class;
                 throw new InvalidArgumentException("Duplicated type identifiers detected: '$typeClassA' and '$typeClassB' as '$typeIdentifier'.");
             }
             $this->typesByIdentifier[$typeIdentifier] = $type;
@@ -54,7 +52,7 @@ class PrefilledTypeProvider extends AbstractTypeProvider
      */
     protected function getIdentifier(TypeInterface $type): string
     {
-        return get_class($type);
+        return $type::class;
     }
 
     protected function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface
