@@ -27,7 +27,7 @@ interface TransferableTypeInterface extends TypeInterface
      * A restricted view on the properties of the {@link TypeInterface::getEntityClass() backing object}. Potentially
      * mapped via {@link AliasableTypeInterface::getAliases() aliases}.
      *
-     * Implementations must return the nested arrays with keys that does not conflict with each other.
+     * Implementations must return the nested arrays with keys that do not conflict with each other.
      *
      * You can easily merge the contained arrays via `array_merge(...$type->getReadableProperties())`.
      *
