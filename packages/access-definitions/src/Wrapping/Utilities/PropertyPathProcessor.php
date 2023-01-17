@@ -20,7 +20,7 @@ use EDT\Wrapping\Utilities\TypeAccessors\AbstractProcessorConfig;
  * for property access violations, depending on the context (readability/sortability/...).
  * The context is set on instantiation by using providers that limit the access accordingly.
  *
- * @template TType of TypeInterface<\EDT\Querying\Contracts\PathsBasedInterface, \EDT\Querying\Contracts\PathsBasedInterface, object>
+ * @template TType of TypeInterface<PathsBasedInterface, PathsBasedInterface, object>
  */
 class PropertyPathProcessor
 {

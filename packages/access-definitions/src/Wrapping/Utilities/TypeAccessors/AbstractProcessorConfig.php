@@ -15,7 +15,7 @@ use function array_key_exists;
  * criteria, e.g. the {@link ExternFilterableProcessorConfig} will only allow access
  * to filterable properties and types.
  *
- * @template TType of TypeInterface<\EDT\Querying\Contracts\PathsBasedInterface, \EDT\Querying\Contracts\PathsBasedInterface, object>
+ * @template TType of TypeInterface<PathsBasedInterface, PathsBasedInterface, object>
  */
 abstract class AbstractProcessorConfig
 {
