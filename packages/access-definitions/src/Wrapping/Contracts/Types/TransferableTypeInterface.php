@@ -31,12 +31,12 @@ interface TransferableTypeInterface extends TypeInterface
      *
      * You can easily merge the contained arrays via `array_merge(...$type->getReadableProperties())`.
      *
-     * @return array{0: array<non-empty-string, AttributeReadability<TEntity>>, 1: array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>, 2: array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>}
+     * @return array{0: array<non-empty-string, AttributeReadability<TEntity>>, 1: array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object>>, 2: array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object>>}
      */
     public function getReadableProperties(): array;
 
     /**
-     * @return array{0: array<non-empty-string, AttributeUpdatability<TCondition, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>}
+     * @return array{0: array<non-empty-string, AttributeUpdatability<TCondition, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, object>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, object>>}
      */
     public function getUpdatableProperties(): array;
 

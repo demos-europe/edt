@@ -12,16 +12,15 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
- * @template TRelationshipType of TransferableTypeInterface<TCondition, TSorting, TRelationship>
  *
- * @template-extends AbstractRelationshipUpdatability<TCondition, TRelationshipType>
+ * @template-extends AbstractRelationshipUpdatability<TCondition, TransferableTypeInterface<TCondition, TSorting, TRelationship>>
  */
 class ToOneRelationshipUpdatability extends AbstractRelationshipUpdatability
 {
     /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
-     * @param TRelationshipType $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param null|callable(TEntity, TRelationship|null): void $customWriteFunction
      */
     public function __construct(

@@ -18,7 +18,7 @@ use EDT\Wrapping\Properties\ToManyRelationshipReadability;
  * @template TRelationship of object
  * @template TRelationshipType of ResourceTypeInterface<TCondition, TSorting, TRelationship>
  *
- * @template-extends AbstractConfig<TCondition, TEntity, ToManyRelationshipReadability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>>
+ * @template-extends AbstractConfig<TCondition, TEntity, ToManyRelationshipReadability<TCondition, TSorting, TEntity, TRelationship>, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship>>
  */
 class ToManyRelationshipConfig extends AbstractConfig
 {

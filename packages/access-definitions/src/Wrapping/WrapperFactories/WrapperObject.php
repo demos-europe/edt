@@ -275,7 +275,7 @@ class WrapperObject
      * information like {@link TransferableTypeInterface::getReadableProperties() readable} or
      * {@link TransferableTypeInterface::getUpdatableProperties() updatable} properties.
      *
-     * @param array{0: array<non-empty-string, AttributeUpdatability<FunctionInterface<bool>, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object, TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object>>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object, TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object>>>} $updatabilities
+     * @param array{0: array<non-empty-string, AttributeUpdatability<FunctionInterface<bool>, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<FunctionInterface<bool>, SortMethodInterface, TEntity, object>>} $updatabilities
      * @param non-empty-string $propertyName
      * @param array<int|string, mixed>|simple_primitive|object|null $propertyValue A single value of some type or an iterable.
      *

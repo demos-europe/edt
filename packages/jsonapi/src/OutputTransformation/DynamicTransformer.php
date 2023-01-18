@@ -68,12 +68,12 @@ class DynamicTransformer extends TransformerAbstract
     private array $attributeReadabilities;
 
     /**
-     * @var array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>
+     * @var array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object>>
      */
     private array $toOneRelationshipReadabilities;
 
     /**
-     * @var array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>
+     * @var array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object>>
      */
     private array $toManyRelationshipReadabilities;
 
@@ -186,7 +186,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>> $readability
+     * @param ToOneRelationshipReadability<TCondition, TSorting, TEntity, object> $readability
      * @param TEntity                        $entity
      * @param non-empty-string               $includeName
      *
@@ -221,7 +221,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>> $readability
+     * @param ToManyRelationshipReadability<TCondition, TSorting, TEntity, object> $readability
      * @param TEntity                         $entity
      * @param non-empty-string                $includeName
      *
