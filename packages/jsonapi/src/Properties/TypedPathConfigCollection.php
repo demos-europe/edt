@@ -44,7 +44,7 @@ class TypedPathConfigCollection
      *
      * @param PropertyPathInterface&TRelationshipType $relationship
      *
-     * @return ToOneRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, PropertyPathInterface&TRelationshipType>
+     * @return ToOneRelationshipConfig<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws ResourcePropertyConfigException
      * @throws PathException
@@ -61,7 +61,7 @@ class TypedPathConfigCollection
      *
      * @param PropertyPathInterface&TRelationshipType $relationship
      *
-     * @return ToManyRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, PropertyPathInterface&TRelationshipType>
+     * @return ToManyRelationshipConfig<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws ResourcePropertyConfigException
      * @throws PathException

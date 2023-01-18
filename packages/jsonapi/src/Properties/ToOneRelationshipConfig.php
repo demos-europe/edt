@@ -16,7 +16,6 @@ use EDT\Wrapping\Properties\ToOneRelationshipReadability;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
- * @template TRelationshipType of ResourceTypeInterface<TCondition, TSorting, TRelationship>
  *
  * @template-extends AbstractConfig<TCondition, TEntity, ToOneRelationshipReadability<TCondition, TSorting, TEntity, TRelationship>, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship>>
  */
@@ -24,7 +23,7 @@ class ToOneRelationshipConfig extends AbstractConfig
 {
     /**
      * @param ResourceTypeInterface<TCondition, TSorting, TEntity> $type
-     * @param TRelationshipType $relationshipType
+     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
         protected ResourceTypeInterface $type,
@@ -32,7 +31,7 @@ class ToOneRelationshipConfig extends AbstractConfig
     ) {}
 
     /**
-     * @return TRelationshipType
+     * @return ResourceTypeInterface<TCondition, TSorting, TRelationship>
      */
     public function getRelationshipType(): ResourceTypeInterface
     {
