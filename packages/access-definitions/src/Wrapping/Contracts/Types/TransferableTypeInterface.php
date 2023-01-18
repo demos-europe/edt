@@ -39,4 +39,9 @@ interface TransferableTypeInterface extends TypeInterface
      * @return array{0: array<non-empty-string, AttributeUpdatability<TCondition, TEntity>>, 1: array<non-empty-string, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>, 2: array<non-empty-string, ToManyRelationshipUpdatability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>}
      */
     public function getUpdatableProperties(): array;
+
+    /**
+     * @return non-empty-string
+     */
+    public function getIdentifier(): string;
 }

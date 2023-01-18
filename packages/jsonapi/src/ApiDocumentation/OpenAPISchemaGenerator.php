@@ -255,7 +255,7 @@ final class OpenAPISchemaGenerator
      */
     private function createSchema(ResourceTypeInterface $type): Schema
     {
-        $properties = array_merge(...$type->getReadableResourceTypeProperties());
+        $properties = array_merge(...$type->getReadableProperties());
 
         $properties = array_map(function (AbstractReadability $readability, string $propertyName) use ($type): array {
             // TODO: this is probably incorrect for all aliases with a path longer than 1 element

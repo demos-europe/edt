@@ -16,11 +16,6 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
         return self::class;
     }
 
-    public function getTransformer(): TransformerAbstract
-    {
-        return new class() extends TransformerAbstract {};
-    }
-
     /**
      * Overwrites its parent relationships with reference to resource type implementations.
      */
@@ -44,10 +39,5 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
     public function isExposedAsPrimaryResource(): bool
     {
         return true;
-    }
-
-    public function getReadableResourceTypeProperties(): array
-    {
-        return $this->getReadableProperties();
     }
 }

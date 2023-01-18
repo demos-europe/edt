@@ -18,10 +18,7 @@ use Tests\data\EmptyEntity;
 class EmptyType extends AbstractResourceType
 {
     public function __construct(
-        private WrapperObjectFactory $wrapperFactory,
-        private ConditionFactoryInterface $conditionFactory,
-        private LoggerInterface $logger,
-        private MessageFormatter $messageFormatter
+        private ConditionFactoryInterface $conditionFactory
     ) {}
 
     protected function configureProperties(TypedPathConfigCollection $configCollection): void
@@ -29,21 +26,6 @@ class EmptyType extends AbstractResourceType
         $configCollection->configureAttribute(
             new PropertyPath(null, '', PropertyPathAccessInterface::DIRECT, ['id'])
         )->enableReadability(true);
-    }
-
-    protected function getWrapperFactory(): WrapperObjectFactory
-    {
-        return $this->wrapperFactory;
-    }
-
-    protected function getLogger(): LoggerInterface
-    {
-        return $this->logger;
-    }
-
-    protected function getMessageFormatter(): MessageFormatter
-    {
-        return $this->messageFormatter;
     }
 
     public function getEntityClass(): string

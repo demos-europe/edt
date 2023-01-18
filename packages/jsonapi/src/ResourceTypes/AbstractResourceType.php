@@ -73,35 +73,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         ];
     }
 
-    public function getReadableResourceTypeProperties(): array
-    {
-        $configCollection = $this->getInitializedConfiguration();
-
-        return [
-            array_filter(
-                array_map(
-                    static fn (AttributeConfig $config): ?AttributeReadability => $config->getReadability(),
-                    $configCollection->getAttributes()
-                ),
-                static fn (?AttributeReadability $readability): bool => null !== $readability
-            ),
-            array_filter(
-                array_map(
-                    static fn (ToOneRelationshipConfig $config): ?ToOneRelationshipReadability => $config->getReadability(),
-                    $configCollection->getToOneRelationships()
-                ),
-                fn (?ToOneRelationshipReadability $readability): bool => null !== $readability && $this->isExposedReadability($readability)
-            ),
-            array_filter(
-                array_map(
-                    static fn (ToManyRelationshipConfig $config): ?ToManyRelationshipReadability => $config->getReadability(),
-                    $configCollection->getToManyRelationships()
-                ),
-                fn (?ToManyRelationshipReadability $readability): bool => null !== $readability && $this->isExposedReadability($readability)
-            ),
-        ];
-    }
-
     public function getFilterableProperties(): array
     {
         return $this->toRelationshipTypes(
@@ -187,19 +158,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * @return DynamicTransformer<TCondition, TSorting, TEntity>
-     */
-    public function getTransformer(): TransformerAbstract
-    {
-        return new DynamicTransformer(
-            $this,
-            $this->getWrapperFactory(),
-            $this->getMessageFormatter(),
-            $this->getLogger()
-        );
-    }
-
-    /**
      * Array order: Even though the order of the properties returned within the array may have an
      * effect (e.g. determining the order of properties in JSON:API responses) you can not rely on
      * these effects; they may be changed in the future.
@@ -219,12 +177,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * @param TypedPathConfigCollection<TCondition, TSorting, TEntity> $configCollection
      */
     abstract protected function configureProperties(TypedPathConfigCollection $configCollection): void;
-
-    abstract protected function getWrapperFactory(): WrapperObjectFactory;
-
-    abstract protected function getLogger(): LoggerInterface;
-
-    abstract protected function getMessageFormatter(): MessageFormatter;
 
     /**
      * @param ConfigCollection<TCondition, TSorting, TEntity> $configCollection

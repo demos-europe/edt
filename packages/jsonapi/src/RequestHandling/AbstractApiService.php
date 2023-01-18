@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
+use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Schema\ContentField;
 use EDT\JsonApi\Schema\RelationshipObject;
@@ -13,10 +14,14 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use Exception;
 use InvalidArgumentException;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
+use League\Fractal\TransformerAbstract;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use function array_key_exists;
 
@@ -40,7 +45,10 @@ abstract class AbstractApiService
         private JsonApiSortingParser $sortingParser,
         private PaginatorFactory $paginatorFactory,
         protected PropertyValuesGenerator $propertyValuesGenerator,
-        protected TypeProviderInterface $typeProvider
+        protected TypeProviderInterface $typeProvider,
+        protected MessageFormatter $messageFormatter,
+        protected LoggerInterface $logger,
+        protected WrapperObjectFactory $wrapperFactory
     ) {}
 
     /**
@@ -59,7 +67,7 @@ abstract class AbstractApiService
 
         $entity = $this->getObject($type, $urlId);
 
-        return new Item($entity, $type->getTransformer(), $type->getIdentifier());
+        return new Item($entity, $this->createTransformer($type), $type->getIdentifier());
     }
 
     /**
@@ -79,7 +87,7 @@ abstract class AbstractApiService
 
         $apiList = $this->getObjects($type, $filters, $sortMethods, $urlParams);
 
-        $transformer = $type->getTransformer();
+        $transformer = $this->createTransformer($type);
         $collection = new Collection($apiList->getList(), $transformer, $type->getIdentifier());
         $collection->setMeta($apiList->getMeta());
         $paginator = $apiList->getPaginator();
@@ -124,7 +132,7 @@ abstract class AbstractApiService
             return null;
         }
 
-        return new Item($updatedEntity, $type->getTransformer(), $type->getIdentifier());
+        return new Item($updatedEntity, $this->createTransformer($type), $type->getIdentifier());
     }
 
     /**
@@ -181,7 +189,7 @@ abstract class AbstractApiService
             return null;
         }
 
-        return new Item($createdEntity, $type->getTransformer(), $type->getIdentifier());
+        return new Item($createdEntity, $this->createTransformer($type), $type->getIdentifier());
     }
 
     /**
@@ -289,5 +297,15 @@ abstract class AbstractApiService
         if (!$type->isExposedAsPrimaryResource()) {
             throw AccessException::typeNotDirectlyAccessible($type);
         }
+    }
+
+    protected function createTransformer(TransferableTypeInterface $transferableType): TransformerAbstract
+    {
+        return new DynamicTransformer(
+            $transferableType,
+            $this->wrapperFactory,
+            $this->messageFormatter,
+            $this->logger
+        );
     }
 }

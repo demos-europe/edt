@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace EDT\JsonApi\OutputTransformation;
 
 use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\Utilities\Iterables;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AbstractRelationshipReadability;
 use EDT\Wrapping\Properties\AttributeReadability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
@@ -43,17 +43,17 @@ use Psr\Log\LoggerInterface;
 /**
  * Behavior can be configured on instantiation.
  *
- * This transformer takes a {@link ResourceTypeInterface} instance and uses the
- * {@link ResourceTypeInterface::getReadableResourceTypeProperties()} to transform given entities
- * corresponding to that resource type.
+ * This transformer takes a {@link TransferableTypeInterface} instance and uses the
+ * {@link TransferableTypeInterface::getReadableProperties()} to transform given entities
+ * corresponding to that type.
  *
- * For example if only a single attribute the 'title' is defined (and
+ * For example if only a single attribute 'title' is defined (and
  * set as default) then this transformer will transform the given entity into a format only
  * containing this single attribute. If additionally a single relationship include is
  * defined but not marked as default then the behavior stays the same, unless in the request it is
  * explicitly stated that that include should be part of the transformer result too.
  *
- * If the given {@link ResourceTypeInterface} is mis-configured, e.g. contains readable properties
+ * If the given {@link TransferableTypeInterface} is mis-configured, e.g. contains readable properties
  * that do not exist in the entity to be transformed, then the behavior is undefined.
  *
  * @template TCondition of FunctionInterface<bool>
@@ -68,25 +68,25 @@ class DynamicTransformer extends TransformerAbstract
     private array $attributeReadabilities;
 
     /**
-     * @var array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>
+     * @var array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>
      */
     private array $toOneRelationshipReadabilities;
 
     /**
-     * @var array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>
+     * @var array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>>>
      */
     private array $toManyRelationshipReadabilities;
 
     /**
-     * @param ResourceTypeInterface<TCondition, TSorting, TEntity> $type
+     * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
      */
     public function __construct(
-        private ResourceTypeInterface $type,
+        private TransferableTypeInterface $type,
         private WrapperObjectFactory $wrapperFactory,
         private MessageFormatter $messageFormatter,
         private ?LoggerInterface $logger
     ) {
-        $readableProperties = $type->getReadableResourceTypeProperties();
+        $readableProperties = $type->getReadableProperties();
         [
             $this->attributeReadabilities,
             $this->toOneRelationshipReadabilities,
@@ -186,7 +186,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param ToOneRelationshipReadability<TCondition, TSorting, TEntity, object,  ResourceTypeInterface<TCondition, TSorting, object>> $readability
+     * @param ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>> $readability
      * @param TEntity                        $entity
      * @param non-empty-string               $includeName
      *
@@ -213,13 +213,15 @@ class DynamicTransformer extends TransformerAbstract
             }
         }
 
+        $transformer = $this->createRelationshipTransformer($relationshipType);
+
         return null === $value
             ? $this->null()
-            : new Item($value, $relationshipType->getTransformer(), $relationshipType->getIdentifier());
+            : new Item($value, $transformer, $relationshipType->getIdentifier());
     }
 
     /**
-     * @param ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>> $readability
+     * @param ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, TransferableTypeInterface<TCondition, TSorting, object>> $readability
      * @param TEntity                         $entity
      * @param non-empty-string                $includeName
      *
@@ -255,7 +257,19 @@ class DynamicTransformer extends TransformerAbstract
             );
         }
 
-        return new Collection($values, $relationshipType->getTransformer(), $relationshipType->getIdentifier());
+        $transformer = $this->createRelationshipTransformer($relationshipType);
+
+        return new Collection($values, $transformer, $relationshipType->getIdentifier());
+    }
+
+    protected function createRelationshipTransformer(TransferableTypeInterface $relationshipType): TransformerAbstract
+    {
+        return new DynamicTransformer(
+            $relationshipType,
+            $this->wrapperFactory,
+            $this->messageFormatter,
+            $this->logger
+        );
     }
 
     /**
