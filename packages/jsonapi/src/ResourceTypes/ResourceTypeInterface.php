@@ -10,10 +10,6 @@ use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
-use EDT\Wrapping\Properties\AttributeReadability;
-use EDT\Wrapping\Properties\ToManyRelationshipReadability;
-use EDT\Wrapping\Properties\ToOneRelationshipReadability;
-use League\Fractal\TransformerAbstract;
 
 /**
  * @template TCondition of PathsBasedInterface

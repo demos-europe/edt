@@ -12,15 +12,14 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
- * @template TRelationshipType of TransferableTypeInterface<TCondition, TSorting, TRelationship>
  *
- * @template-extends AbstractRelationshipReadability<TRelationshipType>
+ * @template-extends AbstractRelationshipReadability<TransferableTypeInterface<TCondition, TSorting, TRelationship>>
  */
 class ToManyRelationshipReadability extends AbstractRelationshipReadability
 {
     /**
      * @param null|callable(TEntity): iterable<TRelationship> $customValueFunction
-     * @param TRelationshipType $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
         bool $defaultField,

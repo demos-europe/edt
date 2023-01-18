@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\JsonApi\Properties\AbstractConfig;
 use EDT\JsonApi\Properties\AttributeConfig;
 use EDT\JsonApi\Properties\ConfigCollection;
 use EDT\JsonApi\Properties\ToManyRelationshipConfig;
 use EDT\JsonApi\Properties\ToOneRelationshipConfig;
 use EDT\JsonApi\Properties\TypedPathConfigCollection;
-use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
@@ -27,10 +25,7 @@ use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToOneRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 use EDT\Wrapping\Properties\ToOneRelationshipReadability;
-use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use InvalidArgumentException;
-use League\Fractal\TransformerAbstract;
-use Psr\Log\LoggerInterface;
 
 /**
  * @template TCondition of FunctionInterface<bool>

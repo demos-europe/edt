@@ -18,7 +18,7 @@ use EDT\Wrapping\Properties\ToOneRelationshipReadability;
  * @template TRelationship of object
  * @template TRelationshipType of ResourceTypeInterface<TCondition, TSorting, TRelationship>
  *
- * @template-extends AbstractConfig<TCondition, TEntity, ToOneRelationshipReadability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>>
+ * @template-extends AbstractConfig<TCondition, TEntity, ToOneRelationshipReadability<TCondition, TSorting, TEntity, TRelationship>, ToOneRelationshipUpdatability<TCondition, TSorting, TEntity, TRelationship>>
  */
 class ToOneRelationshipConfig extends AbstractConfig
 {

@@ -16,7 +16,7 @@ use EDT\Wrapping\Utilities\TypeAccessors\AbstractProcessorConfig;
 
 /**
  * Instances of this class can be used to convert the property paths in a {@link PathsBasedInterface}
- * to their de-aliased version. During the conversion the path will  be automatically checked
+ * to their de-aliased version. During the conversion the path will be automatically checked
  * for property access violations, depending on the context (readability/sortability/...).
  * The context is set on instantiation by using providers that limit the access accordingly.
  *
