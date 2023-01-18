@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-* remove static `ResourceTypeInterface::getName()` method, the non-static `getIdentifier()` method needs to be implemented instead
+* remove `getTransformer` from `ResourceTypeInterface`, transformation is now always done via `DynamicTransformer`, regardless of `TypeInterface` implementation, thus
+  * remove `getReadableResourceTypeProperties`, `getWrapperFactory`, `getLogger` and `getMessageFormatter` from `ResourceTypeInterface`/`AbstractResourceType`
+  * the `WrapperObjectFactory`, `LoggerInterface` and `MessageFormatter` implementations returned by the methods above now need to be injected into the `AbstractApiService`
+* remove static `ResourceTypeInterface::getName()` method, the non-static `TransferableTypeInterface::getIdentifier()` method needs to be implemented instead
 * feature: rework resource property configuration
   * `CreatableTypeInterface`:
       * remove `getPropertiesRequiredForCreation`, its information is now available via `getInitializableProperties`

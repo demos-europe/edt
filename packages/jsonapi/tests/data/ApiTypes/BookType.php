@@ -16,11 +16,6 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
         return self::class;
     }
 
-    public function getTransformer(): TransformerAbstract
-    {
-        return new class() extends TransformerAbstract {};
-    }
-
     /**
      * Overwrites its parent relationships with reference to resource type implementations.
      */
@@ -43,10 +38,5 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
     public function isExposedAsPrimaryResource(): bool
     {
         return true;
-    }
-
-    public function getReadableResourceTypeProperties(): array
-    {
-        return $this->getReadableProperties();
     }
 }

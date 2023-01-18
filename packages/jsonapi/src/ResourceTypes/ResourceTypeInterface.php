@@ -33,19 +33,4 @@ interface ResourceTypeInterface extends
     ExposablePrimaryResourceTypeInterface,
     AliasableTypeInterface
 {
-    /**
-     * @return non-empty-string
-     */
-    public function getIdentifier(): string;
-
-    /**
-     * Provides the transformer to convert instances of
-     * {@link ResourceTypeInterface::getEntityClass} into JSON.
-     */
-    public function getTransformer(): TransformerAbstract;
-
-    /**
-     * @return array{0: array<non-empty-string, AttributeReadability<TEntity>>, 1: array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>, 2: array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>}
-     */
-    public function getReadableResourceTypeProperties(): array;
 }
