@@ -23,12 +23,12 @@ class ConfigCollection
     protected array $attributes = [];
 
     /**
-     * @var array<non-empty-string, ToOneRelationshipConfig<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>
+     * @var array<non-empty-string, ToOneRelationshipConfig<TCondition, TSorting, TEntity, object>>
      */
     protected array $toOneRelationships = [];
 
     /**
-     * @var array<non-empty-string, ToManyRelationshipConfig<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>
+     * @var array<non-empty-string, ToManyRelationshipConfig<TCondition, TSorting, TEntity, object>>
      */
     protected array $toManyRelationships = [];
 
@@ -110,7 +110,7 @@ class ConfigCollection
     }
 
     /**
-     * @return array<non-empty-string, ToOneRelationshipConfig<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>
+     * @return array<non-empty-string, ToOneRelationshipConfig<TCondition, TSorting, TEntity, object>>
      */
     public function getToOneRelationships(): array
     {
@@ -118,7 +118,7 @@ class ConfigCollection
     }
 
     /**
-     * @return array<non-empty-string, ToManyRelationshipConfig<TCondition, TSorting, TEntity, object, ResourceTypeInterface<TCondition, TSorting, object>>>
+     * @return array<non-empty-string, ToManyRelationshipConfig<TCondition, TSorting, TEntity, object>>
      */
     public function getToManyRelationships(): array
     {
@@ -178,7 +178,7 @@ class ConfigCollection
      * @param non-empty-string|PropertyPathInterface $propertyPath
      * @param TRelationshipType $relationshipType
      *
-     * @return ToOneRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>
+     * @return ToOneRelationshipConfig<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws ResourcePropertyConfigException
      * @throws PathException
@@ -223,7 +223,7 @@ class ConfigCollection
      * @param non-empty-string|PropertyPathInterface $propertyPath
      * @param TRelationshipType $relationshipType
      *
-     * @return ToManyRelationshipConfig<TCondition, TSorting, TEntity, TRelationship, TRelationshipType>
+     * @return ToManyRelationshipConfig<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws ResourcePropertyConfigException if the property name is already used for an attribute
      *                                         config or to-one relationship config
