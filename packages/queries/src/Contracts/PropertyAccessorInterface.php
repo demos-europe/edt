@@ -24,6 +24,9 @@ interface PropertyAccessorInterface
      * `'authors', 'name'` you may get errors or undesired/unexpected behavior.
      *
      * If any property in results in a `null` value then `null` will be returned.
+     *
+     * @param non-empty-string $property
+     * @param non-empty-string ...$properties
      */
     public function getValueByPropertyPath(?object $target, string $property, string ...$properties): mixed;
 
