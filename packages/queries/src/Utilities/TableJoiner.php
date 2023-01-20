@@ -37,7 +37,7 @@ class TableJoiner
      * array).
      *
      * However, the returned array containing the nested arrays will be created in the same manner
-     * as an SQL left join. Meaning if $object is a blog article that has 5 comments and
+     * as an SQL left join. Meaning if `$object` is a blog article that has 3 comments and
      * a property path accesses the comment texts then the returned array will have
      * 3 items: `[['text1'], ['text2'], ['text3']]`
      *
@@ -119,7 +119,7 @@ class TableJoiner
         $emptyColumns = array_filter($deReferencedColumns, [$this, 'isEmptyArray']);
 
         // Remove empty columns and references to empty columns
-        /** @var list<NonEmptyColumn|Ref> $nonEmptyColumns */
+        /** @var list<NonEmptyColumn|Ref> $nonEmptyColumns TODO: remove this line when phpstan can detect the type by itself */
         $nonEmptyColumns = array_values(array_diff_key($columns, $emptyColumns));
 
         // if there are no columns we have nothing to do.
@@ -135,8 +135,7 @@ class TableJoiner
         }
         $product = $this->cartesianProductRecursive($mostLeftColumn, $nonEmptyColumns);
 
-        // TODO: remove type-hint when phpstan can detect that `array_keys(list<X>)` results in` list<int<0, max>>`
-        /** @var list<Ref> $emptyColumnIndices */
+        /** @var list<Ref> $emptyColumnIndices TODO: remove this line when phpstan can detect that `array_keys(list<X>)` results in` list<int<0, max>>` */
         $emptyColumnIndices = array_values(array_keys($emptyColumns));
 
         return $this->reAddEmptyColumnsAsNull($product, $emptyColumnIndices);
