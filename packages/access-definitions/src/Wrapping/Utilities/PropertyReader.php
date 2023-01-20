@@ -42,19 +42,19 @@ class PropertyReader
      * @template TEntity of object
      *
      * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $relationshipType
-     * @param TEntity $value
+     * @param TEntity $relationshipEntity
      *
      * @return TEntity|null
      *
      * @throws PathException
      */
-    public function determineToOneRelationshipValue(TransferableTypeInterface $relationshipType, object $value): ?object
+    public function determineToOneRelationshipValue(TransferableTypeInterface $relationshipType, object $relationshipEntity): ?object
     {
         $condition = $this->schemaPathProcessor->processAccessCondition($relationshipType);
 
         // if to-one relationship: if available return the value to wrap, otherwise return null
-        return $this->conditionEvaluator->evaluateCondition($value, $condition)
-            ? $value
+        return $this->conditionEvaluator->evaluateCondition($relationshipEntity, $condition)
+            ? $relationshipEntity
             : null;
     }
 
@@ -73,16 +73,16 @@ class PropertyReader
      * @template TEntity of object
      *
      * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $relationshipType
-     * @param list<TEntity> $values
+     * @param list<TEntity> $relationshipEntities
      *
      * @return list<TEntity>
      *
      * @throws PathException
      * @throws SortException
      */
-    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, array $values): array
+    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, array $relationshipEntities): array
     {
-        $entities = $this->filter($relationshipType, $values);
+        $entities = $this->filter($relationshipType, $relationshipEntities);
 
         $sortMethods = $this->schemaPathProcessor->processDefaultSortMethods($relationshipType);
         if ([] !== $sortMethods) {
