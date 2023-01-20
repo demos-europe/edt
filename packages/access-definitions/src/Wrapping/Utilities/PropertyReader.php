@@ -107,7 +107,7 @@ class PropertyReader
         }
 
         return array_map(
-            static function ($relationshipValue) use ($propertyName, $entityClass): object {
+            static function (mixed $relationshipValue) use ($propertyName, $entityClass): object {
                 if (!$relationshipValue instanceof $entityClass) {
                     throw RelationshipAccessException::toManyIterableInvalidEntity($propertyName, $entityClass);
                 }

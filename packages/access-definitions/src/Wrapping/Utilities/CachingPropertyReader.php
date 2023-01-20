@@ -5,11 +5,32 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
+use EDT\Wrapping\Contracts\Types\TypeInterface;
 use function array_key_exists;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use function is_object;
 
+/**
+ * Saves computational results to skip the computation when called again with the same parameters.
+ *
+ * Assumes that for the same {@link TypeInterface} instance the return of the following method stays
+ * the same during the lifetime of the instance of this class:
+ *
+ * * {@link TypeInterface::getDefaultSortMethods()}
+ * * {@link TypeInterface::getAccessCondition()}
+ * * {@link TypeInterface::getInternalProperties()}
+ * * {@link AliasableTypeInterface::getAliases()} (if implemented)
+ *
+ * Also assumes that the values behind the these property paths that are accessed by these
+ * conditions and sort methods stay the same in the given entities (and their accessed nested
+ * relationship entities) during the lifetime of the instance of this class.
+ *
+ * Note that the property values are read by a {@link PropertyAccessorInterface} instance, which
+ * is assumed to not read the values differently for the same entities and properties as well.
+ */
 class CachingPropertyReader extends PropertyReader
 {
     /**
