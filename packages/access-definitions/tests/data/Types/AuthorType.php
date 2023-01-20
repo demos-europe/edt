@@ -142,4 +142,9 @@ class AuthorType implements
             'pseudonym' => null,
         ];
     }
+
+    public function getIdentifier(): string
+    {
+        return self::class;
+    }
 }
