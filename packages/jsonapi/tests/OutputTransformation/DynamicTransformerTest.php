@@ -37,12 +37,10 @@ class DynamicTransformerTest extends TestCase
 
     private PhpConditionFactory $conditionFactory;
 
-    private MessageFormatter $messageFormatter;
-
     public function testEmpty(): void
     {
         $transformer = new DynamicTransformer(
-            new EmptyType($this->wrapperFactory, $this->conditionFactory, new NullLogger(), $this->messageFormatter),
+            new EmptyType($this->conditionFactory),
             $this->wrapperFactory,
             new MessageFormatter(),
             null

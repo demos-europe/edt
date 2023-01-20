@@ -111,4 +111,9 @@ class BookType implements
     {
         return [];
     }
+
+    public function getIdentifier(): string
+    {
+        return self::class;
+    }
 }
