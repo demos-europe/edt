@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Utilities;
 
-use EDT\Querying\Utilities\Iterables;
-use InvalidArgumentException;
+use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\SortMethodInterface;
 use function array_key_exists;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use function gettype;
 use function is_object;
 
 class CachingPropertyReader extends PropertyReader
@@ -23,53 +22,50 @@ class CachingPropertyReader extends PropertyReader
      */
     private array $toManyValueCache = [];
 
-    public function determineToOneRelationshipValue(TransferableTypeInterface $relationshipType, object $value): ?object
+    public function determineToOneRelationshipValue(TransferableTypeInterface $relationshipType, object $relationshipEntity): ?object
     {
-        $hash = $this->createHash($relationshipType, $value);
+        $hash = $this->createHash($relationshipType, $relationshipEntity);
         if (!array_key_exists($hash, $this->toOneValueCache)) {
-            $value = parent::determineToOneRelationshipValue($relationshipType, $value);
-            $this->toOneValueCache[$hash] = $value;
+            $relationshipEntity = parent::determineToOneRelationshipValue($relationshipType, $relationshipEntity);
+            $this->toOneValueCache[$hash] = $relationshipEntity;
 
-            return $value;
+            return $relationshipEntity;
         }
 
         return $this->toOneValueCache[$hash];
     }
 
-    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, array $values): array
+    public function determineToManyRelationshipValue(TransferableTypeInterface $relationshipType, array $relationshipEntities): array
     {
-        $hash = $this->createHash($relationshipType, $values);
+        $hash = $this->createHash($relationshipType, $relationshipEntities);
         if (!array_key_exists($hash, $this->toManyValueCache)) {
-            $values =  parent::determineToManyRelationshipValue($relationshipType, $values);
-            $this->toManyValueCache[$hash] = $values;
+            $relationshipEntities =  parent::determineToManyRelationshipValue($relationshipType, $relationshipEntities);
+            $this->toManyValueCache[$hash] = $relationshipEntities;
 
-            return $values;
+            return $relationshipEntities;
         }
 
         return $this->toManyValueCache[$hash];
     }
 
     /**
-     * Create cache hash from 3 values that need to be distinct to be cached.
+     * Create cache hash from 2 values that need to be distinct to be cached.
+     *
+     * @template TEntity of object
+     *
+     * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $relationshipType
+     * @param TEntity|list<TEntity> $relationshipValue
      *
      * @return non-empty-string
      */
-    private function createHash(TransferableTypeInterface $relationship, mixed $propertyValue): string
+    private function createHash(TransferableTypeInterface $relationshipType, object|array $relationshipValue): string
     {
-        $hashRelationship = spl_object_hash($relationship);
+        $hashRelationship = spl_object_hash($relationshipType);
 
-        if (null === $propertyValue) {
-            $hashProperty = '';
-        } elseif (is_scalar($propertyValue)) {
-            // int, float, string or bool
-            $hashProperty = (string) $propertyValue;
-        } elseif (is_object($propertyValue)) {
-            $hashProperty = spl_object_hash($propertyValue);
-        } elseif (is_iterable($propertyValue)) {
-            $hashProperty = serialize(Iterables::asArray($propertyValue));
+        if (is_object($relationshipValue)) {
+            $hashProperty = spl_object_hash($relationshipValue);
         } else {
-            $valueType = gettype($propertyValue);
-            throw new InvalidArgumentException("Unexpected value type '$valueType'.");
+            $hashProperty = serialize($relationshipValue);
         }
 
         return hash('sha256', $hashRelationship.$hashProperty);
