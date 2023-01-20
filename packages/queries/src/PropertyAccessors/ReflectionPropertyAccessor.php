@@ -17,6 +17,17 @@ use function is_array;
 class ReflectionPropertyAccessor implements PropertyAccessorInterface
 {
     /**
+     * Cached {@link ReflectionProperty} instances, to avoid re-initialization.
+     *
+     * Mapping from the class and one of its properties to a corresponding
+     * {@link ReflectionProperty} with that property being
+     * {@link ReflectionProperty::setAccessible set as accessible}.
+     *
+     * @var array<class-string, non-empty-array<non-empty-string, ReflectionProperty>>
+     */
+    protected array $reflectedProperties = [];
+
+    /**
      * @throws ReflectionException
      */
     public function getValueByPropertyPath(?object $target, string $property, string ...$properties): mixed
@@ -25,7 +36,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
             return null;
         }
 
-        $newTarget = $this->getValueWithClass($target, $this->getClass($target), $property);
+        $newTarget = $this->getReflectionProperty($this->getClass($target), $property)->getValue($target);
 
         // if there are no more paths to follow we return the new target
         if ([] === $properties) {
@@ -60,7 +71,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         // for each item (or the target) we follow the remaining paths to the values to return
         $currentPart = array_shift($properties);
 
-        return Iterables::mapFlat(function ($newTarget) use ($currentPart, $properties, $depth): array {
+        return Iterables::mapFlat(function (?object $newTarget) use ($currentPart, $properties, $depth): array {
             $newTarget = $this->getValueByPropertyPath($newTarget, $currentPart);
             return [] === $properties
                 ? $this->restructureNesting($newTarget, $depth)
@@ -70,9 +81,28 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
 
     public function setValue(object $target, mixed $value, string $propertyName): void
     {
-        $reflectionProperty = new ReflectionProperty($this->getClass($target), $propertyName);
-        $reflectionProperty->setAccessible(true);
+        $reflectionProperty = $this->getReflectionProperty($this->getClass($target), $propertyName);
         $reflectionProperty->setValue($target, $value);
+    }
+
+    /**
+     * @param class-string $class
+     * @param non-empty-string $propertyName
+     *
+     * @throws ReflectionException
+     */
+    protected function getReflectionProperty(string $class, string $propertyName): ReflectionProperty
+    {
+        $reflectionProperty = $this->reflectedProperties[$class][$propertyName] ?? null;
+        if (null !== $reflectionProperty) {
+            return $reflectionProperty;
+        }
+
+        $reflectionProperty = new ReflectionProperty($class, $propertyName);
+        $reflectionProperty->setAccessible(true);
+        $this->reflectedProperties[$class][$propertyName] = $reflectionProperty;
+
+        return $reflectionProperty;
     }
 
     /**
@@ -81,22 +111,6 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
     protected function getClass(object $target): string
     {
         return $target::class;
-    }
-
-    /**
-     * @param object       $target
-     * @param class-string $class
-     *
-     * @return mixed
-     *
-     * @throws ReflectionException
-     */
-    protected function getValueWithClass(object $target, string $class, string $propertyName)
-    {
-        $reflectionProperty = new ReflectionProperty($class, $propertyName);
-        $reflectionProperty->setAccessible(true);
-
-        return $reflectionProperty->getValue($target);
     }
 
     /**
