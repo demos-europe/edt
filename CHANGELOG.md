@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.17.0 - 2023-01-30
 
 * remove `getTransformer` from `ResourceTypeInterface`, transformation is now always done via `DynamicTransformer`, regardless of `TypeInterface` implementation, thus
   * remove `getReadableResourceTypeProperties`, `getWrapperFactory`, `getLogger` and `getMessageFormatter` from `ResourceTypeInterface`/`AbstractResourceType`
