@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* fix: update `composer.json` files
+
 ## 0.17.0 - 2023-01-30
 
 * remove `getTransformer` from `ResourceTypeInterface`, transformation is now always done via `DynamicTransformer`, regardless of `TypeInterface` implementation, thus
