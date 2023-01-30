@@ -41,7 +41,7 @@ class Sorter
                     $propertyValuesRowsA = $this->tableJoiner->getValueRows($valueA, $propertyPaths);
                     $propertyValuesRowsB = $this->tableJoiner->getValueRows($valueB, $propertyPaths);
                     /**
-                     * Sorting by relationships is not supported yet as it is not as easy to implement as one might think.
+                     * Sorting by to-many relationships is not supported yet as it is not as easy to implement as one might think.
                      * Which of the values should be used for the comparison. See also (basically) the same problem in SQL:
                      * {@see https://www.programmerinterview.com/database-sql/sql-select-distinct-and-order-by/}
                      */
