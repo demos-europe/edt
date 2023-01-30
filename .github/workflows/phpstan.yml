@@ -9,8 +9,8 @@ on:
       - '**.php'
       - 'phpstan.neon'
 jobs:
-  phpstan7_4:
-    name: phpstan @ PHP 7.4
+  phpstan8_1:
+    name: phpstan @ PHP 8.1
     runs-on: ubuntu-latest
 
     steps:
@@ -20,11 +20,11 @@ jobs:
 
       - uses: php-actions/composer@v5
         with:
-          php_version: 7.4
+          php_version: 8.1
 
       - uses: php-actions/phpstan@v3
         with:
-          php_version: 7.4
+          php_version: 8.1
           level: 8
           configuration: 'phpstan.neon'
           version: '1.8.2'
