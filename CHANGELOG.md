@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.17.1 - 2023-01-30
 
 * fix: update `composer.json` files
 
