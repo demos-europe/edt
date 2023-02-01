@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.17.2 - 2023-02-01
 
 * fix: update monorepo dependencies to solve monorepo-split bug
 * fix: update `thecodingmachine/safe` dependency for PHP 8 support
