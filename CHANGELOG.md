@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+* fix: update `simplify/monorepo-builder` dependency to solve monorepo-split bug
+* fix: update `thecodingmachine/safe` dependency for PHP 8 support
+* refactor: update dev-dependencies
+
 ## 0.17.1 - 2023-01-30
 
 * fix: update `composer.json` files
