@@ -64,8 +64,6 @@ class DoctrineOrmEntityProviderTest extends TestCase
         );
         $paths = [__DIR__.'/tests/data/Model'];
         $driver = new AnnotationDriver(new AnnotationReader(), $paths);
-        // registering noop annotation autoloader - allow all annotations by default
-        AnnotationRegistry::registerLoader('class_exists');
         $config->setMetadataDriverImpl($driver);
         $conn = [
             'driver' => 'pdo_sqlite',
