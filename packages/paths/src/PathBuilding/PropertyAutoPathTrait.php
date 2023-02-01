@@ -15,7 +15,6 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Exception;
 use Safe\Exceptions\ArrayException;
 use function array_key_exists;
-use function Safe\array_combine;
 
 /**
  * Denotes a path usable in a condition that can be finalized to a string in dot-notation.

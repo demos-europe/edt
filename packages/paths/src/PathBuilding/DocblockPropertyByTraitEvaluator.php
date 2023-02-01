@@ -14,7 +14,6 @@ use phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
 use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use function array_key_exists;
-use function Safe\array_combine;
 
 class DocblockPropertyByTraitEvaluator
 {

@@ -17,7 +17,6 @@ use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\ParamBag;
-use Safe\Exceptions\StringsException;
 use Webmozart\Assert\Assert;
 use function gettype;
 use function is_array;
@@ -31,7 +30,6 @@ use function array_key_exists;
 use function count;
 use function in_array;
 use InvalidArgumentException;
-use function Safe\substr;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\NullResource;
@@ -315,6 +313,8 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
+     * @param non-empty-string $includeMethodName
+     *
      * @throws TransformException
      */
     private function getIncludeName(string $includeMethodName): string
@@ -323,11 +323,7 @@ class DynamicTransformer extends TransformerAbstract
             throw TransformException::noIncludeMethod($includeMethodName);
         }
 
-        try {
-            return lcfirst(substr($includeMethodName, 7));
-        } catch (StringsException $exception) {
-            throw TransformException::substring($exception);
-        }
+        return lcfirst(substr($includeMethodName, 7));
     }
 
     /**

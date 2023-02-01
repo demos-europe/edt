@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
-use Safe\Exceptions\StringsException;
 use function array_key_exists;
 use cebe\openapi\spec\Schema;
-use function Safe\sprintf;
 
 /**
  * Store OpenAPI Schema Definitions for reuse.
@@ -45,8 +43,6 @@ class SchemaStore
      * @param non-empty-string $schemaName
      *
      * @return non-empty-string
-     *
-     * @throws StringsException
      */
     public function getSchemaReference(string $schemaName): string
     {

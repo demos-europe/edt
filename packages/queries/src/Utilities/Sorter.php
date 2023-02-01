@@ -10,7 +10,6 @@ use EDT\Querying\PropertyPaths\PathInfo;
 use Throwable;
 use Webmozart\Assert\Assert;
 use function count;
-use function Safe\usort;
 
 /**
  * @internal
