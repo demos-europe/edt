@@ -30,7 +30,8 @@
     ],
     "require-dev": {
         "doctrine/annotations": "^1.13",
-        "doctrine/cache": "^1.11",
+        "doctrine/cache": "^2.2",
+        "symfony/cache": "^5.3",
         "ergebnis/phpstan-rules": "^1.0",
         "phpcompatibility/php-compatibility": "^9.3",
         "phpstan/phpstan": "^1.8.2",
