@@ -328,19 +328,19 @@ class ConditionDefinition
      */
     protected function processSubDefinitions(): array
     {
-        $conditions = $this->conditions;
-        foreach ($this->subDefinitions as $definition) {
+        $nestedConditions = array_map(function (ConditionDefinition $definition): array {
             $subConditions = $definition->getConditions();
-            if ($definition->andConjunction === $this->andConjunction
-                || 1 >= count($subConditions)) {
-                $conditions = array_merge($conditions, $subConditions);
-            } else {
-                $conditions[] = $definition->andConjunction
-                    ? $this->conditionFactory->allConditionsApply(...$subConditions)
-                    : $this->conditionFactory->anyConditionApplies(...$subConditions);
+            if ($definition->andConjunction === $this->andConjunction || 1 >= count($subConditions)) {
+                return $subConditions;
             }
-        }
 
-        return $conditions;
+            $conditionGroup = $definition->andConjunction
+                ? $this->conditionFactory->allConditionsApply(...$subConditions)
+                : $this->conditionFactory->anyConditionApplies(...$subConditions);
+
+            return [$conditionGroup];
+        }, $this->subDefinitions);
+
+        return array_merge($this->conditions, ...$nestedConditions);
     }
 }
