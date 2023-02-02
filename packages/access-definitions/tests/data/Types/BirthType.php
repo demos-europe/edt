@@ -12,7 +12,7 @@ use Tests\data\AdModel\Birth;
 class BirthType implements TypeInterface
 {
     public function __construct(
-        private PathsBasedConditionFactoryInterface $conditionFactory
+        private readonly PathsBasedConditionFactoryInterface $conditionFactory
     ) {}
 
 

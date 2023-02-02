@@ -17,7 +17,7 @@ class SortValidator
     private array $sortConstraints;
 
     public function __construct(
-        private ValidatorInterface $validator
+        private readonly ValidatorInterface $validator
     ) {
         $this->sortConstraints = [
             new Assert\NotBlank(null, null, false),

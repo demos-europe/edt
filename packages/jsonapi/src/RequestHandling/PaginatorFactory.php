@@ -14,8 +14,8 @@ use Symfony\Component\Routing\RouterInterface;
 class PaginatorFactory
 {
     public function __construct(
-        private RequestStack $requestStack,
-        private RouterInterface $router
+        private readonly RequestStack $requestStack,
+        private readonly RouterInterface $router
     ) {}
 
     public function createPaginatorAdapter(Pagerfanta $paginator): PaginatorInterface

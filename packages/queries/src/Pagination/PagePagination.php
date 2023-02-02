@@ -11,8 +11,8 @@ class PagePagination
      * @param positive-int $number
      */
     public function __construct(
-        private int $size,
-        private int $number
+        private readonly int $size,
+        private readonly int $number
     ) {}
 
     /**

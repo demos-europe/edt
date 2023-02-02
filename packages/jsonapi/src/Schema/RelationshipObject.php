@@ -13,7 +13,7 @@ use Exception;
 class RelationshipObject
 {
     private function __construct(
-        private ResourceLinkageInterface $data
+        private readonly ResourceLinkageInterface $data
     ) {}
 
     /**

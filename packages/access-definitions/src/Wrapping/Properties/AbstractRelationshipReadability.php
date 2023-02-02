@@ -17,8 +17,8 @@ abstract class AbstractRelationshipReadability extends AbstractReadability
     public function __construct(
         bool $defaultField,
         bool $allowingInconsistencies,
-        private bool $defaultInclude,
-        private TransferableTypeInterface $relationshipType
+        private readonly bool $defaultInclude,
+        private readonly TransferableTypeInterface $relationshipType
     ) {
         parent::__construct($defaultField, $allowingInconsistencies);
     }

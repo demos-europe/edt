@@ -23,8 +23,8 @@ use EDT\Querying\EntityProviders\OffsetPaginatingEntityProviderInterface;
 class DoctrineOrmEntityProvider implements ObjectProviderInterface, OffsetPaginatingEntityProviderInterface
 {
     public function __construct(
-        private EntityManager $entityManager,
-        private QueryBuilderPreparer $builderPreparer
+        private readonly EntityManager $entityManager,
+        private readonly QueryBuilderPreparer $builderPreparer
     ) {}
 
     /**

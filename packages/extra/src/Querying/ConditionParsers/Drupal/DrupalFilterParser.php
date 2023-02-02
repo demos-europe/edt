@@ -101,9 +101,9 @@ class DrupalFilterParser implements FilterParserInterface
      * @param ConditionParserInterface<DrupalFilterCondition, TCondition> $conditionParser
      */
     public function __construct(
-        protected PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
-        private ConditionParserInterface $conditionParser,
-        private DrupalFilterValidator $filterValidator
+        protected readonly PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
+        private readonly ConditionParserInterface $conditionParser,
+        private readonly DrupalFilterValidator $filterValidator
     ) {}
 
     /**

@@ -29,9 +29,9 @@ class DocblockPropertyByTraitEvaluator
      * @param non-empty-list<non-empty-string> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      */
     public function __construct(
-        private TraitEvaluator $traitEvaluator,
-        private string $targetTrait,
-        private array $targetTags
+        private readonly TraitEvaluator $traitEvaluator,
+        private readonly string $targetTrait,
+        private readonly array $targetTags
     ) {}
 
     /**

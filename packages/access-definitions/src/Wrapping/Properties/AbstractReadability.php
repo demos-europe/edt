@@ -64,8 +64,8 @@ abstract class AbstractReadability
      * @see https://jsonapi.org/format/#fetching-sparse-fieldsets JSON:API sparse fieldsets
      */
     public function __construct(
-        private bool $defaultField,
-        private bool $allowingInconsistencies
+        private readonly bool $defaultField,
+        private readonly bool $allowingInconsistencies
     ) {}
 
     public function isDefaultField(): bool

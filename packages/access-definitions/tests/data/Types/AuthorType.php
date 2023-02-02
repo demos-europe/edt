@@ -34,8 +34,8 @@ class AuthorType implements
     AliasableTypeInterface
 {
     public function __construct(
-        private PathsBasedConditionFactoryInterface $conditionFactory,
-        protected TypeProviderInterface $typeProvider
+        private readonly PathsBasedConditionFactoryInterface $conditionFactory,
+        protected readonly TypeProviderInterface $typeProvider
     ) {}
 
     public function getReadableProperties(): array

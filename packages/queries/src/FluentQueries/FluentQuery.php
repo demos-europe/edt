@@ -32,10 +32,10 @@ class FluentQuery
      * @param SortDefinition<TSorting> $sortDefinition
      */
     public function __construct(
-        protected ObjectProviderInterface $objectProvider,
-        private ConditionDefinition $conditionDefinition,
-        private SortDefinition $sortDefinition,
-        private SliceDefinition $sliceDefinition
+        protected readonly ObjectProviderInterface $objectProvider,
+        private readonly ConditionDefinition $conditionDefinition,
+        private readonly SortDefinition $sortDefinition,
+        private readonly SliceDefinition $sliceDefinition
     ) {}
 
     /**

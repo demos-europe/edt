@@ -22,9 +22,9 @@ use EDT\Wrapping\Contracts\WrapperFactoryInterface;
 class PropertyReader
 {
     public function __construct(
-        private SchemaPathProcessor $schemaPathProcessor,
-        private ConditionEvaluator $conditionEvaluator,
-        private Sorter $sorter
+        private readonly SchemaPathProcessor $schemaPathProcessor,
+        private readonly ConditionEvaluator $conditionEvaluator,
+        private readonly Sorter $sorter
     ) {}
 
     /**

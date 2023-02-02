@@ -79,10 +79,10 @@ class DynamicTransformer extends TransformerAbstract
      * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
      */
     public function __construct(
-        private TransferableTypeInterface $type,
-        private WrapperObjectFactory $wrapperFactory,
-        private MessageFormatter $messageFormatter,
-        private ?LoggerInterface $logger
+        private readonly TransferableTypeInterface $type,
+        private readonly WrapperObjectFactory $wrapperFactory,
+        private readonly MessageFormatter $messageFormatter,
+        private readonly ?LoggerInterface $logger
     ) {
         $readableProperties = $type->getReadableProperties();
         [

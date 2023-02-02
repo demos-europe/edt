@@ -23,7 +23,7 @@ class AbstractRelationshipUpdatability extends AbstractUpdatability
     public function __construct(
         array $entityConditions,
         array $valueConditions,
-        private TransferableTypeInterface $relationshipType
+        private readonly TransferableTypeInterface $relationshipType
     ) {
         parent::__construct($entityConditions, $valueConditions);
     }

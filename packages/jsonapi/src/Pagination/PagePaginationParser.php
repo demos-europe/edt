@@ -21,8 +21,8 @@ class PagePaginationParser implements PaginationParserInterface
      * @param positive-int $defaultSize
      */
     public function __construct(
-        private int $defaultSize,
-        private ValidatorInterface $validator
+        private readonly int $defaultSize,
+        private readonly ValidatorInterface $validator
     ) {}
 
     /**

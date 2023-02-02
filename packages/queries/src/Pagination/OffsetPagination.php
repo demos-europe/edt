@@ -11,8 +11,8 @@ class OffsetPagination
      * @param positive-int $limit
      */
     public function __construct(
-        private int $offset,
-        private int $limit
+        private readonly int $offset,
+        private readonly int $limit
     ) {}
 
     /**

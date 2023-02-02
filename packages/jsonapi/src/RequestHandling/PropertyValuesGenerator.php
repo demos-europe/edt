@@ -29,8 +29,8 @@ class PropertyValuesGenerator
      * @param TypeProviderInterface<TCondition, TSorting> $typeProvider
      */
     public function __construct(
-        private EntityFetcherInterface $entityFetcher,
-        private TypeProviderInterface $typeProvider
+        private readonly EntityFetcherInterface $entityFetcher,
+        private readonly TypeProviderInterface $typeProvider
     ) {}
 
     /**

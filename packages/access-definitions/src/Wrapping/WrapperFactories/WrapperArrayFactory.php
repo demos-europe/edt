@@ -30,9 +30,9 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      * @throws InvalidArgumentException Thrown if the given depth is negative.
      */
     public function __construct(
-        private PropertyAccessorInterface $propertyAccessor,
-        private PropertyReader $propertyReader,
-        private int $depth
+        private readonly PropertyAccessorInterface $propertyAccessor,
+        private readonly PropertyReader $propertyReader,
+        private readonly int $depth
     ) {}
 
     /**

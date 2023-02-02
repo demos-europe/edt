@@ -23,8 +23,8 @@ class DrupalConditionParser implements ConditionParserInterface
      * @param non-empty-string $defaultOperator
      */
     public function __construct(
-        private DrupalConditionFactoryInterface $drupalConditionFactory,
-        protected string $defaultOperator = '='
+        private readonly DrupalConditionFactoryInterface $drupalConditionFactory,
+        protected readonly string $defaultOperator = '='
     ) {}
 
     /**

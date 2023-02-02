@@ -22,8 +22,8 @@ class TypeRequirement
      */
     public function __construct(
         private ?TypeInterface $typedInstance,
-        private ?TypeInterface $plainInstance,
-        private string $identifier,
+        private readonly ?TypeInterface $plainInstance,
+        private readonly string $identifier,
         private array $problems
     ) {}
 

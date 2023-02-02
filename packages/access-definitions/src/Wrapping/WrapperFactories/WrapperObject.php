@@ -57,12 +57,12 @@ class WrapperObject
      * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, TEntity> $type
      */
     public function __construct(
-        private object $entity,
-        private PropertyReader $propertyReader,
-        private TransferableTypeInterface $type,
-        private PropertyAccessorInterface $propertyAccessor,
-        private ConditionEvaluator $conditionEvaluator,
-        private WrapperObjectFactory $wrapperFactory
+        private readonly object $entity,
+        private readonly PropertyReader $propertyReader,
+        private readonly TransferableTypeInterface $type,
+        private readonly PropertyAccessorInterface $propertyAccessor,
+        private readonly ConditionEvaluator $conditionEvaluator,
+        private readonly WrapperObjectFactory $wrapperFactory
     ) {}
 
     /**

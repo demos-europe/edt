@@ -7,7 +7,7 @@ namespace EDT\JsonApi\Schema;
 class ToOneResourceLinkage implements ResourceLinkageInterface
 {
     private function __construct(
-        private ?ResourceIdentifierObject $resourceIdentifierObject
+        private readonly ?ResourceIdentifierObject $resourceIdentifierObject
     ) {}
 
     /**

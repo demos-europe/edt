@@ -23,7 +23,7 @@ class ExternReadableProcessorConfig extends AbstractProcessorConfig
     public function __construct(
         TypeProviderInterface $typeProvider,
         TransferableTypeInterface $rootType,
-        private bool $allowAttribute
+        private readonly bool $allowAttribute
     ) {
         parent::__construct($typeProvider, $rootType);
     }

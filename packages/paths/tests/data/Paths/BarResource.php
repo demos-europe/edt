@@ -31,7 +31,7 @@ class BarResource implements PropertyAutoPathInterface
     use PropertyAutoPathTrait;
 
     public function __construct(
-        private string $paramNeededForUnitTests = ''
+        private readonly string $paramNeededForUnitTests = ''
     ) {}
 
     public function __toString(): string

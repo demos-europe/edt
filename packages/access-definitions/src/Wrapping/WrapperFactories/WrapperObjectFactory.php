@@ -18,9 +18,9 @@ use EDT\Wrapping\Utilities\PropertyReader;
 class WrapperObjectFactory implements WrapperFactoryInterface
 {
     public function __construct(
-        private PropertyReader $propertyReader,
-        private PropertyAccessorInterface $propertyAccessor,
-        private ConditionEvaluator $conditionEvaluator
+        private readonly PropertyReader $propertyReader,
+        private readonly PropertyAccessorInterface $propertyAccessor,
+        private readonly ConditionEvaluator $conditionEvaluator
     ) {}
 
     /**

@@ -13,7 +13,7 @@ use ReflectionException;
 class ProxyPropertyAccessor extends ReflectionPropertyAccessor
 {
     public function __construct(
-        private ObjectManager $objectManager
+        private readonly ObjectManager $objectManager
     ) {}
 
     /**

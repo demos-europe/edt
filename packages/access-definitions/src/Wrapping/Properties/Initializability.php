@@ -15,8 +15,8 @@ class Initializability
      * @param list<TCondition> $conditions
      */
     public function __construct(
-        private array $conditions,
-        private bool $requiredForEntityCreation
+        private readonly array $conditions,
+        private readonly bool $requiredForEntityCreation
     ) {}
 
     public function isRequiredForEntityCreation(): bool

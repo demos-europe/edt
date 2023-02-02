@@ -20,7 +20,7 @@ class JsonApiSortingParser
      * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
     public function __construct(
-        private SortMethodFactoryInterface $sortMethodFactory
+        private readonly SortMethodFactoryInterface $sortMethodFactory
     ) {}
 
     /**

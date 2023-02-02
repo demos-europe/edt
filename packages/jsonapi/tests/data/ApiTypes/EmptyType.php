@@ -18,7 +18,7 @@ use Tests\data\EmptyEntity;
 class EmptyType extends AbstractResourceType
 {
     public function __construct(
-        private ConditionFactoryInterface $conditionFactory
+        private readonly ConditionFactoryInterface $conditionFactory
     ) {}
 
     protected function configureProperties(TypedPathConfigCollection $configCollection): void

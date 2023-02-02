@@ -32,9 +32,9 @@ class PrefilledObjectProvider implements ObjectProviderInterface, OffsetPaginati
      * @param array<TKey, TEntity> $prefilledArray
      */
     public function __construct(
-        private ConditionEvaluator $conditionEvaluator,
-        private Sorter $sorter,
-        private array $prefilledArray
+        private readonly ConditionEvaluator $conditionEvaluator,
+        private readonly Sorter $sorter,
+        private readonly array $prefilledArray
     ) {}
 
     /**

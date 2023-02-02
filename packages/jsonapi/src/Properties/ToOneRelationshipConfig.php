@@ -26,8 +26,8 @@ class ToOneRelationshipConfig extends AbstractConfig
      * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
-        protected ResourceTypeInterface $type,
-        private ResourceTypeInterface $relationshipType
+        protected readonly ResourceTypeInterface $type,
+        private readonly ResourceTypeInterface $relationshipType
     ) {}
 
     /**

@@ -21,7 +21,7 @@ use function array_key_exists;
 class JoinFinder
 {
     public function __construct(
-        private ClassMetadataFactory $metadataFactory
+        private readonly ClassMetadataFactory $metadataFactory
     ) {}
 
     /**

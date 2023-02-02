@@ -16,8 +16,8 @@ abstract class AbstractUpdatability
      * @param list<TCondition> $valueConditions
      */
     public function __construct(
-        private array $entityConditions,
-        private array $valueConditions
+        private readonly array $entityConditions,
+        private readonly array $valueConditions
     ) {}
 
     /**

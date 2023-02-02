@@ -24,8 +24,8 @@ abstract class AbstractProcessorConfig
      * @param TType                                                           $rootType
      */
     public function __construct(
-        protected TypeProviderInterface $typeProvider,
-        private TypeInterface $rootType
+        protected readonly TypeProviderInterface $typeProvider,
+        private readonly TypeInterface $rootType
     ) {}
 
     /**
