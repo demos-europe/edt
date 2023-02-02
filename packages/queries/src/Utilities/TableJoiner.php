@@ -198,7 +198,7 @@ class TableJoiner
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    private function rebuildTable($rightColumn, array $wipTable): array
+    private function rebuildTable(array|int $rightColumn, array $wipTable): array
     {
         if (is_array($rightColumn)) {
             $nestedRows = array_map(

@@ -36,7 +36,7 @@ class DrupalFilterValidator
      *
      * @throws DrupalFilterException
      */
-    public function validateFilter($filter): void
+    public function validateFilter(mixed $filter): void
     {
         $filterSchemaViolations = $this->validator->validate($filter, $this->filterSchemaConstraints);
         $filterNameViolations = $this->validator->validate(array_keys($filter), $this->filterNamesConstraints);

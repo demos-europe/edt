@@ -18,7 +18,7 @@ class RelationshipObject
 
     /**
      * This constructor function takes the format defined by the JSON:API specification
-     * which can be send by a client in a request and creates a Relationship Object
+     * which can be sent by a client in a request and creates a Relationship Object
      * (also defined by the JSON:API specification) from it.
      *
      * The type of relationship object depends heavily on the format in the given array parameter.

@@ -51,13 +51,11 @@ class PagePaginationParser implements PaginationParserInterface
     }
 
     /**
-     * @param mixed $page
-     *
      * @return array{size?: non-empty-string, number?: non-empty-string}
      *
      * @throws ValidationFailedException
      */
-    protected function getValidatedPage($page): array
+    protected function getValidatedPage(mixed $page): array
     {
         $violations = $this->validator->validate($page, [
             new Assert\NotNull(),

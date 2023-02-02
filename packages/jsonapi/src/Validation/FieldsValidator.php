@@ -52,13 +52,11 @@ class FieldsValidator
      *
      * Its values must be a comma-separated list of properties that should exist in that type.
      *
-     * @param mixed $fieldValue
-     *
      * @return array<non-empty-string, string>
      *
      * @throws FieldsException
      */
-    public function validateFormat($fieldValue): array
+    public function validateFormat(mixed $fieldValue): array
     {
         $violations = $this->validator->validate($fieldValue, $this->propertiesConstraints);
         if (is_array($fieldValue)) {

@@ -27,11 +27,9 @@ class SortValidator
     }
 
     /**
-     * @param mixed $sortValue
-     *
      * @return non-empty-string
      */
-    public function validateFormat($sortValue): string
+    public function validateFormat(mixed $sortValue): string
     {
         $violations = $this->validator->validate($sortValue, $this->sortConstraints);
 

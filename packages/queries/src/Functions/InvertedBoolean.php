@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Functions;
 
-use EDT\Querying\Contracts\FunctionException;
-use function is_bool;
-
 /**
  * @template-extends AbstractSingleFunction<bool, bool>
  *

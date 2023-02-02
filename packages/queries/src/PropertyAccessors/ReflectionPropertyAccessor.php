@@ -120,7 +120,6 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
      * If at any level the current target is non-iterable then the depth will be assumed to be
      * this level, even if the actual `$depth` is given with a greater value.
      *
-     * @param mixed $target
      * @param int<0, max> $depth Passing 0 will return the given target wrapped in an array.
      *                   Passing 1 will keep the structure of the given target.
      *                   Passing a value greater 1 will flat the target from the top to the
@@ -132,7 +131,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
      *
      * @return list<mixed>
      */
-    private function restructureNesting($target, int $depth, callable $isIterable = null): array
+    private function restructureNesting(mixed $target, int $depth, callable $isIterable = null): array
     {
         if (null === $isIterable) {
             $isIterable = 'is_iterable';

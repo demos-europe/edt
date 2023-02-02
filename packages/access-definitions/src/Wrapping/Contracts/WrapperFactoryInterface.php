@@ -30,5 +30,5 @@ interface WrapperFactoryInterface
      *
      * @throws AccessException
      */
-    public function createWrapper(object $entity, TransferableTypeInterface $type);
+    public function createWrapper(object $entity, TransferableTypeInterface $type): array|object|null;
 }

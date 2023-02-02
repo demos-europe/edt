@@ -119,24 +119,17 @@ class AttributeTypeResolver
     {
         $nativeType = $reflectionType->getName();
 
-        switch ($nativeType) {
-            case 'int':
-                $type = 'number';
-                break;
-
-            case 'array':
-                /*
-                 * Arrays can be either arrays or hashmaps in PHP. This is currently not properly
-                 * handled and all arrays are assumed to be just arrays.
-                 *
-                 * @improve T24976
-                 */
-
-            default:
-                $type = $nativeType;
-        }
-
-        return $type;
+        return match ($nativeType) {
+            'int' => 'number',
+            /*
+             * Arrays can be either arrays or hashmaps in PHP. This is currently not properly
+             * handled and all arrays are assumed to be just arrays.
+             *
+             * TODO @improve T24976
+             */
+            //'array' => $nativeType,
+            default => $nativeType,
+        };
     }
 
     /**
@@ -180,14 +173,14 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param array{0: object, 1: string}|callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
+     * @param callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
      *
      * @return array{type: string}
      *
      * @throws ReflectionException
      */
     private function resolveTypeFromCallable(
-        $customReadCallback,
+        callable $customReadCallback,
         string $resourceClass,
         string $propertyName
     ): array {
@@ -216,13 +209,13 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param array{0: object, 1: string}|callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
+     * @param callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
      *
      * @return ReflectionMethod|ReflectionFunction
      *
      * @throws ReflectionException
      */
-    private function reflectCustomValueFunction($customReadCallback): ReflectionFunctionAbstract
+    private function reflectCustomValueFunction(callable $customReadCallback): ReflectionFunctionAbstract
     {
         if (is_array($customReadCallback)) {
             return (new ReflectionClass($customReadCallback[0]))->getMethod(
@@ -230,11 +223,11 @@ class AttributeTypeResolver
             );
         }
 
-        if (is_callable($customReadCallback)) {
-            $customReadCallback = Closure::fromCallable($customReadCallback);
+        if (is_string($customReadCallback)) {
+            return new ReflectionFunction($customReadCallback);
         }
 
-        return new ReflectionFunction($customReadCallback);
+        return new ReflectionFunction($customReadCallback(...));
     }
 
     /**

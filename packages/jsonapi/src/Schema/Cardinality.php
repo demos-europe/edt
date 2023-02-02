@@ -7,7 +7,7 @@ namespace EDT\JsonApi\Schema;
 /**
  * Represents the cardinality of a relationship. Currently only toOne and toMany are implemented.
  *
- * Note that the creation of multiple equal instances is possible. Eg. multiple instances of 'toOne'
+ * Note that the creation of multiple equal instances is possible. E.g. multiple instances of 'toOne'
  * cardinalities may be created. Ideally for each cardinality at most one instance exists however
  * this is not implemented yet.
  *

@@ -81,7 +81,7 @@ class PropertyBuilder
     public function __construct(
         PropertyPathInterface $path,
         protected string $entityClass,
-        private ?array $relationship = null
+        private readonly ?array $relationship = null
     ) {
         $names = $path->getAsNames();
         Assert::count($names, 1);

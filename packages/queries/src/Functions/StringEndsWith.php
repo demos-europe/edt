@@ -23,7 +23,7 @@ class StringEndsWith extends AbstractMultiFunction
         parent::__construct($contains, $contained);
     }
 
-    protected function reduce(array $functionResults)
+    protected function reduce(array $functionResults): bool
     {
         [$contains, $contained] = $functionResults;
 

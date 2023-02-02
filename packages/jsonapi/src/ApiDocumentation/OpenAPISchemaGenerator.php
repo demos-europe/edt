@@ -49,7 +49,7 @@ final class OpenAPISchemaGenerator
             [
                 'openapi' => '3.0.2',
                 'info'    => [
-                    'title'       => $this->trans('title', []),
+                    'title'       => $this->trans('title'),
                     'description' => $this->trans('description'),
                     'version'     => '2.0',
                 ],

@@ -42,13 +42,11 @@ class OffsetPaginationParser implements PaginationParserInterface
     }
 
     /**
-     * @param mixed $page
-     *
      * @return array{offset: numeric-string, limit: numeric-string}
      *
      * @throws ValidationFailedException
      */
-    protected function getValidatedPage($page): array
+    protected function getValidatedPage(mixed $page): array
     {
         $violations = $this->validator->validate($page, [
             new Assert\NotNull(),

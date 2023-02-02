@@ -141,7 +141,7 @@ class ConfigCollection
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function configureAttribute($propertyPath): AttributeConfig
+    public function configureAttribute(string|PropertyPathInterface $propertyPath): AttributeConfig
     {
         [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
 
@@ -184,7 +184,7 @@ class ConfigCollection
      * @throws PathException
      */
     public function configureToOneRelationship(
-        $propertyPath,
+        string|PropertyPathInterface $propertyPath,
         ResourceTypeInterface $relationshipType
     ): ToOneRelationshipConfig {
         [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
@@ -312,7 +312,7 @@ class ConfigCollection
      *
      * @throws PathException
      */
-    protected function getNameAndPath($propertyPath): array
+    protected function getNameAndPath(string|PropertyPathInterface $propertyPath): array
     {
         if ($propertyPath instanceof PropertyPathInterface) {
             $propertyPath = $propertyPath->getAsNames();

@@ -14,7 +14,6 @@ use EDT\DqlQuerying\Contracts\ClauseInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
-use Webmozart\Assert\Assert;
 use function count;
 
 /**
@@ -34,15 +33,17 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
 
     /**
      * Will set the clauses of this class. By calling {@link AbstractClauseFunction::getDqls()}
-     * the {@link \EDT\DqlQuerying\Contracts\ClauseInterface::asDql()} of all clauses will be invoked and the results
+     * the {@link ClauseInterface::asDql()} of all clauses will be invoked and the results
      * returned inside an array. E.g. if you passed a single clause the returned array will contain
      * one element being the result of the clause. If you passed two clauses the returned array will
      * contain two elements, each being the result of the corresponding clause.
      *
      * @param FunctionInterface<TOutput> $function
      */
-    public function __construct(private FunctionInterface $function, ClauseInterface ...$clauses)
-    {
+    public function __construct(
+        private readonly FunctionInterface $function,
+        ClauseInterface ...$clauses
+    ) {
         $this->clauses = $clauses;
         $this->expr = new Expr();
     }

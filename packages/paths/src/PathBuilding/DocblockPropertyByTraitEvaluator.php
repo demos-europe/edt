@@ -6,6 +6,7 @@ namespace EDT\PathBuilding;
 
 use EDT\Parsing\Utilities\DocblockTagParser;
 use EDT\Parsing\Utilities\ParseException;
+use InvalidArgumentException;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\Tags\Param;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
@@ -80,7 +81,7 @@ class DocblockPropertyByTraitEvaluator
                         && !$tag instanceof Property
                         && !$tag instanceof Param
                         && !$tag instanceof Var_) {
-                        throw new \InvalidArgumentException("Can not determine variable name for '{$tag->getName()}' tags.");
+                        throw new InvalidArgumentException("Can not determine variable name for '{$tag->getName()}' tags.");
                     }
 
                     return $tag;

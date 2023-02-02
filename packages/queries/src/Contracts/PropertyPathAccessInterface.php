@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Contracts;
 
-use Traversable;
 use const PHP_INT_MAX;
 
 interface PropertyPathAccessInterface extends PropertyPathInterface

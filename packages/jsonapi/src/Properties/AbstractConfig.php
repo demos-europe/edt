@@ -208,7 +208,7 @@ abstract class AbstractConfig
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function enableAliasing($aliasedPath): self
+    public function enableAliasing(array|PropertyPathInterface $aliasedPath): self
     {
         $this->assertNullOrImplements(AliasableTypeInterface::class, 'alias');
 

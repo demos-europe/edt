@@ -31,12 +31,12 @@ class DrupalFilterException extends FilterException
     public static function unknownCondition(string $operatorName, string ...$availableOperatorNames): self
     {
         $operatorNames = implode(', ', $availableOperatorNames);
-        return new self("No operator of such name is available: {$operatorName}. The following operators are available: $operatorNames");
+        return new self("No operator of such name is available: $operatorName. The following operators are available: $operatorNames");
     }
 
     public static function conjunctionUnavailable(string $name): self
     {
-        return new self("The conjunction is not available: {$name}");
+        return new self("The conjunction is not available: $name");
     }
 
     public static function emergencyAbort(int $iterations): self

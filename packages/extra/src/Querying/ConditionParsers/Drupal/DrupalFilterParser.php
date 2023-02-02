@@ -188,14 +188,11 @@ class DrupalFilterParser implements FilterParserInterface
      */
     protected function createGroup(string $conjunction, array $conditions): PathsBasedInterface
     {
-        switch ($conjunction) {
-            case self::AND:
-                return $this->conditionGroupFactory->allConditionsApply(...$conditions);
-            case self::OR:
-                return $this->conditionGroupFactory->anyConditionApplies(...$conditions);
-            default:
-                throw DrupalFilterException::conjunctionUnavailable($conjunction);
-        }
+        return match ($conjunction) {
+            self::AND => $this->conditionGroupFactory->allConditionsApply(...$conditions),
+            self::OR => $this->conditionGroupFactory->anyConditionApplies(...$conditions),
+            default => throw DrupalFilterException::conjunctionUnavailable($conjunction),
+        };
     }
 
     /**

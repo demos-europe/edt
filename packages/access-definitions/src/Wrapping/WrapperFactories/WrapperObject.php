@@ -284,7 +284,7 @@ class WrapperObject
     protected function setOrThrowIfNotSetable(
         array $updatabilities,
         string $propertyName,
-        $propertyValue
+        array|string|int|float|bool|object|null $propertyValue
     ): void {
         $propertyPath = $this->mapProperty($propertyName);
 
@@ -320,7 +320,9 @@ class WrapperObject
             $entityClass = $updatability->getRelationshipType()->getEntityClass();
             if (!$propertyValue instanceof $entityClass) {
                 throw new InvalidArgumentException('Tried setting a value with the wrong entity type into a to-one relationship property.');
-            } elseif (!$this->conditionEvaluator->evaluateConditions($propertyValue, $updatability->getValueConditions())) {
+            }
+
+            if (!$this->conditionEvaluator->evaluateConditions($propertyValue, $updatability->getValueConditions())) {
                 // if restricted to-one relationship
                 throw RelationshipAccessException::toOneWithRestrictedItemNotSetable($this->type, $propertyName, $deAliasedPropertyName);
             }

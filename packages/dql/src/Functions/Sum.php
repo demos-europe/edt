@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Expr\Composite;
 use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
+use InvalidArgumentException;
 
 /**
  * @template-extends AbstractClauseFunction<int|float>
@@ -33,10 +34,8 @@ class Sum extends AbstractClauseFunction
         $dqlClauses = $this->getDqls($valueReferences, $propertyAliases);
         $initial = array_shift($dqlClauses);
         $sumDql = array_reduce($dqlClauses, [$this, 'sumReduce'], $initial);
-        if (null === $sumDql) {
-            throw new \InvalidArgumentException('Not enough DQL clauses to create SUM expression.');
-        }
-        return $sumDql;
+
+        return $sumDql ?? throw new InvalidArgumentException('Not enough DQL clauses to create SUM expression.');
     }
 
     private function sumReduce(

@@ -151,11 +151,9 @@ class DynamicTransformer extends TransformerAbstract
      * @param non-empty-string $methodName
      * @param array{0: TEntity, 1: ParamBag} $arguments
      *
-     * @return Collection|Item|NullResource
-     *
      * @throws TransformException
      */
-    public function __call(string $methodName, array $arguments): ResourceAbstract
+    public function __call(string $methodName, array $arguments): Collection|Item|NullResource
     {
         Assert::stringNotEmpty($methodName);
         Assert::count($arguments, 2);
@@ -174,13 +172,15 @@ class DynamicTransformer extends TransformerAbstract
             $relationshipReadability = $this->toOneRelationshipReadabilities[$includeName];
 
             return $this->handleToOneRelationship($relationshipReadability, $entity, $includeName);
-        } elseif (array_key_exists($includeName, $this->toManyRelationshipReadabilities)) {
+        }
+
+        if (array_key_exists($includeName, $this->toManyRelationshipReadabilities)) {
             $relationshipReadability = $this->toManyRelationshipReadabilities[$includeName];
 
             return $this->handleToManyRelationship($relationshipReadability, $entity, $includeName);
-        } else {
-            throw TransformException::includeNotAvailable($includeName);
         }
+
+        throw TransformException::includeNotAvailable($includeName);
     }
 
     /**
@@ -304,7 +304,7 @@ class DynamicTransformer extends TransformerAbstract
      *
      * @throws ExcludeException
      */
-    public function processIncludedResources(Scope $scope, mixed $data)
+    public function processIncludedResources(Scope $scope, mixed $data): array|bool
     {
         $this->validateExcludes($scope);
         $this->validateIncludes($scope);
@@ -392,6 +392,7 @@ class DynamicTransformer extends TransformerAbstract
         if (null === $scope) {
             throw TransformException::nullScope();
         }
+
         $fieldsetBag = $scope->getManager()->getFieldset($this->type->getIdentifier());
         if (null === $fieldsetBag) {
             // default attribute fields
@@ -404,18 +405,18 @@ class DynamicTransformer extends TransformerAbstract
                     || $readability->isDefaultField(),
                 ARRAY_FILTER_USE_BOTH
             );
-        } else {
-            // requested attribute fields
-            $fieldset = Iterables::asArray($fieldsetBag);
-            return array_filter(
-                $attributeReadabilities,
-                fn (string $attributeName): bool =>
-                    // always keep the 'id` attribute, it is required by Fractal
-                    ContentField::ID === $attributeName
-                    // keep the attributes that were requested
-                    || in_array($attributeName, $fieldset, true),
-                ARRAY_FILTER_USE_KEY
-            );
         }
+
+        // requested attribute fields
+        $fieldset = Iterables::asArray($fieldsetBag);
+        return array_filter(
+            $attributeReadabilities,
+            static fn (string $attributeName): bool =>
+                // always keep the 'id` attribute, it is required by Fractal
+                ContentField::ID === $attributeName
+                // keep the attributes that were requested
+                || in_array($attributeName, $fieldset, true),
+            ARRAY_FILTER_USE_KEY
+        );
     }
 }

@@ -25,14 +25,12 @@ class TypedPathConfigCollection
     ) {}
 
     /**
-     * @param PropertyPathInterface $propertyPath
-     *
      * @return AttributeConfig<TCondition, TEntity>
      *
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function configureAttribute($propertyPath): AttributeConfig
+    public function configureAttribute(PropertyPathInterface $propertyPath): AttributeConfig
     {
         $this->validatePathStart($propertyPath);
         return $this->configCollection->configureAttribute($propertyPath);

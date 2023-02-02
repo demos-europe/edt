@@ -9,17 +9,17 @@ includes:
     #- vendor/phpstan/phpstan/conf/bleedingEdge.neon
 rules:
     # kept from vendor/ergebnis/phpstan-rules/rules.neon, the others are considered as too restricting
-	- Ergebnis\PHPStan\Rules\Expressions\NoCompactRule
-	- Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
-	- Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
-	- Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
-	- Ergebnis\PHPStan\Rules\Expressions\NoIssetRule
-	- Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
-	- Ergebnis\PHPStan\Rules\Methods\PrivateInFinalClassRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoCompactRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoIssetRule
+    - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+    - Ergebnis\PHPStan\Rules\Methods\PrivateInFinalClassRule
 parameters:
-    level: 8 # TODO: 9
+    level: 9
     treatPhpDocTypesAsCertain: false
-    checkGenericClassInNonGenericObjectType: false # TODO: true
+    checkGenericClassInNonGenericObjectType: true
     #errorFormat: json
     #tipsOfTheDay: false
 
@@ -27,7 +27,7 @@ parameters:
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     checkUninitializedProperties: true
     rememberPossiblyImpureFunctionValues: false
-    checkImplicitMixed: false # TODO: true
+    checkImplicitMixed: true
     checkBenevolentUnionTypes: true
     checkMissingCallableSignature: true
 
@@ -50,11 +50,131 @@ parameters:
     # Note: use `\w+(\\\w+)+\\(\w+)` to `$2` replacement to remove namespaces in phpstan error messages, making it a bit more readable
     ignoreErrors:
         -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:failedToParseAccessor\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:getTypeClass\\(\\) return type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:multipleEntitiesByIdentifier\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:noEntityByIdentifier\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:typeNotAvailable\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:typeNotDirectlyAccessible\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:typeNotFilterable\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:typeNotReadable\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:typeNotSortable\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:typeNotUpdatable\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:unexpectedArguments\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Property EDT\\\\Wrapping\\\\Contracts\\\\AccessException\\:\\:\\$typeClass with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/AccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\PropertyAccessException\\:\\:nonRelationship\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/PropertyAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\PropertyAccessException\\:\\:pathDenied\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/PropertyAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\PropertyAccessException\\:\\:propertyNotAvailableInReadableType\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/PropertyAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\PropertyAccessException\\:\\:propertyNotAvailableInType\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/PropertyAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\PropertyAccessException\\:\\:propertyNotAvailableInUpdatableType\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/PropertyAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\RelationshipAccessException\\:\\:getRelationshipTypeClass\\(\\) return type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/RelationshipAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\RelationshipAccessException\\:\\:relationshipTypeAccess\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/RelationshipAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\RelationshipAccessException\\:\\:toManyWithRestrictedItemNotSetable\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/RelationshipAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\Contracts\\\\RelationshipAccessException\\:\\:toOneWithRestrictedItemNotSetable\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/RelationshipAccessException.php
+
+        -
+            message: "#^Property EDT\\\\Wrapping\\\\Contracts\\\\RelationshipAccessException\\:\\:\\$relationshipTypeClass with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Contracts/RelationshipAccessException.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\PrefilledTypeProvider\\:\\:getIdentifier\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/TypeProviders/PrefilledTypeProvider.php
+
+        -
             message: """
                 #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
                 will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadableProperties\\(\\)\\} instead$#
             """
             count: 2
+            path: packages/access-definitions/src/Wrapping/TypeProviders/TypeRequirement.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\TypeProviders\\\\TypeRequirement\\:\\:__construct\\(\\) has parameter \\$plainInstance with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
             path: packages/access-definitions/src/Wrapping/TypeProviders/TypeRequirement.php
 
         -
@@ -68,9 +188,94 @@ parameters:
             path: packages/access-definitions/src/Wrapping/Utilities/CachingPropertyReader.php
 
         -
+            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\SchemaPathProcessor\\:\\:mapExternReadablePath\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/Utilities/SchemaPathProcessor.php
+
+        -
+            message: "#^Method EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\:\\:parseMethodAccess\\(\\) should return array\\<int, string\\> but returns mixed\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
+
+        -
+            message: "#^Parameter \\#1 \\$target of method EDT\\\\Querying\\\\Contracts\\\\PropertyAccessorInterface\\:\\:setValue\\(\\) expects object, mixed given\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
+
+        -
+            message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
+
+        -
+            message: "#^Parameter \\#2 \\$ of callable callable\\(TEntity of object, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\: void expects array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|object\\|string\\|null given\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
+
+        -
+            message: "#^Parameter \\#2 \\$ of callable callable\\(TEntity of object, iterable\\<object\\>\\)\\: void expects iterable\\<object\\>, array\\<int\\|string, mixed\\>\\|\\(iterable&object\\) given\\.$#"
+            count: 1
+            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
+
+        -
+            message: "#^Parameter \\#1 \\$baseFunction of class EDT\\\\DqlQuerying\\\\Functions\\\\LowerCase constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<string\\|null\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
+            count: 3
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$contains of class EDT\\\\DqlQuerying\\\\Functions\\\\OneOf constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<array\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$firstFunction of class EDT\\\\DqlQuerying\\\\Functions\\\\AllEqual constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<mixed\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Size given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$min of class EDT\\\\DqlQuerying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<float\\|int\\|numeric\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\$max of class EDT\\\\DqlQuerying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<float\\|int\\|numeric\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\AbstractClauseFunction\\:\\:unflatClauseReferences\\(\\) should return array\\<int, array\\<int, string\\>\\> but returns array\\<int, array\\<int, mixed\\>\\>\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/AbstractClauseFunction.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\AbstractClauseFunction\\:\\:unflatPropertyAliases\\(\\) should return array\\<int, array\\<int, string\\>\\> but returns array\\<int, array\\<int, mixed\\>\\>\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/AbstractClauseFunction.php
+
+        -
             message: "#^Property EDT\\\\DqlQuerying\\\\Functions\\\\AbstractClauseFunction\\<TOutput\\>\\:\\:\\$clauses \\(array\\<int, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\) does not accept array\\<int\\|string, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseInterface\\>\\.$#"
             count: 1
             path: packages/dql/src/Functions/AbstractClauseFunction.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<bool\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/AllTrue.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<bool\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/AllTrue.php
+
+        -
+            message: "#^Parameter \\#3 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<bool\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/AllTrue.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<float\\|int\\|numeric\\-string\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/BetweenInclusive.php
 
         -
             message: "#^Parameter \\#2 \\$x of method Doctrine\\\\ORM\\\\Query\\\\Expr\\:\\:between\\(\\) expects int\\|string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Comparison\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Func\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Math\\|string given\\.$#"
@@ -78,9 +283,39 @@ parameters:
             path: packages/dql/src/Functions/BetweenInclusive.php
 
         -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<float\\|int\\|numeric\\-string\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/BetweenInclusive.php
+
+        -
             message: "#^Parameter \\#3 \\$y of method Doctrine\\\\ORM\\\\Query\\\\Expr\\:\\:between\\(\\) expects int\\|string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Comparison\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Func\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Math\\|string given\\.$#"
             count: 1
             path: packages/dql/src/Functions/BetweenInclusive.php
+
+        -
+            message: "#^Parameter \\#3 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<float\\|int\\|numeric\\-string\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/BetweenInclusive.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\Greater\\:\\:__construct\\(\\) has parameter \\$left with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/Greater.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\Greater\\:\\:__construct\\(\\) has parameter \\$right with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/Greater.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\GreaterEquals\\:\\:__construct\\(\\) has parameter \\$left with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/GreaterEquals.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\GreaterEquals\\:\\:__construct\\(\\) has parameter \\$right with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/GreaterEquals.php
 
         -
             message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<array\\<int, V\\>\\|V\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<array\\<V\\>\\> given\\.$#"
@@ -128,6 +363,26 @@ parameters:
             path: packages/dql/src/Functions/Product.php
 
         -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\Smaller\\:\\:__construct\\(\\) has parameter \\$left with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/Smaller.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\Smaller\\:\\:__construct\\(\\) has parameter \\$right with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/Smaller.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\SmallerEquals\\:\\:__construct\\(\\) has parameter \\$left with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/SmallerEquals.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\SmallerEquals\\:\\:__construct\\(\\) has parameter \\$right with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/dql/src/Functions/SmallerEquals.php
+
+        -
             message: "#^Parameter \\#1 \\$x of method Doctrine\\\\ORM\\\\Query\\\\Expr\\:\\:like\\(\\) expects string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Comparison\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Func\\|Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Math\\|string given\\.$#"
             count: 1
             path: packages/dql/src/Functions/StringContains.php
@@ -156,12 +411,117 @@ parameters:
             path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
 
         -
+            message: "#^Method EDT\\\\DqlQuerying\\\\ObjectProviders\\\\DoctrineOrmEntityProvider\\:\\:getEntities\\(\\) should return iterable\\<TEntity of object\\> but returns mixed\\.$#"
+            count: 1
+            path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\ObjectProviders\\\\DoctrineOrmEntityProvider\\:\\:getObjects\\(\\) should return iterable\\<TEntity of object\\> but returns mixed\\.$#"
+            count: 1
+            path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
+
+        -
             message: "#^Instanceof between Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata and Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo will always evaluate to true\\.$#"
             count: 1
             path: packages/dql/src/Utilities/JoinFinder.php
 
         -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:createTableAlias\\(\\) has parameter \\$tableInfo with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:findJoinsRecursive\\(\\) has parameter \\$classMetadata with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:findNecessaryJoins\\(\\) has parameter \\$classMetadata with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:getTargetClassMetadata\\(\\) has parameter \\$metadata with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:getTargetClassMetadata\\(\\) return type with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:isAttribute\\(\\) has parameter \\$classMetadata with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:isRelationship\\(\\) has parameter \\$classMetadata with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:isToManyRelationship\\(\\) has parameter \\$classMetadata with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/JoinFinder.php
+
+        -
+            message: "#^Property EDT\\\\DqlQuerying\\\\Utilities\\\\QueryBuilderPreparer\\:\\:\\$mainClassMetadata with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo does not specify its types\\: T$#"
+            count: 1
+            path: packages/dql/src/Utilities/QueryBuilderPreparer.php
+
+        -
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:__construct\\(\\) has parameter \\$conditionGroupFactory with generic interface EDT\\\\ConditionFactory\\\\PathsBasedConditionGroupFactoryInterface but does not specify its types\\: TCondition$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
+
+        -
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:createGroup\\(\\) should return TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface but returns mixed\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
+
+        -
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterValidator\\:\\:__construct\\(\\) has parameter \\$drupalConditionFactory with generic interface EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalConditionFactoryInterface but does not specify its types\\: TCondition$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
+
+        -
+            message: "#^Parameter \\#1 \\$array of function array_keys expects array, mixed given\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
+
+        -
+            message: "#^Cannot access offset 0 on mixed\\.$#"
+            count: 2
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
+            message: "#^Cannot access offset 1 on mixed\\.$#"
+            count: 2
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
             message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\PredefinedDrupalConditionFactory\\:\\:getOperatorFunctions\\(\\) should return array\\<non\\-empty\\-string, callable\\(array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns array\\{\\=\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasValue'\\}, \\<\\>\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotValue'\\}, STRING_CONTAINS_CASE_INSENSITIVE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringCo…'\\}, IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasAnyOfVal…'\\}, NOT_IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotAnyOf…'\\}, BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, NOT BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, ARRAY_CONTAINS_VALUE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringAs…'\\}, \\.\\.\\.\\}\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$min of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyBetweenValuesInclusive\\(\\) expects float\\|int\\|numeric\\-string, mixed given\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$min of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyNotBetweenValuesInclusive\\(\\) expects float\\|int\\|numeric\\-string, mixed given\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\$max of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyBetweenValuesInclusive\\(\\) expects float\\|int\\|numeric\\-string, mixed given\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\$max of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyNotBetweenValuesInclusive\\(\\) expects float\\|int\\|numeric\\-string, mixed given\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
@@ -176,7 +536,87 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$propertyReadability with generic class EDT\\\\Wrapping\\\\Properties\\\\AttributeReadability but does not specify its types\\: TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$propertyReadability with generic class EDT\\\\Wrapping\\\\Properties\\\\ToManyRelationshipReadability but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$propertyReadability with generic class EDT\\\\Wrapping\\\\Properties\\\\ToOneRelationshipReadability but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$resourceType with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
+
+        -
+            message: "#^Parameter \\#1 \\$name of method ReflectionClass\\<object\\>\\:\\:getMethod\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
+
+        -
+            message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, mixed given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
+
+        -
+            message: "#^Property EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:\\$classReflectionCache with generic class ReflectionClass does not specify its types\\: T$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:__construct\\(\\) has parameter \\$typeProvider with generic interface EDT\\\\Wrapping\\\\Contracts\\\\TypeProviderInterface but does not specify its types\\: TCondition, TSorting$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:addGetOperation\\(\\) has parameter \\$resource with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:addListOperation\\(\\) has parameter \\$resource with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:createEntityMethodsPathItem\\(\\) has parameter \\$resource with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:createListMethodsPathItem\\(\\) has parameter \\$resource with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:createSchema\\(\\) has parameter \\$type with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:createTag\\(\\) has parameter \\$type with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:resolveAttributeType\\(\\) has parameter \\$resource with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
             message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:wrapAsJsonApiResponseSchema\\(\\) has parameter \\$includedObjects with no value type specified in iterable type array\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:wrapAsJsonApiResponseSchema\\(\\) has parameter \\$resource with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
             count: 1
             path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
 
@@ -191,14 +631,69 @@ parameters:
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
 
         -
+            message: "#^Method EDT\\\\JsonApi\\\\OutputTransformation\\\\DynamicTransformer\\:\\:createRelationshipTransformer\\(\\) has parameter \\$relationshipType with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
             message: "#^Method EDT\\\\JsonApi\\\\OutputTransformation\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) return type has no value type specified in iterable type array\\.$#"
             count: 1
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
 
         -
-            message: "#^Strict comparison using \\=\\=\\= between null and League\\\\Fractal\\\\Scope will always evaluate to false\\.$#"
+            message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(mixed\\)\\: mixed\\)\\|null, Closure\\(EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\)\\: object given\\.$#"
             count: 1
             path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
+            message: "#^Parameter \\#1 \\$checkScopeSegment of method League\\\\Fractal\\\\Scope\\:\\:isRequested\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
+            message: "#^Parameter \\#1 \\$properties of method EDT\\\\JsonApi\\\\RequestHandling\\\\MessageFormatter\\:\\:propertiesToString\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>, non\\-empty\\-array given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
+            message: "#^Parameter \\#2 \\$string of function explode expects string, mixed given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Pagination\\\\OffsetPaginationParser\\:\\:getValidatedPage\\(\\) should return array\\{offset\\: numeric\\-string, limit\\: numeric\\-string\\} but returns mixed\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Pagination/OffsetPaginationParser.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Pagination\\\\PagePaginationParser\\:\\:getValidatedPage\\(\\) should return array\\{size\\?\\: non\\-empty\\-string, number\\?\\: non\\-empty\\-string\\} but returns mixed\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Pagination/PagePaginationParser.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\AbstractConfig\\:\\:getType\\(\\) return type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/AbstractConfig.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\:\\:getType\\(\\) return type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/AttributeConfig.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:assertSameRelationshipType\\(\\) has parameter \\$newRelationshipType with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ConfigCollection.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:assertSameRelationshipType\\(\\) has parameter \\$propertyConfig with generic class EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ConfigCollection.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:assertSameRelationshipType\\(\\) has parameter \\$propertyConfig with generic class EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ConfigCollection.php
 
         -
             message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:configureToManyRelationship\\(\\) should return EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, object\\>\\.$#"
@@ -209,6 +704,66 @@ parameters:
             message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:configureToOneRelationship\\(\\) should return EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, object\\>\\.$#"
             count: 1
             path: packages/jsonapi/src/Properties/ConfigCollection.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:maybeSetAlias\\(\\) has parameter \\$property with generic class EDT\\\\JsonApi\\\\Properties\\\\AbstractConfig but does not specify its types\\: TCondition, TEntity, TReadability, TUpdatability$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ConfigCollection.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\:\\:getType\\(\\) return type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ToManyRelationshipConfig.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig\\:\\:getType\\(\\) return type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/Properties/ToOneRelationshipConfig.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\RequestHandling\\\\AbstractApiService\\:\\:assertExposureAsPrimaryResource\\(\\) has parameter \\$type with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\RequestHandling\\\\AbstractApiService\\:\\:createTransformer\\(\\) has parameter \\$transferableType with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Parameter \\#1 \\$sortQueryParamValue of method EDT\\\\JsonApi\\\\RequestHandling\\\\JsonApiSortingParser\\<TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:createFromQueryParamValue\\(\\) expects string\\|null, mixed given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\RequestHandling\\\\ApiListResultInterface\\:\\:getPaginator\\(\\) return type with generic class Pagerfanta\\\\Pagerfanta does not specify its types\\: T$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/ApiListResultInterface.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\RequestHandling\\\\EntityFetcherInterface\\:\\:getEntityByTypeIdentifier\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/EntityFetcherInterface.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\RequestHandling\\\\EntityFetcherInterface\\:\\:getEntityByTypeIdentifier\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/EntityFetcherInterface.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\RequestHandling\\\\PaginatorFactory\\:\\:createPaginatorAdapter\\(\\) has parameter \\$paginator with generic class Pagerfanta\\\\Pagerfanta but does not specify its types\\: T$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/PaginatorFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$name of method Symfony\\\\Component\\\\Routing\\\\Generator\\\\UrlGeneratorInterface\\:\\:generate\\(\\) expects string, mixed given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/PaginatorFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\.\\.\\.\\$arrays of function array_merge expects array, mixed given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/RequestHandling/PaginatorFactory.php
 
         -
             message: """
@@ -227,9 +782,79 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToManyRelationship\\(\\) has parameter \\$path with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToManyRelationship\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, mixed\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToOneRelationship\\(\\) has parameter \\$path with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToOneRelationship\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, mixed\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getProperties\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:isExposedReadability\\(\\) has parameter \\$readability with generic class EDT\\\\Wrapping\\\\Properties\\\\AbstractRelationshipReadability but does not specify its types\\: TRelationshipType$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:toRelationshipTypes\\(\\) has parameter \\$filter with generic class EDT\\\\JsonApi\\\\Properties\\\\AbstractConfig but does not specify its types\\: TCondition, TEntity, TReadability, TUpdatability$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig but does not specify its types\\: TCondition, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
             message: "#^Parameter \\#1 \\$configCollection of method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<object,mixed\\>\\:\\:addToConfigCollection\\(\\) expects EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object\\> given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:__construct\\(\\) has parameter \\$relationship with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:aliasedPath\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:filterable\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:sortable\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
             message: "#^Parameter \\#2 \\$customValueFunction of method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
@@ -252,6 +877,26 @@ parameters:
             path: packages/jsonapi/src/Schema/RelationshipObject.php
 
         -
+            message: "#^Method EDT\\\\JsonApi\\\\Validation\\\\FieldsValidator\\:\\:getNonReadableProperties\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            count: 1
+            path: packages/jsonapi/src/Validation/FieldsValidator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Validation\\\\FieldsValidator\\:\\:validateFormat\\(\\) should return array\\<non\\-empty\\-string, string\\> but returns mixed\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Validation/FieldsValidator.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\Validation\\\\SortValidator\\:\\:validateFormat\\(\\) should return non\\-empty\\-string but returns mixed\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Validation/SortValidator.php
+
+        -
+            message: "#^Method EDT\\\\Parsing\\\\Utilities\\\\DocblockTagParser\\:\\:createDocblock\\(\\) has parameter \\$commented with generic class ReflectionClass but does not specify its types\\: T$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+
+        -
             message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
             count: 1
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
@@ -265,6 +910,16 @@ parameters:
             message: "#^Parameter \\#2 \\$type of static method EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:createForTagType\\(\\) expects non\\-empty\\-string, string given\\.$#"
             count: 3
             path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+
+        -
+            message: "#^Property EDT\\\\Parsing\\\\Utilities\\\\DocblockTagParser\\:\\:\\$reflectionClass with generic class ReflectionClass does not specify its types\\: T$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+
+        -
+            message: "#^Method EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:getVariableNameOfTag\\(\\) should return non\\-empty\\-string\\|null but returns mixed\\.$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
 
         -
             message: "#^Parameter \\#1 \\$tagName of static method EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:createBaseMessage\\(\\) expects non\\-empty\\-string, string given\\.$#"
@@ -287,6 +942,16 @@ parameters:
             path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
 
         -
+            message: "#^Parameter \\#4 \\$variableName of static method EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:createBaseMessage\\(\\) expects non\\-empty\\-string\\|null, mixed given\\.$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
+
+        -
+            message: "#^Property EDT\\\\Parsing\\\\Utilities\\\\TagTypeParseException\\:\\:\\$variableName \\(non\\-empty\\-string\\|null\\) does not accept mixed\\.$#"
+            count: 1
+            path: packages/paths/src/Parsing/Utilities/TagTypeParseException.php
+
+        -
             message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> and 'EDT\\\\\\\\PathBuilding\\\\\\\\PropertyAutoPathInterface' will always evaluate to true\\.$#"
             count: 2
             path: packages/paths/src/PathBuilding/End.php
@@ -297,9 +962,39 @@ parameters:
             path: packages/paths/src/PathBuilding/End.php
 
         -
+            message: "#^Class EDT\\\\PathBuilding\\\\End implements generic interface IteratorAggregate but does not specify its types\\: TKey, TValue$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/End.php
+
+        -
             message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:getIterator\\(\\) should return ArrayIterator\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
+
+        -
+            message: "#^Interface EDT\\\\PathBuilding\\\\PropertyAutoPathInterface extends generic interface IteratorAggregate but does not specify its types\\: TKey, TValue$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/PropertyAutoPathInterface.php
+
+        -
+            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllClassTraits\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/TraitEvaluator.php
+
+        -
+            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllParentClasses\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/TraitEvaluator.php
+
+        -
+            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllParents\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/TraitEvaluator.php
+
+        -
+            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getAllNestedTraits'\\} given\\.$#"
+            count: 1
+            path: packages/paths/src/PathBuilding/TraitEvaluator.php
 
         -
             message: "#^Parameter \\#1 \\$contains of class EDT\\\\Querying\\\\Functions\\\\StringEndsWith constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<string\\|null\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<string\\> given\\.$#"
@@ -312,9 +1007,89 @@ parameters:
             path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
 
         -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Size given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<bool\\> given\\.$#"
+            count: 2
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<float\\|int\\|string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\Greater constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<float\\|int\\|string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\GreaterEquals constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<float\\|int\\|string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
             message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\LowerCase constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<string\\|null\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<string\\> given\\.$#"
             count: 1
             path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<array\\<int, mixed\\>\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\Smaller constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<float\\|int\\|string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\SmallerEquals constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<float\\|int\\|string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\AllEqual given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<bool\\|float\\|int\\|string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<int\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<float\\|int\\|string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<string\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Parameter \\#3 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\AllEqual constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
+
+        -
+            message: "#^Method EDT\\\\Querying\\\\FluentQueries\\\\ConditionDefinition\\:\\:false\\(\\) return type with generic class EDT\\\\Querying\\\\FluentQueries\\\\ConditionDefinition does not specify its types\\: TCondition$#"
+            count: 1
+            path: packages/queries/src/FluentQueries/ConditionDefinition.php
 
         -
             message: """
@@ -346,6 +1121,21 @@ parameters:
             path: packages/queries/src/ObjectProviders/PrefilledObjectProvider.php
 
         -
+            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, mixed\\>, Closure\\(object\\|null\\)\\: array\\<int, mixed\\> given\\.$#"
+            count: 1
+            path: packages/queries/src/PropertyAccessors/ReflectionPropertyAccessor.php
+
+        -
+            message: "#^Parameter \\#1 \\$iterator of function iterator_to_array expects Traversable, mixed given\\.$#"
+            count: 1
+            path: packages/queries/src/PropertyAccessors/ReflectionPropertyAccessor.php
+
+        -
+            message: "#^Parameter \\#1 \\$target of method EDT\\\\Querying\\\\PropertyAccessors\\\\ReflectionPropertyAccessor\\:\\:getValueByPropertyPath\\(\\) expects object\\|null, mixed given\\.$#"
+            count: 1
+            path: packages/queries/src/PropertyAccessors/ReflectionPropertyAccessor.php
+
+        -
             message: "#^Method EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:getIterator\\(\\) should return Traversable\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, non\\-empty\\-string\\>\\|ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/queries/src/PropertyPaths/PropertyPath.php
@@ -354,3 +1144,23 @@ parameters:
             message: "#^Property EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:\\$iterator \\(ArrayIterator\\<int, non\\-empty\\-string\\>\\|null\\) does not accept ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/queries/src/PropertyPaths/PropertyPath.php
+
+        -
+            message: "#^Parameter \\#1 \\$propertyValueA of method EDT\\\\Querying\\\\SortMethods\\\\AbstractSortMethod\\:\\:evaluateSinglePath\\(\\) expects float\\|int\\|string\\|null, mixed given\\.$#"
+            count: 1
+            path: packages/queries/src/SortMethods/AbstractSortMethod.php
+
+        -
+            message: "#^Parameter \\#2 \\$propertyValueB of method EDT\\\\Querying\\\\SortMethods\\\\AbstractSortMethod\\:\\:evaluateSinglePath\\(\\) expects float\\|int\\|string\\|null, mixed given\\.$#"
+            count: 1
+            path: packages/queries/src/SortMethods/AbstractSortMethod.php
+
+        -
+            message: "#^Method EDT\\\\Querying\\\\Utilities\\\\ConditionEvaluator\\:\\:getPropertyValueRows\\(\\) has parameter \\$condition with generic interface EDT\\\\Querying\\\\Contracts\\\\FunctionInterface but does not specify its types\\: TOutput$#"
+            count: 1
+            path: packages/queries/src/Utilities/ConditionEvaluator.php
+
+        -
+            message: "#^Method EDT\\\\Querying\\\\Utilities\\\\TableJoiner\\:\\:reAddEmptyColumnsAsNull\\(\\) should return non\\-empty\\-array\\<int, non\\-empty\\-array\\<int, mixed\\>\\> but returns mixed\\.$#"
+            count: 1
+            path: packages/queries/src/Utilities/TableJoiner.php
