@@ -93,6 +93,8 @@ class ConditionEvaluator
     }
 
     /**
+     * @param FunctionInterface<bool> $condition
+     *
      * @return list<list<mixed>>
      */
     private function getPropertyValueRows(object $target, FunctionInterface $condition): array

@@ -72,7 +72,10 @@ class AttributeConfig extends AbstractConfig
         return $this;
     }
 
-    protected function getType(): TypeInterface
+    /**
+     * @return ResourceTypeInterface<TCondition, PathsBasedInterface, TEntity>
+     */
+    protected function getType(): ResourceTypeInterface
     {
         return $this->type;
     }

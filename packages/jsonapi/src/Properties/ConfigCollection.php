@@ -160,7 +160,9 @@ class ConfigCollection
             $this->attributes[$propertyName] = $property;
         }
 
-        $this->maybeSetAlias($propertyPath, $property);
+        if ($this->isAliasToSet($propertyPath)) {
+            $property->enableAliasing($propertyPath);
+        }
 
         return $property;
     }
@@ -205,7 +207,9 @@ class ConfigCollection
             $this->toOneRelationships[$propertyName] = $property;
         }
 
-        $this->maybeSetAlias($propertyPath, $property);
+        if ($this->isAliasToSet($propertyPath)) {
+            $property->enableAliasing($propertyPath);
+        }
 
         return $property;
     }
@@ -251,22 +255,19 @@ class ConfigCollection
             $this->toManyRelationships[$propertyName] = $property;
         }
 
-        $this->maybeSetAlias($propertyPath, $property);
+        if ($this->isAliasToSet($propertyPath)) {
+            $property->enableAliasing($propertyPath);
+        }
 
         return $property;
     }
 
     /**
      * @param non-empty-list<non-empty-string> $propertyPath
-     *
-     * @throws ResourcePropertyConfigException
-     * @throws PathException
      */
-    protected function maybeSetAlias(?array $propertyPath, AbstractConfig $property): void
+    protected function isAliasToSet(?array $propertyPath): bool
     {
-        if (null !== $propertyPath && 1 < count($propertyPath)) {
-            $property->enableAliasing($propertyPath);
-        }
+        return null !== $propertyPath && 1 < count($propertyPath);
     }
 
     /**
@@ -283,14 +284,14 @@ class ConfigCollection
      * of the relationship types.
      *
      * @param non-empty-string                                 $propertyName
-     * @param ToOneRelationshipConfig|ToManyRelationshipConfig $propertyConfig
+     * @param ToOneRelationshipConfig<PathsBasedInterface, PathsBasedInterface, object, object>|ToManyRelationshipConfig<PathsBasedInterface, PathsBasedInterface, object, object> $propertyConfig
      * @param ResourceTypeInterface                            $newRelationshipType
      *
      * @throws ResourcePropertyConfigException if the property name is already used for a relationship config and the relationship type differs
      */
     protected function assertSameRelationshipType(
         string $propertyName,
-        AbstractConfig $propertyConfig,
+        ToOneRelationshipConfig|ToManyRelationshipConfig $propertyConfig,
         ResourceTypeInterface $newRelationshipType
     ): void {
         $currentRelationshipType = $propertyConfig->getRelationshipType();

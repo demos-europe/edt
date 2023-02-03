@@ -20,7 +20,7 @@ interface EntityFetcherInterface
     /**
      * @template O of object
      *
-     * @param TypeInterface<TCondition, TSorting, O>&IdentifiableTypeInterface&TransferableTypeInterface $type
+     * @param TypeInterface<TCondition, TSorting, O>&IdentifiableTypeInterface<TCondition, TSorting, O>&TransferableTypeInterface<TCondition, TSorting, O> $type
      * @param non-empty-string                                                                           $id
      *
      * @return O

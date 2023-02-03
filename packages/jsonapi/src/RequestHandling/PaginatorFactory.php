@@ -18,6 +18,9 @@ class PaginatorFactory
         private readonly RouterInterface $router
     ) {}
 
+    /**
+     * @param Pagerfanta<object> $paginator
+     */
     public function createPaginatorAdapter(Pagerfanta $paginator): PaginatorInterface
     {
         return new PagerfantaPaginatorAdapter(

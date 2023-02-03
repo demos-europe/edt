@@ -292,6 +292,9 @@ abstract class AbstractApiService
         return $this->sortingParser->createFromQueryParamValue($sort);
     }
 
+    /**
+     * @param ResourceTypeInterface<TCondition, TSorting, object> $type
+     */
     private function assertExposureAsPrimaryResource(ResourceTypeInterface $type): void
     {
         if (!$type->isExposedAsPrimaryResource()) {
@@ -299,6 +302,9 @@ abstract class AbstractApiService
         }
     }
 
+    /**
+     * @param TransferableTypeInterface<TCondition, TSorting, object> $transferableType
+     */
     protected function createTransformer(TransferableTypeInterface $transferableType): TransformerAbstract
     {
         return new DynamicTransformer(

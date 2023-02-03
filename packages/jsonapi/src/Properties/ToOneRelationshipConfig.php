@@ -88,7 +88,10 @@ class ToOneRelationshipConfig extends AbstractConfig
         return $this;
     }
 
-    protected function getType(): TypeInterface
+    /**
+     * @return ResourceTypeInterface<TCondition, TSorting, TEntity>
+     */
+    protected function getType(): ResourceTypeInterface
     {
         return $this->type;
     }

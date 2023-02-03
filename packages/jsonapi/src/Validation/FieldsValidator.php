@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Validation;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -79,6 +80,8 @@ class FieldsValidator
     }
 
     /**
+     * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     *
      * @return list<string>
      */
     public function getNonReadableProperties(string $propertiesString, TransferableTypeInterface $type): array

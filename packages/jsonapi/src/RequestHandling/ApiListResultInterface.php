@@ -16,6 +16,9 @@ interface ApiListResultInterface
      */
     public function getList(): array;
 
+    /**
+     * @return Pagerfanta<O>|null
+     */
     public function getPaginator(): ?Pagerfanta;
 
     /**

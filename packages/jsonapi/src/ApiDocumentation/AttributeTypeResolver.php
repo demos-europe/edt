@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
-use Closure;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Parsing\Utilities\DocblockTagParser;
 use EDT\Wrapping\Properties\AbstractReadability;

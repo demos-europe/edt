@@ -36,6 +36,9 @@ use function Safe\fclose;
  */
 class DocblockTagParser
 {
+    /**
+     * @var ReflectionClass<object>
+     */
     private ReflectionClass $reflectionClass;
 
     private ?DocBlock $docBlock = null;
@@ -64,9 +67,9 @@ class DocblockTagParser
     }
 
     /**
-     * @param ReflectionClass|ReflectionProperty $commented must provide a `getDocComment` method
+     * @param ReflectionClass<object>|ReflectionProperty $commented
      */
-    public static function createDocblock(Reflector $commented): ?DocBlock
+    public static function createDocblock(ReflectionClass|ReflectionProperty $commented): ?DocBlock
     {
         $docBlock = $commented->getDocComment();
         if (!is_string($docBlock) || '' === $docBlock) {

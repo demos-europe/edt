@@ -7,6 +7,9 @@ namespace EDT\PathBuilding;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use IteratorAggregate;
 
+/**
+ * @template-extends IteratorAggregate<int, non-empty-string>
+ */
 interface PropertyAutoPathInterface extends PropertyPathInterface, IteratorAggregate
 {
     public const TAG_PROPERTY = 'property';

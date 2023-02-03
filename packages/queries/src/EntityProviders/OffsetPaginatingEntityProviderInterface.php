@@ -17,7 +17,6 @@ use EDT\Querying\Contracts\SortException;
  */
 interface OffsetPaginatingEntityProviderInterface extends EntityProviderInterface
 {
-
     /**
      * @param list<TCondition>      $conditions
      * @param list<TSorting>        $sortMethods
