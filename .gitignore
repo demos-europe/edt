@@ -1,6 +1,7 @@
 vendor
 bin
 composer.lock
+.run
 .idea
 .phpunit.result.cache
 .phpunit.cache
