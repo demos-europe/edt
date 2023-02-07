@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* fix: allow creation of `IS NULL` and `IS NOT NULL` Drupal conditions
+
 ## 0.17.2 - 2023-02-01
 
 * fix: update monorepo dependencies to solve monorepo-split bug

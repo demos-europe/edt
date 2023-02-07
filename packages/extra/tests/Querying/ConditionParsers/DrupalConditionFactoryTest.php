@@ -11,9 +11,10 @@ use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
 use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\Querying\Functions\InvertedBoolean;
+use EDT\Querying\Functions\IsNull;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
-use TypeError;
 
 class DrupalConditionFactoryTest extends TestCase
 {
@@ -21,20 +22,38 @@ class DrupalConditionFactoryTest extends TestCase
 
     private DrupalFilterParser $filterFactory;
 
+    private PredefinedDrupalConditionFactory $drupalConditionFactory;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->conditionFactory = new PhpConditionFactory();
-        $drupalConditionFactory = new PredefinedDrupalConditionFactory($this->conditionFactory);
-        $conditionParser = new DrupalConditionParser($drupalConditionFactory);
+        $this->drupalConditionFactory = new PredefinedDrupalConditionFactory($this->conditionFactory);
+        $conditionParser = new DrupalConditionParser($this->drupalConditionFactory);
         $this->filterFactory = new DrupalFilterParser(
             $this->conditionFactory,
             $conditionParser,
             new DrupalFilterValidator(
                 Validation::createValidator(),
-                $drupalConditionFactory
+                $this->drupalConditionFactory
             )
         );
+    }
+
+    public function testNull(): void
+    {
+        /** @var IsNull $condition */
+        $condition = $this->drupalConditionFactory->createCondition('IS NULL', null, ['foo']);
+        self::assertTrue($condition->apply([null]));
+        self::assertFalse($condition->apply([false]));
+    }
+
+    public function testNotNull(): void
+    {
+        /** @var InvertedBoolean $condition */
+        $condition = $this->drupalConditionFactory->createCondition('IS NOT NULL', null, ['foo']);
+        self::assertTrue($condition->apply([false]));
+        self::assertFalse($condition->apply([null]));
     }
 
     public function testTwoExplicitEqualsOrExplicit(): void
