@@ -9,7 +9,9 @@ use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\Utilities\TableJoiner;
 use InvalidArgumentException;
 use ReflectionMethod;
+use Tests\data\Model\Publisher;
 use Tests\ModelBasedTest;
+use function PHPUnit\Framework\assertCount;
 
 class TableJoinerTest extends ModelBasedTest
 {
@@ -31,45 +33,39 @@ class TableJoinerTest extends ModelBasedTest
         $this->insertValue = $this->getReflectionMethod('insertValue');
     }
 
-    public function testCartesianProductWithNoColumns(): void
+    /**
+     * @param non-empty-list<list<mixed>|int<0, max>> $inputColumns
+     * @param list<non-empty-list<mixed>> $expectedOutput
+     *
+     * @dataProvider cartesianProductTestData
+     */
+    public function testCartesianProduct(array $inputColumns, array $expectedOutput): void
     {
-        $actual = $this->cartesianProduct->invoke($this->tableJoiner, []);
-        self::assertEquals([], $actual);
+        $actual = $this->cartesianProduct->invoke($this->tableJoiner, $inputColumns);
+        self::assertEquals($expectedOutput, $actual);
     }
 
-    public function testCartesianProductWithOneColumn(): void
+    /**
+     * Very basic {@link TableJoiner::cartesianProduct()} performance test code.
+     *
+     * @dataProvider cartesianProductPerformanceTestData
+     */
+    public function testCartesianProductWithGeneratedInput(array $columnSizes, float $maxRunTimeMs): void
     {
-        $input = [
-            ['a', 'b', 'c'],
-        ];
-        $expected = [
-            ['a'],
-            ['b'],
-            ['c'],
-        ];
-        $actual = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        self::assertEquals($expected, $actual);
-    }
+        $this->markTestSkipped('for manual execution only');
+        $inputColumns = array_map(
+            static fn (int $rowCount): array => array_map(
+                static fn (int $rowIndex): string => "r$rowIndex",
+                range(1, $rowCount)
+            ),
+            $columnSizes
+        );
 
-    public function testCartesianProductWithTwoColumns(): void
-    {
-        $input = [
-            ['a', 'b', 'c'],
-            [1, 2, 3],
-        ];
-        $expected = [
-            ['a', 1],
-            ['b', 1],
-            ['c', 1],
-            ['a', 2],
-            ['b', 2],
-            ['c', 2],
-            ['a', 3],
-            ['b', 3],
-            ['c', 3],
-        ];
-        $actual = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        self::assertEquals($expected, $actual);
+        $start = microtime(true);
+        $actual = $this->cartesianProduct->invoke($this->tableJoiner, $inputColumns);
+        $end = microtime(true);
+        assertCount(array_product($columnSizes), $actual);
+        self::assertLessThanOrEqual($maxRunTimeMs, $end-$start);
     }
 
     public function testGetValueRowsWithMergedPaths(): void
@@ -124,127 +120,6 @@ class TableJoinerTest extends ModelBasedTest
         ];
 
         $this->cartesianProduct->invoke($this->tableJoiner, $input);
-    }
-
-    public function testCartesianWithSingleEmptyRow(): void
-    {
-        $input = [
-            [],
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        $expected = [];
-
-        self::assertEquals($expected, $output);
-    }
-
-    public function testCartesianWithSecondEmptyRow(): void
-    {
-        $input = [
-            ['abc'],
-            [],
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        $expected = [
-            ['abc', null],
-        ];
-
-        self::assertEquals($expected, $output);
-    }
-
-    public function testCartesianWithFirstRowEmpty(): void
-    {
-        $input = [
-            [],
-            [1],
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        $expected = [
-            [null, 1],
-        ];
-
-        self::assertEquals($expected, $output);
-    }
-
-    public function testCartesianWithReferenceAfterEmpty(): void
-    {
-        $input = [
-            [],
-            0,
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        $expected = [];
-
-        self::assertEquals($expected, $output);
-    }
-
-    public function testCartesianWithLastRowEmpty(): void
-    {
-        $input = [
-            [1],
-            [],
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        $expected = [
-            [1, null],
-        ];
-
-        self::assertEquals($expected, $output);
-    }
-
-    public function testCartesionThreeEmpty(): void
-    {
-        $input = [
-            [],
-            [],
-            [],
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        $expected = [];
-
-        self::assertEquals($expected, $output);
-    }
-
-    public function testCartesianWithFirstRowEmptyAndThirdRowReference(): void
-    {
-        $input = [
-            [],
-            [1],
-            0,
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-        $expected = [
-            [null, 1, null],
-        ];
-
-        self::assertEquals($expected, $output);
-    }
-
-
-    public function testCartesianWithEmptyRowBetween(): void
-    {
-        $input = [
-            [false],
-            ['abc'],
-            [],
-            1,
-            0,
-            [7],
-        ];
-
-        $output = $this->cartesianProduct->invoke($this->tableJoiner, $input);
-
-        $expected = [
-            [false, 'abc', null, 'abc', false, 7],
-        ];
-
-        self::assertEquals($expected, $output);
     }
 
     public function testSetReferencesSingle(): void
@@ -329,6 +204,86 @@ class TableJoinerTest extends ModelBasedTest
         $expected = [['a', null], ['b', null]];
 
         self::assertEquals($expected, $input);
+    }
+
+    public function cartesianProductPerformanceTestData(): array
+    {
+        return [
+            [[1000, 50, 25], 0.5],
+        ];
+    }
+
+    public function cartesianProductTestData(): array
+    {
+        return [
+            [[], []], // no columns
+            [[['a', 'b', 'c']], [ // one column
+                ['a'],
+                ['b'],
+                ['c'],
+            ]],
+            [[ // two columns
+                ['a', 'b', 'c'],
+                [1, 2, 3],
+            ], [
+                ['a', 1],
+                ['b', 1],
+                ['c', 1],
+                ['a', 2],
+                ['b', 2],
+                ['c', 2],
+                ['a', 3],
+                ['b', 3],
+                ['c', 3],
+            ]],
+            [[ // single empty row
+                [],
+            ], []],
+            [[ // second empty row
+                ['abc'],
+                [],
+            ], [
+                ['abc', null],
+            ]],
+            [[ // first row empty
+                [],
+                [1],
+            ], [
+                [null, 1],
+            ]],
+            [[ // reference after empty
+                [],
+                0,
+            ], []],
+            [[ // last row empty
+                [1],
+                [],
+            ], [
+                [1, null],
+            ]],
+            [[ // three empty
+                [],
+                [],
+                [],
+            ], []],
+            [[ // first row empty and third row reference
+                [],
+                [1],
+                0,
+            ], [
+                [null, 1, null],
+            ]],
+            [[ // empty row between
+                [false],
+                ['abc'],
+                [],
+                1,
+                0,
+                [7],
+            ], [
+                [false, 'abc', null, 'abc', false, 7],
+            ]],
+        ];
     }
 
     private function getReflectionMethod(string $name): ReflectionMethod
