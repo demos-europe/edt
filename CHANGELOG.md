@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* fix: allow `DocblockTagParser` to find interfaces
 * fix: allow creation of `IS NULL` and `IS NOT NULL` Drupal conditions
 
 ## 0.17.2 - 2023-02-01

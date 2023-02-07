@@ -94,13 +94,11 @@ class DocblockTagParser
     }
 
     /**
-     * @param PropertyRead|PropertyWrite|Property|Param|Var_ $tag
-     *
      * @return non-empty-string
      *
      * @throws TagNameParseException
      */
-    public function getVariableNameOfTag(TagWithType $tag): string
+    public function getVariableNameOfTag(PropertyRead|PropertyWrite|Property|Param|Var_ $tag): string
     {
         $variableName = $tag->getVariableName();
         if (null === $variableName || '' === $variableName) {
@@ -119,7 +117,7 @@ class DocblockTagParser
     {
         $namespaceName = $this->reflectionClass->getNamespaceName();
 
-        return $this->getFqsenOfClass($tag, $namespaceName);
+        return $this->getQualifiedNameOfClass($tag, $namespaceName);
     }
 
     /**
@@ -127,7 +125,7 @@ class DocblockTagParser
      *
      * @throws TagTypeParseException
      */
-    private function getFqsenOfClass(TagWithType $tag, string $namespaceName): string
+    private function getQualifiedNameOfClass(TagWithType $tag, string $namespaceName): string
     {
         $tagType = $tag->getType();
         if ($tagType instanceof AggregatedType) {
@@ -139,37 +137,37 @@ class DocblockTagParser
         }
 
         $typeDeclaration = (string)$tagType->getFqsen();
-        $fqsenParts = explode('\\', $typeDeclaration);
-        if (2 > count($fqsenParts)) {
+        $qualifiedNameParts = explode('\\', $typeDeclaration);
+        if (2 > count($qualifiedNameParts)) {
             throw TagTypeParseException::createForTagType($tag, (string)$tagType, $this->reflectionClass->getName());
         }
 
         // look for return type in use statements
-        $class = $fqsenParts[1];
-        $fqsen = null;
-        foreach ($this->useStatements as $as => $currentUseFqsen) {
+        $class = $qualifiedNameParts[1];
+        $qualifiedName = null;
+        foreach ($this->useStatements as $as => $currentUseQualifiedName) {
             if ($class === $as) {
-                $fqsen = $currentUseFqsen;
+                $qualifiedName = $currentUseQualifiedName;
                 break;
             }
         }
 
-        if (null !== $fqsen && class_exists($fqsen)) {
+        if (null !== $qualifiedName && (class_exists($qualifiedName) || interface_exists($qualifiedName))) {
             // usable return type found in use statements
-            return $fqsen;
+            return $qualifiedName;
         }
 
-        if (class_exists($typeDeclaration)) {
-            // the declaration was a valid FQSEN in the first place
+        if (class_exists($typeDeclaration) || interface_exists($typeDeclaration)) {
+            // the declaration was a valid fully qualified class/interface name in the first place
             return $typeDeclaration;
         }
 
         // no matching 'use' statements were found and the class is not already defined
-        // with a FQSEN. Adding the current namespace as last resort to find it.
-        $fqsen = $namespaceName.$typeDeclaration;
-        if (class_exists($fqsen)) {
+        // with a fully qualified class/interface name. Adding the current namespace as last resort to find it.
+        $qualifiedName = $namespaceName.$typeDeclaration;
+        if (class_exists($qualifiedName) || interface_exists($qualifiedName)) {
             // usable return type found in use statements
-            return $fqsen;
+            return $qualifiedName;
         }
 
         // giving up looking for return type
