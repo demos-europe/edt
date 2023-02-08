@@ -113,7 +113,7 @@ class DocblockTagParser
      *
      * @throws TagTypeParseException
      */
-    public function getTagType(TagWithType $tag): string
+    public function getPropertyType(TagWithType $tag): string
     {
         $namespaceName = $this->reflectionClass->getNamespaceName();
 

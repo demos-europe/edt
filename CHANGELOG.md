@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* refactor: require enum to define relevant tags on docblock parsing 
 * fix: allow `DocblockTagParser` to find interfaces
 * fix: allow creation of `IS NULL` and `IS NOT NULL` Drupal conditions
 

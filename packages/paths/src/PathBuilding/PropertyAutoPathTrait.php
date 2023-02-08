@@ -118,7 +118,7 @@ trait PropertyAutoPathTrait
             try {
                 $properties = $this->getAutoPathProperties();
                 if (!array_key_exists($propertyName, $properties)) {
-                    throw PathBuildException::createFromName($propertyName, $implementingClass, ...$this->docblockTraitEvaluator->getTargetTags());
+                    throw PathBuildException::createFromName($propertyName, $implementingClass, $this->docblockTraitEvaluator->getTargetTags());
                 }
 
                 $returnType = $properties[$propertyName];
@@ -211,12 +211,12 @@ trait PropertyAutoPathTrait
     /**
      * Provides all property-read tags from the docblock of the class this method was invoked on and its parent classes/interfaces.
      *
-     * @param non-empty-list<value-of<PropertyAutoPathInterface::SUPPORTED_TARGET_TAGS>> $targetTags
+     * @param non-empty-list<PropertyTag> $targetTags
      *
      * @return array<non-empty-string, class-string<PropertyAutoPathInterface>>
      * @throws ParseException
      */
-    protected function getAutoPathProperties(array $targetTags = [PropertyAutoPathInterface::TAG_PROPERTY_READ]): array
+    protected function getAutoPathProperties(array $targetTags = [PropertyTag::PROPERTY_READ]): array
     {
         if (null === $this->properties) {
             $this->properties = $this->getDocblockTraitEvaluator($targetTags)->parseProperties(
@@ -274,7 +274,7 @@ trait PropertyAutoPathTrait
     }
 
     /**
-     * @param non-empty-list<non-empty-string> $targetTags
+     * @param non-empty-list<PropertyTag> $targetTags
      * @internal
      */
     protected function getDocblockTraitEvaluator(array $targetTags): DocblockPropertyByTraitEvaluator

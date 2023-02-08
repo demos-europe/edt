@@ -6,14 +6,6 @@ namespace EDT\PathBuilding;
 
 use EDT\Parsing\Utilities\DocblockTagParser;
 use EDT\Parsing\Utilities\ParseException;
-use InvalidArgumentException;
-use phpDocumentor\Reflection\DocBlock\Tag;
-use phpDocumentor\Reflection\DocBlock\Tags\Param;
-use phpDocumentor\Reflection\DocBlock\Tags\Property;
-use phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
-use phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
-use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use function array_key_exists;
 
 class DocblockPropertyByTraitEvaluator
@@ -27,7 +19,7 @@ class DocblockPropertyByTraitEvaluator
 
     /**
      * @param list<non-empty-string> $targetTraits
-     * @param non-empty-list<non-empty-string> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
+     * @param non-empty-list<PropertyTag> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      */
     public function __construct(
         private readonly TraitEvaluator $traitEvaluator,
@@ -55,7 +47,7 @@ class DocblockPropertyByTraitEvaluator
     }
 
     /**
-     * @return non-empty-list<non-empty-string>
+     * @return non-empty-list<PropertyTag>
      */
     public function getTargetTags(): array
     {
@@ -68,29 +60,20 @@ class DocblockPropertyByTraitEvaluator
      * @return array<non-empty-string, class-string>
      *
      * @throws ParseException
+     * @throws PropertyTagException
      */
     private function parsePropertiesOfClass(string $class): array
     {
         if (!array_key_exists($class, $this->parsedClasses)) {
             $parser = new DocblockTagParser($class);
-            $nestedProperties = array_map(function (string $targetTag) use ($parser): array {
-                $tags = $parser->getTags($targetTag);
-                $tags = array_map(static function (Tag $tag): TagWithType {
-                    if (!$tag instanceof PropertyRead
-                        && !$tag instanceof PropertyWrite
-                        && !$tag instanceof Property
-                        && !$tag instanceof Param
-                        && !$tag instanceof Var_) {
-                        throw new InvalidArgumentException("Can not determine variable name for '{$tag->getName()}' tags.");
-                    }
+            $nestedProperties = array_map(function (PropertyTag $targetTag) use ($parser): array {
+                $propertyTags = $parser->getTags($targetTag->value);
+                $propertyTags = array_map([$targetTag, 'convertToCorrespondingType'], $propertyTags);
+                $propertyNames = array_map([$parser, 'getVariableNameOfTag'], $propertyTags);
+                $propertyTags = array_combine($propertyNames, $propertyTags);
+                $propertyTypes = array_map([$parser, 'getPropertyType'], $propertyTags);
 
-                    return $tag;
-                }, $tags);
-                $keys = array_map([$parser, 'getVariableNameOfTag'], $tags);
-                $tags = array_combine($keys, $tags);
-                $tags = array_map([$parser, 'getTagType'], $tags);
-
-                return array_filter($tags, [$this, 'isUsingRequiredTraits']);
+                return array_filter($propertyTypes, [$this, 'isUsingRequiredTraits']);
             }, $this->targetTags);
 
             $this->parsedClasses[$class] = array_merge(...$nestedProperties);

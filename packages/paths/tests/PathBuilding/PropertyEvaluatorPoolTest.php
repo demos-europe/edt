@@ -6,6 +6,7 @@ namespace Tests\PathBuilding;
 
 use EDT\PathBuilding\PropertyAutoPathTrait;
 use EDT\PathBuilding\PropertyEvaluatorPool;
+use EDT\PathBuilding\PropertyTag;
 use PHPUnit\Framework\TestCase;
 
 class PropertyEvaluatorPoolTest extends TestCase
@@ -24,21 +25,33 @@ class PropertyEvaluatorPoolTest extends TestCase
     public function getGetEvaluatorParams()
     {
         return [
-            [[], ['var']],
-            [[], ['property']],
-            [[], ['property-write']],
-            [[], ['property-read']],
-            [[], ['param']],
+            [[], [PropertyTag::VAR]],
+            [[], [PropertyTag::PROPERTY]],
+            [[], [PropertyTag::PROPERTY_WRITE]],
+            [[], [PropertyTag::PROPERTY_READ]],
+            [[], [PropertyTag::PARAM]],
 
-            [[], ['var', 'property', 'property-read', 'property-write', 'param']],
+            [[], [
+                PropertyTag::VAR,
+                PropertyTag::PROPERTY,
+                PropertyTag::PROPERTY_READ,
+                PropertyTag::PROPERTY_WRITE,
+                PropertyTag::PARAM
+            ]],
 
-            [[PropertyAutoPathTrait::class], ['var']],
-            [[PropertyAutoPathTrait::class], ['property']],
-            [[PropertyAutoPathTrait::class], ['property-write']],
-            [[PropertyAutoPathTrait::class], ['property-read']],
-            [[PropertyAutoPathTrait::class], ['param']],
+            [[PropertyAutoPathTrait::class], [PropertyTag::VAR]],
+            [[PropertyAutoPathTrait::class], [PropertyTag::PROPERTY]],
+            [[PropertyAutoPathTrait::class], [PropertyTag::PROPERTY_WRITE]],
+            [[PropertyAutoPathTrait::class], [PropertyTag::PROPERTY_READ]],
+            [[PropertyAutoPathTrait::class], [PropertyTag::PARAM]],
 
-            [[PropertyAutoPathTrait::class], ['var', 'property', 'property-read', 'property-write', 'param']],
+            [[PropertyAutoPathTrait::class], [
+                PropertyTag::VAR,
+                PropertyTag::PROPERTY,
+                PropertyTag::PROPERTY_READ,
+                PropertyTag::PROPERTY_WRITE,
+                PropertyTag::PARAM
+            ]],
         ];
     }
 }

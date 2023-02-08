@@ -9,6 +9,7 @@ use EDT\PathBuilding\End;
 use EDT\PathBuilding\PropertyAutoPathInterface;
 use EDT\PathBuilding\PropertyAutoPathTrait;
 use EDT\PathBuilding\PropertyEvaluatorPool;
+use EDT\PathBuilding\PropertyTag;
 
 /**
  * @param End $paramAttribute
@@ -29,7 +30,7 @@ class PropertyWriteTagged implements PropertyAutoPathInterface
         if (null === $this->docblockTraitEvaluator) {
             $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(
                 [PropertyAutoPathTrait::class],
-                ['property-write']
+                [PropertyTag::PROPERTY_WRITE]
             );
         }
 

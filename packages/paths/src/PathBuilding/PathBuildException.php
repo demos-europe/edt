@@ -29,10 +29,20 @@ class PathBuildException extends PathException
         return new self("Could not create path starting point with parent class '$class'.", 0, $previous);
     }
 
-    public static function createFromName(string $propertyName, string $className, string $tagIdentifier, string ...$tagIdentifiers): self
+    /**
+     * @param non-empty-string $propertyName
+     * @param class-string $className
+     * @param non-empty-list<PropertyTag> $propertyTags
+     */
+    public static function createFromName(string $propertyName, string $className, array $propertyTags): self
     {
-        array_unshift($tagIdentifiers, $tagIdentifier);
-        $tagIdentifiers = implode(', ', $tagIdentifiers);
+        $tagIdentifiers = implode(
+            ', ',
+            array_map(
+                static fn (PropertyTag $propertyTag): string => $propertyTag->value,
+                $propertyTags
+            )
+        );
 
         return new self("The property '$propertyName' is not available in the class '$className'. Looked for the following docblock tags: $tagIdentifiers");
     }
