@@ -942,7 +942,7 @@ parameters:
             path: packages/paths/src/PathBuilding/TraitEvaluator.php
 
         -
-            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getAllNestedTraits'\\} given\\.$#"
+            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getWithAllNestedTra…'\\} given\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/TraitEvaluator.php
 

@@ -281,7 +281,7 @@ trait PropertyAutoPathTrait
     {
         if (null === $this->docblockTraitEvaluator) {
             $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(
-                PropertyAutoPathTrait::class,
+                [PropertyAutoPathTrait::class],
                 $targetTags
             );
         }

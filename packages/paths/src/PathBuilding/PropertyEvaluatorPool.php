@@ -32,24 +32,24 @@ class PropertyEvaluatorPool
     }
 
     /**
-     * @param non-empty-string $targetTrait
+     * @param list<non-empty-string> $requiredTraits
      * @param non-empty-list<non-empty-string> $targetTags
      *
      * @return DocblockPropertyByTraitEvaluator
      */
-    public function getEvaluator(string $targetTrait, array $targetTags): DocblockPropertyByTraitEvaluator
+    public function getEvaluator(array $requiredTraits, array $targetTags): DocblockPropertyByTraitEvaluator
     {
-        $key = $targetTags;
-        $key[] = $targetTrait;
-        $key = implode('|', $key);
-        if (!array_key_exists($key, $this->evaluators)) {
-            $this->evaluators[$key] = new DocblockPropertyByTraitEvaluator(
+        $tagsConcat = implode('|', $targetTags);
+        $traitsConcat = implode('|', $requiredTraits);
+        $evaluatorKey = "$tagsConcat&$traitsConcat";
+        if (!array_key_exists($evaluatorKey, $this->evaluators)) {
+            $this->evaluators[$evaluatorKey] = new DocblockPropertyByTraitEvaluator(
                 $this->traitEvaluator,
-                $targetTrait,
+                $requiredTraits,
                 $targetTags
             );
         }
 
-        return $this->evaluators[$key];
+        return $this->evaluators[$evaluatorKey];
     }
 }

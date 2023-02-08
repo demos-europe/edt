@@ -93,13 +93,13 @@ class TraitEvaluator
      *
      * @throws SplException
      */
-    public function getAllNestedTraits(string $trait): array
+    public function getWithAllNestedTraits(string $trait): array
     {
         $traits = class_uses($trait);
         if (0 === count($traits)) {
             return [$trait];
         }
-        $traits = Iterables::mapFlat([$this, 'getAllNestedTraits'], $traits);
+        $traits = Iterables::mapFlat([$this, 'getWithAllNestedTraits'], $traits);
         $traits[] = $trait;
 
         Assert::allStringNotEmpty($traits);
@@ -108,24 +108,28 @@ class TraitEvaluator
     }
 
     /**
-     * Checks if the given class uses the given trait. The method will take
+     * Checks if the given class uses all the given traits. The method will take
      * parent classes and nested traits into consideration.
      *
-     * @param class-string     $class
-     * @param non-empty-string $trait
+     * @param class-string $targetClass
+     * @param list<non-empty-string> $requiredTraits
      *
      * @throws SplException
      */
-    public function isClassUsingTrait(string $class, string $trait): bool
+    public function isClassUsingAllTraits(string $targetClass, array $requiredTraits): bool
     {
-        $traits = $this->getAllClassTraits($class);
-        if (0 === count($traits)) {
+        if (0 === count($requiredTraits)) {
+            return true;
+        }
+
+        $usedTraits = $this->getAllClassTraits($targetClass);
+        if (0 === count($usedTraits)) {
             return false;
         }
 
-        $traits = Iterables::mapFlat([$this, 'getAllNestedTraits'], $traits);
-        $traits = array_unique($traits);
+        $usedAndNestedTraits = Iterables::mapFlat([$this, 'getWithAllNestedTraits'], $usedTraits);
+        $missingTraits = array_diff($requiredTraits, array_unique($usedAndNestedTraits));
 
-        return in_array($trait, $traits, true);
+        return 0 === count($missingTraits);
     }
 }

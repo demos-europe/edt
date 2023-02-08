@@ -27,7 +27,10 @@ class PropertyWriteTagged implements PropertyAutoPathInterface
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator
     {
         if (null === $this->docblockTraitEvaluator) {
-            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(PropertyAutoPathTrait::class, ['property-write']);
+            $this->docblockTraitEvaluator = PropertyEvaluatorPool::getInstance()->getEvaluator(
+                [PropertyAutoPathTrait::class],
+                ['property-write']
+            );
         }
 
         return $this->docblockTraitEvaluator;
