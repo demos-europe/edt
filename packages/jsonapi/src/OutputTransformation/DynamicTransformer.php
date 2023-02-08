@@ -302,6 +302,8 @@ class DynamicTransformer extends TransformerAbstract
      * the default Fractal behavior to silently not include them, because the page will not work
      * and with the log message the cause is way more clear.
      *
+     * TODO: by validating the request before invoking the root transformer the warning logging in this class can be replaced with an exception, as it should never occur
+     *
      * @throws ExcludeException
      */
     public function processIncludedResources(Scope $scope, mixed $data): array|bool
