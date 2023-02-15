@@ -21,6 +21,7 @@ use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\Utilities\TableJoiner;
 use Tests\ModelBasedTest;
+use TypeError;
 
 class ConditionEvaluatorTest extends ModelBasedTest
 {
@@ -128,7 +129,7 @@ class ConditionEvaluatorTest extends ModelBasedTest
 
     public function testPropertyHasValueWithNull(): void
     {
-        $this->expectException(\TypeError::class);
+        $this->expectException(TypeError::class);
         $propertyHasValue = $this->conditionFactory->propertyHasValue(null, ['author', 'pseudonym']);
     }
 
@@ -160,16 +161,9 @@ class ConditionEvaluatorTest extends ModelBasedTest
         self::assertEquals($expectedAuthors, $filteredAuthors);
     }
 
-    public function testPropertyHasSizeWithInvalidPathAndPathMerge(): void
-    {
-        $this->expectError();
-        $propertyHasSize = $this->conditionFactory->propertyHasSize(2, ['books', 'title']);
-        $this->conditionEvaluator->filterArray($this->authors, $propertyHasSize);
-    }
-
     public function testPropertyHasSizeWithInvalidPath(): void
     {
-        $this->expectError();
+        $this->expectException(TypeError::class);
         $propertyHasSize = $this->conditionFactory->propertyHasSize(2, ['books', 'title']);
         $this->conditionEvaluator->filterArray($this->authors, $propertyHasSize);
     }
