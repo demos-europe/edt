@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.17.4 - 2023-02-15
 
 * refactor: require enum to define relevant tags on docblock parsing 
 * fix: allow `DocblockTagParser` to find interfaces
