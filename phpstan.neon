@@ -421,11 +421,6 @@ parameters:
             path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
 
         -
-            message: "#^Instanceof between Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata and Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo will always evaluate to true\\.$#"
-            count: 1
-            path: packages/dql/src/Utilities/JoinFinder.php
-
-        -
             message: "#^Method EDT\\\\DqlQuerying\\\\Utilities\\\\JoinFinder\\:\\:createTableAlias\\(\\) has parameter \\$tableInfo with generic class Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo but does not specify its types\\: T$#"
             count: 1
             path: packages/dql/src/Utilities/JoinFinder.php
@@ -629,16 +624,6 @@ parameters:
             message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenAPISchemaGenerator\\:\\:wrapAsJsonApiResponseSchema\\(\\) has parameter \\$resource with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
             count: 1
             path: packages/jsonapi/src/ApiDocumentation/OpenAPISchemaGenerator.php
-
-        -
-            message: "#^Call to static method Webmozart\\\\Assert\\\\Assert\\:\\:count\\(\\) with array\\{TEntity of object, League\\\\Fractal\\\\ParamBag\\} and 2 will always evaluate to true\\.$#"
-            count: 1
-            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
-
-        -
-            message: "#^Call to static method Webmozart\\\\Assert\\\\Assert\\:\\:isInstanceOf\\(\\) with League\\\\Fractal\\\\ParamBag and 'League\\\\\\\\Fractal\\\\\\\\ParamBag' will always evaluate to true\\.$#"
-            count: 1
-            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
 
         -
             message: "#^Method EDT\\\\JsonApi\\\\OutputTransformation\\\\DynamicTransformer\\:\\:createRelationshipTransformer\\(\\) has parameter \\$relationshipType with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
