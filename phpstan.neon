@@ -807,12 +807,12 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#2 \\$customValueFunction of method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
+            message: "#^Parameter \\#2 \\$customReadCallback of method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#3 \\$customRead of method EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,object\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: iterable\\<object\\>\\)\\|\\(callable\\(TEntity of object\\)\\: object\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
+            message: "#^Parameter \\#3 \\$customReadCallback of method EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,object\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: iterable\\<object\\>\\)\\|\\(callable\\(TEntity of object\\)\\: object\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
