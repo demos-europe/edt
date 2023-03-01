@@ -18,14 +18,14 @@ use function is_string;
 class JsonAttributeReadability extends AttributeReadability
 {
     /**
-     * @param null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null) $customValueFunction
+     * @param null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null) $customReadCallback
      */
     public function __construct(
         bool $defaultField,
         bool $allowingInconsistencies,
-        $customValueFunction
+        $customReadCallback
     ) {
-        parent::__construct($defaultField, $allowingInconsistencies, $customValueFunction);
+        parent::__construct($defaultField, $allowingInconsistencies, $customReadCallback);
     }
 
     /**

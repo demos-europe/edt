@@ -57,7 +57,7 @@ class AttributeTypeResolver
         string $propertyName,
         AbstractReadability $propertyReadability
     ): array {
-        $customReadCallback = $propertyReadability->getCustomValueFunction();
+        $customReadCallback = $propertyReadability->getCustomReadCallback();
         if (null !== $customReadCallback) {
             return $this->resolveTypeFromCallable($customReadCallback, $resourceType::class, $propertyName);
         }
@@ -184,7 +184,7 @@ class AttributeTypeResolver
         string $propertyName
     ): array {
         try {
-            $functionReflection = $this->reflectCustomValueFunction($customReadCallback);
+            $functionReflection = $this->reflectCustomReadCallback($customReadCallback);
         } catch (Throwable $exception) {
             // This catch purely exists to have a convenient breakpoint if an unhandled variant of callables appears
             throw $exception;
@@ -214,7 +214,7 @@ class AttributeTypeResolver
      *
      * @throws ReflectionException
      */
-    private function reflectCustomValueFunction(callable $customReadCallback): ReflectionFunctionAbstract
+    private function reflectCustomReadCallback(callable $customReadCallback): ReflectionFunctionAbstract
     {
         if (is_array($customReadCallback)) {
             return (new ReflectionClass($customReadCallback[0]))->getMethod(

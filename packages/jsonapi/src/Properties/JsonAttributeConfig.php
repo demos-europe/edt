@@ -26,12 +26,12 @@ class JsonAttributeConfig extends AttributeConfig
     protected function createAttributeReadability(
         bool $defaultField,
         bool $allowingInconsistencies,
-        ?callable $customValueFunction
+        ?callable $customReadCallback
     ): AttributeReadability {
         return new JsonAttributeReadability(
             $defaultField,
             $allowingInconsistencies,
-            $customValueFunction
+            $customReadCallback
         );
     }
 }

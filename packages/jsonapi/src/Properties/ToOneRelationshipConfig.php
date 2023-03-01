@@ -39,7 +39,7 @@ class ToOneRelationshipConfig extends AbstractConfig
     }
 
     /**
-     * @param null|callable(TEntity): (TRelationship|null) $customRead
+     * @param null|callable(TEntity): (TRelationship|null) $customReadCallback
      *
      * @return $this
      *
@@ -48,7 +48,7 @@ class ToOneRelationshipConfig extends AbstractConfig
     public function enableReadability(
         bool $defaultField = false,
         bool $defaultInclude = false,
-        callable $customRead = null,
+        callable $customReadCallback = null,
         bool $allowingInconsistencies = false
     ): self {
         $this->assertNullOrImplements(TransferableTypeInterface::class, 'readable');
@@ -57,7 +57,7 @@ class ToOneRelationshipConfig extends AbstractConfig
             $defaultField,
             $allowingInconsistencies,
             $defaultInclude,
-            $customRead,
+            $customReadCallback,
             $this->relationshipType
         );
 
@@ -65,16 +65,16 @@ class ToOneRelationshipConfig extends AbstractConfig
     }
 
     /**
-     * @param list<TCondition>                                 $entityConditions
-     * @param list<TCondition>                                 $valueConditions
-     * @param null|callable(TEntity, TRelationship|null): void $customWrite
+     * @param list<TCondition> $entityConditions
+     * @param list<TCondition> $valueConditions
+     * @param null|callable(TEntity, TRelationship|null): void $customWriteCallback
      *
      * @return $this
      */
     public function enableUpdatability(
         array $entityConditions = [],
         array $valueConditions = [],
-        callable $customWrite = null
+        callable $customWriteCallback = null
     ): ToOneRelationshipConfig {
         $this->assertNullOrImplements(TransferableTypeInterface::class, 'readable');
 
@@ -82,7 +82,7 @@ class ToOneRelationshipConfig extends AbstractConfig
             $entityConditions,
             $valueConditions,
             $this->relationshipType,
-            $customWrite
+            $customWriteCallback
         );
 
         return $this;

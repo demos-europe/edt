@@ -27,7 +27,7 @@ abstract class AttributeConfig extends AbstractConfig
     ) {}
 
     /**
-     * @param null|callable(TEntity): TValue $customValueFunction
+     * @param null|callable(TEntity): TValue $customReadCallback
      *
      * @return $this
      *
@@ -35,7 +35,7 @@ abstract class AttributeConfig extends AbstractConfig
      */
     public function enableReadability(
         bool $defaultField = false,
-        callable $customValueFunction = null,
+        callable $customReadCallback = null,
         bool $allowingInconsistencies = false
     ): self {
         $this->assertNullOrImplements(TransferableTypeInterface::class, 'readable');
@@ -43,41 +43,41 @@ abstract class AttributeConfig extends AbstractConfig
         $this->readability = $this->createAttributeReadability(
             $defaultField,
             $allowingInconsistencies,
-            $customValueFunction
+            $customReadCallback
         );
 
         return $this;
     }
 
     /**
-     * @param null|callable(TEntity): TValue $customValueFunction
+     * @param null|callable(TEntity): TValue $customReadCallback
      *
      * @return AttributeReadability<TEntity>
      */
     abstract protected function createAttributeReadability(
         bool $defaultField,
         bool $allowingInconsistencies,
-        ?callable $customValueFunction
+        ?callable $customReadCallback
     ): AttributeReadability;
 
     /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
-     * @param null|callable(TEntity, TValue): void $customWrite
+     * @param null|callable(TEntity, TValue): void $customWriteCallback
      *
      * @return $this
      */
     public function enableUpdatability(
         array $entityConditions = [],
         array $valueConditions = [],
-        callable $customWrite = null
+        callable $customWriteCallback = null
     ): AttributeConfig {
         $this->assertNullOrImplements(TransferableTypeInterface::class, 'readable');
 
         $this->updatability = new JsonAttributeUpdatability(
             $entityConditions,
             $valueConditions,
-            $customWrite
+            $customWriteCallback
         );
 
         return $this;

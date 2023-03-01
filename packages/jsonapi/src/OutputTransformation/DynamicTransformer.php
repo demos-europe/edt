@@ -120,7 +120,7 @@ class DynamicTransformer extends TransformerAbstract
 
         $attributesToReturn = [];
         foreach ($effectiveReadabilities as $attributeName => $readability) {
-            $customReadCallable = $readability->getCustomValueFunction();
+            $customReadCallable = $readability->getCustomReadCallback();
             $attributeValue = null === $customReadCallable
                 // we should only get non-objects here, so there is no need to unwrap
                 ? $this->getValueViaWrapper($entity, $attributeName)
@@ -185,7 +185,7 @@ class DynamicTransformer extends TransformerAbstract
     ): ResourceAbstract {
         $relationshipType = $readability->getRelationshipType();
 
-        $customReadCallable = $readability->getCustomValueFunction();
+        $customReadCallable = $readability->getCustomReadCallback();
         if (null !== $customReadCallable) {
             $value = $customReadCallable($entity);
         } else {
@@ -220,7 +220,7 @@ class DynamicTransformer extends TransformerAbstract
     ): Collection {
         $relationshipType = $readability->getRelationshipType();
 
-        $customReadCallable = $readability->getCustomValueFunction();
+        $customReadCallable = $readability->getCustomReadCallback();
         if (null !== $customReadCallable) {
             $values = $customReadCallable($entity);
         } else {

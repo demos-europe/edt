@@ -23,14 +23,14 @@ class JsonAttributeUpdatability extends AttributeUpdatability
     /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
-     * @param null|callable(TEntity, mixed): void $customWriteFunction
+     * @param null|callable(TEntity, mixed): void $customWriteCallback
      */
     public function __construct(
         array $entityConditions,
         array $valueConditions,
-        ?callable $customWriteFunction
+        ?callable $customWriteCallback
     ) {
-        parent::__construct($entityConditions, $valueConditions, $customWriteFunction);
+        parent::__construct($entityConditions, $valueConditions, $customWriteCallback);
     }
 
     /**

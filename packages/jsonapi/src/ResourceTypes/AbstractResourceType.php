@@ -291,7 +291,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         $readability = $config->getReadability();
         if (null === $readability
             || $readability->isAllowingInconsistencies()
-            || null === $readability->getCustomValueFunction()
+            || null === $readability->getCustomReadCallback()
         ) {
             return;
         }

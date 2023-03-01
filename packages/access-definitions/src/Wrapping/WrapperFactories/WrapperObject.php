@@ -310,9 +310,9 @@ class WrapperObject
                 }
             }
 
-            $customWrite = $updatability->getCustomWriteFunction();
-            if (null !== $customWrite) {
-                $customWrite($this->entity, $propertyValue);
+            $customWriteCallback = $updatability->getCustomWriteCallback();
+            if (null !== $customWriteCallback) {
+                $customWriteCallback($this->entity, $propertyValue);
 
                 return;
             }
@@ -330,9 +330,9 @@ class WrapperObject
                 throw RelationshipAccessException::toOneWithRestrictedItemNotSetable($this->type, $propertyName, $deAliasedPropertyName);
             }
 
-            $customWrite = $updatability->getCustomWriteFunction();
-            if (null !== $customWrite) {
-                $customWrite($this->entity, $propertyValue);
+            $customWriteCallback = $updatability->getCustomWriteCallback();
+            if (null !== $customWriteCallback) {
+                $customWriteCallback($this->entity, $propertyValue);
 
                 return;
             }
@@ -349,9 +349,9 @@ class WrapperObject
                 throw new InvalidArgumentException('Value to set into attribute is not allowed by value conditions.');
             }
 
-            $customWrite = $updatability->getCustomWriteFunction();
-            if (null !== $customWrite) {
-                $customWrite($this->entity, $propertyValue);
+            $customWriteCallback = $updatability->getCustomWriteCallback();
+            if (null !== $customWriteCallback) {
+                $customWriteCallback($this->entity, $propertyValue);
 
                 return;
             }

@@ -2,6 +2,7 @@
 
 # Unreleased
 
+* harmonize custom read and write callback namings to `customReadCallback` and `customWriteCallback`
 * rename `configureAttribute` to `configureJsonAttribute` in `ConfigCollection`/`TypedPathConfigCollection`
 * allow `AttributeReadability` and `AttributeUpdatability` to check the output/input
 

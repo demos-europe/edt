@@ -17,12 +17,12 @@ abstract class AttributeUpdatability extends AbstractUpdatability
     /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $valueConditions
-     * @param null|callable(TEntity, mixed): void $customWriteFunction
+     * @param null|callable(TEntity, mixed): void $customWriteCallback
      */
     public function __construct(
         array $entityConditions,
         array $valueConditions,
-        private readonly mixed $customWriteFunction
+        private readonly mixed $customWriteCallback
     ) {
         parent::__construct($entityConditions, $valueConditions);
     }
@@ -30,9 +30,9 @@ abstract class AttributeUpdatability extends AbstractUpdatability
     /**
      * @return null|callable(TEntity, mixed): void
      */
-    public function getCustomWriteFunction(): ?callable
+    public function getCustomWriteCallback(): ?callable
     {
-        return $this->customWriteFunction;
+        return $this->customWriteCallback;
     }
 
     abstract public function isValidValue(mixed $attributeValue): bool;
