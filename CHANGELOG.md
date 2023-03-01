@@ -1,5 +1,10 @@
 # Changelog
 
+# Unreleased
+
+* rename `configureAttribute` to `configureJsonAttribute` in `ConfigCollection`/`TypedPathConfigCollection`
+* allow `AttributeReadability` and `AttributeUpdatability` to check the output/input
+
 ## 0.17.4 - 2023-02-15
 
 * refactor: require enum to define relevant tags on docblock parsing 

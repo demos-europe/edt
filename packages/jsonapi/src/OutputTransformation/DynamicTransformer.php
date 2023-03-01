@@ -19,11 +19,6 @@ use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\ParamBag;
 use Webmozart\Assert\Assert;
 use function gettype;
-use function is_array;
-use function is_bool;
-use function is_float;
-use function is_int;
-use function is_string;
 use const ARRAY_FILTER_USE_BOTH;
 use const ARRAY_FILTER_USE_KEY;
 use function array_key_exists;
@@ -126,19 +121,12 @@ class DynamicTransformer extends TransformerAbstract
         $attributesToReturn = [];
         foreach ($effectiveReadabilities as $attributeName => $readability) {
             $customReadCallable = $readability->getCustomValueFunction();
-            if (null !== $customReadCallable) {
-                $attributesToReturn[$attributeName] = $customReadCallable($entity);
-            }
+            $attributeValue = null === $customReadCallable
+                // we should only get non-objects here, so there is no need to unwrap
+                ? $this->getValueViaWrapper($entity, $attributeName)
+                : $customReadCallable($entity);
 
-            // we should only get non-objects here, so there is no need to unwrap
-            $attributeValue = $this->getValueViaWrapper($entity, $attributeName);
-            if (null !== $attributeValue
-                && !is_string($attributeValue)
-                && !is_int($attributeValue)
-                && !is_float($attributeValue)
-                && !is_bool($attributeValue)
-                && !is_array($attributeValue) // TODO: validate array content further?
-            ) {
+            if (!$readability->isValidValue($attributeValue)) {
                 throw TransformException::nonAttributeValue(gettype($attributeValue));
             }
             $attributesToReturn[$attributeName] = $attributeValue;

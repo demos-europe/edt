@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\data\ApiTypes;
 
+use EDT\JsonApi\Properties\JsonAttributeReadability;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Properties\AttributeReadability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
-use League\Fractal\TransformerAbstract;
 
 class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInterface
 {
@@ -23,9 +22,9 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
     {
         return [
             [
-                'name' => new AttributeReadability(false, false, null),
-                'pseudonym' => new AttributeReadability(false, false, null),
-                'birthCountry' => new AttributeReadability(false, false, null),
+                'name' => new JsonAttributeReadability(false, false, null),
+                'pseudonym' => new JsonAttributeReadability(false, false, null),
+                'birthCountry' => new JsonAttributeReadability(false, false, null),
             ],
             [],
             [

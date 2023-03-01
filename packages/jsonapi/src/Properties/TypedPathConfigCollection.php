@@ -25,15 +25,15 @@ class TypedPathConfigCollection
     ) {}
 
     /**
-     * @return AttributeConfig<TCondition, TEntity>
+     * @return JsonAttributeConfig<TCondition, TEntity>
      *
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function configureAttribute(PropertyPathInterface $propertyPath): AttributeConfig
+    public function configureJsonAttribute(PropertyPathInterface $propertyPath): AttributeConfig
     {
         $this->validatePathStart($propertyPath);
-        return $this->configCollection->configureAttribute($propertyPath);
+        return $this->configCollection->configureJsonAttribute($propertyPath);
     }
 
     /**

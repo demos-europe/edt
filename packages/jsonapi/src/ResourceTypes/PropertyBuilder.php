@@ -285,7 +285,7 @@ class PropertyBuilder
     public function addToConfigCollection(ConfigCollection $configCollection): void
     {
         if (null === $this->relationship) {
-            $config = $configCollection->configureAttribute($this->name);
+            $config = $configCollection->configureJsonAttribute($this->name);
             if ($this->readable) {
                 $config->enableReadability(
                     $this->defaultField,

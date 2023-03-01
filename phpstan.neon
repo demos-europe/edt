@@ -208,11 +208,6 @@ parameters:
             path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
 
         -
-            message: "#^Parameter \\#2 \\$ of callable callable\\(TEntity of object, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\: void expects array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|object\\|string\\|null given\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
-
-        -
             message: "#^Parameter \\#2 \\$ of callable callable\\(TEntity of object, iterable\\<object\\>\\)\\: void expects iterable\\<object\\>, array\\<int\\|string, mixed\\>\\|\\(iterable&object\\) given\\.$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
@@ -772,7 +767,7 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig but does not specify its types\\: TCondition, TEntity$#"
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig but does not specify its types\\: TCondition, TEntity, TValue$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
@@ -812,7 +807,7 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#2 \\$customValueFunction of method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
+            message: "#^Parameter \\#2 \\$customValueFunction of method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 

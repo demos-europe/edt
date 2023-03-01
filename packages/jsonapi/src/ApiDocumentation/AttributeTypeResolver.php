@@ -172,7 +172,7 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
+     * @param callable(object): mixed $customReadCallback
      *
      * @return array{type: string}
      *
@@ -208,7 +208,7 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param callable(object): (simple_primitive|array<int|string, mixed>|null|object|iterable<object>) $customReadCallback
+     * @param callable(object): mixed $customReadCallback
      *
      * @return ReflectionMethod|ReflectionFunction
      *

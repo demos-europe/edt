@@ -8,58 +8,6 @@ use Exception;
 
 class ResourcePropertyConfigException extends Exception
 {
-    private const PHRASE_ATTRIBUTE = 'an attribute';
-    private const PHRASE_TO_ONE = 'a to-one relationship';
-    private const PHRASE_TO_MANY = 'a to-many relationship';
-    
-    /**
-     * @param non-empty-string $propertyName
-     */
-    public static function attributeAlreadyToOneRelationship(string $propertyName): self
-    {
-        return new self(self::buildMessage($propertyName, self::PHRASE_TO_ONE, self::PHRASE_ATTRIBUTE));
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     */
-    public static function attributeAlreadyToManyRelationship(string $propertyName): self
-    {
-        return new self(self::buildMessage($propertyName, self::PHRASE_TO_MANY, self::PHRASE_ATTRIBUTE));
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     */
-    public static function toOneRelationshipAlreadyAttribute(string $propertyName): self
-    {
-        return new self(self::buildMessage($propertyName, self::PHRASE_ATTRIBUTE, self::PHRASE_TO_ONE));
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     */
-    public static function toOneRelationshipAlreadyToManyRelationship(string $propertyName): self
-    {
-        return new self(self::buildMessage($propertyName, self::PHRASE_TO_MANY, self::PHRASE_TO_ONE));
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     */
-    public static function toManyRelationshipAlreadyAttribute(string $propertyName): self
-    {
-        return new self(self::buildMessage($propertyName, self::PHRASE_ATTRIBUTE, self::PHRASE_TO_MANY));
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     */
-    public static function toManyRelationshipAlreadyToOneRelationship(string $propertyName): self
-    {
-        return new self(self::buildMessage($propertyName, self::PHRASE_TO_ONE, self::PHRASE_TO_MANY));
-    }
-
     /**
      * @param non-empty-string $propertyName
      * @param non-empty-string $currentRelationshipTypeName
@@ -89,13 +37,25 @@ class ResourcePropertyConfigException extends Exception
 
     /**
      * @param non-empty-string $propertyName
-     * @param non-empty-string $actual
-     * @param non-empty-string $attempt
-     *
-     * @return non-empty-string
      */
-    protected static function buildMessage(string $propertyName, string $actual, string $attempt): string
+    public static function propertyAlreadyDefinedAsOneRelationship(string $propertyName): self
     {
-        return "Property name '$propertyName' was already used to configure $actual and can not be used to configure $attempt.";
+        return new self("The to-one relationship '$propertyName' was already configured with a different type.");
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     */
+    public static function propertyAlreadyDefinedAsToMany(string $propertyName): self
+    {
+        return new self("The property '$propertyName' was already configured as to-many relationship.");
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     */
+    public static function propertyAlreadyDefinedAsAttribute(string $propertyName): self
+    {
+        return new self("The property '$propertyName' was already configured as JSON attribute.");
     }
 }

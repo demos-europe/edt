@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\data\ApiTypes;
 
+use EDT\JsonApi\Properties\JsonAttributeReadability;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Properties\AttributeReadability;
 use EDT\Wrapping\Properties\ToOneRelationshipReadability;
-use League\Fractal\TransformerAbstract;
 
 class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterface
 {
@@ -23,8 +22,8 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
     {
         return [
             [
-                'title' => new AttributeReadability(false, false, null),
-                'tags' => new AttributeReadability(false, false, null),
+                'title' => new JsonAttributeReadability(false, false, null),
+                'tags' => new JsonAttributeReadability(false, false, null),
             ],
             [
                 'author' => new ToOneRelationshipReadability(false, false, false, null,

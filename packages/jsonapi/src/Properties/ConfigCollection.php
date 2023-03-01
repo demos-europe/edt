@@ -18,9 +18,9 @@ use function array_key_exists;
 class ConfigCollection
 {
     /**
-     * @var array<non-empty-string, AttributeConfig<TCondition, TEntity>>
+     * @var array<non-empty-string, JsonAttributeConfig<TCondition, TEntity>>
      */
-    protected array $attributes = [];
+    private array $attributes = [];
 
     /**
      * @var array<non-empty-string, ToOneRelationshipConfig<TCondition, TSorting, TEntity, object>>
@@ -36,46 +36,8 @@ class ConfigCollection
      * @param ResourceTypeInterface<TCondition, TSorting, TEntity> $type
      */
     public function __construct(
-        protected ResourceTypeInterface $type
+        protected readonly ResourceTypeInterface $type
     ) {}
-
-    /**
-     * Remove a configured property from this collection, if it exists as attribute or to-one/to-many relationship.
-     *
-     * @param non-empty-string $propertyName
-     *
-     * @return bool `true` if the call actually removed an existing property configuration, `false` otherwise
-     */
-    public function removeProperty(string $propertyName): bool
-    {
-        $removed = false;
-        if (array_key_exists($propertyName, $this->attributes)) {
-            $removed = true;
-            unset($this->attributes[$propertyName]);
-        }
-
-        if (array_key_exists($propertyName, $this->toOneRelationships)) {
-            $removed = true;
-            unset($this->toOneRelationships[$propertyName]);
-        }
-
-        if (array_key_exists($propertyName, $this->toManyRelationships)) {
-            $removed = true;
-            unset($this->toManyRelationships[$propertyName]);
-        }
-
-        return $removed;
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     */
-    public function hasProperty(string $propertyName): bool
-    {
-        return $this->hasAttribute($propertyName)
-            || $this->hasToOneRelationship($propertyName)
-            || $this->hasToManyRelationship($propertyName);
-    }
 
     /**
      * @param non-empty-string $propertyName
@@ -102,7 +64,7 @@ class ConfigCollection
     }
 
     /**
-     * @return array<non-empty-string, AttributeConfig<TCondition, TEntity>>
+     * @return array<non-empty-string, JsonAttributeConfig<TCondition, TEntity>>
      */
     public function getAttributes(): array
     {
@@ -136,27 +98,21 @@ class ConfigCollection
     /**
      * @param non-empty-string|PropertyPathInterface $propertyPath
      *
-     * @return AttributeConfig<TCondition, TEntity>
+     * @return JsonAttributeConfig<TCondition, TEntity>
      *
      * @throws ResourcePropertyConfigException
      * @throws PathException
      */
-    public function configureAttribute(string|PropertyPathInterface $propertyPath): AttributeConfig
+    public function configureJsonAttribute(string|PropertyPathInterface $propertyPath): AttributeConfig
     {
         [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
 
-        if (array_key_exists($propertyName, $this->toOneRelationships)) {
-            throw ResourcePropertyConfigException::attributeAlreadyToOneRelationship($propertyName);
-        }
-
-        if (array_key_exists($propertyName, $this->toManyRelationships)) {
-            throw ResourcePropertyConfigException::attributeAlreadyToManyRelationship($propertyName);
-        }
+        $this->assertPropertyIsNotConfigured($propertyName, $this->attributes);
 
         if (array_key_exists($propertyName, $this->attributes)) {
             $property = $this->attributes[$propertyName];
         } else {
-            $property = new AttributeConfig($this->type);
+            $property = new JsonAttributeConfig($this->type);
             $this->attributes[$propertyName] = $property;
         }
 
@@ -191,13 +147,7 @@ class ConfigCollection
     ): ToOneRelationshipConfig {
         [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
 
-        if (array_key_exists($propertyName, $this->attributes)) {
-            throw ResourcePropertyConfigException::toOneRelationshipAlreadyAttribute($propertyName);
-        }
-
-        if (array_key_exists($propertyName, $this->toManyRelationships)) {
-            throw ResourcePropertyConfigException::toOneRelationshipAlreadyToManyRelationship($propertyName);
-        }
+        $this->assertPropertyIsNotConfigured($propertyName, $this->toOneRelationships);
 
         if (array_key_exists($propertyName, $this->toOneRelationships)) {
             $property = $this->toOneRelationships[$propertyName];
@@ -239,13 +189,7 @@ class ConfigCollection
     ): ToManyRelationshipConfig {
         [$propertyName, $propertyPath] = $this->getNameAndPath($propertyPath);
 
-        if (array_key_exists($propertyName, $this->attributes)) {
-            throw ResourcePropertyConfigException::toManyRelationshipAlreadyAttribute($propertyName);
-        }
-
-        if (array_key_exists($propertyName, $this->toOneRelationships)) {
-            throw ResourcePropertyConfigException::toManyRelationshipAlreadyToOneRelationship($propertyName);
-        }
+        $this->assertPropertyIsNotConfigured($propertyName, $this->toManyRelationships);
 
         if (array_key_exists($propertyName, $this->toManyRelationships)) {
             $property = $this->toManyRelationships[$propertyName];
@@ -283,9 +227,9 @@ class ConfigCollection
      * an exception, we verify the correctness at runtime. The same is done for the entity class
      * of the relationship types.
      *
-     * @param non-empty-string                                 $propertyName
+     * @param non-empty-string $propertyName
      * @param ToOneRelationshipConfig<PathsBasedInterface, PathsBasedInterface, object, object>|ToManyRelationshipConfig<PathsBasedInterface, PathsBasedInterface, object, object> $propertyConfig
-     * @param ResourceTypeInterface                            $newRelationshipType
+     * @param ResourceTypeInterface $newRelationshipType
      *
      * @throws ResourcePropertyConfigException if the property name is already used for a relationship config and the relationship type differs
      */
@@ -301,6 +245,27 @@ class ConfigCollection
                 $currentRelationshipType->getIdentifier(),
                 $newRelationshipType->getIdentifier()
             );
+        }
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     * @param array<non-empty-string, mixed> $exemption
+     *
+     * @throws ResourcePropertyConfigException
+     */
+    protected function assertPropertyIsNotConfigured(string $propertyName, array $exemption): void
+    {
+        if ($exemption !== $this->attributes && array_key_exists($propertyName, $this->attributes)) {
+            throw ResourcePropertyConfigException::propertyAlreadyDefinedAsAttribute($propertyName);
+        }
+
+        if ($exemption !== $this->toOneRelationships && array_key_exists($propertyName, $this->toOneRelationships)) {
+            throw ResourcePropertyConfigException::propertyAlreadyDefinedAsOneRelationship($propertyName);
+        }
+
+        if ($exemption !== $this->toManyRelationships && array_key_exists($propertyName, $this->toManyRelationships)) {
+            throw ResourcePropertyConfigException::propertyAlreadyDefinedAsToMany($propertyName);
         }
     }
 

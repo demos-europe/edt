@@ -184,7 +184,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     /**
      * @return PropertyBuilder<TEntity, mixed>
      *
-     * @deprecated use {@link TypedPathConfigCollection::configureAttribute()} instead
+     * @deprecated use {@link TypedPathConfigCollection::configureJsonAttribute()} instead
      */
     protected function createAttribute(PropertyPathInterface $path): PropertyBuilder
     {
