@@ -136,7 +136,7 @@ class WrapperObject
         }
 
         if (array_key_exists($propertyName, $readableProperties[1])) {
-            $readability = $readableProperties[2][$propertyName];
+            $readability = $readableProperties[1][$propertyName];
             $propertyValue = $this->propertyAccessor->getValueByPropertyPath($this->entity, ...$propertyPath);
             $relationshipType = $readability->getRelationshipType();
             $relationshipEntityClass = $relationshipType->getEntityClass();

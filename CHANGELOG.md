@@ -2,9 +2,10 @@
 
 # Unreleased
 
-* harmonize custom read and write callback namings to `customReadCallback` and `customWriteCallback`
-* rename `configureAttribute` to `configureJsonAttribute` in `ConfigCollection`/`TypedPathConfigCollection`
-* allow `AttributeReadability` and `AttributeUpdatability` to check the output/input
+* fix: use correct property list when reading to-one relationships in `WrapperObject`
+* refactor: harmonize custom read and write callback namings to `customReadCallback` and `customWriteCallback`
+* refactor: rename `configureAttribute` to `configureJsonAttribute` in `ConfigCollection`/`TypedPathConfigCollection`
+* feature: allow `AttributeReadability` and `AttributeUpdatability` to check the output/input
 
 ## 0.17.4 - 2023-02-15
 
