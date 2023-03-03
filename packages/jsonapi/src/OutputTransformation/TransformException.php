@@ -35,30 +35,4 @@ class TransformException extends Exception
     {
         return new self('Failed to create include name', 0, $exception);
     }
-
-    public static function nonAttributeValue(string $valueType): self
-    {
-        return new self("The type '$valueType' is not valid as type of attribute.");
-    }
-
-    /**
-     * @param non-empty-string $targetType
-     */
-    public static function nonToOneType(string $relationshipType, string $targetType): self
-    {
-        return new self("The type '$relationshipType' is not valid as type of a to-one relationship with the target '$targetType'.");
-    }
-
-    public static function nonToManyIterable(string $relationshipType): self
-    {
-        return new self("The type '$relationshipType' is not iterable und thus not valid as type of a to-many relationship.");
-    }
-
-    /**
-     * @param non-empty-string $targetType
-     */
-    public static function nonToManyNestedType(string $relationshipType, string $targetType): self
-    {
-        return new self("The type '$relationshipType' is not valid as target type of a to-many relationship with the target '$targetType'.");
-    }
 }

@@ -7,9 +7,9 @@ namespace EDT\JsonApi\Properties;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
+use EDT\Wrapping\WrapperFactories\WrapperObject;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -39,7 +39,7 @@ class ToManyRelationshipConfig extends AbstractConfig
     }
 
     /**
-     * @param null|callable(TEntity): iterable<TRelationship> $customReadCallback
+     * @param null|callable(TEntity): iterable<TRelationship|WrapperObject<TRelationship>> $customReadCallback
      *
      * @return $this
      *

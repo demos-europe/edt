@@ -8,7 +8,6 @@ use EDT\Querying\Utilities\Iterables;
 use Safe\Exceptions\SplException;
 use Webmozart\Assert\Assert;
 use function count;
-use function in_array;
 use function Safe\class_uses;
 use function Safe\class_parents;
 

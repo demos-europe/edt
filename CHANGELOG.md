@@ -2,6 +2,10 @@
 
 # Unreleased
 
+* fix: consider and check return of `customReadCallback` and allow `WrapperObject` instances as relationship return
+  * `DynamicTransformer` may now throw `PropertyAccessException`s beside its `TransformException`s on usage
+  * `verifyToManyIterable` is now static
+  * remove multiple static constructor methods from `TransformException` 
 * fix: use correct property list when reading to-one relationships in `WrapperObject`
 * refactor: harmonize custom read and write callback namings to `customReadCallback` and `customWriteCallback`
 * refactor: rename `configureAttribute` to `configureJsonAttribute` in `ConfigCollection`/`TypedPathConfigCollection`

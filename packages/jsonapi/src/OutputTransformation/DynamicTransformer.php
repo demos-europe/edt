@@ -9,11 +9,14 @@ use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\Utilities\Iterables;
+use EDT\Wrapping\Contracts\AttributeAccessException;
+use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AbstractRelationshipReadability;
 use EDT\Wrapping\Properties\AttributeReadability;
 use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 use EDT\Wrapping\Properties\ToOneRelationshipReadability;
+use EDT\Wrapping\Utilities\PropertyReader;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\ParamBag;
@@ -111,6 +114,7 @@ class DynamicTransformer extends TransformerAbstract
      * @return array<string, mixed>
      *
      * @throws TransformException
+     * @throws AttributeAccessException
      */
     public function transform($entity): array
     {
@@ -127,7 +131,7 @@ class DynamicTransformer extends TransformerAbstract
                 : $customReadCallable($entity);
 
             if (!$readability->isValidValue($attributeValue)) {
-                throw TransformException::nonAttributeValue(gettype($attributeValue));
+                throw AttributeAccessException::attributeValueForNameInvalid($attributeName, $attributeValue);
             }
             $attributesToReturn[$attributeName] = $attributeValue;
         }
@@ -173,10 +177,13 @@ class DynamicTransformer extends TransformerAbstract
 
     /**
      * @param ToOneRelationshipReadability<TCondition, TSorting, TEntity, object> $readability
-     * @param TEntity                        $entity
-     * @param non-empty-string               $includeName
+     * @param TEntity $entity
+     * @param non-empty-string $includeName
      *
      * @return Item|NullResource
+     *
+     * @throws TransformException
+     * @throws RelationshipAccessException
      */
     protected function handleToOneRelationship(
         ToOneRelationshipReadability $readability,
@@ -186,32 +193,30 @@ class DynamicTransformer extends TransformerAbstract
         $relationshipType = $readability->getRelationshipType();
 
         $customReadCallable = $readability->getCustomReadCallback();
-        if (null !== $customReadCallable) {
-            $value = $customReadCallable($entity);
-        } else {
-            $value = $this->getValueViaWrapper($entity, $includeName);
-            $entityClass = $relationshipType->getEntityClass();
+        $value = null === $customReadCallable
+            ? $this->getValueViaWrapper($entity, $includeName)
+            : $customReadCallable($entity);
 
-            if ($value instanceof WrapperObject) {
-                $value = $value->getEntity();
-            } elseif (null !== $value && !$value instanceof $entityClass) {
-                throw TransformException::nonToOneType(gettype($value), $entityClass);
-            }
+        if (null === $value) {
+            return $this->null();
         }
 
+        $entityClass = $relationshipType->getEntityClass();
+        $value = PropertyReader::verifyToOneEntity($value, $includeName, $entityClass);
         $transformer = $this->createRelationshipTransformer($relationshipType);
 
-        return null === $value
-            ? $this->null()
-            : new Item($value, $transformer, $relationshipType->getIdentifier());
+        return new Item($value, $transformer, $relationshipType->getIdentifier());
     }
 
     /**
      * @param ToManyRelationshipReadability<TCondition, TSorting, TEntity, object> $readability
-     * @param TEntity                         $entity
-     * @param non-empty-string                $includeName
+     * @param TEntity $entity
+     * @param non-empty-string $includeName
      *
      * @return Collection
+     *
+     * @throws TransformException
+     * @throws RelationshipAccessException
      */
     protected function handleToManyRelationship(
         ToManyRelationshipReadability $readability,
@@ -219,30 +224,14 @@ class DynamicTransformer extends TransformerAbstract
         string $includeName
     ): Collection {
         $relationshipType = $readability->getRelationshipType();
+        $entityClass = $relationshipType->getEntityClass();
 
         $customReadCallable = $readability->getCustomReadCallback();
-        if (null !== $customReadCallable) {
-            $values = $customReadCallable($entity);
-        } else {
-            $values = $this->getValueViaWrapper($entity, $includeName);
-            if (!is_iterable($values)) {
-                throw TransformException::nonToManyIterable(gettype($values));
-            }
+        $values = null === $customReadCallable
+            ? $this->getValueViaWrapper($entity, $includeName)
+            : $customReadCallable($entity);
 
-            $entityClass = $relationshipType->getEntityClass();
-            $values = array_map(
-                static function (WrapperObject $object) use ($entityClass): object {
-                    $value = $object->getEntity();
-                    if (!$value instanceof $entityClass) {
-                        throw TransformException::nonToManyNestedType($value::class, $entityClass);
-                    }
-
-                    return $value;
-                },
-                array_values(Iterables::asArray($values))
-            );
-        }
-
+        $values = PropertyReader::verifyToManyIterable($values, $includeName, $entityClass);
         $transformer = $this->createRelationshipTransformer($relationshipType);
 
         return new Collection($values, $transformer, $relationshipType->getIdentifier());
