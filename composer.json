@@ -11,7 +11,7 @@
         "pagerfanta/pagerfanta": "^2.7",
         "php": "^8.1",
         "phpdocumentor/reflection-docblock": "^5.1.0",
-        "psr/log": "^1.1.4",
+        "psr/log": "^3.0.0",
         "symfony/http-foundation": "^5.3.7,<6",
         "symfony/routing": "^5.3,<6",
         "symfony/validator": "5.*.*",
