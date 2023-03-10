@@ -23,6 +23,6 @@ jobs:
         with:
           php_version: 8.1
 
-      - uses: php-actions/phpunit@v2
+      - uses: php-actions/phpunit@v9
         with:
           php_version: 8.1
