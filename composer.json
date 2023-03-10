@@ -4,7 +4,7 @@
     "license": "MIT",
     "require": {
         "cebe/php-openapi": "^1.5",
-        "doctrine/collections": "^1.5",
+        "doctrine/collections": "^2.1",
         "doctrine/orm": "^2.5",
         "league/fractal": "^0.20",
         "nikic/php-parser": "^4.14",
