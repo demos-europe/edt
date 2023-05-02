@@ -32,7 +32,7 @@
         "doctrine/annotations": "^2.0",
         "doctrine/cache": "^2.2",
         "symfony/cache": "^6.2",
-        "ergebnis/phpstan-rules": "^1.0",
+        "ergebnis/phpstan-rules": "^2.0",
         "phpcompatibility/php-compatibility": "^9.3",
         "phpstan/phpstan": "^1.8.2",
         "phpstan/phpstan-deprecation-rules": "^1.1",
