@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symplify\MonorepoBuilder\ComposerJsonManipulator\ValueObject\ComposerJsonSection;
+use Symplify\MonorepoBuilder\Config\MBConfig;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\AddTagToChangelogReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushNextDevReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushTagReleaseWorker;
@@ -12,27 +12,22 @@ use Symplify\MonorepoBuilder\Release\ReleaseWorker\SetNextMutualDependenciesRele
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\TagVersionReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateBranchAliasReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateReplaceReleaseWorker;
-use Symplify\MonorepoBuilder\ValueObject\Option;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $parameters = $containerConfigurator->parameters();
+return static function (MBConfig $config): void {
+    $parameters = $config->parameters();
 
-    $parameters->set(Option::DEFAULT_BRANCH_NAME, 'main');
+    $config->defaultBranch('main');
 
-    $parameters->set(Option::DATA_TO_APPEND, [
+    $config->dataToAppend([
         ComposerJsonSection::REQUIRE_DEV => [
             'phpunit/phpunit' => '^9.5',
         ],
     ]);
 
-    $parameters->set(Option::PACKAGE_DIRECTORIES, [
-        // default value
-        __DIR__ . '/packages',
-    ]);
+    $config->packageDirectories([__DIR__ . '/packages']);
+    $config->packageAliasFormat('<major>.<minor>.x-dev');
 
-    $parameters->set(Option::PACKAGE_ALIAS_FORMAT, '<major>.<minor>.x-dev');
-
-    $services = $containerConfigurator->services();
+    $services = $config->services();
 
     $services->set(UpdateReplaceReleaseWorker::class);
     $services->set(SetCurrentMutualDependenciesReleaseWorker::class);
