@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\OutputTransformation;
 
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
+use EDT\JsonApi\ResourceTypes\PropertyBuilderFactory;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\Utilities\ConditionEvaluator;
@@ -13,23 +15,22 @@ use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
+use EDT\Wrapping\Utilities\PhpEntityVerifier;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
-use EDT\Wrapping\Utilities\PropertyReader;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\JsonApiSerializer;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use stdClass;
 use Tests\data\ApiTypes\EmptyType;
 use Tests\data\EmptyEntity;
 use Tests\data\Types\AuthorType;
 use Tests\data\Types\BirthType;
 use Tests\data\Types\BookType;
+use Tests\ModelBasedTest;
 
-class DynamicTransformerTest extends TestCase
+class DynamicTransformerTest extends ModelBasedTest
 {
     private Manager $fractal;
 
@@ -37,10 +38,12 @@ class DynamicTransformerTest extends TestCase
 
     private PhpConditionFactory $conditionFactory;
 
+    private PropertyBuilderFactory $propertyBuilderFactory;
+
     public function testEmpty(): void
     {
         $transformer = new DynamicTransformer(
-            new EmptyType($this->conditionFactory),
+            new EmptyType($this->conditionFactory, $this->propertyBuilderFactory, $this->propertyAccessor, $this->typeResolver),
             $this->wrapperFactory,
             new MessageFormatter(),
             null
@@ -79,29 +82,30 @@ class DynamicTransformerTest extends TestCase
         $this->fractal->parseFieldsets([]);
         $this->fractal->parseExcludes([]);
 
+        $this->propertyAccessor = new ReflectionPropertyAccessor();
         $this->messageFormatter = new MessageFormatter();
         $conditionFactory = new PhpConditionFactory();
         $this->conditionFactory = $conditionFactory;
         $lazyTypeProvider = new LazyTypeProvider();
-        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider);
+        $propertyPathProcessorFactory = new PropertyPathProcessorFactory();
+        $schemaPathProcessor = new SchemaPathProcessor($propertyPathProcessorFactory, $lazyTypeProvider);
+        $tableJoiner = new TableJoiner($this->propertyAccessor);
+        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $sorter = new Sorter($tableJoiner);
+        $this->typeResolver = new AttributeTypeResolver();
+        $entityVerifier = new PhpEntityVerifier($schemaPathProcessor, $conditionEvaluator, $sorter);
+        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider, $this->propertyAccessor, $entityVerifier, $this->typeResolver);
         $typeProvider = new PrefilledTypeProvider([
             $this->authorType,
-            new BookType($conditionFactory, $lazyTypeProvider),
+            new BookType($conditionFactory, $lazyTypeProvider, $this->propertyAccessor, $this->typeResolver, $entityVerifier),
             new BirthType($conditionFactory),
         ]);
         $lazyTypeProvider->setAllTypes($typeProvider);
-        $propertyAccessor = new ReflectionPropertyAccessor();
-        $tableJoiner = new TableJoiner($propertyAccessor);
-        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
-        $sorter = new Sorter($tableJoiner);
-        $this->wrapperFactory = new WrapperObjectFactory(
-            new PropertyReader(
-                new SchemaPathProcessor(new PropertyPathProcessorFactory(), $typeProvider),
-                $conditionEvaluator,
-                $sorter
-            ),
-            $propertyAccessor,
-            $conditionEvaluator
+        $this->wrapperFactory = new WrapperObjectFactory();
+        $this->propertyBuilderFactory = new PropertyBuilderFactory(
+            $this->propertyAccessor,
+            $this->typeResolver,
+            $entityVerifier
         );
     }
 }

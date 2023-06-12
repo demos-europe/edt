@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Wrapping\Utilities;
 
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
+use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
+use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\Sorter;
+use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
+use EDT\Wrapping\Utilities\PhpEntityVerifier;
 use EDT\Wrapping\Utilities\PropertyPathProcessor;
+use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
+use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use EDT\Wrapping\Utilities\TypeAccessors\ExternReadableProcessorConfig;
 use EDT\Wrapping\Utilities\TypeAccessors\ExternSortableProcessorConfig;
 use PHPUnit\Framework\TestCase;
@@ -30,8 +38,16 @@ class PropertyPathProcessorTest extends TestCase
         parent::setUp();
         $conditionFactory = new PhpConditionFactory();
         $lazyTypeProvider = new LazyTypeProvider();
-        $this->bookType = new BookType($conditionFactory, $lazyTypeProvider);
-        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider);
+        $propertyAccessor = new ReflectionPropertyAccessor();
+        $propertyPathProcessorFactory = new PropertyPathProcessorFactory();
+        $schemaPathProcessor = new SchemaPathProcessor($propertyPathProcessorFactory, $lazyTypeProvider);
+        $tableJoiner = new TableJoiner($propertyAccessor);
+        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $sorter = new Sorter($tableJoiner);
+        $typeResolver = new AttributeTypeResolver();
+        $entityVerifier = new PhpEntityVerifier($schemaPathProcessor, $conditionEvaluator, $sorter);
+        $this->bookType = new BookType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $typeResolver, $entityVerifier);
+        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $entityVerifier, $typeResolver);
         $this->typeProvider = new PrefilledTypeProvider([
             $this->bookType,
             $this->authorType,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Wrapping\WrapperFactories;
 
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\Utilities\ConditionEvaluator;
@@ -12,8 +13,8 @@ use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
+use EDT\Wrapping\Utilities\PhpEntityVerifier;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
-use EDT\Wrapping\Utilities\PropertyReader;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
 use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
@@ -33,26 +34,24 @@ class WrapperObjectFactoryTest extends ModelBasedTest
         parent::setUp();
         $conditionFactory = new PhpConditionFactory();
         $lazyTypeProvider = new LazyTypeProvider();
-        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider);
-        $typeProvider = new PrefilledTypeProvider([
-            $this->authorType,
-            new BookType($conditionFactory, $lazyTypeProvider),
-            new BirthType($conditionFactory),
-        ]);
-        $lazyTypeProvider->setAllTypes($typeProvider);
         $propertyAccessor = new ReflectionPropertyAccessor();
+        $lazyTypeProvider = new LazyTypeProvider();
+        $propertyPathProcessorFactory = new PropertyPathProcessorFactory();
+        $schemaPathProcessor = new SchemaPathProcessor($propertyPathProcessorFactory, $lazyTypeProvider);
         $tableJoiner = new TableJoiner($propertyAccessor);
         $conditionEvaluator = new ConditionEvaluator($tableJoiner);
         $sorter = new Sorter($tableJoiner);
-        $this->factory = new WrapperObjectFactory(
-            new PropertyReader(
-                new SchemaPathProcessor(new PropertyPathProcessorFactory(), $typeProvider),
-                $conditionEvaluator,
-                $sorter
-            ),
-            $propertyAccessor,
-            $conditionEvaluator
-        );
+        $entityVerifier = new PhpEntityVerifier($schemaPathProcessor, $conditionEvaluator, $sorter);
+        $attributeTypeResolver = new AttributeTypeResolver();
+        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $entityVerifier, $attributeTypeResolver);
+        $typeResolver = new AttributeTypeResolver();
+        $typeProvider = new PrefilledTypeProvider([
+            $this->authorType,
+            new BookType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $typeResolver, $entityVerifier),
+            new BirthType($conditionFactory),
+        ]);
+        $lazyTypeProvider->setAllTypes($typeProvider);
+        $this->factory = new WrapperObjectFactory();
     }
 
     public function testAllowedPropertyAccess(): void
@@ -145,7 +144,7 @@ class WrapperObjectFactoryTest extends ModelBasedTest
 
     public function testInvalidCall(): void
     {
-        $this->expectException(AccessException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $author = $this->factory->createWrapper($this->authors['salinger'], $this->authorType);
         $author->isName();
         self::fail('Expected exception');

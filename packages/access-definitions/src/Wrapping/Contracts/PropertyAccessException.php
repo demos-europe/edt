@@ -6,6 +6,7 @@ namespace EDT\Wrapping\Contracts;
 
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
+use Exception;
 use Throwable;
 
 class PropertyAccessException extends AccessException
@@ -91,6 +92,14 @@ class PropertyAccessException extends AccessException
         $self->typeClass = $typeClass;
 
         return $self;
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     */
+    public static function update(string $propertyName, Exception $cause): self
+    {
+        return new self($propertyName, "Failed to update property '$propertyName'.", 0, $cause);
     }
 
     /**

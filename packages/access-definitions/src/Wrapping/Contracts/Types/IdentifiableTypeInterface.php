@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Contracts\Types;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Properties\IdReadabilityInterface;
 
 /**
  * Defines the property {@link TypeInterface::getEntityClass() corresponding entities}
@@ -19,10 +20,20 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 interface IdentifiableTypeInterface extends TypeInterface
 {
     /**
-     * The path to the property (in the schema of the Type) that uniquely identifies an instance of the
-     * {@link TypeInterface::getEntityClass() backing entity}.
-     *
      * @return non-empty-list<non-empty-string>
      */
-    public function getIdentifierPropertyPath(): array;
+    public function getIdentifierFilterPath(): array;
+
+    /**
+     * @return non-empty-list<non-empty-string>
+     */
+    public function getIdentifierSortingPath(): array;
+
+    /**
+     * Provides a readability for the identifier that uniquely identifies an instance of the
+     * {@link TypeInterface::getEntityClass() backing entity}.
+     *
+     * @return IdReadabilityInterface<TEntity>
+     */
+    public function getIdentifierReadability(): IdReadabilityInterface;
 }

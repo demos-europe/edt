@@ -178,39 +178,9 @@ parameters:
             path: packages/access-definitions/src/Wrapping/TypeProviders/TypeRequirement.php
 
         -
-            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\CachingPropertyReader\\:\\:determineToManyRelationshipValue\\(\\) should return array\\<int, TEntity of object\\> but returns array\\<int, object\\>\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/CachingPropertyReader.php
-
-        -
-            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\CachingPropertyReader\\:\\:determineToOneRelationshipValue\\(\\) should return \\(TEntity of object\\)\\|null but returns object\\|null\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/CachingPropertyReader.php
-
-        -
             message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\SchemaPathProcessor\\:\\:mapExternReadablePath\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
             count: 1
             path: packages/access-definitions/src/Wrapping/Utilities/SchemaPathProcessor.php
-
-        -
-            message: "#^Method EDT\\\\Wrapping\\\\WrapperFactories\\\\WrapperObject\\:\\:parseMethodAccess\\(\\) should return array\\<int, string\\> but returns mixed\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
-
-        -
-            message: "#^Parameter \\#1 \\$target of method EDT\\\\Querying\\\\Contracts\\\\PropertyAccessorInterface\\:\\:setValue\\(\\) expects object, mixed given\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
-
-        -
-            message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
-
-        -
-            message: "#^Parameter \\#2 \\$ of callable callable\\(TEntity of object, iterable\\<object\\>\\)\\: void expects iterable\\<object\\>, array\\<int\\|string, mixed\\>\\|\\(iterable&object\\) given\\.$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/WrapperFactories/WrapperObject.php
 
         -
             message: "#^Parameter \\#1 \\$baseFunction of class EDT\\\\DqlQuerying\\\\Functions\\\\LowerCase constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<string\\|null\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
@@ -536,37 +506,7 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$propertyReadability with generic class EDT\\\\Wrapping\\\\Properties\\\\AttributeReadability but does not specify its types\\: TEntity$#"
-            count: 1
-            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$propertyReadability with generic class EDT\\\\Wrapping\\\\Properties\\\\ToManyRelationshipReadability but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
-            count: 1
-            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$propertyReadability with generic class EDT\\\\Wrapping\\\\Properties\\\\ToOneRelationshipReadability but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
-            count: 1
-            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:getPropertyType\\(\\) has parameter \\$resourceType with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
-            count: 1
-            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
-
-        -
-            message: "#^Parameter \\#1 \\$name of method ReflectionClass\\<object\\>\\:\\:getMethod\\(\\) expects string, mixed given\\.$#"
-            count: 1
-            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
-
-        -
-            message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, mixed given\\.$#"
-            count: 1
-            path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
-
-        -
-            message: "#^Property EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:\\$classReflectionCache with generic class ReflectionClass does not specify its types\\: T$#"
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\AttributeTypeResolver\\:\\:resolveReturnTypeFromCallable\\(\\) has parameter \\$callable with no signature specified for callable\\.$#"
             count: 1
             path: packages/jsonapi/src/ApiDocumentation/AttributeTypeResolver.php
 
@@ -656,26 +596,6 @@ parameters:
             path: packages/jsonapi/src/Pagination/PagePaginationParser.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\AbstractConfig\\:\\:getType\\(\\) return type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface does not specify its types\\: TCondition, TSorting, TEntity$#"
-            count: 1
-            path: packages/jsonapi/src/Properties/AbstractConfig.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:assertSameRelationshipType\\(\\) has parameter \\$newRelationshipType with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
-            count: 1
-            path: packages/jsonapi/src/Properties/ConfigCollection.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:configureToManyRelationship\\(\\) should return EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, object\\>\\.$#"
-            count: 1
-            path: packages/jsonapi/src/Properties/ConfigCollection.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\:\\:configureToOneRelationship\\(\\) should return EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, object\\>\\.$#"
-            count: 1
-            path: packages/jsonapi/src/Properties/ConfigCollection.php
-
-        -
             message: "#^Parameter \\#1 \\$sortQueryParamValue of method EDT\\\\JsonApi\\\\RequestHandling\\\\JsonApiSortingParser\\<TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:createFromQueryParamValue\\(\\) expects string\\|null, mixed given\\.$#"
             count: 1
             path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
@@ -691,11 +611,6 @@ parameters:
             path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
 
         -
-            message: "#^Parameter \\#1 \\$type of class EDT\\\\JsonApi\\\\OutputTransformation\\\\DynamicTransformer constructor expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, object\\>, EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\> given\\.$#"
-            count: 1
-            path: packages/jsonapi/src/RequestHandling/AbstractApiService.php
-
-        -
             message: "#^Parameter \\#1 \\$name of method Symfony\\\\Component\\\\Routing\\\\Generator\\\\UrlGeneratorInterface\\:\\:generate\\(\\) expects string, mixed given\\.$#"
             count: 1
             path: packages/jsonapi/src/RequestHandling/PaginatorFactory.php
@@ -706,17 +621,9 @@ parameters:
             path: packages/jsonapi/src/RequestHandling/PaginatorFactory.php
 
         -
-            message: "#^Parameter \\#1 \\$type of method EDT\\\\JsonApi\\\\RequestHandling\\\\EntityFetcherInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getEntityByTypeIdentifier\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\IdentifiableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>&EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface&EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface&EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\> given\\.$#"
+            message: "#^Parameter \\#1 \\$type of method EDT\\\\JsonApi\\\\RequestHandling\\\\EntityFetcherInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:getEntityByTypeIdentifier\\(\\) expects EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface&EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface&EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TypeInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\> given\\.$#"
             count: 1
             path: packages/jsonapi/src/RequestHandling/PropertyValuesGenerator.php
-
-        -
-            message: """
-                #^Call to deprecated method getProperties\\(\\) of class EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:
-                implement \\{@link self\\:\\:configureProperties\\(\\)\\} instead$#
-            """
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
             message: """
@@ -732,7 +639,7 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToManyRelationship\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, mixed\\>\\.$#"
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToManyRelationship\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
@@ -742,74 +649,49 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToOneRelationship\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, mixed\\>\\.$#"
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:createToOneRelationship\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:getProperties\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:isExposedReadability\\(\\) has parameter \\$readability with generic class EDT\\\\Wrapping\\\\Properties\\\\AbstractRelationshipReadability but does not specify its types\\: TRelationshipType$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:toRelationshipTypes\\(\\) has parameter \\$filter with generic class EDT\\\\JsonApi\\\\Properties\\\\AbstractConfig but does not specify its types\\: TCondition, TEntity, TReadability, TUpdatability$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig but does not specify its types\\: TCondition, TEntity, TValue$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\AbstractResourceType\\:\\:validateConsistency\\(\\) has parameter \\$config with generic class EDT\\\\JsonApi\\\\Properties\\\\ToOneRelationshipConfig but does not specify its types\\: TCondition, TSorting, TEntity, TRelationship$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Parameter \\#1 \\$configCollection of method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<object,mixed\\>\\:\\:addToConfigCollection\\(\\) expects EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\>, EDT\\\\JsonApi\\\\Properties\\\\ConfigCollection\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<bool\\>, TSorting of EDT\\\\Querying\\\\Contracts\\\\SortMethodInterface, TEntity of object\\> given\\.$#"
-            count: 1
-            path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:__construct\\(\\) has parameter \\$relationship with generic interface EDT\\\\JsonApi\\\\ResourceTypes\\\\ResourceTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
+            message: "#^Parameter \\#2 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeReadability constructor expects callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, callable\\(TEntity of object\\)\\: TValue given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:aliasedPath\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
+            message: "#^Parameter \\#2 \\$updateCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeUpdatability constructor expects callable\\(TEntity of object, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\: void, callable\\(TEntity of object, TValue\\)\\: void given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:filterable\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
+            message: "#^Parameter \\#3 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipReadability constructor expects callable\\(TEntity of object\\)\\: iterable\\<object\\>, callable\\(TEntity of object\\)\\: TValue given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:sortable\\(\\) return type with generic class EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder does not specify its types\\: TEntity, TValue$#"
+            message: "#^Parameter \\#3 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipReadability constructor expects callable\\(TEntity of object\\)\\: object\\|null, callable\\(TEntity of object\\)\\: TValue given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#2 \\$customReadCallback of method EDT\\\\JsonApi\\\\Properties\\\\AttributeConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
+            message: "#^Parameter \\#4 \\$updateCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipUpdatability constructor expects callable\\(TEntity of object, iterable\\<object\\>\\)\\: void, callable\\(TEntity of object, TValue\\)\\: void given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#3 \\$customReadCallback of method EDT\\\\JsonApi\\\\Properties\\\\ToManyRelationshipConfig\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,object\\>\\:\\:enableReadability\\(\\) expects \\(callable\\(TEntity of object\\)\\: iterable\\<object\\>\\)\\|\\(callable\\(TEntity of object\\)\\: object\\|null\\)\\|null, \\(callable\\(TEntity of object, League\\\\Fractal\\\\ParamBag\\)\\: TValue\\)\\|null given\\.$#"
+            message: "#^Parameter \\#4 \\$updateCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipUpdatability constructor expects callable\\(TEntity of object, object\\|null\\)\\: void, callable\\(TEntity of object, TValue\\)\\: void given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilderFactory\\:\\:createToMany\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, mixed, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilderFactory.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilderFactory\\:\\:createToOne\\(\\) should return EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\<TEntity of object, mixed, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilderFactory.php
 
         -
             message: "#^Parameter \\#1 \\$resourceIdentifierObject of static method EDT\\\\JsonApi\\\\Schema\\\\ToOneResourceLinkage\\:\\:createFromArray\\(\\) expects array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|null, array\\<'id'\\|'type'\\|int, array\\{type\\: non\\-empty\\-string, id\\: non\\-empty\\-string\\}\\|non\\-empty\\-string\\>\\|null given\\.$#"

@@ -15,24 +15,22 @@ use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Tag;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Properties\AbstractReadability;
-use EDT\Wrapping\Properties\AbstractRelationshipReadability;
-use EDT\Wrapping\Properties\AttributeReadability;
-use Psr\Log\LoggerInterface;
+use EDT\Wrapping\Properties\AttributeReadabilityInterface;
+use EDT\Wrapping\Properties\CommonMark;
+use EDT\Wrapping\Properties\PropertyReadabilityInterface;
+use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
+use Exception;
 use ReflectionException;
 use Safe\Exceptions\StringsException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
-use UnexpectedValueException;
 use function count;
 
 final class OpenAPISchemaGenerator
 {
     public function __construct(
-        private readonly AttributeTypeResolver $typeResolver,
-        private readonly LoggerInterface $logger,
         private readonly TypeProviderInterface $typeProvider,
         private readonly RouterInterface $router,
         private readonly SchemaStore $schemaStore,
@@ -255,22 +253,18 @@ final class OpenAPISchemaGenerator
      */
     private function createSchema(ResourceTypeInterface $type): Schema
     {
-        $properties = array_merge(...$type->getReadableProperties());
+        $schemaProperties = [];
+        foreach (array_merge(...$type->getReadableProperties()) as $propertyName => $readability) {
+            $schemaProperties[$propertyName] = $readability instanceof RelationshipReadabilityInterface
+                ? [
+                    '$ref' => $this->schemaStore->getSchemaReference(
+                        $readability->getRelationshipType()->getIdentifier()
+                    ),
+                ]
+                : $this->resolveAttributeType($type, $propertyName, $readability);
+        }
 
-        $properties = array_map(function (AbstractReadability $readability, string $propertyName) use ($type): array {
-            // TODO: this is probably incorrect for all aliases with a path longer than 1 element
-            $propertyName = $type->getAliases()[$propertyName][0] ?? $propertyName;
-
-            if ($readability instanceof AbstractRelationshipReadability) {
-                $relationshipTypeIdentifier = $readability->getRelationshipType()->getIdentifier();
-
-                return ['$ref' => $this->schemaStore->getSchemaReference($relationshipTypeIdentifier)];
-            }
-
-            return $this->resolveAttributeType($type, $propertyName, $readability);
-        }, $properties, array_keys($properties));
-
-        return new Schema(['type' => 'object', 'properties' => $properties]);
+        return new Schema(['type' => 'object', 'properties' => $schemaProperties]);
     }
 
     /**
@@ -343,24 +337,19 @@ final class OpenAPISchemaGenerator
 
     /**
      * @param non-empty-string $propertyName
-     * @param AttributeReadability<object> $readability
+     * @param AttributeReadabilityInterface<object> $readability
      *
-     * @return array{type: string, format?: non-empty-string, description?: string}
-     *
-     * @throws ReflectionException
-     * @throws Throwable
+     * @return array<non-empty-string, mixed>
      */
     private function resolveAttributeType(
         ResourceTypeInterface $resource,
         string $propertyName,
-        AttributeReadability $readability
+        AttributeReadabilityInterface $readability
     ): array {
         try {
-            return $this->typeResolver->getPropertyType($resource, $propertyName, $readability);
-        } catch (UnexpectedValueException $exception) {
-            $this->logger->warning("Could not determine attribute type of resource property {$resource->getIdentifier()}::$propertyName", [$exception]);
-
-            return ['type' => 'undetermined'];
+            return $readability->getPropertySchema();
+        } catch (Exception $exception) {
+            throw new OpenApiGenerateException("Could not determine attribute type of resource property {$resource->getIdentifier()}::$propertyName", 0, $exception);
         }
     }
 

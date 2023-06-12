@@ -4,18 +4,35 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\Properties\AbstractConfig;
-use EDT\JsonApi\Properties\AttributeConfig;
-use EDT\JsonApi\Properties\ConfigCollection;
-use EDT\JsonApi\Properties\ResourcePropertyConfigException;
-use EDT\JsonApi\Properties\ToManyRelationshipConfig;
-use EDT\JsonApi\Properties\ToOneRelationshipConfig;
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
+use EDT\JsonApi\Properties\Attributes\CallbackAttributeReadability;
+use EDT\JsonApi\Properties\Attributes\CallbackAttributeUpdatability;
+use EDT\JsonApi\Properties\Attributes\PathAttributeReadability;
+use EDT\JsonApi\Properties\Attributes\PathAttributeUpdatability;
+use EDT\JsonApi\Properties\PropertyConfigInterface;
+use EDT\JsonApi\Properties\Relationships\CallbackToManyRelationshipReadability;
+use EDT\JsonApi\Properties\Relationships\CallbackToManyRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\CallbackToOneRelationshipReadability;
+use EDT\JsonApi\Properties\Relationships\CallbackToOneRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipReadability;
+use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipUpdatability;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
-use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
-use League\Fractal\ParamBag;
+use EDT\Wrapping\Properties\AttributeReadabilityInterface;
+use EDT\Wrapping\Properties\AttributeUpdatabilityInterface;
+use EDT\Wrapping\Properties\Initializability;
+use EDT\Wrapping\Properties\PropertyInitializabilityInterface;
+use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
+use EDT\Wrapping\Properties\ToManyRelationshipUpdatabilityInterface;
+use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
+use EDT\Wrapping\Properties\ToOneRelationshipUpdatabilityInterface;
+use EDT\Wrapping\Utilities\EntityVerifierInterface;
+use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
 /**
@@ -38,10 +55,12 @@ use Webmozart\Assert\Assert;
  *
  * @template TEntity of object
  * @template TValue
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  *
- * @deprecated when no more usages of the setter methods of this class remain, it can simply be deleted (no need to preserve documentation)
+ * @template-implements PropertyConfigInterface<TEntity, TValue, TCondition>
  */
-class PropertyBuilder
+class PropertyBuilder implements PropertyConfigInterface
 {
     /**
      * @var non-empty-string
@@ -62,26 +81,45 @@ class PropertyBuilder
     protected bool $defaultField = false;
 
     /**
-     * @var null|callable(TEntity, ParamBag): TValue
+     * @var null|callable(TEntity): TValue
      */
     protected $customReadCallback;
-
-    protected bool $allowingInconsistencies = false;
 
     protected bool $initializable = false;
 
     protected bool $requiredForCreation = true;
 
+    private bool $updatable = false;
+
+    /**
+     * @var list<TCondition>
+     */
+    private array $updateEntityConditions = [];
+
+    /**
+     * @var list<TCondition>
+     */
+    private array $updateRelationshipConditions = [];
+
+    /**
+     * @var null|callable(TEntity, TValue): void
+     */
+    private $customUpdateCallback;
+
     /**
      * @param class-string<TEntity> $entityClass
-     * @param array{relationshipType: ResourceTypeInterface, defaultInclude: bool, toMany: bool}|null $relationship
+     * @param array{relationshipType: ResourceTypeInterface<TCondition, TSorting, object>, defaultInclude: bool, toMany: bool}|null $relationship
+     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      *
      * @throws PathException
      */
     public function __construct(
         PropertyPathInterface $path,
-        protected string $entityClass,
-        private readonly ?array $relationship = null
+        protected readonly string $entityClass,
+        protected readonly ?array $relationship,
+        protected readonly PropertyAccessorInterface $propertyAccessor,
+        protected readonly AttributeTypeResolver $typeResolver,
+        protected readonly EntityVerifierInterface $entityVerifier
     ) {
         $names = $path->getAsNames();
         Assert::count($names, 1);
@@ -89,30 +127,7 @@ class PropertyBuilder
     }
 
     /**
-     * Set an alias to follow when this property is accessed.
-     *
-     * Beside {@link PropertyBuilder::readable() custom read functions},
-     * aliases are another and the preferred way to slightly deviate from the schema of the backing
-     * entity class when exposing properties. Their advantage over custom read functions is that
-     * conditions and sort methods that are using aliases can still be executed in the database,
-     * which is not the case for custom read functions as they require data from the database being
-     * loaded into PHP.
-     *
-     * An alias can redirect to a property in the backing entity or to the property of a different
-     * entity, if there is a connection from the first entity to the latter one.
-     *
-     * Simple example: if you define a property `id` for your resource but the actual entity property
-     * is stored in `ident`, then you can pass `ident` as `$aliasedPath`.
-     *
-     * Advanced example: if you define an (alias) attribute `authorName` for your `Book`
-     * resource type, you can redirect it to `$this->author->name` if `Book` has a relationship to
-     * `Author` named `book` that is present in the entity backing the `Book` resource type and
-     * `Author` has a property `name` that is present in the entity backing the `Author` resource
-     * type.
-     *
-     * @param PropertyPathInterface $aliasedPath all segments must have a corresponding property in the backing entity
-     *
-     * @deprecated use {@link AbstractConfig::enableAliasing()}
+     * @return $this
      */
     public function aliasedPath(PropertyPathInterface $aliasedPath): self
     {
@@ -122,26 +137,7 @@ class PropertyBuilder
     }
 
     /**
-     * Mark this property as usable when filtering resources. It can then be used to filter
-     * the resource they belong to as well as other resources when used in a path.
-     *
-     * E.g. when a user has access to `Book` and `Author` resource types (and `Book` has a
-     * to-one relationship to `Author` while `Author` has a to-many relationship to `Book`), then
-     * setting `fullName` in the `Author` type to filterable allows not only to filter `Author`
-     * resources by their name but also to filter `Book` resources by the name of their author, if
-     * the relationship to `Author` is set as filterable too.
-     *
-     * However, filtering `Author` resources by the title of their books will not work, because
-     * of the to-many relationship it would not be clear which `Book` resource to use from an
-     * author when testing it.
-     *
-     * E.g. if you enable a `price` property in a `Book` resource for filtering then you
-     * can not only filter books by their price but also authors by the price of the
-     * books they have written (assuming the necessary relationship from authors to
-     * books is defined and the resources'
-     * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} returns `true`).
-     *
-     * @deprecated use {@link AbstractConfig::enableFiltering()}
+     * @return $this
      */
     public function filterable(): self
     {
@@ -151,22 +147,7 @@ class PropertyBuilder
     }
 
     /**
-     * Mark this property as usable when sorting resources. It can then be used to sort
-     * the resources they belong to as well as other resources when used in a path.
-     *
-     * E.g. when a user has access to `Book` and `Author` resource types (and `Book` has a
-     * to-one relationship to `Author` while `Author` has a to-many relationship to `Book`), then
-     * setting `fullName` in the `Author` type to sortable allows not only to sort `Author`
-     * resources by their name but also to sort `Book` resources by the name of their author, if
-     * the relationship to `Author` is set as sortable too.
-     *
-     * However, sorting `Author` resources by the title of their books will not work, because
-     * of the to-many relationship it would not be clear which `Book` resource to use from an
-     * author when comparing two `Author` resources.
-     *
-     * @see https://jsonapi.org/format/#fetching-sorting
-     *
-     * @deprecated use {@link AbstractConfig::enableSorting()}
+     * @return $this
      */
     public function sortable(): self
     {
@@ -176,88 +157,47 @@ class PropertyBuilder
     }
 
     /**
-     * Mark this property as readable, i.e. allow its value to be read.
-     *
-     * Please note that either
-     * {@link ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource()} or
-     * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} in this type must
-     * return `true` for the readability to be usable via the generic JSON:API implementation.
-     *
-     * When used on an attribute the actual attribute value can be accessed. When used on a
-     * relationship the relationship reference can be accessed, but to access the properties
-     * of the relationship these properties must be set as readable too.
-     *
-     * Using `readable()` is the same as using `readable(false)`, meaning the property's value
-     * can be accessed but will only be present in the JSON:API response when a
-     * [sparse fieldset](https://jsonapi.org/format/#fetching-sparse-fieldsets) request was used
-     * requesting that property. To automatically have the value present in the JSON:API response
-     * when no sparse fieldset request is used, `true` must be used as `$defaultField` parameter.
-     *
-     * By passing a `$customRead` callable you can override the default behavior when the
-     * property is read, e.g. when it is written into a JSON:API response. Normally the system
-     * will get the value from an object by looking for a property within it and directly
-     * reading the value from it, circumventing any getter method. If an alias is set, it
-     * will simply redirect the access through the different properties until the end of the
-     * alias path is reached.
-     *
-     * Directly accessing the property is a good default behavior because it is consistent with
-     * the behavior for Doctrine entities when they are filtered or sorted via their properties,
-     * because there are no getters for them in the database.
-     *
-     * By passing the `$customRead` callable here the value will not be read directly from
-     * the property anymore but from the callable instead, by passing the object as parameter
-     * when calling the callable.
-     *
-     * This may introduce unintended inconsistencies: if the `$customRead` callable returns
-     * a different value than the one stored in the property, then sorting and filtering
-     * will be executed on a different value. It is not possible to set a custom
-     * read callable for sorting/filtering due to compatibility requirements with Doctrine
-     * as explained above.
-     *
-     * To avoid unintended inconsistencies you can **not** do the following with a property for
-     * which a custom read callable was set (an exception will be thrown when the property is used):
-     *
-     * * set it as sortable
-     * * set it as filterable
-     * * set an alias
-     *
-     * If you accept the risk of inconsistencies you can set `$allowingInconsistencies` to `true`,
-     * in which case the `$customRead` callable will be used when reading the value of the property,
-     * and the value stored in the property will be used when filtering or sorting. The interaction
-     * with aliases is undefined.
-     *
-     * @param bool $defaultField the field is to be returned in responses by default
-     * @param null|callable(TEntity, ParamBag): TValue $customReadCallback to be set if this property needs special handling when read
-     * @param bool $allowingInconsistencies sanity checks will be disabled
-     *
-     * @return $this
-     *
-     * @see https://jsonapi.org/format/#fetching-sparse-fieldsets JSON:API sparse fieldsets
-     *
-     * @deprecated use {@link AttributeConfig::enableReadability()}/{@link ToOneRelationshipConfig::enableReadability()}/{@link ToManyRelationshipConfig::enableReadability()}
+     * @return non-empty-list<non-empty-string>|null
      */
-    public function readable(bool $defaultField = false, callable $customReadCallback = null, bool $allowingInconsistencies = false): self
+    public function getAliasedPath(): ?array
+    {
+        return $this->aliasedPath;
+    }
+
+    /**
+     * @return $this
+     */
+    public function readable(bool $defaultField = false, callable $customReadCallback = null): self
     {
         $this->readable = true;
         $this->defaultField = $defaultField;
         $this->customReadCallback = $customReadCallback;
-        $this->allowingInconsistencies = $allowingInconsistencies;
 
         return $this;
     }
 
     /**
-     * Mark the property as initializable when creating a resource.
-     *
-     * Please note that {@link CreatableTypeInterface::isCreatable()} must return `true`
-     * to allow the creation of resources of that type.
-     *
-     * By default, properties marked as initializable are required to be present in a request when
-     * a resource is created. You can change that by setting the `$optional` parameter to `true`.
-     *
      * @return $this
-     *
-     * @deprecated use {@link AbstractConfig::enableInitializability()}
+     */
+    public function updatable(
+        array $entityConditions,
+        ?callable $customUpdateCallback,
+        array $relationshipConditions = [],
+    ): self {
+        if (null === $this->relationship && [] !== $relationshipConditions) {
+            throw new InvalidArgumentException("Can't set relationship conditions for an attribute configuration: $this->name");
+        }
+
+        $this->updatable = true;
+        $this->updateEntityConditions = $entityConditions;
+        $this->updateRelationshipConditions = $relationshipConditions;
+        $this->customUpdateCallback = $customUpdateCallback;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
      */
     public function initializable(bool $optional = false): self
     {
@@ -276,54 +216,225 @@ class PropertyBuilder
     }
 
     /**
-     * @param ConfigCollection<PathsBasedInterface, PathsBasedInterface, TEntity> $configCollection
-     *
-     * @return void
-     * @throws PathException
-     * @throws ResourcePropertyConfigException
+     * @return AttributeReadabilityInterface<TEntity>|null
      */
-    public function addToConfigCollection(ConfigCollection $configCollection): void
+    public function getAttributeReadability(): ?AttributeReadabilityInterface
     {
-        if (null === $this->relationship) {
-            $config = $configCollection->configureJsonAttribute($this->name);
-            if ($this->readable) {
-                $config->enableReadability(
-                    $this->defaultField,
-                    $this->customReadCallback,
-                    $this->allowingInconsistencies
-                );
-            }
-        } else {
-            $config = $this->relationship['toMany']
-                ? $configCollection->configureToManyRelationship(
-                    $this->name,
-                    $this->relationship['relationshipType']
-                )
-                : $configCollection->configureToOneRelationship(
-                    $this->name,
-                    $this->relationship['relationshipType']
-                );
-            if ($this->readable) {
-                $config->enableReadability(
-                    $this->defaultField,
-                    $this->relationship['defaultInclude'],
-                    $this->customReadCallback,
-                    $this->allowingInconsistencies
-                );
-            }
+        if (!$this->readable || null !== $this->relationship) {
+            return null;
         }
 
-        if (null !== $this->aliasedPath) {
-            $config->enableAliasing($this->aliasedPath);
+        if (null === $this->customReadCallback) {
+            return new PathAttributeReadability(
+                $this->entityClass,
+                $this->getPropertyPath(),
+                $this->defaultField,
+                $this->propertyAccessor,
+                $this->typeResolver
+            );
         }
-        if ($this->sortable) {
-            $config->enableSorting();
+
+        return new CallbackAttributeReadability(
+            $this->defaultField,
+            $this->customReadCallback,
+            $this->typeResolver
+        );
+    }
+
+    /**
+     * @return ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object>|null
+     */
+    public function getToOneRelationshipReadability(): ?ToOneRelationshipReadabilityInterface
+    {
+        if (!$this->readable || null === $this->relationship || $this->relationship['toMany']) {
+            return null;
         }
-        if ($this->filterable) {
-            $config->enableFiltering();
+
+        if (null === $this->customReadCallback) {
+            return new PathToOneRelationshipReadability(
+                $this->entityClass,
+                $this->getPropertyPath(),
+                $this->defaultField,
+                $this->relationship['defaultInclude'],
+                $this->relationship['relationshipType'],
+                $this->propertyAccessor,
+                $this->entityVerifier
+            );
         }
-        if ($this->initializable) {
-            $config->enableInitializability([], !$this->requiredForCreation);
+
+        return new CallbackToOneRelationshipReadability(
+            $this->defaultField,
+            $this->relationship['defaultInclude'],
+            $this->customReadCallback,
+            $this->relationship['relationshipType'],
+            $this->entityVerifier
+        );
+    }
+
+    /**
+     * @return ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object>|null
+     */
+    public function getToManyRelationshipReadability(): ?ToManyRelationshipReadabilityInterface
+    {
+        if (!$this->readable || null === $this->relationship || !$this->relationship['toMany']) {
+            return null;
         }
+
+        if (null === $this->customReadCallback) {
+            return new PathToManyRelationshipReadability(
+                $this->entityClass,
+                $this->getPropertyPath(),
+                $this->defaultField,
+                $this->relationship['defaultInclude'],
+                $this->relationship['relationshipType'],
+                $this->propertyAccessor,
+                $this->entityVerifier
+            );
+        }
+
+        return new CallbackToManyRelationshipReadability(
+            $this->defaultField,
+            $this->relationship['defaultInclude'],
+            $this->customReadCallback,
+            $this->relationship['relationshipType'],
+            $this->entityVerifier
+        );
+    }
+
+    public function isFilterable(): bool
+    {
+        return $this->filterable;
+    }
+
+    public function isSortable(): bool
+    {
+        return $this->sortable;
+    }
+
+    public function isAttribute(): bool
+    {
+        return null === $this->relationship;
+    }
+
+    /**
+     * @return ResourceTypeInterface<TCondition, TSorting, object>|null
+     */
+    public function getRelationshipType(): ?ResourceTypeInterface
+    {
+        return $this->relationship['relationshipType'] ?? null;
+    }
+
+    public function isToOneRelationship(): bool
+    {
+        return !$this->isAttribute() && !$this->isToManyRelationship();
+    }
+
+    public function isToManyRelationship(): bool
+    {
+        return $this->relationship['toMany'] ?? false;
+    }
+
+    /**
+     * @return PropertyInitializabilityInterface<TCondition>|null
+     */
+    public function getInitializability(): ?PropertyInitializabilityInterface
+    {
+        if (!$this->initializable) {
+            return null;
+        }
+
+        return new Initializability([], !$this->requiredForCreation);
+    }
+
+    /**
+     * @return AttributeUpdatabilityInterface<TCondition, TEntity>|null
+     */
+    public function getAttributeUpdatability(): ?AttributeUpdatabilityInterface
+    {
+        if (!$this->updatable || null !== $this->relationship) {
+            return null;
+        }
+
+        if (null === $this->customUpdateCallback) {
+            return new PathAttributeUpdatability(
+                $this->entityClass,
+                $this->updateEntityConditions,
+                $this->getPropertyPath(),
+                $this->propertyAccessor
+            );
+        }
+
+        return new CallbackAttributeUpdatability(
+            $this->updateEntityConditions,
+            $this->customUpdateCallback
+        );
+    }
+
+    /**
+     * @return ToOneRelationshipUpdatabilityInterface<TCondition, TSorting, TEntity, object>|null
+     */
+    public function getToOneRelationshipUpdatability(): ?ToOneRelationshipUpdatabilityInterface
+    {
+        if (!$this->updatable || null === $this->relationship || $this->relationship['toMany']) {
+            return null;
+        }
+
+        if (null === $this->customUpdateCallback) {
+            return new PathToOneRelationshipUpdatability(
+                $this->entityClass,
+                $this->updateEntityConditions,
+                $this->updateRelationshipConditions,
+                $this->relationship['relationshipType'],
+                $this->getPropertyPath(),
+                $this->propertyAccessor,
+                $this->entityVerifier
+            );
+        }
+
+        return new CallbackToOneRelationshipUpdatability(
+            $this->updateEntityConditions,
+            $this->updateRelationshipConditions,
+            $this->relationship['relationshipType'],
+            $this->customUpdateCallback,
+            $this->entityVerifier
+        );
+    }
+
+    /**
+     * @return ToManyRelationshipUpdatabilityInterface<TCondition, TSorting, TEntity, object>|null
+     */
+    public function getToManyRelationshipUpdatability(): ?ToManyRelationshipUpdatabilityInterface
+    {
+        if (!$this->updatable || null === $this->relationship || !$this->relationship['toMany']) {
+            return null;
+        }
+
+        if (null === $this->customUpdateCallback) {
+            return new PathToManyRelationshipUpdatability(
+                $this->entityClass,
+                $this->updateEntityConditions,
+                $this->updateRelationshipConditions,
+                $this->relationship['relationshipType'],
+                $this->getPropertyPath(),
+                $this->propertyAccessor,
+                $this->entityVerifier
+            );
+        }
+
+        return new CallbackToManyRelationshipUpdatability(
+            $this->updateEntityConditions,
+            $this->updateRelationshipConditions,
+            $this->relationship['relationshipType'],
+            $this->customUpdateCallback,
+            $this->entityVerifier
+        );
+    }
+
+    /**
+     * @return non-empty-list<non-empty-string>
+     */
+    protected function getPropertyPath(): array
+    {
+        return $this->aliasedPath ?? [$this->name];
     }
 }

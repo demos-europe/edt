@@ -4,12 +4,30 @@ declare(strict_types=1);
 
 namespace Tests\data\Types;
 
-use EDT\Wrapping\Properties\AttributeUpdatability;
+use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Wrapping\Properties\AttributeUpdatabilityInterface;
+use Webmozart\Assert\Assert;
 
-class TestAttributeUpdatability extends AttributeUpdatability
+class TestAttributeUpdatability implements AttributeUpdatabilityInterface
 {
-    public function isValidValue(mixed $attributeValue): bool
+    public function __construct(
+        private readonly array $propertyPath,
+       private readonly PropertyAccessorInterface $propertyAccessor
+    ) {}
+
+    public function updateAttributeValue(object $entity, mixed $value): void
     {
-        return true;
+        $propertyPath = $this->propertyPath;
+        $propertyName = array_pop($propertyPath);
+        $target = [] === $propertyPath
+            ? $entity
+            : $this->propertyAccessor->getValueByPropertyPath($entity, ...$propertyPath);
+        Assert::object($target);
+        $this->propertyAccessor->setValue($target, $value, $propertyName);
+    }
+
+    public function getEntityConditions(): array
+    {
+        return [];
     }
 }

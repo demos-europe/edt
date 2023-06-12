@@ -37,7 +37,7 @@ abstract class AbstractProcessorConfig
     }
 
     /**
-     * @param TType            $type
+     * @param TType $type
      * @param non-empty-string $property
      *
      * @return TType|null

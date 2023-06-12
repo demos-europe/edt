@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\data\ApiTypes;
 
-use EDT\JsonApi\Properties\JsonAttributeReadability;
+use EDT\JsonApi\Properties\Attributes\PathAttributeReadability;
+use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipReadability;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipReadability;
 
 class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterface
 {
@@ -22,12 +22,30 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
     {
         return [
             [
-                'title' => new JsonAttributeReadability(false, false, null),
-                'tags' => new JsonAttributeReadability(false, false, null),
+                'title' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['title'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver
+                ),
+                'tags' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['tags'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver,
+                ),
             ],
             [
-                'author' => new ToOneRelationshipReadability(false, false, false, null,
+                'author' => new PathToOneRelationshipReadability(
+                    $this->getEntityClass(),
+                    ['author'],
+                    false,
+                    false,
                     $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
+                    $this->propertyAccessor,
+                    $this->entityVerifier
                 ),
             ],
             [],

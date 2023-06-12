@@ -12,7 +12,8 @@ class Book
     public function __construct(
         protected string $title,
         protected Person $author,
-        protected array $tags = []
+        protected array $tags = [],
+        protected int $id = 0
     ) {}
 
     public function getTitle(): string

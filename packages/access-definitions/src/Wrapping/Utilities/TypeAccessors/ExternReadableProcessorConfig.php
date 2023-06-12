@@ -8,8 +8,8 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Properties\AbstractReadability;
-use EDT\Wrapping\Properties\AbstractRelationshipReadability;
+use EDT\Wrapping\Properties\PropertyReadabilityInterface;
+use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
 
 /**
  * @template-extends AbstractProcessorConfig<TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object>>
@@ -34,13 +34,13 @@ class ExternReadableProcessorConfig extends AbstractProcessorConfig
 
         return $this->allowAttribute
             ? array_map(
-                static fn (AbstractReadability $property): ?TypeInterface => $property instanceof AbstractRelationshipReadability
+                static fn (PropertyReadabilityInterface $property): ?TypeInterface => $property instanceof RelationshipReadabilityInterface
                     ? $property->getRelationshipType()
                     : null,
                 array_merge(...$readableProperties)
             )
             : array_map(
-                static fn (AbstractRelationshipReadability $property): TypeInterface => $property->getRelationshipType(),
+                static fn (RelationshipReadabilityInterface $property): TypeInterface => $property->getRelationshipType(),
                 array_merge($readableProperties[1], $readableProperties[2])
             );
     }

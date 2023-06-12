@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\data\ApiTypes;
 
-use EDT\JsonApi\Properties\JsonAttributeReadability;
+use EDT\JsonApi\Properties\Attributes\PathAttributeReadability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipReadability;
 
 class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInterface
 {
@@ -22,14 +22,38 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
     {
         return [
             [
-                'name' => new JsonAttributeReadability(false, false, null),
-                'pseudonym' => new JsonAttributeReadability(false, false, null),
-                'birthCountry' => new JsonAttributeReadability(false, false, null),
+                'name' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['name'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver
+                ),
+                'pseudonym' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['pseudonym'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver,
+                ),
+                'birthCountry' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['birth', 'country'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver
+                ),
             ],
             [],
             [
-                'books' => new ToManyRelationshipReadability(false, false, false, null,
-                    $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow()
+                'books' => new PathToManyRelationshipReadability(
+                    $this->getEntityClass(),
+                    ['books'],
+                    false,
+                    false,
+                    $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
+                    $this->propertyAccessor,
+                    $this->entityVerifier
                 ),
             ]
         ];

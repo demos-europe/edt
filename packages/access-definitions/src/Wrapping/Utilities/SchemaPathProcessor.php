@@ -40,7 +40,7 @@ class SchemaPathProcessor
      * @template TSorting of PathsBasedInterface
      *
      * @param FilterableTypeInterface<TCondition, TSorting, object> $type
-     * @param non-empty-list<TCondition>                     $conditions
+     * @param non-empty-list<TCondition> $conditions
      *
      * @throws PathException Thrown if {@link AliasableTypeInterface::getAliases()} returned an invalid path.
      * @throws AccessException

@@ -5,14 +5,21 @@ declare(strict_types=1);
 namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
+use EDT\JsonApi\Properties\Id\PathIdReadability;
+use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipReadability;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Querying\Pagination\PagePagination;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipReadability;
+use EDT\Wrapping\Properties\IdReadabilityInterface;
+use EDT\Wrapping\Utilities\EntityVerifierInterface;
+use Pagerfanta\Pagerfanta;
 use Tests\data\Model\Book;
 
 /**
@@ -25,25 +32,33 @@ class BookType implements
     TransferableTypeInterface,
     FilterableTypeInterface,
     SortableTypeInterface,
-    IdentifiableTypeInterface,
     ExposableRelationshipTypeInterface
 {
     private bool $exposedAsRelationship = true;
 
     public function __construct(
-        private readonly PathsBasedConditionFactoryInterface $conditionFactory,
-        protected readonly TypeProviderInterface $typeProvider
+        protected readonly PathsBasedConditionFactoryInterface $conditionFactory,
+        protected readonly TypeProviderInterface $typeProvider,
+        protected readonly PropertyAccessorInterface $propertyAccessor,
+        protected readonly AttributeTypeResolver $typeResolver,
+        protected readonly EntityVerifierInterface $entityVerifier
     ) {}
 
     public function getReadableProperties(): array
     {
         return [
             [
-                'title' => new TestAttributeReadability(false, false, null),
-                'tags' => new TestAttributeReadability(false, false, null),
+                'title' => new TestAttributeReadability(['title'], $this->propertyAccessor),
+                'tags' => new TestAttributeReadability(['tags'], $this->propertyAccessor),
             ], [
-                'author' => new ToOneRelationshipReadability(false, false, false, null,
+                'author' => new PathToOneRelationshipReadability(
+                    Book::class,
+                    ['author'],
+                    false,
+                    false,
                     $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
+                    $this->propertyAccessor,
+                    $this->entityVerifier
                 ),
             ],
             [],
@@ -77,7 +92,7 @@ class BookType implements
         return Book::class;
     }
 
-    public function getIdentifierPropertyPath(): array
+    public function getIdentifierFilterPath(): array
     {
         return ['title'];
     }
@@ -114,5 +129,33 @@ class BookType implements
     public function getIdentifier(): string
     {
         return self::class;
+    }
+
+    public function getIdentifierSortingPath(): array
+    {
+        throw new \Exception('Not implemented');
+    }
+
+    public function getIdentifierReadability(): IdReadabilityInterface
+    {
+        return new PathIdReadability($this->getEntityClass(), ['id'], $this->propertyAccessor, $this->typeResolver);
+    }
+
+    public function fetchPagePaginatedEntities(
+        array $conditions,
+        array $sortMethods,
+        PagePagination $pagination
+    ): Pagerfanta {
+        throw new \Exception('Not implemented');
+    }
+
+    public function fetchEntities(array $conditions, array $sortMethods): array
+    {
+        throw new \Exception('Not implemented');
+    }
+
+    public function fetchEntity(int|string $entityIdentifier, array $conditions): ?object
+    {
+        throw new \Exception('Not implemented');
     }
 }

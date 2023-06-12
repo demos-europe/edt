@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipUpdatability;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Querying\Pagination\PagePagination;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
@@ -13,8 +18,9 @@ use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipReadability;
-use EDT\Wrapping\Properties\ToManyRelationshipUpdatability;
+use EDT\Wrapping\Properties\IdReadabilityInterface;
+use EDT\Wrapping\Utilities\EntityVerifierInterface;
+use Pagerfanta\Pagerfanta;
 use Tests\data\Model\Person;
 
 /**
@@ -27,31 +33,35 @@ class AuthorType implements
     TransferableTypeInterface,
     FilterableTypeInterface,
     SortableTypeInterface,
-    IdentifiableTypeInterface,
     ExposableRelationshipTypeInterface,
     AliasableTypeInterface
 {
     public function __construct(
-        private readonly PathsBasedConditionFactoryInterface $conditionFactory,
-        protected readonly TypeProviderInterface $typeProvider
+        protected readonly PathsBasedConditionFactoryInterface $conditionFactory,
+        protected readonly TypeProviderInterface $typeProvider,
+        protected readonly PropertyAccessorInterface $propertyAccessor,
+        protected readonly EntityVerifierInterface $entityVerifier,
+        protected readonly AttributeTypeResolver $typeResolver
     ) {}
 
     public function getReadableProperties(): array
     {
         return [
             [
-                'name' => new TestAttributeReadability(false, false, null),
-                'pseudonym' => new TestAttributeReadability(false, false, null),
-                'birthCountry' => new TestAttributeReadability(false, false, null),
+                'name' => new TestAttributeReadability(['name'], $this->propertyAccessor),
+                'pseudonym' => new TestAttributeReadability(['pseudonym'], $this->propertyAccessor),
+                'birthCountry' => new TestAttributeReadability(['birth', 'country'], $this->propertyAccessor),
             ],
             [],
             [
-                'books' => new ToManyRelationshipReadability(
+                'books' => new PathToManyRelationshipReadability(
+                    $this->getEntityClass(),
+                    ['books'],
                     false,
                     false,
-                    false,
-                    null,
                     $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
+                    $this->propertyAccessor,
+                    $this->entityVerifier
                 ),
             ],
         ];
@@ -89,7 +99,7 @@ class AuthorType implements
         return Person::class;
     }
 
-    public function getIdentifierPropertyPath(): array
+    public function getIdentifierFilterPath(): array
     {
         return ['name'];
     }
@@ -118,14 +128,22 @@ class AuthorType implements
 
         return [
             [
-                'name' => new TestAttributeUpdatability([], [], null),
-                'birthCountry' => new TestAttributeUpdatability([], [], null),
+                'name' => new TestAttributeUpdatability(['name'], $this->propertyAccessor),
+                'birthCountry' => new TestAttributeUpdatability(['birth', 'country'], $this->propertyAccessor),
             ],
             [],
             [
-                'books' => new ToManyRelationshipUpdatability([], [
-                    $bookType->getAccessCondition()
-                ], $bookType, null),
+                'books' => new PathToManyRelationshipUpdatability(
+                    self::class,
+                    [],
+                    [
+                        $bookType->getAccessCondition()
+                    ],
+                    $bookType,
+                    ['books'],
+                    $this->propertyAccessor,
+                    $this->entityVerifier
+                ),
             ],
         ];
     }
@@ -144,5 +162,48 @@ class AuthorType implements
     public function getIdentifier(): string
     {
         return self::class;
+    }
+
+    public function getIdentifierSortingPath(): array
+    {
+        throw new \Exception('Not implemented');
+    }
+
+    public function getIdentifierReadability(): IdReadabilityInterface
+    {
+        return new class implements IdReadabilityInterface {
+            public function getValue(object $entity): int|string
+            {
+                return 0;
+            }
+
+            public function isDefaultField(): bool
+            {
+                return false;
+            }
+
+            public function getPropertySchema(): array
+            {
+                return [];
+            }
+        };
+    }
+
+    public function fetchPagePaginatedEntities(
+        array $conditions,
+        array $sortMethods,
+        PagePagination $pagination
+    ): Pagerfanta {
+        throw new \Exception('Not implemented');
+    }
+
+    public function fetchEntities(array $conditions, array $sortMethods): array
+    {
+        throw new \Exception('Not implemented');
+    }
+
+    public function fetchEntity(int|string $entityIdentifier, array $conditions): ?object
+    {
+        throw new \Exception('Not implemented');
     }
 }

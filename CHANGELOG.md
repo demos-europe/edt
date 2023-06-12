@@ -2,14 +2,9 @@
 
 # Unreleased
 
-* fix: consider and check return of `customReadCallback` and allow `WrapperObject` instances as relationship return
-  * `DynamicTransformer` may now throw `PropertyAccessException`s beside its `TransformException`s on usage
-  * `verifyToManyIterable` is now static
-  * remove multiple static constructor methods from `TransformException` 
+* refactor: use type readabilities/updatabilities/initializabilities instances instead of using a predefined algorithm
+* refactor: separate `id` property from attributes; attributes MUST NOT return an `id` property but implement `IdentifiableTypeInterface::getIdentifierReadability` instead
 * fix: use correct property list when reading to-one relationships in `WrapperObject`
-* refactor: harmonize custom read and write callback namings to `customReadCallback` and `customWriteCallback`
-* refactor: rename `configureAttribute` to `configureJsonAttribute` in `ConfigCollection`/`TypedPathConfigCollection`
-* feature: allow `AttributeReadability` and `AttributeUpdatability` to check the output/input
 
 ## 0.17.4 - 2023-02-15
 

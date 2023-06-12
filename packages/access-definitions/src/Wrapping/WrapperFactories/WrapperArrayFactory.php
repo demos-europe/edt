@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\WrapperFactories;
 
-use EDT\Querying\Contracts\FunctionInterface;
+use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SortException;
-use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Wrapping\Contracts\AccessException;
-use EDT\Wrapping\Contracts\AttributeAccessException;
-use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Contracts\WrapperFactoryInterface;
-use EDT\Wrapping\Utilities\PropertyReader;
+use EDT\Wrapping\Properties\AttributeReadabilityInterface;
+use EDT\Wrapping\Properties\IdAttributeConflictException;
+use EDT\Wrapping\Properties\IdReadabilityInterface;
 use InvalidArgumentException;
+use function array_key_exists;
 
 /**
- * @template-implements WrapperFactoryInterface<FunctionInterface<bool>, SortMethodInterface>
+ * Creates a wrapper around an instance of a {@link TypeInterface::getEntityClass() backing object}.
  */
-class WrapperArrayFactory implements WrapperFactoryInterface
+class WrapperArrayFactory
 {
     /**
      * @param int<0, max> $depth
@@ -31,7 +31,6 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      */
     public function __construct(
         private readonly PropertyAccessorInterface $propertyAccessor,
-        private readonly PropertyReader $propertyReader,
         private readonly int $depth
     ) {}
 
@@ -70,7 +69,10 @@ class WrapperArrayFactory implements WrapperFactoryInterface
      * If a relationship is referenced each value will be checked using {@link TypeInterface::getAccessCondition()}
      * if it should be included, if so it is wrapped using this factory and included in the result.
      *
-     * @param TransferableTypeInterface<FunctionInterface<bool>, SortMethodInterface, object> $type
+     * @template TCondition of PathsBasedInterface
+     * @template TSorting of PathsBasedInterface
+     *
+     * @param TransferableTypeInterface<TCondition, TSorting, object> $type
      *
      * @return array<non-empty-string, mixed> an array containing the readable properties of the given type
      *
@@ -82,85 +84,54 @@ class WrapperArrayFactory implements WrapperFactoryInterface
     {
         // we only include properties in the result array that are actually accessible
         $readableProperties = $type->getReadableProperties();
-        $aliases = $type instanceof AliasableTypeInterface ? $type->getAliases() : [];
 
         // TODO: respect $readability settings (default field, default include)?
+        // TODO: add sparse fieldset support
 
-        $wrapperArray = [];
-        foreach ($readableProperties[0] as $propertyName => $readability) {
-            $customReadCallback = $readability->getCustomReadCallback();
-            $propertyValue = null === $customReadCallback
-                ? $this->getValue($propertyName, $entity, $aliases)
-                : $customReadCallback($entity);
-            if (!$readability->isValidValue($propertyValue)) {
-                throw AttributeAccessException::attributeValueForNameInvalid($propertyName, $propertyValue);
-            }
-            $wrapperArray[$propertyName] = $propertyValue;
+        $idReadability = $type->getIdentifierReadability();
+        $attributes = $readableProperties[0];
+        if (array_key_exists(ContentField::ID, $attributes)) {
+            throw IdAttributeConflictException::create($type->getIdentifier());
         }
+        $attributes[ContentField::ID] = $idReadability;
+
+        $wrapperArray = array_map(
+            static fn (AttributeReadabilityInterface|IdReadabilityInterface $readability) => $readability->getValue($entity),
+            $attributes
+        );
+
+        $relationshipWrapperFactory = $this->getNextWrapperFactory();
+
         foreach ($readableProperties[1] as $propertyName => $readability) {
-            $customReadCallback = $readability->getCustomReadCallback();
-            $propertyValue = null === $customReadCallback
-                ? $this->getValue($propertyName, $entity, $aliases)
-                : $customReadCallback($entity);
-
-            if (null === $propertyValue) {
-                $newValue = null;
+            $targetEntity = $readability->getValue($entity, []);
+            if (null === $targetEntity) {
+                $wrapperArray[$propertyName] = null;
             } else {
-                $wrapperFactory = $this->getNextWrapperFactory();
                 $relationshipType = $readability->getRelationshipType();
-                $relationshipEntityClass = $relationshipType->getEntityClass();
-
-                $propertyValue = PropertyReader::verifyToOneEntity($propertyValue, $propertyName, $relationshipEntityClass);
-                $propertyValue = $this->propertyReader->determineToOneRelationshipValue($relationshipType, $propertyValue);
-                $newValue = null === $propertyValue
-                    ? null
-                    : $wrapperFactory->createWrapper($propertyValue, $relationshipType);
+                $wrapperArray[$propertyName] = $relationshipWrapperFactory
+                    ->createWrapper($targetEntity, $relationshipType);
             }
-
-            $wrapperArray[$propertyName] = $newValue;
         }
+
         foreach ($readableProperties[2] as $propertyName => $readability) {
-            $customReadCallback = $readability->getCustomReadCallback();
-            $propertyValue = null === $customReadCallback
-                ? $this->getValue($propertyName, $entity, $aliases)
-                : $customReadCallback($entity);
-
-            $wrapperFactory = $this->getNextWrapperFactory();
             $relationshipType = $readability->getRelationshipType();
-
-            $relationshipValues = PropertyReader::verifyToManyIterable($propertyValue, $propertyName, $relationshipType->getEntityClass());
-            $relationshipValues = $this->propertyReader->determineToManyRelationshipValue($relationshipType, $relationshipValues);
-
-            // wrap the entities
+            $relationshipEntities = $readability->getValue($entity, [], []);
             $wrapperArray[$propertyName] = array_map(
-                static fn (object $objectToWrap) => $wrapperFactory->createWrapper($objectToWrap, $relationshipType),
-                $relationshipValues
+                static fn (object $objectToWrap) => $relationshipWrapperFactory
+                    ->createWrapper($objectToWrap, $relationshipType),
+                $relationshipEntities
             );
         }
 
         return $wrapperArray;
     }
 
-    /**
-     * @return self|ArrayEndWrapperFactory
-     */
-    protected function getNextWrapperFactory(): WrapperFactoryInterface
+    protected function getNextWrapperFactory(): self|ArrayEndWrapperFactory
     {
         $newDepth = $this->depth - 1;
 
         return 0 > $newDepth
             ? new ArrayEndWrapperFactory()
-            : new self($this->propertyAccessor, $this->propertyReader, $newDepth);
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     * @param array<non-empty-string, non-empty-list<non-empty-string>> $aliases
-     */
-    protected function getValue(string $propertyName, object $target, array $aliases): mixed
-    {
-        $propertyPath = $aliases[$propertyName] ?? [$propertyName];
-
-        return $this->propertyAccessor->getValueByPropertyPath($target, ...$propertyPath);
+            : new self($this->propertyAccessor, $newDepth);
     }
 }
