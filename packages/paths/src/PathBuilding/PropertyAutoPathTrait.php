@@ -10,10 +10,7 @@ use EDT\PathBuilding\SegmentFactories\ReflectionSegmentFactory;
 use EDT\PathBuilding\SegmentFactories\SegmentFactoryInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyPathInterface;
-use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Exception;
-use Safe\Exceptions\ArrayException;
 use function array_key_exists;
 
 /**
@@ -229,32 +226,6 @@ trait PropertyAutoPathTrait
             $this->properties,
             static fn (string $propertyClass): bool => is_subclass_of($propertyClass, PropertyAutoPathInterface::class)
         );
-    }
-
-    /**
-     * @param list<array{0: PropertyPathInterface, 1: PropertyPathInterface}> $paths The first index
-     *                                        in each item is the {@link PropertyPathInterface} of this
-     *                                        {@link TypeInterface} instance from which we want to
-     *                                        redirect to another property or attribute (it is thus
-     *                                        expected to have only one segment). The second index
-     *                                        is a {@link PropertyPathInterface} to which we want
-     *                                        to redirect.
-     *
-     * @return array<non-empty-string, non-empty-list<non-empty-string>>
-     *
-     * @throws PathException
-     * @throws ArrayException
-     *
-     * @see AliasableTypeInterface::getAliases()
-     */
-    protected function toAliases(array $paths): array
-    {
-        $keys = array_column($paths, 0);
-        $keys = array_map([$this, 'getSourcePath'], $keys);
-        $values = array_column($paths, 1);
-        $values = array_map([$this, 'getTargetPath'], $values);
-
-        return array_combine($keys, $values);
     }
 
     /**

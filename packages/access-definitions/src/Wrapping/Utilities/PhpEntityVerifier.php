@@ -35,7 +35,7 @@ class PhpEntityVerifier extends AbstractEntityVerifier
         if ([] !== $conditions) {
             $this->schemaPathProcessor->mapFilterConditions($type, $conditions);
         }
-        $conditions[] = $this->schemaPathProcessor->processAccessCondition($type);
+        $conditions[] = $type->getAccessCondition();
 
         // if access is allowed, return the entity, otherwise return null
         return $this->conditionEvaluator->evaluateConditions($entity, $conditions)
@@ -51,7 +51,7 @@ class PhpEntityVerifier extends AbstractEntityVerifier
         if ([] !== $conditions) {
             $this->schemaPathProcessor->mapFilterConditions($type, $conditions);
         }
-        $conditions[] = $this->schemaPathProcessor->processAccessCondition($type);
+        $conditions[] = $type->getAccessCondition();
 
         return array_values($this->conditionEvaluator->filterArray($entities, ...$conditions));
     }
@@ -62,7 +62,7 @@ class PhpEntityVerifier extends AbstractEntityVerifier
         TypeInterface $type
     ): array {
         if ([] === $sortMethods) {
-            $sortMethods = $this->schemaPathProcessor->processDefaultSortMethods($type);
+            $sortMethods = $type->getDefaultSortMethods();
         } elseif ($type instanceof SortableTypeInterface) {
             $this->schemaPathProcessor->mapSorting($type, $sortMethods);
         } else {

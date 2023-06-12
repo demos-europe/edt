@@ -26,18 +26,6 @@ class BirthType implements TypeInterface
         return $this->conditionFactory->true();
     }
 
-    public function getAliases(): array
-    {
-        return [];
-    }
-
-    public function getInternalProperties(): array
-    {
-        return [
-            'country' => null,
-        ];
-    }
-
     public function getDefaultSortMethods(): array
     {
         return [];

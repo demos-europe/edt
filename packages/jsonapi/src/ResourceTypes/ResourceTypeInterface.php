@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\AliasableTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
@@ -23,7 +22,6 @@ interface ResourceTypeInterface extends
     TransferableTypeInterface,
     FilterableTypeInterface,
     SortableTypeInterface,
-    ExposablePrimaryResourceTypeInterface,
-    AliasableTypeInterface
+    ExposablePrimaryResourceTypeInterface
 {
 }

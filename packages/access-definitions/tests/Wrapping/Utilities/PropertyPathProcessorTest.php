@@ -18,7 +18,6 @@ use EDT\Wrapping\Utilities\PhpEntityVerifier;
 use EDT\Wrapping\Utilities\PropertyPathProcessor;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
-use EDT\Wrapping\Utilities\TypeAccessors\ExternReadableProcessorConfig;
 use EDT\Wrapping\Utilities\TypeAccessors\ExternSortableProcessorConfig;
 use PHPUnit\Framework\TestCase;
 use Tests\data\Types\AuthorType;
@@ -66,32 +65,6 @@ class PropertyPathProcessorTest extends TestCase
             [],
             'title',
             'foobar'
-        );
-    }
-
-    public function testProcessPropertyPathWithAllowedAttribute(): void
-    {
-        $processorConfig = new ExternReadableProcessorConfig($this->typeProvider, $this->authorType, true);
-        $propertyPathProcessor = new PropertyPathProcessor($processorConfig);
-        $processedPath = $propertyPathProcessor->processPropertyPath(
-            $this->authorType,
-            [],
-            'books',
-            'title'
-        );
-        self::assertSame(['books', 'title'], $processedPath);
-    }
-
-    public function testProcessPropertyPathWithNonAllowedAttribute(): void
-    {
-        $this->expectException(PropertyAccessException::class);
-        $processorConfig = new ExternReadableProcessorConfig($this->typeProvider, $this->authorType, false);
-        $propertyPathProcessor = new PropertyPathProcessor($processorConfig);
-        $propertyPathProcessor->processPropertyPath(
-            $this->authorType,
-            [],
-            'books',
-            'title'
         );
     }
 }

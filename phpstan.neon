@@ -178,11 +178,6 @@ parameters:
             path: packages/access-definitions/src/Wrapping/TypeProviders/TypeRequirement.php
 
         -
-            message: "#^Method EDT\\\\Wrapping\\\\Utilities\\\\SchemaPathProcessor\\:\\:mapExternReadablePath\\(\\) has parameter \\$type with generic interface EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\TransferableTypeInterface but does not specify its types\\: TCondition, TSorting, TEntity$#"
-            count: 1
-            path: packages/access-definitions/src/Wrapping/Utilities/SchemaPathProcessor.php
-
-        -
             message: "#^Parameter \\#1 \\$baseFunction of class EDT\\\\DqlQuerying\\\\Functions\\\\LowerCase constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<string\\|null\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
             count: 3
             path: packages/dql/src/ConditionFactories/DqlConditionFactory.php

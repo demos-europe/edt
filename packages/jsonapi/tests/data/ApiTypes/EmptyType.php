@@ -50,11 +50,6 @@ class EmptyType extends AbstractResourceType
         return $this->conditionFactory->false();
     }
 
-    public function getInternalProperties(): array
-    {
-        return [];
-    }
-
     public function getDefaultSortMethods(): array
     {
         return [];

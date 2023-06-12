@@ -251,7 +251,7 @@ class WrapperArrayFactoryTest extends ModelBasedTest
     private function listEntities(FilterableTypeInterface $type, array $conditions): array
     {
         $this->schemaPathProcessor->mapFilterConditions($type, $conditions);
-        $conditions[] = $this->schemaPathProcessor->processAccessCondition($type);
+        $conditions[] = $type->getAccessCondition();
 
         return $this->authorProvider->getEntities($conditions, [], null);
     }

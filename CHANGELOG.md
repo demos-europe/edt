@@ -2,6 +2,8 @@
 
 # Unreleased
 
+* refactor: conditions/sort methods returned by `getAccessCondition`/`getDefaultSortMethods` must now access the schema of the backing entity instead of the schema of the type (i.e. the automatic de-aliasing was removed)
+* feature: a type property defined in `getFilterableProperties` and `getSortableProperties` can now use different property in the backing entity for filtering and sorting 
 * refactor: use type readabilities/updatabilities/initializabilities instances instead of using a predefined algorithm
 * refactor: separate `id` property from attributes; attributes MUST NOT return an `id` property but implement `IdentifiableTypeInterface::getIdentifierReadability` instead
 * fix: use correct property list when reading to-one relationships in `WrapperObject`

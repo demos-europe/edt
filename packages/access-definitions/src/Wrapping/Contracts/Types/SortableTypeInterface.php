@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Contracts\Types;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\PropertyPaths\PropertyLink;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -24,10 +25,7 @@ interface SortableTypeInterface extends TypeInterface
      * at all. You may also want to allow more properties for sorting than you allowed for reading,
      * but be careful as this may allow guessing values of non-readable properties.
      *
-     * @return array<non-empty-string, SortableTypeInterface<TCondition, TSorting, object>|null> The keys in the returned array are the names of the
-     *                                   properties. Each value is the target
-     *                                   {@link TypeInterface} or `null` if the
-     *                                   property is a non-relationship.
+     * @return array<non-empty-string, PropertyLink<SortableTypeInterface<TCondition, TSorting, object>>> The keys in the returned array are the names of the properties.
      */
     public function getSortableProperties(): array;
 }

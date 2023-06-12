@@ -467,11 +467,6 @@ class PropertyAutoPathTraitTest extends TestCase
 
     public function testAliasing(): void
     {
-        $foo = new FooResource();
-        $aliases = $foo->getAliases();
-        self::assertEquals([
-            'barTitle' => ['bar', 'title'],
-        ], $aliases);
         $path = new ParamTagged();
         self::assertInstanceOf(End::class, $path->paramAttribute);
         self::assertInstanceOf(FooResource::class, $path->paramRelationship);

@@ -26,9 +26,9 @@ class PropertyAccessException extends AccessException
 
     /**
      * @param non-empty-string $property
-     * @param non-empty-string ...$availableProperties
+     * @param list<non-empty-string> $availableProperties
      */
-    public static function propertyNotAvailableInType(string $property, TypeInterface $type, string ...$availableProperties): self
+    public static function propertyNotAvailableInType(string $property, TypeInterface $type, array $availableProperties): self
     {
         $typeClass = $type::class;
         $propertyList = implode(', ', $availableProperties);
@@ -80,7 +80,7 @@ class PropertyAccessException extends AccessException
     }
 
     /**
-     * @param PropertyAccessException          $previous
+     * @param PropertyAccessException $previous
      * @param non-empty-list<non-empty-string> $path
      */
     public static function pathDenied(TypeInterface $type, PropertyAccessException $previous, array $path): self

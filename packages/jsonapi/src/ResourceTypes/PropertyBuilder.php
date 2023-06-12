@@ -23,6 +23,8 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
+use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
 use EDT\Wrapping\Properties\AttributeUpdatabilityInterface;
 use EDT\Wrapping\Properties\Initializability;
@@ -127,11 +129,15 @@ class PropertyBuilder implements PropertyConfigInterface
     }
 
     /**
+     * @param non-empty-list<non-empty-string>|PropertyPathInterface $aliasedPath
+     *
      * @return $this
      */
-    public function aliasedPath(PropertyPathInterface $aliasedPath): self
+    public function aliasedPath(array|PropertyPathInterface $aliasedPath): self
     {
-        $this->aliasedPath = $aliasedPath->getAsNames();
+        $this->aliasedPath = $aliasedPath instanceof PropertyPathInterface
+            ? $aliasedPath->getAsNames()
+            : $aliasedPath;
 
         return $this;
     }
@@ -154,14 +160,6 @@ class PropertyBuilder implements PropertyConfigInterface
         $this->sortable = true;
 
         return $this;
-    }
-
-    /**
-     * @return non-empty-list<non-empty-string>|null
-     */
-    public function getAliasedPath(): ?array
-    {
-        return $this->aliasedPath;
     }
 
     /**
@@ -324,6 +322,22 @@ class PropertyBuilder implements PropertyConfigInterface
         return $this->relationship['relationshipType'] ?? null;
     }
 
+    /**
+     * @return FilterableTypeInterface<TCondition, TSorting, object>|null
+     */
+    public function getFilterableRelationshipType(): ?FilterableTypeInterface
+    {
+        return $this->relationship['relationshipType'] ?? null;
+    }
+
+    /**
+     * @return SortableTypeInterface<TCondition, TSorting, object>|null
+     */
+    public function getSortableRelationshipType(): ?SortableTypeInterface
+    {
+        return $this->relationship['relationshipType'] ?? null;
+    }
+
     public function isToOneRelationship(): bool
     {
         return !$this->isAttribute() && !$this->isToManyRelationship();
@@ -433,7 +447,7 @@ class PropertyBuilder implements PropertyConfigInterface
     /**
      * @return non-empty-list<non-empty-string>
      */
-    protected function getPropertyPath(): array
+    public function getPropertyPath(): array
     {
         return $this->aliasedPath ?? [$this->name];
     }

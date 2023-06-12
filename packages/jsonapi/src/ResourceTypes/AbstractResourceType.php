@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use demosplan\DemosPlanCoreBundle\Exception\InvalidArgumentException;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\Querying\PropertyPaths\PropertyLink;
 use EDT\Wrapping\Contracts\Types\CreatableTypeInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
@@ -30,10 +30,6 @@ use EDT\Wrapping\Properties\ToOneRelationshipUpdatabilityInterface;
  */
 abstract class AbstractResourceType implements ResourceTypeInterface
 {
-    /**
-     * A restricted view on the properties of the {@link TypeInterface::getEntityClass() backing object}. Potentially
-     * mapped via {@link ResourceTypeInterface::getAliases() aliases}.
-     */
     public function getReadableProperties(): array
     {
         $configCollection = $this->getInitializedProperties();
@@ -67,7 +63,10 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     {
         $propertyArray = $this->getInitializedProperties();
         $propertyArray = array_map(
-            static fn (PropertyBuilder $property): ?ResourceTypeInterface => $property->getRelationshipType(),
+            static fn (PropertyBuilder $property): PropertyLink => new PropertyLink(
+                $property->getPropertyPath(),
+                $property->getFilterableRelationshipType()
+            ),
             array_filter(
                 $propertyArray,
                 static fn (PropertyBuilder $property): bool => $property->isFilterable()
@@ -80,7 +79,10 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     public function getSortableProperties(): array
     {
         $propertyArray = array_map(
-            static fn (PropertyBuilder $property): ?ResourceTypeInterface => $property->getRelationshipType(),
+            static fn (PropertyBuilder $property): PropertyLink => new PropertyLink(
+                $property->getPropertyPath(),
+                $property->getSortableRelationshipType()
+            ),
             array_filter(
                 $this->getInitializedProperties(),
                 static fn (PropertyBuilder $property): bool => $property->isSortable()
@@ -132,17 +134,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface
                 $this->getInitializedProperties()
             ),
             static fn (?PropertyInitializabilityInterface $initializability): bool => null !== $initializability
-        );
-    }
-
-    public function getAliases(): array
-    {
-        return array_filter(
-            array_map(
-                static fn (PropertyBuilder $property): ?array => $property->getAliasedPath(),
-                $this->getInitializedProperties()
-            ),
-            static fn (?array $path): bool => null !== $path
         );
     }
 
@@ -234,18 +225,20 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      *
      * @template TType of TypeInterface
      *
-     * @param array<non-empty-string, TType|null> $types
+     * @param array<non-empty-string, PropertyLink<TType>> $types
      *
-     * @return array<non-empty-string, (TType&ExposableRelationshipTypeInterface)|null>
+     * @return array<non-empty-string, PropertyLink<TType>>
      */
     protected function keepExposedTypes(array $types): array
     {
         return array_filter(
             $types,
-            static fn (?TypeInterface $type): bool =>
-                null === $type
-                || ($type instanceof ExposableRelationshipTypeInterface
-                && $type->isExposedAsRelationship())
+            static function (PropertyLink $property): bool {
+                $type = $property->getTargetType();
+                return null === $type
+                    || ($type instanceof ExposableRelationshipTypeInterface
+                    && $type->isExposedAsRelationship());
+            }
         );
     }
 

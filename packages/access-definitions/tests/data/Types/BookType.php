@@ -11,6 +11,7 @@ use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipReadability;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Pagination\PagePagination;
+use EDT\Querying\PropertyPaths\PropertyLink;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
@@ -68,17 +69,23 @@ class BookType implements
     public function getFilterableProperties(): array
     {
         return [
-            'title' => null,
-            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
-            'tags' => null,
+            'title' => new PropertyLink(['title'], null),
+            'author' => new PropertyLink(
+                ['author'],
+                $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow()
+            ),
+            'tags' => new PropertyLink(['tags'], null),
         ];
     }
 
     public function getSortableProperties(): array
     {
         return [
-            'title' => null,
-            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
+            'title' => new PropertyLink(['title'], null),
+            'author' => new PropertyLink(
+                ['author'],
+                $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow()
+            ),
         ];
     }
 
@@ -97,11 +104,6 @@ class BookType implements
         return ['title'];
     }
 
-    public function getAliases(): array
-    {
-        return [];
-    }
-
     public function isExposedAsRelationship(): bool
     {
         return $this->exposedAsRelationship;
@@ -110,15 +112,6 @@ class BookType implements
     public function getDefaultSortMethods(): array
     {
         return [];
-    }
-
-    public function getInternalProperties(): array
-    {
-        return [
-            'title' => null,
-            'author' => $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
-            'tags' => null,
-        ];
     }
 
     public function getUpdatableProperties(): array
