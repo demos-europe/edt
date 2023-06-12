@@ -8,9 +8,8 @@ includes:
     #- phar://phpstan.phar/conf/bleedingEdge.neon
     #- vendor/phpstan/phpstan/conf/bleedingEdge.neon
 rules:
-    # kept from vendor/ergebnis/phpstan-rules/rules.neon, the others are considered as too restricting
+    # kept from vendor/ergebnis/phpstan-rules/rules.neon version ^1.0, the others are considered as too restricting
     - Ergebnis\PHPStan\Rules\Expressions\NoCompactRule
-    - Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
     - Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
     - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
     - Ergebnis\PHPStan\Rules\Expressions\NoIssetRule
@@ -262,7 +261,7 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\PredefinedDrupalConditionFactory\\:\\:getOperatorFunctions\\(\\) should return array\\<non\\-empty\\-string, callable\\(array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns array\\{\\=\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasValue'\\}, \\<\\>\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotValue'\\}, STRING_CONTAINS_CASE_INSENSITIVE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringCo…'\\}, IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasAnyOfVal…'\\}, NOT_IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotAnyOf…'\\}, BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, NOT BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, ARRAY_CONTAINS_VALUE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringAs…'\\}, \\.\\.\\.\\}\\.$#"
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\PredefinedDrupalConditionFactory\\:\\:getOperatorFunctions\\(\\) should return array\\<non\\-empty\\-string, callable\\(array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\)\\: TCondition\\> but returns array\\{\\=\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasValue'\\}, \\<\\>\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotValue'\\}, STRING_CONTAINS_CASE_INSENSITIVE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringCo…'\\}, IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasAnyOfVal…'\\}, NOT_IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotAnyOf…'\\}, BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition, NOT BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition, ARRAY_CONTAINS_VALUE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringAs…'\\}, \\.\\.\\.\\}\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
@@ -330,47 +329,47 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#2 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeReadability constructor expects callable\\(TEntity of object\\)\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, callable\\(TEntity of object\\)\\: TValue given\\.$#"
+            message: "#^Parameter \\#2 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeReadability constructor expects callable\\(TEntity\\)\\: \\(array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\), callable\\(TEntity\\)\\: TValue given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#2 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeInitializability constructor expects callable\\(TEntity of object, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\: bool, callable\\(TEntity of object, TValue\\)\\: bool given\\.$#"
+            message: "#^Parameter \\#2 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeInitializability constructor expects callable\\(TEntity, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\: bool, callable\\(TEntity, TValue\\)\\: bool given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#2 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeSetability constructor expects callable\\(TEntity of object, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\: bool, callable\\(TEntity of object, TValue\\)\\: bool given\\.$#"
+            message: "#^Parameter \\#2 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Attributes\\\\CallbackAttributeSetability constructor expects callable\\(TEntity, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\)\\: bool, callable\\(TEntity, TValue\\)\\: bool given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#3 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipReadability constructor expects callable\\(TEntity of object\\)\\: iterable\\<object\\>, callable\\(TEntity of object\\)\\: TValue given\\.$#"
+            message: "#^Parameter \\#3 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipReadability constructor expects callable\\(TEntity\\)\\: iterable\\<object\\>, callable\\(TEntity\\)\\: TValue given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#3 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipReadability constructor expects callable\\(TEntity of object\\)\\: object\\|null, callable\\(TEntity of object\\)\\: TValue given\\.$#"
+            message: "#^Parameter \\#3 \\$readCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipReadability constructor expects callable\\(TEntity\\)\\: \\(object\\|null\\), callable\\(TEntity\\)\\: TValue given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipInitializability constructor expects callable\\(TEntity of object, iterable\\<object\\>\\)\\: bool, callable\\(TEntity of object, TValue\\)\\: bool given\\.$#"
+            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipInitializability constructor expects callable\\(TEntity, iterable\\<object\\>\\)\\: bool, callable\\(TEntity, TValue\\)\\: bool given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipSetability constructor expects callable\\(TEntity of object, iterable\\<object\\>\\)\\: bool, callable\\(TEntity of object, TValue\\)\\: bool given\\.$#"
+            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToManyRelationshipSetability constructor expects callable\\(TEntity, iterable\\<object\\>\\)\\: bool, callable\\(TEntity, TValue\\)\\: bool given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipInitializability constructor expects callable\\(TEntity of object, object\\|null\\)\\: bool, callable\\(TEntity of object, TValue\\)\\: bool given\\.$#"
+            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipInitializability constructor expects callable\\(TEntity, object\\|null\\)\\: bool, callable\\(TEntity, TValue\\)\\: bool given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
         -
-            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipSetability constructor expects callable\\(TEntity of object, object\\|null\\)\\: bool, callable\\(TEntity of object, TValue\\)\\: bool given\\.$#"
+            message: "#^Parameter \\#4 \\$setterCallback of class EDT\\\\JsonApi\\\\Properties\\\\Relationships\\\\CallbackToOneRelationshipSetability constructor expects callable\\(TEntity, object\\|null\\)\\: bool, callable\\(TEntity, TValue\\)\\: bool given\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 
