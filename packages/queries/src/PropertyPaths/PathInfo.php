@@ -13,8 +13,8 @@ use EDT\Querying\Contracts\PropertyPathAccessInterface;
 class PathInfo
 {
     public function __construct(
-        private readonly PropertyPathAccessInterface $path,
-        private readonly bool $toManyAllowed
+        protected readonly PropertyPathAccessInterface $path,
+        protected readonly bool $toManyAllowed
     ) {}
 
     /**

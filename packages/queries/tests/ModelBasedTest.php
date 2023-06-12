@@ -34,33 +34,33 @@ abstract class ModelBasedTest extends TestCase
      */
     protected function getTestData(): array
     {
-        $king = new Person('Stephen King', 'Richard Bachman', new Birth(
+        $king = new Person('1', 'Stephen King', 'Richard Bachman', new Birth(
             'USA', 'Maine', 'Portland', 1947, 9, 21
         ));
-        $tolkien = new Person('John Ronald Reuel Tolkien', null, new Birth(
+        $tolkien = new Person('2', 'John Ronald Reuel Tolkien', null, new Birth(
             'Oranje-Freistaat', null, 'Bloemfontein', 1892, 1, 3
         ));
-        $dickens = new Person('Charles John Huffam Dickens', 'Boz', new Birth(
+        $dickens = new Person('3', 'Charles John Huffam Dickens', 'Boz', new Birth(
             'England', 'Portsmouth', 'Landport', 1812, 2, 7
         ));
-        $rowling = new Person('Joanne K. Rowling', 'Robert Galbraith', new Birth(
+        $rowling = new Person('4', 'Joanne K. Rowling', 'Robert Galbraith', new Birth(
             'England', 'South Gloucestershire', 'Yate', 1965, 7, 31
         ));
-        $lee = new Person('Nelle Harper Lee', null, new Birth(
+        $lee = new Person('5', 'Nelle Harper Lee', null, new Birth(
             'USA', 'Alabama', 'Monroeville', 1926, 4, 28
         ));
-        $salinger = new Person('Jerome David Salinger', null, new Birth(
+        $salinger = new Person('6', 'Jerome David Salinger', null, new Birth(
             'USA', 'New York', 'Manhattan', 1919, 1, 1
         ));
-        $phen = new Person('Manfred', 'Mannie', new Birth(
+        $phen = new Person('7', 'Manfred', 'Mannie', new Birth(
            'Germany', 'Berlin', 'Spandau', 2012, 7, 8
         ));
 
-        $doctorSleep = new Book('Doctor Sleep', $king);
-        $beowulf = new Book('Beowulf: The Monsters and the Critics', $tolkien);
-        $pickwickPapers = new Book('The Pickwick Papers', $dickens, ['Novel']);
-        $philosopherStone = new Book('Harry Potter and the Philosopher\'s Stone', $rowling);
-        $deathlyHallows = new Book('Harry Potter and the Deathly Hallows', $rowling);
+        $doctorSleep = new Book('1', 'Doctor Sleep', $king);
+        $beowulf = new Book('2', 'Beowulf: The Monsters and the Critics', $tolkien);
+        $pickwickPapers = new Book('3', 'The Pickwick Papers', $dickens, ['Novel']);
+        $philosopherStone = new Book('4', 'Harry Potter and the Philosopher\'s Stone', $rowling);
+        $deathlyHallows = new Book('5', 'Harry Potter and the Deathly Hallows', $rowling);
 
         $king->addBook($doctorSleep);
         $tolkien->addBook($beowulf);

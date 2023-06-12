@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
-use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\MappingAttribute;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 use EDT\Parsing\Utilities\DocblockTagParser;
-use EDT\Wrapping\Properties\AbstractReadability;
-use EDT\Wrapping\Properties\AttributeReadability;
-use EDT\Wrapping\Properties\ToManyRelationshipReadability;
-use EDT\Wrapping\Properties\ToOneRelationshipReadability;
-use ReflectionFunctionAbstract;
+use InvalidArgumentException;
 use ReflectionMethod;
 use ReflectionProperty;
+use Webmozart\Assert\Assert;
 use function array_key_exists;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
@@ -25,7 +26,6 @@ use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
 use function is_array;
-use function is_callable;
 use function is_string;
 use function strlen;
 
@@ -37,62 +37,34 @@ use function strlen;
 class AttributeTypeResolver
 {
     /**
-     * @var array<class-string, ReflectionClass>
+     * @var array<class-string, ReflectionClass<object>>
      */
     private array $classReflectionCache = [];
+
+    private AnnotationReader $annotationReader;
+
+    public function __construct()
+    {
+        $this->annotationReader = new AnnotationReader();
+    }
 
     /**
      * Return a valid `cebe\OpenApi` type declaration.
      *
-     * @param non-empty-string $propertyName
-     * @param AttributeReadability|ToOneRelationshipReadability|ToManyRelationshipReadability $propertyReadability
-     *
-     * @return array{type: string, format?: non-empty-string, description?: string}
-     *
-     * @throws ReflectionException
-     * @throws Throwable
-     */
-    public function getPropertyType(
-        ResourceTypeInterface $resourceType,
-        string $propertyName,
-        AbstractReadability $propertyReadability
-    ): array {
-        $customReadCallback = $propertyReadability->getCustomReadCallback();
-        if (null !== $customReadCallback) {
-            return $this->resolveTypeFromCallable($customReadCallback, $resourceType::class, $propertyName);
-        }
-
-        return $this->resolveTypeFromEntityClass($resourceType->getEntityClass(), $propertyName);
-    }
-
-    /**
-     * @param class-string $entityClassName
+     * @param class-string $rootEntityClass
+     * @param non-empty-list<non-empty-string> $propertyPath
      *
      * @return array{type: non-empty-string, format?: non-empty-string, description?: string}
      *
      * @throws ReflectionException
      */
-    private function resolveTypeFromEntityClass(
-        string $entityClassName,
-        string $propertyName
+    public function resolveTypeFromEntityClass(
+        string $rootEntityClass,
+        array $propertyPath
     ): array {
-        if (!array_key_exists($entityClassName, $this->classReflectionCache)) {
-            $this->classReflectionCache[$entityClassName] = new ReflectionClass($entityClassName);
-        }
+        $propertyReflection = $this->getPropertyReflection($rootEntityClass, $propertyPath);
 
-        if (!$this->classReflectionCache[$entityClassName]->hasProperty($propertyName)) {
-            throw new UnexpectedValueException("API references non-existent property $propertyName on $entityClassName.");
-        }
-
-        $propertyReflection = $this->classReflectionCache[$entityClassName]->getProperty(
-            $propertyName
-        );
-
-        $reader = new AnnotationReader();
-
-        $column = $reader->getPropertyAnnotation($propertyReflection, Column::class);
-        $id = $reader->getPropertyAnnotation($propertyReflection, Id::class);
-
+        $id = $this->annotationReader->getPropertyAnnotation($propertyReflection, Id::class);
         if ($id instanceof Id) {
             return [
                 'type'        => 'string',
@@ -101,6 +73,7 @@ class AttributeTypeResolver
             ];
         }
 
+        $column = $this->annotationReader->getPropertyAnnotation($propertyReflection, Column::class);
         if ($column instanceof Column) {
             $dqlTypeMapping = $this->mapDqlType($column);
             $dqlTypeMapping['description'] = $this->formatDescriptionFromDocblock($propertyReflection);
@@ -112,9 +85,48 @@ class AttributeTypeResolver
     }
 
     /**
+     * @param class-string<object>             $entityClass
+     * @param non-empty-list<non-empty-string> $propertyPath
+     *
+     * @throws ReflectionException
+     */
+    protected function getPropertyReflection(string $entityClass, array $propertyPath): ReflectionProperty
+    {
+        $propertyName = array_shift($propertyPath);
+        if (array_key_exists($entityClass, $this->classReflectionCache)) {
+            $entityReflection = $this->classReflectionCache[$entityClass];
+        } else {
+            $entityReflection = new ReflectionClass($entityClass);
+            $this->classReflectionCache[$entityClass] = $entityReflection;
+        }
+
+        if (!$entityReflection->hasProperty($propertyName)) {
+            throw new UnexpectedValueException("Non-existent property '$propertyName' on entity '$entityClass'.");
+        }
+
+        $propertyReflection = $entityReflection->getProperty($propertyName);
+        if ([] === $propertyPath) {
+            return $propertyReflection;
+        }
+
+        $mapping = $this->annotationReader->getPropertyAnnotation($propertyReflection, MappingAttribute::class);
+        if (!$mapping instanceof OneToMany
+            && !$mapping instanceof ManyToOne
+            && !$mapping instanceof ManyToMany
+            && !$mapping instanceof OneToOne
+        ) {
+            throw new InvalidArgumentException("No mapping annotation found for property '$propertyName' in entity class '$entityClass'.");
+        }
+
+        Assert::classExists($mapping->targetEntity);
+
+        return $this->getPropertyReflection($mapping->targetEntity, $propertyPath);
+    }
+
+    /**
      * Map a native type from a type reflection.
      */
-    private function mapNativeType(ReflectionNamedType $reflectionType): string
+    protected function mapNativeType(ReflectionNamedType $reflectionType): string
     {
         $nativeType = $reflectionType->getName();
 
@@ -134,7 +146,7 @@ class AttributeTypeResolver
     /**
      * @return array{type: non-empty-string, format?: non-empty-string}
      */
-    private function mapDqlType(Column $column): array
+    protected function mapDqlType(Column $column): array
     {
         $format = null;
         $dqlType = $column->type;
@@ -172,61 +184,73 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param callable(object): mixed $customReadCallback
+     * @template TEntity of object
      *
-     * @return array{type: string}
+     * @param callable(TEntity): mixed $callable
+     *
+     * @return array{type: string} valid `cebe\OpenApi` type declaration
      *
      * @throws ReflectionException
      */
-    private function resolveTypeFromCallable(
-        callable $customReadCallback,
-        string $resourceClass,
-        string $propertyName
-    ): array {
-        try {
-            $functionReflection = $this->reflectCustomReadCallback($customReadCallback);
-        } catch (Throwable $exception) {
-            // This catch purely exists to have a convenient breakpoint if an unhandled variant of callables appears
-            throw $exception;
-        }
+    public function resolveReturnTypeFromCallable(callable $callable): array
+    {
+        $functionReflection = $this->reflectReturnOfCallable($callable);
+        $returnType = $this->getReturnType($functionReflection);
 
-        if (!$functionReflection->hasReturnType()) {
-            // OpenAPI and JSON do not support void/mixed types
-
-            throw new RuntimeException("Custom read callback without declared return type detected: $resourceClass::$propertyName");
-        }
-
-        $returnType = $functionReflection->getReturnType();
-        if (!$returnType instanceof ReflectionNamedType || !$returnType->isBuiltin()) {
-            // OpenAPI and JSON do not support compound types on attributes
-            // see: https://spec.openapis.org/oas/v3.1.0.html#data-types
-
-            throw new RuntimeException("Custom read callback does not return a builtin type: $resourceClass::$propertyName");
+        if (!$returnType->isBuiltin()) {
+            throw new InvalidArgumentException('Custom read callback does not return a builtin type.');
         }
 
         return ['type' => $this->mapNativeType($returnType)];
     }
 
     /**
-     * @param callable(object): mixed $customReadCallback
+     * @param ReflectionMethod|ReflectionFunction $reflection
      *
-     * @return ReflectionMethod|ReflectionFunction
+     * @throws InvalidArgumentException if there is no return type hint or if it could not be determined
+     *
+     */
+    public function getReturnType(ReflectionMethod|ReflectionFunction $reflection): ReflectionNamedType
+    {
+        if (!$reflection->hasReturnType()) {
+            // OpenAPI and JSON do not support void/mixed types
+
+            throw new InvalidArgumentException('Custom read callback without declared return type detected.');
+        }
+
+        $returnType = $reflection->getReturnType();
+        if (!$returnType instanceof ReflectionNamedType) {
+            // OpenAPI and JSON do not support compound types on attributes
+            // see: https://spec.openapis.org/oas/v3.1.0.html#data-types
+
+            throw new InvalidArgumentException('Custom read callback does not return a builtin type.');
+        }
+
+        return $returnType;
+    }
+
+    /**
+     * @template TEntity of object
+     *
+     * @param callable(TEntity): mixed $callable
      *
      * @throws ReflectionException
      */
-    private function reflectCustomReadCallback(callable $customReadCallback): ReflectionFunctionAbstract
+    protected function reflectReturnOfCallable(callable $callable): ReflectionMethod|ReflectionFunction
     {
-        if (is_array($customReadCallback)) {
-            return (new ReflectionClass($customReadCallback[0]))->getMethod(
-                $customReadCallback[1]
-            );
+        if (is_array($callable)) {
+            [$class, $method] = $callable;
+            Assert::object($class);
+            Assert::stringNotEmpty($method);
+
+            return (new ReflectionClass($class))->getMethod($method);
         }
 
-        if (is_string($customReadCallback)) {
-            return new ReflectionFunction($customReadCallback);
+        if (is_string($callable)) {
+            return new ReflectionFunction($callable);
         }
 
-        return new ReflectionFunction($customReadCallback(...));
+        return new ReflectionFunction($callable(...));
     }
 
     /**
@@ -236,7 +260,7 @@ class AttributeTypeResolver
      * any annotations) from a docblock into a CommonMark string which can
      * be used to fuel schema descriptions.
      */
-    private function formatDescriptionFromDocblock(ReflectionProperty $reflectionProperty): string
+    protected function formatDescriptionFromDocblock(ReflectionProperty $reflectionProperty): string
     {
         $docblock = DocblockTagParser::createDocblock($reflectionProperty);
         if (null === $docblock) {

@@ -25,7 +25,7 @@ interface PropertyAccessorInterface
      *
      * If any property in results in a `null` value then `null` will be returned.
      *
-     * @param non-empty-string $property
+     * @param non-empty-string $property TODO: refactor to non-empty-list<non-empty-string>
      * @param non-empty-string ...$properties
      */
     public function getValueByPropertyPath(?object $target, string $property, string ...$properties): mixed;
@@ -37,7 +37,7 @@ interface PropertyAccessorInterface
      * If the result is only a single value then that single value will be wrapped
      * into an array and returned in such.
      *
-     * If any property in results in a `null` values then `null` will be used as values in the
+     * If any property results in a `null` values then `null` will be used as values in the
      * returned array.
      *
      * @param non-empty-list<non-empty-string> $properties

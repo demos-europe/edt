@@ -15,7 +15,7 @@ use Webmozart\Assert\Assert;
 class Property implements FunctionInterface
 {
     public function __construct(
-        private readonly PropertyPathAccessInterface $propertyPath
+        protected readonly PropertyPathAccessInterface $propertyPath
     ) {}
 
     public function apply(array $propertyValues)

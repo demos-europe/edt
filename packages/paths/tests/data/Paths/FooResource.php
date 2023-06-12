@@ -15,13 +15,4 @@ use EDT\PathBuilding\PathBuildException;
  */
 class FooResource extends BaseFooResource
 {
-    /**
-     * @throws PathBuildException
-     */
-    public function getAliases(): array
-    {
-        return $this->toAliases([
-            [$this->barTitle, $this->bar->title],
-        ]);
-    }
 }

@@ -14,7 +14,7 @@ class TagNameParseException extends ParseException
      * @param non-empty-string $message
      */
     protected function __construct(
-        private readonly string $propertyName,
+        protected readonly string $propertyName,
         string $className,
         string $message,
         int $code = 0,

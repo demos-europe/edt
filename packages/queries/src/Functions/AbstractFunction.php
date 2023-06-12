@@ -69,7 +69,7 @@ abstract class AbstractFunction implements FunctionInterface
         return "$class($functionList)";
     }
 
-    private function setToManyAllowed(PathInfo $pathInfo): PathInfo
+    protected function setToManyAllowed(PathInfo $pathInfo): PathInfo
     {
         return PathInfo::maybeCopy($pathInfo, $this->toManyAllowed);
     }

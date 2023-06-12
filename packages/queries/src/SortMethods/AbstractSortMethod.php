@@ -8,6 +8,7 @@ use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
+use InvalidArgumentException;
 use function is_string;
 
 abstract class AbstractSortMethod implements SortMethodInterface
@@ -30,11 +31,13 @@ abstract class AbstractSortMethod implements SortMethodInterface
 
     /**
      * @throws SortException
+     * @throws InvalidArgumentException
      */
     public function evaluate(array $propertyValuesA, array $propertyValuesB): int
     {
         $valueA = $this->target->apply($propertyValuesA);
         $valueB = $this->target->apply($propertyValuesB);
+
         return $this->evaluateSinglePath($valueA, $valueB);
     }
 
@@ -43,6 +46,8 @@ abstract class AbstractSortMethod implements SortMethodInterface
      * @param numeric|string|null $propertyValueB
      *
      * @return int
+     *
+     * @throws SortException
      */
     protected function evaluateSinglePath(string|int|float|null $propertyValueA, string|int|float|null $propertyValueB): int
     {

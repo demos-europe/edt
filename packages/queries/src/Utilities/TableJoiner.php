@@ -8,7 +8,7 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use InvalidArgumentException;
-use function array_key_exists;
+use Webmozart\Assert\Assert;
 use function count;
 use function is_array;
 use function is_int;
@@ -25,7 +25,7 @@ use function is_int;
 class TableJoiner
 {
     public function __construct(
-        private readonly PropertyAccessorInterface $propertyAccessor
+        protected readonly PropertyAccessorInterface $propertyAccessor
     ) {}
 
     /**
@@ -73,6 +73,7 @@ class TableJoiner
      * @return list<Row>
      *
      * @throws PathException
+     * @throws InvalidArgumentException
      */
     public function getValueRows(object $target, array $propertyPaths): array
     {
@@ -110,52 +111,35 @@ class TableJoiner
      *                                            of rows. an integer instead of an array indicates a reference to another column
      *
      * @return list<NonEmptyRow> The resulting table with a row oriented layout (the outer items being rows and the inner items being columns).
+     *
+     * @throws InvalidArgumentException
      */
-    private function cartesianProduct(array $columns): array
+    protected function cartesianProduct(array $columns): array
     {
-        // Handle empty columns by removing them for now from the columns to
+        // Handle empty columns (i.e. columns without rows) by removing them for now from the columns to
         // build the cartesian product from.
         $deReferencedColumns = $this->setDeReferencing($columns);
-        $emptyColumns = array_filter($deReferencedColumns, [$this, 'isEmptyArray']);
+        $emptyColumns = array_filter($deReferencedColumns, static fn (array $value): bool => [] === $value);
 
         // Remove empty columns and references to empty columns
         /** @var list<NonEmptyColumn|Ref> $nonEmptyColumns TODO: remove this line when phpstan can detect the type by itself */
         $nonEmptyColumns = array_values(array_diff_key($columns, $emptyColumns));
 
-        // if there are no columns we have nothing to do.
+        // if there are no non-empty columns we have nothing to do.
         if ([] === $nonEmptyColumns) {
             return [];
         }
 
-        // Building the cartesian product of the other columns is left to the
+        // Building the cartesian product of the non-empty columns is left to the
         // recursion.
         $mostLeftColumn = array_shift($nonEmptyColumns);
-        if (!is_array($mostLeftColumn)) {
-            throw new InvalidArgumentException("Most left column must not be a reference, was: '$mostLeftColumn'.");
-        }
+        Assert::isArray($mostLeftColumn, "Most left column must not be a reference, was: '%s'.");
         $product = $this->cartesianProductRecursive($mostLeftColumn, $nonEmptyColumns);
 
         /** @var list<Ref> $emptyColumnIndices TODO: remove this line when phpstan can detect that `array_keys(list<X>)` results in` list<int<0, max>>` */
         $emptyColumnIndices = array_values(array_keys($emptyColumns));
 
         return $this->reAddEmptyColumnsAsNull($product, $emptyColumnIndices);
-    }
-
-    /**
-     * This method is **not** intended as a general replacement for empty checks but intended to be used as callback, e.g.
-     * ```
-     * array_filter($array, [Iterables::class, 'isEmpty']);
-     * ```
-     *
-     * Technically it would be possible to use this method in `if` conditions too,
-     * but this is discouraged because it can be considered less readable than a
-     * simple `if ([] === $array) {`.
-     *
-     * @param array<string|int, mixed> $value
-     */
-    private function isEmptyArray(array $value): bool
-    {
-        return [] === $value;
     }
 
     /**
@@ -182,27 +166,25 @@ class TableJoiner
     }
 
     /**
-     * We create a new table: For each value in our current $rightColumn we
-     * append it to all to the already generated rows. Meaning if we had
-     * * `r` rows in our $wipTable with `k` column
-     * * and `l` lines in our $rightColumn
+     * We create a new table: For each value in our current `$rightColumn` we
+     * append all the already generated rows. Meaning if we had
+     * * `r` rows in our `$wipTable` with `k` column
+     * * and `l` lines in our $rightColumn we get a table with `r * l` rows and `k + 1` columns.
      *
-     * we get a table with r * l rows and k + 1 columns.
+     * However, this is only done for a non-reference column. If the `$rightColumn`
+     * references another column (i.e. is an integer) we simply de-reference the value and add it, meaning
+     * the result is a table with `r` rows and `k + 1` columns.
      *
-     * However, this is only done for a non-reference column. If the $rightColumn
-     * references another column we simply de-reference the value and add it, meaning
-     * the result is a table with r rows and k + 1 columns.
-     *
-     * @param NonEmptyColumn|Ref          $rightColumn
+     * @param NonEmptyColumn|Ref $rightColumn
      * @param non-empty-list<NonEmptyRow> $wipTable
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    private function rebuildTable(array|int $rightColumn, array $wipTable): array
+    protected function rebuildTable(array|int $rightColumn, array $wipTable): array
     {
         if (is_array($rightColumn)) {
             $nestedRows = array_map(
-                fn ($value): array => $this->addValueToRows($wipTable, $value),
+                fn (mixed $value): array => $this->addValueToRows($wipTable, $value),
                 $rightColumn
             );
 
@@ -219,11 +201,9 @@ class TableJoiner
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    private function addValueToRows(array $rows, mixed $value): array
+    protected function addValueToRows(array $rows, mixed $value): array
     {
-        array_walk($rows, static function (array &$row) use ($value): void {
-            $row[] = $value;
-        });
+        array_walk($rows, static fn (array &$row) => $row[] = $value);
 
         return $rows;
     }
@@ -234,7 +214,7 @@ class TableJoiner
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    private function addReferenceToRows(array $rows, int $reference): array
+    protected function addReferenceToRows(array $rows, int $reference): array
     {
         return array_map(static function (array $row) use ($reference): array {
             $row[] = $row[$reference];
@@ -258,7 +238,7 @@ class TableJoiner
      *
      * @return non-empty-list<PropertyPathAccessInterface|Ref>
      */
-    private function setReferences(array $paths): array
+    protected function setReferences(array $paths): array
     {
         return $this->setReferencesGeneric([$this, 'equalPaths'], $paths);
     }
@@ -276,7 +256,7 @@ class TableJoiner
      * @param non-empty-list<T> $values
      * @return non-empty-list<T|int<0, max>>
      */
-    private function setReferencesGeneric(callable $equalityComparison, array $values): array
+    protected function setReferencesGeneric(callable $equalityComparison, array $values): array
     {
         $count = count($values);
         for ($fullLoopIndex = 0; $fullLoopIndex < $count; $fullLoopIndex++) {
@@ -297,7 +277,7 @@ class TableJoiner
     /**
      * @throws PathException
      */
-    private function equalPaths(PropertyPathAccessInterface $pathA, PropertyPathAccessInterface $pathB): bool
+    protected function equalPaths(PropertyPathAccessInterface $pathA, PropertyPathAccessInterface $pathB): bool
     {
         return $pathA->getAsNames() == $pathB->getAsNames()
             && $pathA->getAccessDepth() === $pathB->getAccessDepth()
@@ -306,14 +286,14 @@ class TableJoiner
     }
 
     /**
-     * Re-add the previously removed empty columns by adding null values into each row.
+     * Re-add the previously removed empty columns by adding `null` values into each row.
      *
      * @param non-empty-list<NonEmptyRow> $rows
-     * @param list<Ref>                   $emptyColumnIndices
+     * @param list<Ref> $emptyColumnIndices
      *
      * @return non-empty-list<NonEmptyRow>
      */
-    private function reAddEmptyColumnsAsNull(array $rows, array $emptyColumnIndices): array
+    protected function reAddEmptyColumnsAsNull(array $rows, array $emptyColumnIndices): array
     {
         foreach ($emptyColumnIndices as $index) {
             $this->insertValue($rows, $index, null);
@@ -331,11 +311,9 @@ class TableJoiner
      * @param array<string|int, list<TValue>> $array
      * @param TValue $value
      */
-    private function insertValue(array &$array, int $index, mixed $value): void
+    protected function insertValue(array &$array, int $index, mixed $value): void
     {
-        array_walk($array, static function (&$arrayValue) use ($index, $value): void {
-            array_splice($arrayValue, $index, 0, [$value]);
-        });
+        array_walk($array, static fn (array &$arrayValue) => array_splice($arrayValue, $index, 0, [$value]));
     }
 
     /**
@@ -344,17 +322,17 @@ class TableJoiner
      * @param non-empty-list<Column|Ref> $columns
      *
      * @return non-empty-list<Column>
+     *
+     * @throws InvalidArgumentException if the given array contains invalid references
      */
-    private function setDeReferencing(array $columns): array
+    protected function setDeReferencing(array $columns): array
     {
         return array_map(static function (array|int $column) use ($columns) {
             if (!is_int($column)) {
                 return $column;
             }
 
-            if (!array_key_exists($column, $columns)) {
-                throw new InvalidArgumentException("Could not de-reference: missing index '$column'.");
-            }
+            Assert::keyExists($columns, $column, "Could not de-reference: missing index '%s'.");
 
             $referencedColumn = $columns[$column];
             if (is_int($referencedColumn)) {
