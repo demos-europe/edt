@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\WrapperFactories;
 
-use EDT\JsonApi\Schema\ContentField;
+use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
@@ -88,10 +88,10 @@ class WrapperArrayFactory
         // TODO: respect $readability settings (default field, default include)?
         // TODO: add sparse fieldset support
 
-        $idReadability = $type->getIdentifierReadability();
-        $attributes = $readableProperties[0];
+        $idReadability = $readableProperties->getIdentifierReadability();
+        $attributes = $readableProperties->getAttributes();
         if (array_key_exists(ContentField::ID, $attributes)) {
-            throw IdAttributeConflictException::create($type->getIdentifier());
+            throw IdAttributeConflictException::create($type->getTypeName());
         }
         $attributes[ContentField::ID] = $idReadability;
 
@@ -102,7 +102,7 @@ class WrapperArrayFactory
 
         $relationshipWrapperFactory = $this->getNextWrapperFactory();
 
-        foreach ($readableProperties[1] as $propertyName => $readability) {
+        foreach ($readableProperties->getToOneRelationships() as $propertyName => $readability) {
             $targetEntity = $readability->getValue($entity, []);
             if (null === $targetEntity) {
                 $wrapperArray[$propertyName] = null;
@@ -113,7 +113,7 @@ class WrapperArrayFactory
             }
         }
 
-        foreach ($readableProperties[2] as $propertyName => $readability) {
+        foreach ($readableProperties->getToManyRelationships() as $propertyName => $readability) {
             $relationshipType = $readability->getRelationshipType();
             $relationshipEntities = $readability->getValue($entity, [], []);
             $wrapperArray[$propertyName] = array_map(

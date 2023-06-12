@@ -6,44 +6,42 @@ namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
+use EDT\JsonApi\Properties\Id\PathIdReadability;
 use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
-use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipSetability;
+use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
+use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\PropertyLink;
+use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
-use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
-use EDT\Wrapping\Contracts\Types\IdentifiableTypeInterface;
-use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
+use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\IdReadabilityInterface;
-use EDT\Wrapping\Utilities\EntityVerifierInterface;
+use EDT\Wrapping\Properties\ReadabilityCollection;
+use EDT\Wrapping\Properties\UpdatablePropertyCollection;
 use Tests\data\Model\Person;
+use Webmozart\Assert\Assert;
 
-/**
- * @template-implements TransferableTypeInterface<Person>
- * @template-implements IdentifiableTypeInterface<Person>
- * @template-implements FilterableTypeInterface<Person>
- * @template-implements SortableTypeInterface<Person>
- */
 class AuthorType implements
     TransferableTypeInterface,
-    FilterableTypeInterface,
-    SortableTypeInterface,
+    FilteringTypeInterface,
+    SortingTypeInterface,
     ExposableRelationshipTypeInterface
 {
     public function __construct(
         protected readonly PathsBasedConditionFactoryInterface $conditionFactory,
         protected readonly TypeProviderInterface $typeProvider,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly EntityVerifierInterface $entityVerifier,
         protected readonly AttributeTypeResolver $typeResolver
     ) {}
 
-    public function getReadableProperties(): array
+    public function getReadableProperties(): ReadabilityCollection
     {
-        return [
+        return new ReadabilityCollection(
             [
                 'name' => new TestAttributeReadability(['name'], $this->propertyAccessor),
                 'pseudonym' => new TestAttributeReadability(['pseudonym'], $this->propertyAccessor),
@@ -56,28 +54,35 @@ class AuthorType implements
                     ['books'],
                     false,
                     false,
-                    $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow(),
+                    $this->typeProvider->getTypeByIdentifier(BookType::class),
                     $this->propertyAccessor,
                     $this->entityVerifier
                 ),
             ],
-        ];
+            new PathIdReadability(
+                $this->getEntityClass(),
+                ['id'],
+                $this->propertyAccessor,
+                $this->typeResolver
+            )
+        );
     }
 
-    public function getFilterableProperties(): array
+    public function getFilteringProperties(): array
     {
         return [
+            'id' => new PropertyLink(['id'], null),
             'name' => new PropertyLink(['name'], null),
             'pseudonym' => new PropertyLink(['pseudonym'], null),
             'books' => new PropertyLink(
                 ['books'],
-                $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow()
+                $this->typeProvider->getTypeByIdentifier(BookType::class)
             ),
             'birthCountry' => new PropertyLink(['birth', 'country'], null),
         ];
     }
 
-    public function getSortableProperties(): array
+    public function getSortingProperties(): array
     {
         return [
             'name' => new PropertyLink(['name'], null),
@@ -88,19 +93,12 @@ class AuthorType implements
 
     public function getAccessCondition(): PathsBasedInterface
     {
-        return $this->conditionFactory->allConditionsApply(
-            $this->conditionFactory->propertyHasNotSize(0, ['books']),
-        );
+        return $this->conditionFactory->propertyHasNotSize(0, ['books']);
     }
 
     public function getEntityClass(): string
     {
         return Person::class;
-    }
-
-    public function getIdentifierFilterPath(): array
-    {
-        return ['name'];
     }
 
     public function isExposedAsRelationship(): bool
@@ -113,18 +111,18 @@ class AuthorType implements
         return [];
     }
 
-    public function getUpdatableProperties(): array
+    public function getUpdatableProperties(): UpdatablePropertyCollection
     {
-        $bookType = $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow();
+        $bookType = $this->typeProvider->getTypeByIdentifier(BookType::class);
 
-        return [
+        return new UpdatablePropertyCollection(
             [
-                'name' => new TestAttributeUpdatability(['name'], $this->propertyAccessor),
-                'birthCountry' => new TestAttributeUpdatability(['birth', 'country'], $this->propertyAccessor),
+                'name' => new TestAttributeSetability(['name'], $this->propertyAccessor),
+                'birthCountry' => new TestAttributeSetability(['birth', 'country'], $this->propertyAccessor),
             ],
             [],
             [
-                'books' => new PathToManyRelationshipUpdatability(
+                'books' => new PathToManyRelationshipSetability(
                     self::class,
                     [],
                     [
@@ -136,31 +134,57 @@ class AuthorType implements
                     $this->entityVerifier
                 ),
             ],
-        ];
+        );
     }
 
-    public function getIdentifier(): string
+    public function getTypeName(): string
     {
         return self::class;
     }
 
-    public function getIdentifierSortingPath(): array
+    public function getEntityByIdentifier(string $identifier, array $conditions): object
     {
-        throw new \Exception('Not implemented');
+        throw new \RuntimeException();
     }
 
-    public function getIdentifierReadability(): IdReadabilityInterface
+    public function getEntitiesByIdentifiers(array $identifiers, array $conditions, array $sortMethods): array
     {
-        return new class implements IdReadabilityInterface {
-            public function getValue(object $entity): int|string
-            {
-                return 0;
-            }
+        throw new \RuntimeException();
+    }
 
-            public function getPropertySchema(): array
-            {
-                return [];
-            }
-        };
+    public function getExpectedUpdateProperties(): ExpectedPropertyCollection
+    {
+        throw new \RuntimeException();
+    }
+
+    public function updateEntity(UpdateRequestBody $requestBody): ?object
+    {
+        throw new \RuntimeException();
+    }
+
+    public function assertMatchingEntities(array $entities, array $conditions): void
+    {
+        throw new \RuntimeException();
+    }
+
+    public function assertMatchingEntity(object $entity, array $conditions): void
+    {
+        $tableJoiner = new TableJoiner($this->propertyAccessor);
+        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $conditions[] = $this->getAccessCondition();
+        Assert::true($conditionEvaluator->evaluateConditions($entity, $conditions));
+    }
+
+    public function isMatchingEntity(object $entity, array $conditions): bool
+    {
+        $conditions[] = $this->getAccessCondition();
+        $tableJoiner = new TableJoiner($this->propertyAccessor);
+
+        return (new ConditionEvaluator($tableJoiner))->evaluateConditions($entity, $conditions);
+    }
+
+    public function reindexEntities(array $entities, array $conditions, array $sortMethods): array
+    {
+        throw new \RuntimeException();
     }
 }

@@ -8,7 +8,6 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\EntityVerificationTrait;
 use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
-use EDT\Wrapping\Utilities\EntityVerifierInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -25,14 +24,12 @@ class CallbackToOneRelationshipReadability implements ToOneRelationshipReadabili
     /**
      * @param callable(TEntity): (TRelationship|null) $readCallback
      * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      */
     public function __construct(
         protected readonly bool $defaultField,
         protected readonly bool $defaultInclude,
         protected readonly mixed $readCallback,
         protected readonly TransferableTypeInterface $relationshipType,
-        protected readonly EntityVerifierInterface $entityVerifier
     ) {}
 
     public function getValue(object $entity, array $conditions): ?object
@@ -40,10 +37,11 @@ class CallbackToOneRelationshipReadability implements ToOneRelationshipReadabili
         $relationshipEntity = ($this->readCallback)($entity);
         $relationshipClass = $this->relationshipType->getEntityClass();
         $relationshipEntity = $this->assertValidToOneValue($relationshipEntity, $relationshipClass);
-        $relationshipEntity = $this->entityVerifier
-            ->filterEntity($relationshipEntity, $conditions, $this->relationshipType);
 
-        return $relationshipEntity;
+        // TODO: how to disallow a `null` relationship? can it be done with a condition?
+        return null === $relationshipEntity || $this->relationshipType->isMatchingEntity($relationshipEntity, $conditions)
+            ? $relationshipEntity
+            : null;
     }
 
     public function isDefaultField(): bool

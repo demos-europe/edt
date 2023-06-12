@@ -8,7 +8,6 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\EntityVerificationTrait;
 use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
-use EDT\Wrapping\Utilities\EntityVerifierInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -25,14 +24,12 @@ class CallbackToManyRelationshipReadability implements ToManyRelationshipReadabi
     /**
      * @param callable(TEntity): iterable<TRelationship> $readCallback
      * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      */
     public function __construct(
         protected readonly bool $defaultField,
         protected readonly bool $defaultInclude,
         protected readonly mixed $readCallback,
         protected readonly TransferableTypeInterface $relationshipType,
-        protected readonly EntityVerifierInterface $entityVerifier
     ) {}
 
     public function isDefaultInclude(): bool
@@ -56,11 +53,7 @@ class CallbackToManyRelationshipReadability implements ToManyRelationshipReadabi
 
         $relationshipClass = $this->relationshipType->getEntityClass();
         $relationshipEntities = $this->assertValidToManyValue($relationshipEntities, $relationshipClass);
-        $relationshipEntities = $this->entityVerifier
-            ->filterEntities($relationshipEntities, $conditions, $this->relationshipType);
-        $relationshipEntities = $this->entityVerifier
-            ->sortEntities($relationshipEntities, $sortMethods, $this->relationshipType);
 
-        return $relationshipEntities;
+        return $this->relationshipType->reindexEntities($relationshipEntities, $conditions, $sortMethods);
     }
 }

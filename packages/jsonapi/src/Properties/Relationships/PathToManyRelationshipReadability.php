@@ -9,7 +9,6 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\EntityVerificationTrait;
 use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
-use EDT\Wrapping\Utilities\EntityVerifierInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -26,7 +25,6 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
      * @param class-string<TEntity> $entityClass
      * @param non-empty-list<non-empty-string> $propertyPath
      * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      */
     public function __construct(
         protected readonly string $entityClass,
@@ -34,8 +32,7 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
         protected readonly bool $defaultField,
         protected readonly bool $defaultInclude,
         protected readonly TransferableTypeInterface $relationshipType,
-        protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly EntityVerifierInterface $entityVerifier
+        protected readonly PropertyAccessorInterface $propertyAccessor
     ) {}
 
     public function isDefaultInclude(): bool
@@ -58,11 +55,7 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
         $relationshipEntities = $this->propertyAccessor->getValueByPropertyPath($entity, ...$this->propertyPath);
         $relationshipClass = $this->relationshipType->getEntityClass();
         $relationshipEntities = $this->assertValidToManyValue($relationshipEntities, $relationshipClass);
-        $relationshipEntities = $this->entityVerifier
-            ->filterEntities($relationshipEntities, $conditions, $this->relationshipType);
-        $relationshipEntities = $this->entityVerifier
-            ->sortEntities($relationshipEntities, $sortMethods, $this->relationshipType);
 
-        return $relationshipEntities;
+        return $this->relationshipType->reindexEntities($relationshipEntities, $conditions, $sortMethods);
     }
 }

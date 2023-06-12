@@ -265,7 +265,7 @@ trait PropertyAutoPathTrait
      *
      * @throws PathException
      */
-    private function getSourcePath(PropertyPathInterface $sourcePath): string
+    protected function getSourcePath(PropertyPathInterface $sourcePath): string
     {
         return $sourcePath->getAsNamesInDotNotation();
     }
@@ -275,7 +275,7 @@ trait PropertyAutoPathTrait
      *
      * @throws PathException
      */
-    private function getTargetPath(PropertyPathInterface $targetPath): array
+    protected function getTargetPath(PropertyPathInterface $targetPath): array
     {
         return $targetPath->getAsNames();
     }

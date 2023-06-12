@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\OutputTransformation;
 
+use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
@@ -15,22 +15,21 @@ use EDT\Wrapping\Properties\IdReadabilityInterface;
 use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
 use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
 use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
-use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
 use Exception;
 use InvalidArgumentException;
 use League\Fractal\ParamBag;
-use Webmozart\Assert\Assert;
-use const ARRAY_FILTER_USE_BOTH;
-use const ARRAY_FILTER_USE_KEY;
-use function array_key_exists;
-use function count;
-use function in_array;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\NullResource;
 use League\Fractal\Scope;
 use League\Fractal\TransformerAbstract;
 use Psr\Log\LoggerInterface;
+use Webmozart\Assert\Assert;
+use function array_key_exists;
+use function count;
+use function in_array;
+use const ARRAY_FILTER_USE_BOTH;
+use const ARRAY_FILTER_USE_KEY;
 
 /**
  * This transformer takes a {@link TransferableTypeInterface} instance and uses the
@@ -74,25 +73,22 @@ class DynamicTransformer extends TransformerAbstract
 
     /**
      * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
-     * @param WrapperObjectFactory<TCondition, TSorting> $wrapperFactory
      *
      * @throws InvalidArgumentException
      */
     public function __construct(
         protected readonly TransferableTypeInterface $type,
-        protected readonly WrapperObjectFactory $wrapperFactory,
         protected readonly MessageFormatter $messageFormatter,
         protected readonly ?LoggerInterface $logger
     ) {
-        [
-            $this->attributeReadabilities,
-            $this->toOneRelationshipReadabilities,
-            $this->toManyRelationshipReadabilities
-        ] = $type->getReadableProperties();
-        $this->idReadability = $type->getIdentifierReadability();
+        $readabilityCollection = $this->type->getReadableProperties();
+        $this->attributeReadabilities = $readabilityCollection->getAttributes();
+        $this->toOneRelationshipReadabilities = $readabilityCollection->getToOneRelationships();
+        $this->toManyRelationshipReadabilities = $readabilityCollection->getToManyRelationships();
+        $this->idReadability = $readabilityCollection->getIdentifierReadability();
 
         if (array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
-            throw IdAttributeConflictException::create($type->getIdentifier());
+            throw IdAttributeConflictException::create($type->getTypeName());
         }
 
         $relationshipReadabilities = array_merge(
@@ -204,7 +200,7 @@ class DynamicTransformer extends TransformerAbstract
         $relationshipType = $readability->getRelationshipType();
         $transformer = $this->createRelationshipTransformer($relationshipType);
 
-        return $this->item($relationshipEntity, $transformer, $relationshipType->getIdentifier());
+        return $this->item($relationshipEntity, $transformer, $relationshipType->getTypeName());
     }
 
     /**
@@ -221,17 +217,18 @@ class DynamicTransformer extends TransformerAbstract
         $relationshipType = $readability->getRelationshipType();
         $transformer = $this->createRelationshipTransformer($relationshipType);
 
-        return $this->collection($relationshipEntities, $transformer, $relationshipType->getIdentifier());
+        return $this->collection($relationshipEntities, $transformer, $relationshipType->getTypeName());
     }
 
     /**
+     * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
+     *
      * @throws InvalidArgumentException
      */
     protected function createRelationshipTransformer(TransferableTypeInterface $relationshipType): TransformerAbstract
     {
         return new DynamicTransformer(
             $relationshipType,
-            $this->wrapperFactory,
             $this->messageFormatter,
             $this->logger
         );
@@ -251,7 +248,7 @@ class DynamicTransformer extends TransformerAbstract
      *
      * @throws InvalidArgumentException
      */
-    public function processIncludedResources(Scope $scope, mixed $data): array|bool
+    public function processIncludedResources(Scope $scope, mixed $data): array|false
     {
         $this->validateExcludes($scope);
         $this->validateIncludes($scope);
@@ -262,7 +259,7 @@ class DynamicTransformer extends TransformerAbstract
     /**
      * @throws InvalidArgumentException
      */
-    private function validateExcludes(Scope $scope): void
+    protected function validateExcludes(Scope $scope): void
     {
         $requestedExcludes = $scope->getManager()->getRequestedExcludes();
         $requestedExcludesCount = count($requestedExcludes);
@@ -281,6 +278,7 @@ class DynamicTransformer extends TransformerAbstract
         $requestedIncludes = $scope->getManager()->getRequestedIncludes();
         $notAvailableIncludes = [];
         foreach ($requestedIncludes as $requestedInclude) {
+            Assert::stringNotEmpty($requestedInclude);
             if (!$scope->isRequested($requestedInclude)) {
                 // continue if the include was not requested for this specific type
                 continue;
@@ -302,10 +300,10 @@ class DynamicTransformer extends TransformerAbstract
     /**
      * @param non-empty-list<non-empty-string> $notAvailableIncludes
      */
-    private function createIncludeErrorMessage(array $notAvailableIncludes): string
+    protected function createIncludeErrorMessage(array $notAvailableIncludes): string
     {
         $notAvailableIncludesString = $this->messageFormatter->propertiesToString($notAvailableIncludes);
-        $message = "The following requested includes are not available in the resource type '{$this->type->getIdentifier()}': $notAvailableIncludesString.";
+        $message = "The following requested includes are not available in the resource type '{$this->type->getTypeName()}': $notAvailableIncludesString.";
 
         if ([] !== $this->availableIncludes) {
             $availableIncludesString = $this->messageFormatter->propertiesToString($this->availableIncludes);
@@ -328,7 +326,7 @@ class DynamicTransformer extends TransformerAbstract
      */
     protected function getEffectiveAttributeReadabilities(Scope $scope): array
     {
-        $fieldsetBag = $scope->getManager()->getFieldset($this->type->getIdentifier());
+        $fieldsetBag = $scope->getManager()->getFieldset($this->type->getTypeName());
         if (null === $fieldsetBag) {
             // if no fieldset was requested, return default attribute fields
             return array_filter(

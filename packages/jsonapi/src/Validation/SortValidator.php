@@ -35,11 +35,13 @@ class SortValidator
 
         if (0 !== $violations->count()) {
             throw new SortException(
-                'Invalid format used for \'sort\' parameter.',
+                "Invalid format used for 'sort' parameter.",
                 0,
                 new ValidationFailedException($sortValue, $violations)
             );
         }
+
+        \Webmozart\Assert\Assert::stringNotEmpty($sortValue);
 
         return $sortValue;
     }

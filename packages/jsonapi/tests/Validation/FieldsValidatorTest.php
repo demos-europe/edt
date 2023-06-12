@@ -5,19 +5,12 @@ declare(strict_types=1);
 namespace Tests\Validation;
 
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
-use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Validation\FieldsException;
 use EDT\JsonApi\Validation\FieldsValidator;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
-use EDT\Querying\Utilities\ConditionEvaluator;
-use EDT\Querying\Utilities\Sorter;
-use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
-use EDT\Wrapping\Utilities\PhpEntityVerifier;
-use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
-use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 use Tests\data\ApiTypes\AuthorType;
@@ -36,16 +29,10 @@ class FieldsValidatorTest extends TestCase
         $conditionFactory = new PhpConditionFactory();
         $lazyTypeProvider = new LazyTypeProvider();
         $propertyAccessor = new ReflectionPropertyAccessor();
-        $propertyPathProcessorFactory = new PropertyPathProcessorFactory();
-        $schemaPathProcessor = new SchemaPathProcessor($propertyPathProcessorFactory, $lazyTypeProvider);
-        $tableJoiner = new TableJoiner($propertyAccessor);
-        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
-        $sorter = new Sorter($tableJoiner);
-        $entityVerifier = new PhpEntityVerifier($schemaPathProcessor, $conditionEvaluator, $sorter);
         $attributeTypeResover = new AttributeTypeResolver();
         $this->typeProvider = new PrefilledTypeProvider([
-            new AuthorType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $entityVerifier, $attributeTypeResover),
-            new BookType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $attributeTypeResover, $entityVerifier),
+            new AuthorType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $attributeTypeResover),
+            new BookType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $attributeTypeResover),
             new BirthType($conditionFactory),
         ]);
         $lazyTypeProvider->setAllTypes($this->typeProvider);
@@ -57,9 +44,7 @@ class FieldsValidatorTest extends TestCase
      */
     public function testGetNonReadableProperties(string $typeIdentifier, string $propertiesString, array $expectedNonReadables): void
     {
-        $type = $this->typeProvider->requestType($typeIdentifier)
-            ->instanceOf(ResourceTypeInterface::class)
-            ->getInstanceOrThrow();
+        $type = $this->typeProvider->getTypeByIdentifier($typeIdentifier);
         $nonReadables = $this->fieldsValidator->getNonReadableProperties($propertiesString, $type);
         self::assertSame($expectedNonReadables, $nonReadables);
     }

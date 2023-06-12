@@ -10,7 +10,6 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
-use EDT\Wrapping\Utilities\EntityVerifierInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -18,13 +17,9 @@ use EDT\Wrapping\Utilities\EntityVerifierInterface;
  */
 class PropertyBuilderFactory
 {
-    /**
-     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
-     */
     public function __construct(
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver $typeResolver,
-        protected readonly EntityVerifierInterface $entityVerifier
+        protected readonly AttributeTypeResolver $typeResolver
     ) {}
 
     /**
@@ -44,8 +39,7 @@ class PropertyBuilderFactory
             $entityClass,
             null,
             $this->propertyAccessor,
-            $this->typeResolver,
-            $this->entityVerifier
+            $this->typeResolver
         );
     }
 
@@ -74,8 +68,7 @@ class PropertyBuilderFactory
                 'toMany' => false,
             ],
             $this->propertyAccessor,
-            $this->typeResolver,
-            $this->entityVerifier
+            $this->typeResolver
         );
     }
 
@@ -104,8 +97,7 @@ class PropertyBuilderFactory
                 'toMany' => true,
             ],
             $this->propertyAccessor,
-            $this->typeResolver,
-            $this->entityVerifier
+            $this->typeResolver
         );
     }
 }

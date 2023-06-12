@@ -198,7 +198,7 @@ class DrupalFilterParser implements FilterParserInterface
     /**
      * @param array<non-empty-string, list<TCondition|null>> $conditions
      */
-    private function hasReachedRootGroup(array $conditions): bool
+    protected function hasReachedRootGroup(array $conditions): bool
     {
         return 1 === count($conditions) && self::ROOT === array_key_first($conditions);
     }

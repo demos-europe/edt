@@ -12,15 +12,9 @@ use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\SortMethodFactories\PhpSortMethodFactory;
 use EDT\Querying\SortMethods\Ascending;
-use EDT\Querying\Utilities\ConditionEvaluator;
-use EDT\Querying\Utilities\Sorter;
-use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\AccessException;
-use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
-use EDT\Wrapping\Utilities\PhpEntityVerifier;
-use EDT\Wrapping\Utilities\PropertyPathProcessor;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Tests\data\Types\AuthorType;
@@ -44,14 +38,10 @@ class SchemaPathProcessorTest extends ModelBasedTest
         $lazyTypeProvider = new LazyTypeProvider();
         $propertyAccessor = new ReflectionPropertyAccessor();
         $propertyPathProcessorFactory = new PropertyPathProcessorFactory();
-        $this->schemaPathProcessor = new SchemaPathProcessor($propertyPathProcessorFactory, $lazyTypeProvider);
-        $tableJoiner = new TableJoiner($propertyAccessor);
-        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
-        $sorter = new Sorter($tableJoiner);
+        $this->schemaPathProcessor = new SchemaPathProcessor($propertyPathProcessorFactory);
         $typeResolver = new AttributeTypeResolver();
-        $entityVerifier = new PhpEntityVerifier($this->schemaPathProcessor, $conditionEvaluator, $sorter);
-        $this->bookType = new BookType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $typeResolver, $entityVerifier);
-        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $entityVerifier, $typeResolver);
+        $this->bookType = new BookType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $typeResolver);
+        $this->authorType = new AuthorType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $typeResolver);
         $this->typeProvider = new PrefilledTypeProvider([
             $this->bookType,
             $this->authorType,
@@ -63,7 +53,7 @@ class SchemaPathProcessorTest extends ModelBasedTest
     public function testSortAccessException(): void
     {
         $this->expectException(AccessException::class);
-        $this->expectExceptionMessage("Access with the path 'foo.bar' into the type class 'Tests\data\Types\AuthorType' was denied because of the path segment 'foo'.");
+        $this->expectExceptionMessage("Access with the path 'foo.bar' into the type class 'Tests\data\Types\AuthorType' was denied.");
         $invalidSortMethod = $this->sortMethodFactory->propertyAscending(['foo', 'bar']);
         $this->schemaPathProcessor->mapSorting($this->authorType, [$invalidSortMethod]);
     }
@@ -88,7 +78,7 @@ class SchemaPathProcessorTest extends ModelBasedTest
 
     public function testProcessPropertyPathWithNonAllowedAttribute(): void
     {
-        $this->expectException(PropertyAccessException::class);
+        $this->expectException(AccessException::class);
         $this->schemaPathProcessor->verifyExternReadablePath($this->authorType, ['books', 'title'], false);
     }
 }

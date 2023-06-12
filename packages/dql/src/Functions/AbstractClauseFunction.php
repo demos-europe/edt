@@ -117,7 +117,7 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
      *
      * @return list<list<string>>
      */
-    private function unflatPropertyAliases(string ...$propertyAliases): array
+    protected function unflatPropertyAliases(string ...$propertyAliases): array
     {
         $propertyAliasCountables = array_map(
             static fn (PathsBasedInterface $pathsBased): int => count($pathsBased->getPropertyPaths()),

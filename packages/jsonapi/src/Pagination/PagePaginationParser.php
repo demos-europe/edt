@@ -77,7 +77,8 @@ class PagePaginationParser implements PaginationParserInterface
             throw new ValidationFailedException($page, $violations);
         }
 
+        \Webmozart\Assert\Assert::isArray($page);
+
         return $page;
     }
-
 }

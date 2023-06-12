@@ -7,21 +7,22 @@ namespace EDT\Wrapping\TypeProviders;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
+use InvalidArgumentException;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  *
- * @template-extends AbstractTypeProvider<TCondition, TSorting>
+ * @template-implements TypeProviderInterface<TCondition, TSorting>
  */
-class LazyTypeProvider extends AbstractTypeProvider
+class LazyTypeProvider implements TypeProviderInterface
 {
     /**
      * @var array<non-empty-string, TypeInterface<TCondition, TSorting, object>>
      */
     protected array $types = [];
 
-    protected function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface
+    public function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface
     {
         return $this->types[$typeIdentifier] ?? null;
     }
@@ -46,7 +47,8 @@ class LazyTypeProvider extends AbstractTypeProvider
     public function setAllTypes(TypeProviderInterface $typeProvider): void
     {
         foreach ($typeProvider->getTypeIdentifiers() as $typeIdentifier) {
-            $this->types[$typeIdentifier] = $typeProvider->requestType($typeIdentifier)->getInstanceOrThrow();
+            $this->types[$typeIdentifier] = $typeProvider->getTypeByIdentifier($typeIdentifier)
+                ?? throw new InvalidArgumentException("No type instance found for identifier '$typeIdentifier'.");
         }
     }
 }

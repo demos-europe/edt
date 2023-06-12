@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace EDT\Querying\PropertyPaths;
 
-use EDT\Wrapping\Contracts\Types\TypeInterface;
-
 /**
- * @template TType of TypeInterface
+ * @template TType of object
  */
 class PropertyLink
 {
     /**
      * @param non-empty-list<non-empty-string> $path
-     * @param TType $targetType
+     * @param TType|null $targetType
      */
     public function __construct(
         protected readonly array $path,
-        protected readonly ?TypeInterface $targetType
+        protected readonly ?object $targetType
     ) {}
 
     /**
+     * The relationship type of the last path segment or `null` if the path leads to an attribute.
+     *
      * @return TType|null
      */
-    public function getTargetType(): ?TypeInterface
+    public function getTargetType(): ?object
     {
         return $this->targetType;
     }

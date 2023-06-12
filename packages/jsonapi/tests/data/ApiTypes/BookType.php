@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Tests\data\ApiTypes;
 
 use EDT\JsonApi\Properties\Attributes\PathAttributeReadability;
+use EDT\JsonApi\Properties\Id\PathIdReadability;
 use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipReadability;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\Wrapping\Properties\ReadabilityCollection;
+use League\Fractal\TransformerAbstract;
 
 class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterface
 {
-    public function getIdentifier(): string
+    public function getTypeName(): string
     {
         return self::class;
     }
@@ -18,9 +21,9 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
     /**
      * Overwrites its parent relationships with reference to resource type implementations.
      */
-    public function getReadableProperties(): array
+    public function getReadableProperties(): ReadabilityCollection
     {
-        return [
+        return new ReadabilityCollection(
             [
                 'title' => new PathAttributeReadability(
                     $this->getEntityClass(),
@@ -43,17 +46,21 @@ class BookType extends \Tests\data\Types\BookType implements ResourceTypeInterfa
                     ['author'],
                     false,
                     false,
-                    $this->typeProvider->requestType(AuthorType::class)->getInstanceOrThrow(),
-                    $this->propertyAccessor,
-                    $this->entityVerifier
+                    $this->typeProvider->getTypeByIdentifier(AuthorType::class),
+                    $this->propertyAccessor
                 ),
             ],
             [],
-        ];
+            new PathIdReadability(
+                $this->getEntityClass(),
+                ['id'],
+                $this->propertyAccessor,
+                $this->typeResolver
+            )
+        );
     }
 
-    public function isExposedAsPrimaryResource(): bool
+    public function getTransformer(): TransformerAbstract
     {
-        return true;
     }
 }

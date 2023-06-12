@@ -5,35 +5,45 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
+use EDT\JsonApi\Properties\Attributes\CallbackAttributeInitializability;
 use EDT\JsonApi\Properties\Attributes\CallbackAttributeReadability;
-use EDT\JsonApi\Properties\Attributes\CallbackAttributeUpdatability;
+use EDT\JsonApi\Properties\Attributes\CallbackAttributeSetability;
+use EDT\JsonApi\Properties\Attributes\PathAttributeInitializability;
 use EDT\JsonApi\Properties\Attributes\PathAttributeReadability;
-use EDT\JsonApi\Properties\Attributes\PathAttributeUpdatability;
+use EDT\JsonApi\Properties\Attributes\PathAttributeSetability;
+use EDT\JsonApi\Properties\Id\PathIdReadability;
 use EDT\JsonApi\Properties\PropertyConfigInterface;
+use EDT\JsonApi\Properties\Relationships\CallbackToManyRelationshipInitializability;
 use EDT\JsonApi\Properties\Relationships\CallbackToManyRelationshipReadability;
-use EDT\JsonApi\Properties\Relationships\CallbackToManyRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\CallbackToManyRelationshipSetability;
+use EDT\JsonApi\Properties\Relationships\CallbackToOneRelationshipInitializability;
 use EDT\JsonApi\Properties\Relationships\CallbackToOneRelationshipReadability;
-use EDT\JsonApi\Properties\Relationships\CallbackToOneRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\CallbackToOneRelationshipSetability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipInitializability;
 use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
-use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipSetability;
+use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipInitializability;
 use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipReadability;
-use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipUpdatability;
+use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipSetability;
+use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
-use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
-use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
+use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
+use EDT\Wrapping\Properties\AttributeInitializabilityInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
-use EDT\Wrapping\Properties\AttributeUpdatabilityInterface;
-use EDT\Wrapping\Properties\Initializability;
-use EDT\Wrapping\Properties\PropertyInitializabilityInterface;
+use EDT\Wrapping\Properties\AttributeSetabilityInterface;
+use EDT\Wrapping\Properties\ConstructorParameter;
+use EDT\Wrapping\Properties\ConstructorParameterInterface;
+use EDT\Wrapping\Properties\IdReadabilityInterface;
+use EDT\Wrapping\Properties\ToManyRelationshipInitializabilityInterface;
 use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipUpdatabilityInterface;
+use EDT\Wrapping\Properties\ToManyRelationshipSetabilityInterface;
+use EDT\Wrapping\Properties\ToOneRelationshipInitializabilityInterface;
 use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipUpdatabilityInterface;
-use EDT\Wrapping\Utilities\EntityVerifierInterface;
+use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
@@ -48,12 +58,6 @@ use Webmozart\Assert\Assert;
  * You can also mark the property as an alias by setting {@link PropertyBuilder::aliasedPath()}.
  * This will result in all accesses mentioned above expecting that the path segments having
  * corresponding properties in the backend entities.
- *
- * Note that the resource type itself must return `true` in
- * {@link ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource()} to be accessed
- * directly via the JSON:API or in
- * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} to be usable as
- * relationship via the JSON:API.
  *
  * @template TEntity of object
  * @template TValue
@@ -89,7 +93,7 @@ class PropertyBuilder implements PropertyConfigInterface
 
     protected bool $initializable = false;
 
-    protected bool $requiredForCreation = true;
+    protected bool $initializabilityOptional = true;
 
     private bool $updatable = false;
 
@@ -104,14 +108,23 @@ class PropertyBuilder implements PropertyConfigInterface
     private array $updateRelationshipConditions = [];
 
     /**
-     * @var null|callable(TEntity, TValue): void
+     * @var null|callable(TEntity, TValue): bool
      */
     private $customUpdateCallback;
 
     /**
+     * @var null|callable(TEntity, TValue): bool
+     */
+    private mixed $customInitCallback = null;
+
+    /**
+     * @var list<TCondition>
+     */
+    private array $initializeRelationshipConditions = [];
+
+    /**
      * @param class-string<TEntity> $entityClass
      * @param array{relationshipType: ResourceTypeInterface<TCondition, TSorting, object>, defaultInclude: bool, toMany: bool}|null $relationship
-     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      *
      * @throws PathException
      */
@@ -121,7 +134,6 @@ class PropertyBuilder implements PropertyConfigInterface
         protected readonly ?array $relationship,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         protected readonly AttributeTypeResolver $typeResolver,
-        protected readonly EntityVerifierInterface $entityVerifier
     ) {
         $names = $path->getAsNames();
         Assert::count($names, 1);
@@ -197,10 +209,12 @@ class PropertyBuilder implements PropertyConfigInterface
     /**
      * @return $this
      */
-    public function initializable(bool $optional = false): self
+    public function initializable(bool $optional = false, array $relationshipConditions = [], callable $customInitCallback = null): self
     {
         $this->initializable = true;
-        $this->requiredForCreation = !$optional;
+        $this->initializabilityOptional = $optional;
+        $this->customInitCallback = $customInitCallback;
+        $this->initializeRelationshipConditions = $relationshipConditions;
 
         return $this;
     }
@@ -218,6 +232,9 @@ class PropertyBuilder implements PropertyConfigInterface
      */
     public function getAttributeReadability(): ?AttributeReadabilityInterface
     {
+        if (ContentField::ID === $this->name) {
+            return null;
+        }
         if (!$this->readable || null !== $this->relationship) {
             return null;
         }
@@ -255,8 +272,7 @@ class PropertyBuilder implements PropertyConfigInterface
                 $this->defaultField,
                 $this->relationship['defaultInclude'],
                 $this->relationship['relationshipType'],
-                $this->propertyAccessor,
-                $this->entityVerifier
+                $this->propertyAccessor
             );
         }
 
@@ -264,8 +280,7 @@ class PropertyBuilder implements PropertyConfigInterface
             $this->defaultField,
             $this->relationship['defaultInclude'],
             $this->customReadCallback,
-            $this->relationship['relationshipType'],
-            $this->entityVerifier
+            $this->relationship['relationshipType']
         );
     }
 
@@ -285,8 +300,7 @@ class PropertyBuilder implements PropertyConfigInterface
                 $this->defaultField,
                 $this->relationship['defaultInclude'],
                 $this->relationship['relationshipType'],
-                $this->propertyAccessor,
-                $this->entityVerifier
+                $this->propertyAccessor
             );
         }
 
@@ -294,8 +308,7 @@ class PropertyBuilder implements PropertyConfigInterface
             $this->defaultField,
             $this->relationship['defaultInclude'],
             $this->customReadCallback,
-            $this->relationship['relationshipType'],
-            $this->entityVerifier
+            $this->relationship['relationshipType']
         );
     }
 
@@ -323,17 +336,17 @@ class PropertyBuilder implements PropertyConfigInterface
     }
 
     /**
-     * @return FilterableTypeInterface<TCondition, TSorting, object>|null
+     * @return FilteringTypeInterface<TCondition, TSorting>|null
      */
-    public function getFilterableRelationshipType(): ?FilterableTypeInterface
+    public function getFilterableRelationshipType(): ?FilteringTypeInterface
     {
         return $this->relationship['relationshipType'] ?? null;
     }
 
     /**
-     * @return SortableTypeInterface<TCondition, TSorting, object>|null
+     * @return SortingTypeInterface<TCondition, TSorting>|null
      */
-    public function getSortableRelationshipType(): ?SortableTypeInterface
+    public function getSortableRelationshipType(): ?SortingTypeInterface
     {
         return $this->relationship['relationshipType'] ?? null;
     }
@@ -349,28 +362,16 @@ class PropertyBuilder implements PropertyConfigInterface
     }
 
     /**
-     * @return PropertyInitializabilityInterface<TCondition>|null
+     * @return AttributeSetabilityInterface<TCondition, TEntity>|null
      */
-    public function getInitializability(): ?PropertyInitializabilityInterface
-    {
-        if (!$this->initializable) {
-            return null;
-        }
-
-        return new Initializability([], !$this->requiredForCreation);
-    }
-
-    /**
-     * @return AttributeUpdatabilityInterface<TCondition, TEntity>|null
-     */
-    public function getAttributeUpdatability(): ?AttributeUpdatabilityInterface
+    public function getAttributeUpdatability(): ?AttributeSetabilityInterface
     {
         if (!$this->updatable || null !== $this->relationship) {
             return null;
         }
 
         if (null === $this->customUpdateCallback) {
-            return new PathAttributeUpdatability(
+            return new PathAttributeSetability(
                 $this->entityClass,
                 $this->updateEntityConditions,
                 $this->getPropertyPath(),
@@ -378,69 +379,65 @@ class PropertyBuilder implements PropertyConfigInterface
             );
         }
 
-        return new CallbackAttributeUpdatability(
+        return new CallbackAttributeSetability(
             $this->updateEntityConditions,
             $this->customUpdateCallback
         );
     }
 
     /**
-     * @return ToOneRelationshipUpdatabilityInterface<TCondition, TSorting, TEntity, object>|null
+     * @return ToOneRelationshipSetabilityInterface<TCondition, TSorting, TEntity, object>|null
      */
-    public function getToOneRelationshipUpdatability(): ?ToOneRelationshipUpdatabilityInterface
+    public function getToOneRelationshipUpdatability(): ?ToOneRelationshipSetabilityInterface
     {
         if (!$this->updatable || null === $this->relationship || $this->relationship['toMany']) {
             return null;
         }
 
         if (null === $this->customUpdateCallback) {
-            return new PathToOneRelationshipUpdatability(
+            return new PathToOneRelationshipSetability(
                 $this->entityClass,
                 $this->updateEntityConditions,
                 $this->updateRelationshipConditions,
                 $this->relationship['relationshipType'],
                 $this->getPropertyPath(),
-                $this->propertyAccessor,
-                $this->entityVerifier
+                $this->propertyAccessor
             );
         }
 
-        return new CallbackToOneRelationshipUpdatability(
+        return new CallbackToOneRelationshipSetability(
             $this->updateEntityConditions,
             $this->updateRelationshipConditions,
             $this->relationship['relationshipType'],
-            $this->customUpdateCallback,
-            $this->entityVerifier
+            $this->customUpdateCallback
         );
     }
 
     /**
-     * @return ToManyRelationshipUpdatabilityInterface<TCondition, TSorting, TEntity, object>|null
+     * @return ToManyRelationshipSetabilityInterface<TCondition, TSorting, TEntity, object>|null
      */
-    public function getToManyRelationshipUpdatability(): ?ToManyRelationshipUpdatabilityInterface
+    public function getToManyRelationshipUpdatability(): ?ToManyRelationshipSetabilityInterface
     {
         if (!$this->updatable || null === $this->relationship || !$this->relationship['toMany']) {
             return null;
         }
 
         if (null === $this->customUpdateCallback) {
-            return new PathToManyRelationshipUpdatability(
+            return new PathToManyRelationshipSetability(
                 $this->entityClass,
                 $this->updateEntityConditions,
                 $this->updateRelationshipConditions,
                 $this->relationship['relationshipType'],
                 $this->getPropertyPath(),
-                $this->propertyAccessor,
-                $this->entityVerifier
+                $this->propertyAccessor
             );
         }
 
-        return new CallbackToManyRelationshipUpdatability(
+        return new CallbackToManyRelationshipSetability(
             $this->updateEntityConditions,
             $this->updateRelationshipConditions,
             $this->relationship['relationshipType'],
-            $this->customUpdateCallback,
-            $this->entityVerifier
+            $this->customUpdateCallback
         );
     }
 
@@ -450,5 +447,134 @@ class PropertyBuilder implements PropertyConfigInterface
     public function getPropertyPath(): array
     {
         return $this->aliasedPath ?? [$this->name];
+    }
+
+    /**
+     * @return AttributeInitializabilityInterface<TCondition, TEntity>|null
+     */
+    public function getAttributeInitializability(): ?AttributeInitializabilityInterface
+    {
+        if (!$this->initializable || null !== $this->relationship) {
+            return null;
+        }
+
+        $initializability = null === $this->customInitCallback
+            ? new PathAttributeInitializability(
+                $this->entityClass,
+                [],
+                $this->getPropertyPath(),
+                $this->propertyAccessor
+            )
+            : new CallbackAttributeInitializability(
+                [],
+                $this->customInitCallback
+            );
+
+        $initializability->setOptional($this->initializabilityOptional);
+
+        return $initializability;
+    }
+
+    /**
+     * @return ToOneRelationshipInitializabilityInterface<TCondition, TSorting, TEntity, object>|null
+     */
+    public function getToOneRelationshipInitializability(): ?ToOneRelationshipInitializabilityInterface
+    {
+        if (!$this->initializable || null === $this->relationship || $this->relationship['toMany']) {
+            return null;
+        }
+
+        $initializability = null === $this->customInitCallback
+            ? new PathToOneRelationshipInitializability(
+                $this->entityClass,
+                [],
+                $this->initializeRelationshipConditions,
+                $this->relationship['relationshipType'],
+                $this->getPropertyPath(),
+                $this->propertyAccessor
+            )
+            :  new CallbackToOneRelationshipInitializability(
+                [],
+                $this->initializeRelationshipConditions,
+                $this->relationship['relationshipType'],
+                $this->customInitCallback
+            );
+
+        $initializability->setOptional($this->initializabilityOptional);
+
+        return $initializability;
+    }
+
+    /**
+     * @return ToManyRelationshipInitializabilityInterface<TCondition, TSorting, TEntity, object>|null
+     */
+    public function getToManyRelationshipInitializability(): ?ToManyRelationshipInitializabilityInterface
+    {
+        if (!$this->initializable || null === $this->relationship || !$this->relationship['toMany']) {
+            return null;
+        }
+
+        $initializability = null === $this->customInitCallback
+            ? new PathToManyRelationshipInitializability(
+                $this->entityClass,
+                [],
+                $this->initializeRelationshipConditions,
+                $this->relationship['relationshipType'],
+                $this->getPropertyPath(),
+                $this->propertyAccessor
+            )
+            : new CallbackToManyRelationshipInitializability(
+                [],
+                $this->initializeRelationshipConditions,
+                $this->relationship['relationshipType'],
+                $this->customInitCallback
+            );
+
+        $initializability->setOptional($this->initializabilityOptional);
+
+        return $initializability;
+    }
+
+    /**
+     * @return IdReadabilityInterface<TEntity>|null
+     */
+    public function getIdentifierReadability(): ?IdReadabilityInterface
+    {
+        return ContentField::ID === $this->name
+            ? new PathIdReadability($this->entityClass, $this->getPropertyPath(), $this->propertyAccessor, $this->typeResolver)
+            : null;
+    }
+
+    /**
+     * @return ConstructorParameterInterface<TCondition, TSorting>|null
+     */
+    public function getRequiredConstructorParameter(): ?ConstructorParameterInterface
+    {
+        return $this->initializabilityOptional ? null : $this->createConstructorParameter();
+
+    }
+
+    /**
+     * @return ConstructorParameterInterface<TCondition, TSorting>|null
+     */
+    public function getOptionalConstructorParameter(): ?ConstructorParameterInterface
+    {
+        return !$this->initializabilityOptional ? null : $this->createConstructorParameter();
+    }
+
+    /**
+     * @return ConstructorParameterInterface<TCondition, TSorting>
+     */
+    protected function createConstructorParameter(): ConstructorParameterInterface
+    {
+        if (null === $this->relationship) {
+            return new ConstructorParameter(null);
+        }
+
+        return new ConstructorParameter([
+            'toMany' => $this->relationship['toMany'],
+            'relationshipType' => $this->relationship['relationshipType'],
+            'conditions' => [],
+        ]);
     }
 }

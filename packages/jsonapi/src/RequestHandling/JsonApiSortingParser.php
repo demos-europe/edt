@@ -47,7 +47,7 @@ class JsonApiSortingParser
      *
      * @throws PathException
      */
-    private function parseSortMethod(string $sortMethodRaw): PathsBasedInterface
+    protected function parseSortMethod(string $sortMethodRaw): PathsBasedInterface
     {
         return $this->isNegativeDirection($sortMethodRaw)
             ? $this->parseNegativeDirection($sortMethodRaw)
@@ -62,7 +62,7 @@ class JsonApiSortingParser
      *
      * @throws PathException
      */
-    private function parseNegativeDirection(string $sortMethodRaw): PathsBasedInterface
+    protected function parseNegativeDirection(string $sortMethodRaw): PathsBasedInterface
     {
         $pathString = substr($sortMethodRaw, 1);
         $pathArray = $this->toPathArray($pathString);
@@ -76,7 +76,7 @@ class JsonApiSortingParser
      *
      * @throws PathException
      */
-    private function parsePositiveDirection(string $sortMethodRaw): PathsBasedInterface
+    protected function parsePositiveDirection(string $sortMethodRaw): PathsBasedInterface
     {
         $pathArray = $this->toPathArray($sortMethodRaw);
         return $this->sortMethodFactory->propertyAscending($pathArray);
@@ -85,7 +85,7 @@ class JsonApiSortingParser
     /**
      * @param non-empty-string $sortMethodRaw
      */
-    private function isNegativeDirection(string $sortMethodRaw): bool
+    protected function isNegativeDirection(string $sortMethodRaw): bool
     {
         return 0 === strncmp($sortMethodRaw, '-', 1);
     }
@@ -95,7 +95,7 @@ class JsonApiSortingParser
      *
      * @return non-empty-list<non-empty-string>
      */
-    private function toPathArray(string $pathString): array
+    protected function toPathArray(string $pathString): array
     {
         $path = explode('.', $pathString);
         if (in_array('', $path, true)) {

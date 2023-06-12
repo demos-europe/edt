@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Utilities\TypeAccessors;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLink;
-use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
@@ -14,23 +12,21 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
  * criteria, e.g. the {@link ExternFilterableProcessorConfig} will only allow access
  * to filterable properties and types.
  *
- * @template TType of TypeInterface<PathsBasedInterface, PathsBasedInterface, object>
+ * @template TType of object
  */
 abstract class AbstractProcessorConfig
 {
     /**
-     * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
      * @param TType $rootType
      */
     public function __construct(
-        protected readonly TypeProviderInterface $typeProvider,
-        protected readonly TypeInterface $rootType
+        protected readonly object $rootType
     ) {}
 
     /**
      * @return TType
      */
-    public function getRootType(): TypeInterface
+    public function getRootType(): object
     {
         return $this->rootType;
     }
@@ -42,5 +38,5 @@ abstract class AbstractProcessorConfig
      *
      * @return array<non-empty-string, PropertyLink<TType>>
      */
-    abstract public function getProperties(TypeInterface $type): array;
+    abstract public function getProperties(object $type): array;
 }

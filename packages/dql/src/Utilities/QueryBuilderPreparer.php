@@ -58,6 +58,8 @@ class QueryBuilderPreparer
     /**
      * Provides all needed information to choose the correct entity type and mappings to translate
      * the group into DQL data.
+     *
+     * @var ClassMetadataInfo<object>
      */
     private ClassMetadataInfo $mainClassMetadata;
 
@@ -335,7 +337,7 @@ class QueryBuilderPreparer
     /**
      * @throws MappingException
      */
-    private function setJoins(QueryBuilder $queryBuilder): void
+    protected function setJoins(QueryBuilder $queryBuilder): void
     {
         foreach ($this->joinClauses as $alias => $joinObject) {
             $joinType = $joinObject->getJoinType();
@@ -362,7 +364,7 @@ class QueryBuilderPreparer
      * the {@link QueryBuilderPreparer::setWhereExpressions()} or {@link QueryBuilderPreparer::setOrderByExpressions()}
      * is used after {@link QueryBuilderPreparer::fillQueryBuilder()}.
      */
-    private function resetTemporaryState(): void
+    protected function resetTemporaryState(): void
     {
         $this->joinClauses = [];
         $this->parameters = [];
@@ -375,7 +377,7 @@ class QueryBuilderPreparer
      *
      * @throws MappingException
      */
-    private function addFromClause(string $context, string $tableAlias): void
+    protected function addFromClause(string $context, string $tableAlias): void
     {
         if (array_key_exists($tableAlias, $this->fromClauses)) {
             $existingContext = $this->fromClauses[$tableAlias];

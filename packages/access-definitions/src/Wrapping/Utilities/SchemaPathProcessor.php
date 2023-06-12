@@ -8,12 +8,10 @@ use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
-use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\Types\FilterableTypeInterface;
+use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Contracts\Types\SortableTypeInterface;
+use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
-use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
 use EDT\Wrapping\Utilities\TypeAccessors\ExternFilterableProcessorConfig;
 use EDT\Wrapping\Utilities\TypeAccessors\ExternSortableProcessorConfig;
 use function array_key_exists;
@@ -25,12 +23,8 @@ use function array_key_exists;
  */
 class SchemaPathProcessor
 {
-    /**
-     * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
-     */
     public function __construct(
-        protected readonly PropertyPathProcessorFactory $propertyPathProcessorFactory,
-        protected readonly TypeProviderInterface $typeProvider
+        protected readonly PropertyPathProcessorFactory $propertyPathProcessorFactory
     ) {}
 
     /**
@@ -39,15 +33,15 @@ class SchemaPathProcessor
      * @template TCondition of PathsBasedInterface
      * @template TSorting of PathsBasedInterface
      *
-     * @param FilterableTypeInterface<TCondition, TSorting, object> $type
-     * @param non-empty-list<TCondition> $conditions
+     * @param FilteringTypeInterface<TCondition, TSorting>&TypeInterface<TCondition, TSorting, object> $type
+     * @param non-empty-list<TCondition>                                                               $conditions
      *
      * @throws PathException
      * @throws AccessException
      */
-    public function mapFilterConditions(FilterableTypeInterface $type, array $conditions): void
+    public function mapFilterConditions(FilteringTypeInterface&TypeInterface $type, array $conditions): void
     {
-        $processorConfig = new ExternFilterableProcessorConfig($this->typeProvider, $type);
+        $processorConfig = new ExternFilterableProcessorConfig($type);
         $processor = $this->propertyPathProcessorFactory->createPropertyPathProcessor($processorConfig);
         array_map([$processor, 'processPropertyPaths'], $conditions);
     }
@@ -58,15 +52,15 @@ class SchemaPathProcessor
      * @template TCondition of PathsBasedInterface
      * @template TSorting of PathsBasedInterface
      *
-     * @param SortableTypeInterface<TCondition, TSorting, object> $type
+     * @param SortingTypeInterface<TCondition, TSorting> $type
      * @param non-empty-list<TSorting>                   $sortMethods
      *
      * @throws AccessException
      * @throws PathException
      */
-    public function mapSorting(SortableTypeInterface $type, array $sortMethods): void
+    public function mapSorting(SortingTypeInterface $type, array $sortMethods): void
     {
-        $processorConfig = new ExternSortableProcessorConfig($this->typeProvider, $type);
+        $processorConfig = new ExternSortableProcessorConfig($type);
         $processor = $this->propertyPathProcessorFactory->createPropertyPathProcessor($processorConfig);
         array_map([$processor, 'processPropertyPaths'], $sortMethods);
     }
@@ -85,13 +79,13 @@ class SchemaPathProcessor
         $originalPath = $path;
         try {
             $readableProperties = $type->getReadableProperties();
-            $readableProperties = $allowAttribute
-                ? array_merge(...$readableProperties)
-                : array_merge($readableProperties[1], $readableProperties[2]);
+            $allReadableProperties = $allowAttribute
+                ? $readableProperties->getAllProperties()
+                : $readableProperties->getRelationships();
 
             $pathSegment = array_shift($path);
-            if (!array_key_exists($pathSegment, $readableProperties)) {
-                $availablePropertyNames = array_keys($readableProperties);
+            if (!array_key_exists($pathSegment, $allReadableProperties)) {
+                $availablePropertyNames = array_keys($allReadableProperties);
                 throw PropertyAccessException::propertyNotAvailableInType($pathSegment, $type, $availablePropertyNames);
             }
 
@@ -99,14 +93,15 @@ class SchemaPathProcessor
                 return;
             }
 
-            $property = $readableProperties[$pathSegment];
-            if (!$property instanceof RelationshipReadabilityInterface) {
+            if (!$readableProperties->hasRelationship($pathSegment)) {
                 throw PropertyAccessException::nonRelationship($pathSegment, $type);
             }
 
+            $property = $readableProperties->getRelationship($pathSegment);
+
             $this->verifyExternReadablePath($property->getRelationshipType(), $path, $allowAttribute);
         } catch (PropertyAccessException $exception) {
-            throw PropertyAccessException::pathDenied($type, $exception, $originalPath);
+            throw AccessException::pathDenied($type, $exception, $originalPath);
         }
     }
 }

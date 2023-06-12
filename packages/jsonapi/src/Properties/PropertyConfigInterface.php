@@ -95,11 +95,6 @@ interface PropertyConfigInterface
     /**
      * Mark this property as readable, i.e. allow its value to be read.
      *
-     * Please note that either
-     * {@link ExposablePrimaryResourceTypeInterface::isExposedAsPrimaryResource()} or
-     * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} in this type must
-     * return `true` for the readability to be usable via the generic JSON:API implementation.
-     *
      * When used on an attribute the actual attribute value can be accessed. When used on a
      * relationship the relationship reference can be accessed, but to access the properties
      * of the relationship these properties must be set as readable too.
@@ -154,7 +149,7 @@ interface PropertyConfigInterface
 
     /**
      * @param list<TCondition> $entityConditions
-     * @param null|callable(TEntity, TValue): void $customUpdateCallback
+     * @param null|callable(TEntity, TValue): bool $customUpdateCallback
      * @param list<TCondition> $relationshipConditions
      *
      * @return $this
@@ -168,13 +163,13 @@ interface PropertyConfigInterface
     /**
      * Mark the property as initializable when creating a resource.
      *
-     * Please note that {@link CreatableTypeInterface::isCreatable()} must return `true`
-     * to allow the creation of resources of that type.
-     *
      * By default, properties marked as initializable are required to be present in a request when
      * a resource is created. You can change that by setting the `$optional` parameter to `true`.
      *
+     * @param list<TCondition> $relationshipConditions
+     * @param null|callable(TEntity, TValue): bool $customInitCallback
+     *
      * @return $this
      */
-    public function initializable(bool $optional = false): self;
+    public function initializable(bool $optional = false, array $relationshipConditions = [], callable $customInitCallback = null): self;
 }

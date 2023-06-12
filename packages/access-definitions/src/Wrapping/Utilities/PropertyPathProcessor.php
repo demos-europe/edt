@@ -10,7 +10,6 @@ use EDT\Querying\Contracts\PropertyPathAccessInterface;
 use EDT\Querying\PropertyPaths\PathInfo;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Utilities\TypeAccessors\AbstractProcessorConfig;
 use function array_key_exists;
 
@@ -20,7 +19,7 @@ use function array_key_exists;
  * for property access violations, depending on the context (readability/sortability/...).
  * The context is set on instantiation by using providers that limit the access accordingly.
  *
- * @template TType of TypeInterface<PathsBasedInterface, PathsBasedInterface, object>
+ * @template TType of object
  */
 class PropertyPathProcessor
 {
@@ -55,7 +54,7 @@ class PropertyPathProcessor
             try {
                 $path = $this->processPropertyPath($rootType, [], ...$path);
             } catch (PropertyAccessException $exception) {
-                throw PropertyAccessException::pathDenied($rootType, $exception, $path);
+                throw AccessException::pathDenied($rootType, $exception, $path);
             }
             $propertyPath->setPath($path);
         }, PathInfo::getPropertyPaths($pathsBased));
@@ -73,7 +72,7 @@ class PropertyPathProcessor
      *
      * @throws PropertyAccessException if the property of the $currentPathPart or any of the $remainingParts is not available for some reason
      */
-    public function processPropertyPath(TypeInterface $currentType, array $newPath, string $currentExternalPathSegment, string ...$remainingExternalPathSegments): array
+    public function processPropertyPath(object $currentType, array $newPath, string $currentExternalPathSegment, string ...$remainingExternalPathSegments): array
     {
         $availableProperties = $this->processorConfig->getProperties($currentType);
 

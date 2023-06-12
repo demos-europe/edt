@@ -18,9 +18,9 @@ interface IdReadabilityInterface extends PropertySchemaInterface
      *
      * @param TEntity $entity
      *
-     * @return int|non-empty-string
+     * @return non-empty-string
      *
      * @throws Exception
      */
-    public function getValue(object $entity): int|string;
+    public function getValue(object $entity): string;
 }

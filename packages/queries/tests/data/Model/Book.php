@@ -10,10 +10,10 @@ class Book
      * @param list<non-empty-string> $tags
      */
     public function __construct(
+        protected string $id,
         protected string $title,
         protected Person $author,
-        protected array $tags = [],
-        protected int $id = 0
+        protected array $tags = []
     ) {}
 
     public function getTitle(): string

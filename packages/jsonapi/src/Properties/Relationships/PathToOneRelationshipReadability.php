@@ -9,7 +9,6 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\EntityVerificationTrait;
 use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
-use EDT\Wrapping\Utilities\EntityVerifierInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -27,7 +26,6 @@ class PathToOneRelationshipReadability implements ToOneRelationshipReadabilityIn
      * @param class-string<TEntity> $entityClass
      * @param non-empty-list<non-empty-string> $propertyPath
      * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      */
     public function __construct(
         protected readonly string $entityClass,
@@ -36,7 +34,6 @@ class PathToOneRelationshipReadability implements ToOneRelationshipReadabilityIn
         protected readonly bool $defaultInclude,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly EntityVerifierInterface $entityVerifier
     ) {}
 
     public function getValue(object $entity, array $conditions): ?object
@@ -44,9 +41,11 @@ class PathToOneRelationshipReadability implements ToOneRelationshipReadabilityIn
         $relationship = $this->propertyAccessor->getValueByPropertyPath($entity, ...$this->propertyPath);
         $relationshipClass = $this->relationshipType->getEntityClass();
         $relationship = $this->assertValidToOneValue($relationship, $relationshipClass);
-        $relationship = $this->entityVerifier->filterEntity($relationship, $conditions, $this->relationshipType);
 
-        return $relationship;
+        // TODO: how to disallow a `null` relationship? can it be done with a condition?
+        return null === $relationship || $this->relationshipType->isMatchingEntity($relationship, $conditions)
+            ? $relationship
+            : null;
     }
 
     public function isDefaultField(): bool

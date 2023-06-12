@@ -90,7 +90,7 @@ class AttributeTypeResolver
      *
      * @throws ReflectionException
      */
-    private function getPropertyReflection(string $entityClass, array $propertyPath): ReflectionProperty
+    protected function getPropertyReflection(string $entityClass, array $propertyPath): ReflectionProperty
     {
         $propertyName = array_shift($propertyPath);
         if (array_key_exists($entityClass, $this->classReflectionCache)) {
@@ -126,7 +126,7 @@ class AttributeTypeResolver
     /**
      * Map a native type from a type reflection.
      */
-    private function mapNativeType(ReflectionNamedType $reflectionType): string
+    protected function mapNativeType(ReflectionNamedType $reflectionType): string
     {
         $nativeType = $reflectionType->getName();
 
@@ -146,7 +146,7 @@ class AttributeTypeResolver
     /**
      * @return array{type: non-empty-string, format?: non-empty-string}
      */
-    private function mapDqlType(Column $column): array
+    protected function mapDqlType(Column $column): array
     {
         $format = null;
         $dqlType = $column->type;
@@ -184,6 +184,10 @@ class AttributeTypeResolver
     }
 
     /**
+     * @template TEntity of object
+     *
+     * @param callable(TEntity): mixed $callable
+     *
      * @return array{type: string} valid `cebe\OpenApi` type declaration
      *
      * @throws ReflectionException
@@ -226,25 +230,27 @@ class AttributeTypeResolver
     }
 
     /**
-     * @param callable(object): mixed $customReadCallback
+     * @template TEntity of object
+     *
+     * @param callable(TEntity): mixed $callable
      *
      * @throws ReflectionException
      */
-    private function reflectReturnOfCallable(callable $customReadCallback): ReflectionMethod|ReflectionFunction
+    protected function reflectReturnOfCallable(callable $callable): ReflectionMethod|ReflectionFunction
     {
-        if (is_array($customReadCallback)) {
-            [$class, $method] = $customReadCallback;
+        if (is_array($callable)) {
+            [$class, $method] = $callable;
             Assert::object($class);
             Assert::stringNotEmpty($method);
 
             return (new ReflectionClass($class))->getMethod($method);
         }
 
-        if (is_string($customReadCallback)) {
-            return new ReflectionFunction($customReadCallback);
+        if (is_string($callable)) {
+            return new ReflectionFunction($callable);
         }
 
-        return new ReflectionFunction($customReadCallback(...));
+        return new ReflectionFunction($callable(...));
     }
 
     /**
@@ -254,7 +260,7 @@ class AttributeTypeResolver
      * any annotations) from a docblock into a CommonMark string which can
      * be used to fuel schema descriptions.
      */
-    private function formatDescriptionFromDocblock(ReflectionProperty $reflectionProperty): string
+    protected function formatDescriptionFromDocblock(ReflectionProperty $reflectionProperty): string
     {
         $docblock = DocblockTagParser::createDocblock($reflectionProperty);
         if (null === $docblock) {

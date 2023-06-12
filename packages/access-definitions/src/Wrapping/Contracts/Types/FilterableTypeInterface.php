@@ -5,41 +5,38 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Contracts\Types;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Querying\PropertyPaths\PropertyLink;
+use Exception;
 
 /**
- * Defines that the implementing type can be used to filter entities of this type or other types.
- *
- * E.g. if you have a `BookType` that implements {@link TransferableTypeInterface} you can retrieve
- * corresponding `Book` entities. If you want to retrieve books with a specific title, you can
- * implement this interface and return the `title` property in
- * {@link FilterableTypeInterface::getFilterableProperties()}.
- *
- * Note however, that it can make sense to let your type implement this interface without implementing
- * {@link TransferableTypeInterface}. E.g. if you define an `AuthorType` implementing
- * {@link TransferableTypeInterface} and {@link FilterableTypeInterface}, then it you may want to
- * allow filtering of `Author` entities by properties of their written books, without allowing
- * the reading of these `Book` entities, i.e. without having `BookType` implement {@link TransferableTypeInterface}.
- *
  * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
- *
- * @template-extends TypeInterface<TCondition, TSorting, TEntity>
  */
-interface FilterableTypeInterface extends TypeInterface
+interface FilterableTypeInterface
 {
     /**
-     * All properties of this type that can be used to filter instances of this type and types that
-     * have a relationship to this type.
+     * Removes items not matching the given conditions from the given list and sort the remaining
+     * items by the given sort methods and by an internal default sorting.
      *
-     * In most use cases this method could return the same properties as
-     * {@link TransferableTypeInterface::getReadableProperties()} but you may want to limit
-     * the properties further, e.g. if filtering over some properties is computation heavy or not supported
-     * at all. You may also want to allow more properties for filtering than you allowed for reading,
-     * but be careful as this may allow guessing values of non-readable properties.
+     * Implementations are also responsible to not return instances with restricted accessibility.
      *
-     * @return array<non-empty-string, PropertyLink<FilterableTypeInterface<TCondition, TSorting, object>>> The keys in the returned array are the names of the properties.
+     * @param list<TEntity> $entities
+     * @param list<TCondition> $conditions
+     *
+     * @throws Exception
      */
-    public function getFilterableProperties(): array;
+    public function assertMatchingEntities(array $entities, array $conditions): void;
+
+    /**
+     * @param TEntity $entity
+     * @param list<TCondition> $conditions
+     *
+     * @throws Exception
+     */
+    public function assertMatchingEntity(object $entity, array $conditions): void;
+
+    /**
+     * @param TEntity $entity
+     * @param list<TCondition> $conditions
+     */
+    public function isMatchingEntity(object $entity, array $conditions): bool;
 }

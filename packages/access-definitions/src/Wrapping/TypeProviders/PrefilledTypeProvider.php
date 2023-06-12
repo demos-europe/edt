@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Wrapping\TypeProviders;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
 use function array_key_exists;
@@ -18,9 +19,9 @@ use function array_key_exists;
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  *
- * @template-extends AbstractTypeProvider<TCondition, TSorting>
+ * @template-implements TypeProviderInterface<TCondition, TSorting>
  */
-class PrefilledTypeProvider extends AbstractTypeProvider
+class PrefilledTypeProvider implements TypeProviderInterface
 {
     /**
      * @var array<non-empty-string, TypeInterface<TCondition, TSorting, object>>
@@ -55,7 +56,7 @@ class PrefilledTypeProvider extends AbstractTypeProvider
         return $type::class;
     }
 
-    protected function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface
+    public function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface
     {
         return $this->typesByIdentifier[$typeIdentifier] ?? null;
     }

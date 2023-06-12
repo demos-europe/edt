@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Querying\ObjectProviders;
 
-use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
+use EDT\Querying\ObjectProviders\PrefilledEntityProvider;
+use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Sorter;
@@ -15,19 +16,19 @@ use Tests\ModelBasedTest;
 class PrefilledObjectProviderTest extends ModelBasedTest
 {
     /**
-     * @var PrefilledObjectProvider<Person, int>
+     * @var PrefilledEntityProvider<Person, int>
      */
-    private PrefilledObjectProvider $authorProvider;
+    private PrefilledEntityProvider $authorProvider;
 
     public function testUnconditionedAll()
     {
-        $actual = $this->authorProvider->getObjects([]);
+        $actual = $this->authorProvider->getEntities([], [], null);
         self::assertEquals($this->authors, $actual);
     }
 
     public function testUndconditionedOffsetSlice()
     {
-        $actual = $this->authorProvider->getObjects([], [], 1);
+        $actual = $this->authorProvider->getEntities([], [], new OffsetPagination(1, PHP_INT_MAX));
         $expected = $this->authors;
         array_shift($expected);
         self::assertEquals($expected, $actual);
@@ -35,7 +36,7 @@ class PrefilledObjectProviderTest extends ModelBasedTest
 
     public function testUndconditionedLimitSlice()
     {
-        $actual = $this->authorProvider->getObjects([], [], 0, 2);
+        $actual = $this->authorProvider->getEntities([], [], new OffsetPagination(0, 2));
         $expected = $this->authors;
         $expected = [
             array_shift($expected),
@@ -46,7 +47,7 @@ class PrefilledObjectProviderTest extends ModelBasedTest
 
     public function testUndconditionedOffsetAndLimitSlice()
     {
-        $actual = $this->authorProvider->getObjects([], [], 1, 2);
+        $actual = $this->authorProvider->getEntities([], [], new OffsetPagination(1, 2));
         $expected = $this->authors;
         array_shift($expected);
         $expected = [
@@ -61,7 +62,7 @@ class PrefilledObjectProviderTest extends ModelBasedTest
         parent::setUp();
 
         $propertyAccessor = new ReflectionPropertyAccessor();
-        $this->authorProvider = new PrefilledObjectProvider(
+        $this->authorProvider = new PrefilledEntityProvider(
             new ConditionEvaluator(new TableJoiner($propertyAccessor)),
             new Sorter(new TableJoiner($propertyAccessor)),
             $this->authors

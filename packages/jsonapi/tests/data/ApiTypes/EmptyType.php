@@ -6,14 +6,14 @@ namespace Tests\data\ApiTypes;
 
 use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
-use EDT\JsonApi\Properties\Id\PathIdReadability;
+use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\PropertyBuilderFactory;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Querying\Pagination\PagePagination;
-use EDT\Wrapping\Properties\IdReadabilityInterface;
-use Pagerfanta\Pagerfanta;
+use EDT\Querying\PropertyPaths\PropertyPath;
+use EDT\Wrapping\Contracts\Types\ReindexableTypeInterface;
+use Psr\Log\LoggerInterface;
 use Tests\data\EmptyEntity;
 
 class EmptyType extends AbstractResourceType
@@ -30,17 +30,7 @@ class EmptyType extends AbstractResourceType
         return EmptyEntity::class;
     }
 
-    public function isExposedAsPrimaryResource(): bool
-    {
-        return false;
-    }
-
-    public function getIdentifierFilterPath(): array
-    {
-        return ['id'];
-    }
-
-    public function getIdentifier(): string
+    public function getTypeName(): string
     {
         return 'Foobar';
     }
@@ -57,20 +47,11 @@ class EmptyType extends AbstractResourceType
 
     protected function getProperties(): array
     {
-        return [];
-    }
-
-    public function fetchPagePaginatedResources(
-        array $conditions,
-        array $sortMethods,
-        PagePagination $pagination
-    ): Pagerfanta {
-        throw new \RuntimeException('not implemented');
-    }
-
-    public function fetchResources(array $conditions, array $sortMethods): array
-    {
-        throw new \Exception('not implemented');
+        return [
+            $this->createAttribute(
+                new PropertyPath(null, '', PropertyPath::UNPACK, ['id'])
+            )->readable()
+        ];
     }
 
     protected function getPropertyBuilderFactory(): PropertyBuilderFactory
@@ -78,31 +59,43 @@ class EmptyType extends AbstractResourceType
         return $this->propertyBuilderFactory;
     }
 
-    public function getIdentifierSortingPath(): array
+    public function getEntityByIdentifier(string $identifier, array $conditions): object
     {
-        // TODO: Implement getIdentifierSortingPath() method.
+        throw new \RuntimeException();
     }
 
-    public function getIdentifierReadability(): IdReadabilityInterface
+    public function getEntitiesByIdentifiers(array $identifiers, array $conditions, array $sortMethods): array
     {
-        return new PathIdReadability($this->getEntityClass(), ['id'], $this->propertyAccessor, $this->typeResolver);
+        throw new \RuntimeException();
     }
 
-    public function fetchPagePaginatedEntities(
-        array $conditions,
-        array $sortMethods,
-        PagePagination $pagination
-    ): Pagerfanta {
-        // TODO: Implement fetchPagePaginatedEntities() method.
+    protected function getMessageFormatter(): MessageFormatter
+    {
+        throw new \RuntimeException();
     }
 
-    public function fetchEntities(array $conditions, array $sortMethods): array
+    protected function getLogger(): LoggerInterface
     {
-        // TODO: Implement fetchEntities() method.
+        throw new \RuntimeException();
     }
 
-    public function fetchEntity(int|string $entityIdentifier, array $conditions): ?object
+    public function assertMatchingEntities(array $entities, array $conditions): void
     {
-        // TODO: Implement fetchEntity() method.
+        throw new \RuntimeException();
+    }
+
+    public function assertMatchingEntity(object $entity, array $conditions): void
+    {
+        throw new \RuntimeException();
+    }
+
+    public function isMatchingEntity(object $entity, array $conditions): bool
+    {
+        throw new \RuntimeException();
+    }
+
+    protected function getReindexableType(): ReindexableTypeInterface
+    {
+        throw new \RuntimeException();
     }
 }

@@ -10,7 +10,7 @@ use function array_slice;
 /**
  * @internal
  */
-class Iterables
+final class Iterables
 {
     private function __construct() {}
 
@@ -22,7 +22,7 @@ class Iterables
      * @template TOutput
      *
      * @param callable(TItem): list<TOutput> $callable how to map each given value to an array
-     * @param array<int|string, TItem> $values   the values to be mapped to an array
+     * @param array<int|string, TItem> $values the values to be mapped to an array
      *
      * @return list<TOutput>
      */

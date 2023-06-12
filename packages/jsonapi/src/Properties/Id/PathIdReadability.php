@@ -8,7 +8,6 @@ use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Properties\IdReadabilityInterface;
 use Webmozart\Assert\Assert;
-use function is_int;
 
 /**
  * @template TEntity of object
@@ -28,14 +27,10 @@ class PathIdReadability implements IdReadabilityInterface
         protected readonly AttributeTypeResolver $typeResolver
     ) {}
 
-    public function getValue(object $entity): int|string
+    public function getValue(object $entity): string
     {
         $propertyValue = $this->propertyAccessor->getValueByPropertyPath($entity, ...$this->propertyPath);
-        if (is_int($propertyValue)) {
-            return $propertyValue;
-        }
-
-        Assert::stringNotEmpty($propertyValue, "Expected int or string as ID value, got '".gettype($propertyValue)."'.");
+        Assert::stringNotEmpty($propertyValue);
 
         return $propertyValue;
     }

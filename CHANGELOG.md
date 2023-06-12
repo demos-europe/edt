@@ -1,7 +1,10 @@
+
 # Changelog
 
 # Unreleased
 
+* feature: apply more centralized and stricter request validation
+* refactor: remodel logic to be more flexible for different use cases
 * refactor: conditions/sort methods returned by `getAccessCondition`/`getDefaultSortMethods` must now access the schema of the backing entity instead of the schema of the type (i.e. the automatic de-aliasing was removed)
 * feature: a type property defined in `getFilterableProperties` and `getSortableProperties` can now use different property in the backing entity for filtering and sorting 
 * refactor: use type readabilities/updatabilities/initializabilities instances instead of using a predefined algorithm

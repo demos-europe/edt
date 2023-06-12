@@ -11,7 +11,7 @@ class SliceDefinition
      */
     private int $offset = 0;
     /**
-     * @var int<0, max>|null
+     * @var positive-int|null
      */
     private ?int $limit = null;
 
@@ -36,7 +36,7 @@ class SliceDefinition
     }
 
     /**
-     * @return int<0, max>|null
+     * @return positive-int|null
      */
     public function getLimit(): ?int
     {
@@ -44,7 +44,7 @@ class SliceDefinition
     }
 
     /**
-     * @param int<0, max>|null $limit
+     * @param positive-int|null $limit
      *
      * @return $this
      */

@@ -6,8 +6,10 @@ namespace EDT\Querying\PropertyAccessors;
 
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Utilities\Iterables;
+use InvalidArgumentException;
 use ReflectionException;
 use ReflectionProperty;
+use Webmozart\Assert\Assert;
 use function array_slice;
 use function is_array;
 
@@ -29,6 +31,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
 
     /**
      * @throws ReflectionException
+     * @throws InvalidArgumentException
      */
     public function getValueByPropertyPath(?object $target, string $property, string ...$properties): mixed
     {
@@ -43,11 +46,15 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
             return $newTarget;
         }
 
+        Assert::object($newTarget);
+
         return $this->getValueByPropertyPath($newTarget, ...$properties);
     }
 
     /**
      * @param mixed $target
+     *
+     * @throws InvalidArgumentException
      */
     public function getValuesByPropertyPath($target, int $depth, array $properties): array
     {
@@ -79,6 +86,9 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         }, $target);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function setValue(object $target, mixed $value, string $propertyName): void
     {
         $reflectionProperty = $this->getReflectionProperty($this->getClass($target), $propertyName);
@@ -130,8 +140,10 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
      *                   Defaults to {@link is_iterable()} if `null` is given.
      *
      * @return list<mixed>
+     *
+     * @throws InvalidArgumentException
      */
-    private function restructureNesting(mixed $target, int $depth, callable $isIterable = null): array
+    protected function restructureNesting(mixed $target, int $depth, callable $isIterable = null): array
     {
         if (null === $isIterable) {
             $isIterable = 'is_iterable';
@@ -139,6 +151,8 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         if (0 === $depth || !$isIterable($target)) {
             return [$target];
         }
+
+        Assert::isIterable($target);
 
         return Iterables::mapFlat(
             fn ($newTarget): array => $this->restructureNesting($newTarget, $depth - 1),
