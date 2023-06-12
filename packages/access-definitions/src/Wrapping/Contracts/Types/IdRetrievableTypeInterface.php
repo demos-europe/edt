@@ -15,23 +15,12 @@ use Exception;
 interface IdRetrievableTypeInterface
 {
     /**
-     * Get all entities with the given IDs that *also* match the given conditions.
-     *
-     * Implementations are responsible to not return instances with restricted accessibility.
-     *
-     * @param non-empty-list<non-empty-string> $identifiers
-     * @param list<TCondition> $conditions
-     * @param list<TSorting> $sortMethods
-     *
-     * @return list<TEntity>
-     */
-    public function getEntitiesByIdentifiers(array $identifiers, array $conditions, array $sortMethods): array;
-
-    /**
      * Get an instance of the entity corresponding to this type with the given identifier that matches the
      * given conditions.
      *
      * Implementations are responsible to not return instances with restricted accessibility.
+     *
+     * The given conditions must only access properties that are allowed for external filtering usage.
      *
      * @param non-empty-string $identifier
      * @param list<TCondition> $conditions

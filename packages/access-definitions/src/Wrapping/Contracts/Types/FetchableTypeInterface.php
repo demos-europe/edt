@@ -20,6 +20,11 @@ interface FetchableTypeInterface
      *
      * Implementations are responsible to not return instances with restricted accessibility.
      *
+     * Implementations may add default sort criteria to the given ones.
+     *
+     * The given conditions and sort methods must only use properties that are allowed to be used
+     * by an external request.
+     *
      * @param list<TCondition> $conditions
      * @param list<TSorting> $sortMethods
      *
@@ -31,6 +36,11 @@ interface FetchableTypeInterface
      * Get all entities of this type that match all the given conditions in a paginated manner.
      *
      * Implementations are responsible to not return instances with restricted accessibility.
+     *
+     * Implementations may add default sort criteria to the given ones.
+     *
+     * The given conditions and sort methods must only use properties that are allowed to be used
+     * by an external request.
      *
      * @param list<TCondition> $conditions
      * @param list<TSorting> $sortMethods

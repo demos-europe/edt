@@ -3,6 +3,8 @@
 
 # Unreleased
 
+* refactor: restructure the "Type" interface hierarchy
+* refactor: rename `AbstractResourceType::getAccessCondition` to `getAccessConditions` and return list of conditions instead of a single (already merged) one
 * feature: apply more centralized and stricter request validation
 * refactor: remodel logic to be more flexible for different use cases
 * refactor: conditions/sort methods returned by `getAccessCondition`/`getDefaultSortMethods` must now access the schema of the backing entity instead of the schema of the type (i.e. the automatic de-aliasing was removed)

@@ -15,18 +15,16 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\PropertyPaths\PropertyLink;
 use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\Reindexer;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
-use EDT\Wrapping\Contracts\Types\PhpReindexableType;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\ReadabilityCollection;
 use EDT\Wrapping\Properties\UpdatablePropertyCollection;
-use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
-use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Tests\data\Model\Book;
 
 class BookType implements
@@ -93,9 +91,9 @@ class BookType implements
         ];
     }
 
-    public function getAccessCondition(): PathsBasedInterface
+    public function getAccessConditions(): array
     {
-        return $this->conditionFactory->propertyHasNotSize(0, ['author', 'books']);
+        return [$this->conditionFactory->propertyHasNotSize(0, ['author', 'books'])];
     }
 
     public function getEntityClass(): string
@@ -106,11 +104,6 @@ class BookType implements
     public function isExposedAsRelationship(): bool
     {
         return $this->exposedAsRelationship;
-    }
-
-    public function getDefaultSortMethods(): array
-    {
-        return [];
     }
 
     public function getUpdatableProperties(): UpdatablePropertyCollection
@@ -128,7 +121,7 @@ class BookType implements
         throw new \RuntimeException();
     }
 
-    public function getEntitiesByIdentifiers(array $identifiers, array $conditions, array $sortMethods): array
+    public function getEntitiesForRelationship(array $identifiers, array $conditions, array $sortMethods): array
     {
         throw new \RuntimeException();
     }
@@ -145,28 +138,12 @@ class BookType implements
 
     public function assertMatchingEntities(array $entities, array $conditions): void
     {
-        $tableJoiner = new TableJoiner(new ReflectionPropertyAccessor());
-        $reindexer = new PhpReindexableType(
-            $this,
-            new SchemaPathProcessor(new PropertyPathProcessorFactory()),
-            new ConditionEvaluator($tableJoiner),
-            new Sorter($tableJoiner)
-        );
-
-        $reindexer->assertMatchingEntities($entities, $conditions);
+        $this->getReindexer()->assertMatchingEntities($entities, $conditions);
     }
 
     public function assertMatchingEntity(object $entity, array $conditions): void
     {
-        $tableJoiner = new TableJoiner(new ReflectionPropertyAccessor());
-        $reindexer = new PhpReindexableType(
-            $this,
-            new SchemaPathProcessor(new PropertyPathProcessorFactory()),
-            new ConditionEvaluator($tableJoiner),
-            new Sorter($tableJoiner)
-        );
-
-        $reindexer->assertMatchingEntity($entity, $conditions);
+        $this->getReindexer()->assertMatchingEntity($entity, $conditions);
     }
 
     public function isMatchingEntity(object $entity, array $conditions): bool
@@ -176,14 +153,20 @@ class BookType implements
 
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array
     {
-        $tableJoiner = new TableJoiner(new ReflectionPropertyAccessor());
-        $reindexer = new PhpReindexableType(
-            $this,
-            new SchemaPathProcessor(new PropertyPathProcessorFactory()),
-            new ConditionEvaluator($tableJoiner),
-            new Sorter($tableJoiner)
-        );
+        return $this->getReindexer()->reindexEntities($entities, $conditions, $sortMethods);
+    }
 
-        return $reindexer->reindexEntities($entities, $conditions, $sortMethods);
+    protected function getReindexer(): Reindexer
+    {
+        $tableJoiner = new TableJoiner(new ReflectionPropertyAccessor());
+        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $sorter = new Sorter($tableJoiner);
+
+        return new Reindexer($conditionEvaluator, $sorter);
+    }
+
+    public function getEntityForRelationship(string $identifier, array $conditions): object
+    {
+        throw new \RuntimeException();
     }
 }

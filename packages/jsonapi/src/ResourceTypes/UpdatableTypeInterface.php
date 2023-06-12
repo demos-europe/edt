@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\IdRetrievableTypeInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\Contracts\Types\UpdatableInterface;
 
@@ -15,9 +14,8 @@ use EDT\Wrapping\Contracts\Types\UpdatableInterface;
  * @template TEntity of object
  *
  * @template-extends UpdatableInterface<TCondition, TEntity>
- * @template-extends IdRetrievableTypeInterface<TCondition, TSorting, TEntity>
  */
-interface UpdatableTypeInterface extends NamedTypeInterface, UpdatableInterface, IdRetrievableTypeInterface, ReadableTypeInterface
+interface UpdatableTypeInterface extends NamedTypeInterface, UpdatableInterface, ReadableTypeInterface
 {
 
 }

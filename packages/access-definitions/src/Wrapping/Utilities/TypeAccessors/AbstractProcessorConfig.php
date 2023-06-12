@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Utilities\TypeAccessors;
 
 use EDT\Querying\PropertyPaths\PropertyLink;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
  * Implementing this class allows to limit the access to properties by different
@@ -32,7 +31,7 @@ abstract class AbstractProcessorConfig
     }
 
     /**
-     * Get actually available properties of the given {@link TypeInterface type}.
+     * Get actually available properties of the given instance.
      *
      * @param TType $type
      *

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Contracts\Types;
 
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
@@ -11,8 +12,8 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends IdRetrievableTypeInterface<TCondition, TSorting, TEntity>
- * @template-extends TypeInterface<TCondition, TSorting, TEntity>
+ * @template-extends RelationshipFetchableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-extends EntityBasedInterface<TEntity>
  * @template-extends PropertyUpdatableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends PropertyReadableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends ReindexableTypeInterface<TCondition, TSorting, TEntity>
@@ -20,8 +21,8 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  */
 interface TransferableTypeInterface extends
     NamedTypeInterface,
-    IdRetrievableTypeInterface,
-    TypeInterface,
+    RelationshipFetchableTypeInterface,
+    EntityBasedInterface,
     PropertyUpdatableTypeInterface,
     PropertyReadableTypeInterface,
     UpdatableInterface,

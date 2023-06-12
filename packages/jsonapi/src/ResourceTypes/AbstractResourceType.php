@@ -12,11 +12,15 @@ use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\JsonApi\RequestHandling\SideEffectHandleTrait;
 use EDT\JsonApi\Requests\PropertyUpdaterTrait;
 use EDT\Querying\Contracts\EntityBasedInterface;
+use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\Querying\Pagination\PagePagination;
 use EDT\Querying\PropertyPaths\PropertyLink;
+use EDT\Wrapping\Contracts\EntityFetcherInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
-use EDT\Wrapping\Contracts\Types\ReindexableTypeInterface;
+use EDT\Wrapping\Contracts\Types\FetchableTypeInterface;
+use EDT\Wrapping\Contracts\Types\IdRetrievableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AttributeInitializabilityInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
@@ -34,8 +38,10 @@ use EDT\Wrapping\Properties\ToOneRelationshipInitializabilityInterface;
 use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
 use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
 use EDT\Wrapping\Properties\UpdatablePropertyCollection;
+use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Exception;
 use League\Fractal\TransformerAbstract;
+use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use ReflectionMethod;
@@ -47,8 +53,10 @@ use Webmozart\Assert\Assert;
  * @template TEntity of object
  *
  * @template-implements ResourceTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements FetchableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements IdRetrievableTypeInterface<TCondition, TSorting, TEntity>
  */
-abstract class AbstractResourceType implements ResourceTypeInterface
+abstract class AbstractResourceType implements ResourceTypeInterface, FetchableTypeInterface, IdRetrievableTypeInterface
 {
     use PropertyUpdaterTrait;
     use SideEffectHandleTrait;
@@ -153,6 +161,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         );
     }
 
+    /**
+     * @return EntityFetcherInterface<TCondition, TSorting, TEntity>
+     */
+    abstract protected function getEntityFetcher(): EntityFetcherInterface;
+
     public function getExpectedUpdateProperties(): ExpectedPropertyCollection
     {
         $updatabilityCollection = $this->getUpdatableProperties();
@@ -189,16 +202,19 @@ abstract class AbstractResourceType implements ResourceTypeInterface
             $requestBody->getToManyRelationships()
         );
 
-        $entityConditions = array_merge(...array_map(
-            static fn (PropertyAccessibilityInterface $accessibility): array => $accessibility->getEntityConditions(),
-            array_merge(
-                $attributeSetabilities,
-                $toOneRelationshipSetabilities,
-                $toManyRelationshipSetabilities
+        $entityConditions = array_merge(
+            $this->getAccessConditions(),
+            ...array_map(
+                static fn (PropertyAccessibilityInterface $accessibility): array => $accessibility->getEntityConditions(),
+                array_merge(
+                    $attributeSetabilities,
+                    $toOneRelationshipSetabilities,
+                    $toManyRelationshipSetabilities
+                )
             )
-        ));
+        );
 
-        $entity = $this->getEntityByIdentifier($requestBody->getId(), $entityConditions);
+        $entity = $this->getEntityFetcher()->getEntityByIdentifier($requestBody->getId(), $entityConditions);
 
         $sideEffects = [
             $this->updateAttributes($entity, $attributeSetabilities, $requestBody->getAttributes()),
@@ -311,7 +327,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      *
      * @see CreatableTypeInterface::getInitializableProperties()
      */
-    public function getInitializableProperties(): InitializabilityCollection
+    protected function getInitializableProperties(): InitializabilityCollection
     {
         $properties = $this->getInitializedProperties();
 
@@ -383,6 +399,26 @@ abstract class AbstractResourceType implements ResourceTypeInterface
         );
     }
 
+    /**
+     * Returns the condition limiting the access to {@link EntityBasedInterface::getEntityClass() entities}
+     * corresponding to this type.
+     *
+     * The returned condition is applied to the schema of the
+     * {@link EntityBasedInterface::getEntityClass() backing entity}.
+     *
+     * Beside limiting the access depending on the authorization of the accessing user, the returned
+     * condition can also be used to filter out invalid instances of the backing entity class:
+     * E.g. even though a database may store different animals as a single `Animal` entity/table
+     * there may be different types for different kinds of animals (`CatType`, `DogType`, ...).
+     * For a list query on a `CatType` the condition returned by this method must define
+     * limits to only get `Animal` instances that are a `Cat`.
+     *
+     * @return list<TCondition>
+     */
+    abstract protected function getAccessConditions(): array;
+
+    abstract protected function getSchemaPathProcessor(): SchemaPathProcessor;
+
     abstract protected function getMessageFormatter(): MessageFormatter;
 
     abstract protected function getLogger(): LoggerInterface;
@@ -395,6 +431,17 @@ abstract class AbstractResourceType implements ResourceTypeInterface
      * @return list<PropertyBuilder<TEntity, mixed, TCondition, TSorting>>
      */
     abstract protected function getProperties(): array;
+
+    /**
+     * Get the sort methods to apply when a collection of this property is fetched and no sort methods were specified.
+     *
+     * The schema used in the sort methods must be the one of the {@link EntityBasedInterface::getEntityClass() backing entity class}.
+     *
+     * Return an empty array to not define any default sorting.
+     *
+     * @return list<TSorting>
+     */
+    abstract protected function getDefaultSortMethods(): array;
 
     /**
      * @param list<PropertyBuilder<TEntity, mixed, TCondition, TSorting>> $properties
@@ -536,27 +583,91 @@ abstract class AbstractResourceType implements ResourceTypeInterface
     }
 
     /**
-     * @return ReindexableTypeInterface<TCondition, TSorting, TEntity>
+     * @param list<TCondition> $conditions
+     * @param list<TSorting> $sortMethods
+     *
+     * @throws PathException
      */
-    abstract protected function getReindexableType(): ReindexableTypeInterface;
+    protected function mapPaths(array $conditions, array $sortMethods): void
+    {
+        $schemaPathProcessor = $this->getSchemaPathProcessor();
+
+        if ([] !== $conditions) {
+            $schemaPathProcessor->mapFilterConditions($this, $conditions);
+        }
+
+        if ([] !== $sortMethods) {
+            $schemaPathProcessor->mapSorting($this, $sortMethods);
+        }
+    }
+
+    public function getEntitiesForRelationship(array $identifiers, array $conditions, array $sortMethods): array
+    {
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+        $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
+
+        return $this->getEntityFetcher()->getEntitiesByIdentifiers($identifiers, $conditions, $sortMethods);
+    }
+
+    public function getEntityForRelationship(string $identifier, array $conditions): object
+    {
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+
+        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions);
+    }
+
+    public function getEntityByIdentifier(string $identifier, array $conditions): object
+    {
+        $this->mapPaths($conditions, []);
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+
+        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions);
+    }
+
+    public function getEntities(array $conditions, array $sortMethods): array
+    {
+        $this->mapPaths($conditions, $sortMethods);
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+        $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
+
+        return $this->getEntityFetcher()->getEntities($conditions, $sortMethods);
+    }
+
+    public function getEntitiesForPage(array $conditions, array $sortMethods, PagePagination $pagination): Pagerfanta
+    {
+        $this->mapPaths($conditions, $sortMethods);
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+        $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
+
+        return $this->getEntityFetcher()->getEntitiesForPage($conditions, $sortMethods, $pagination);
+    }
 
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array
     {
-        return $this->getReindexableType()->reindexEntities($entities, $conditions, $sortMethods);
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+        $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
+
+        return $this->getEntityFetcher()->reindexEntities($entities, $conditions, $sortMethods);
     }
 
     public function assertMatchingEntities(array $entities, array $conditions): void
     {
-        $this->getReindexableType()->assertMatchingEntities($entities, $conditions);
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+
+        $this->getEntityFetcher()->assertMatchingEntities($entities, $conditions);
     }
 
     public function assertMatchingEntity(object $entity, array $conditions): void
     {
-        $this->getReindexableType()->assertMatchingEntity($entity, $conditions);
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+
+        $this->getEntityFetcher()->assertMatchingEntity($entity, $conditions);
     }
 
     public function isMatchingEntity(object $entity, array $conditions): bool
     {
-        return $this->getReindexableType()->isMatchingEntity($entity, $conditions);
+        $conditions = array_merge($conditions, $this->getAccessConditions());
+
+        return $this->getEntityFetcher()->isMatchingEntity($entity, $conditions);
     }
 }

@@ -10,9 +10,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SortException;
 use EDT\Wrapping\Contracts\AccessException;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
 use EDT\Wrapping\Properties\IdAttributeConflictException;
 use EDT\Wrapping\Properties\IdReadabilityInterface;
@@ -20,7 +18,7 @@ use InvalidArgumentException;
 use function array_key_exists;
 
 /**
- * Creates a wrapper around an instance of a {@link TypeInterface::getEntityClass() backing object}.
+ * Creates a wrapper around an instance of a {@link EntityBasedInterface::getEntityClass() backing object}.
  */
 class WrapperArrayFactory
 {
@@ -35,13 +33,10 @@ class WrapperArrayFactory
     ) {}
 
     /**
-     * Converts the given object into an array with the object's property names as array keys and the
+     * Converts the given object into an `array` with the object's property names as array keys and the
      * property values as array values. Only properties that are defined as readable by
      * {@link TransferableTypeInterface::getReadableProperties()} are included. Relationships to
-     * other types will be copied recursively in the same manner, but only if they're
-     * allowed to be accessed. If they are allowed to be accessed depends on their
-     * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} and
-     * {@link TypeInterface::getAccessCondition()} methods, both must return `true` for the property to be included.
+     * other types will be copied recursively in the same manner, but only if access is granted.
      *
      * The recursion stops when the specified depth in {@link WrapperArrayFactory::$depth} is reached.
      *
@@ -62,12 +57,8 @@ class WrapperArrayFactory
      * with the value read using the property path corresponding to the $propertyName.
      *
      * For each relationship the same will be done, but additionally it will be recursively
-     * wrapped using this factory until the depth set in this instance is reached. If access is not granted due to the
-     * settings in the corresponding {@link TypeInterface::getAccessCondition()} it will be
-     * replaced by `null`.
-     *
-     * If a relationship is referenced each value will be checked using {@link TypeInterface::getAccessCondition()}
-     * if it should be included, if so it is wrapped using this factory and included in the result.
+     * wrapped using this factory until the depth set in this instance is reached.
+     * If access is not granted it will be replaced by `null`.
      *
      * @template TCondition of PathsBasedInterface
      * @template TSorting of PathsBasedInterface

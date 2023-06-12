@@ -30,8 +30,8 @@ class FluentQuery
 {
     /**
      * @param OffsetEntityProviderInterface<TCondition, TSorting, TEntity> $objectProvider
-     * @param ConditionDefinition<TCondition>                              $conditionDefinition
-     * @param SortDefinition<TSorting>                                     $sortDefinition
+     * @param ConditionDefinition<TCondition> $conditionDefinition
+     * @param SortDefinition<TSorting> $sortDefinition
      */
     public function __construct(
         protected readonly OffsetEntityProviderInterface $objectProvider,

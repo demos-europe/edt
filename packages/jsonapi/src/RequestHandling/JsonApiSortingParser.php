@@ -9,6 +9,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use InvalidArgumentException;
+use Webmozart\Assert\Assert;
 use function in_array;
 
 /**
@@ -24,24 +25,21 @@ class JsonApiSortingParser
     ) {}
 
     /**
-     * Create an array of {@link SortMethodInterface} objects from the sort query parameter given if not null.
-     * Otherwise, returns an empty array.
+     * Create an array of {@link SortMethodInterface} objects from the sort query parameter given.
      *
-     * @return list<TSorting>
+     * @param non-empty-string $sortQueryParamValue
+     *
+     * @return non-empty-list<TSorting>
      */
-    public function createFromQueryParamValue(?string $sortQueryParamValue): array
+    public function createFromQueryParamValue(string $sortQueryParamValue): array
     {
-        if (null === $sortQueryParamValue) {
-            return [];
-        }
-
         $sortMethodsRaw = explode(',', $sortQueryParamValue);
 
         return array_map([$this, 'parseSortMethod'], $sortMethodsRaw);
     }
 
     /**
-     * @param non-empty-string $sortMethodRaw
+     * @param string $sortMethodRaw
      *
      * @return TSorting
      *
@@ -49,6 +47,8 @@ class JsonApiSortingParser
      */
     protected function parseSortMethod(string $sortMethodRaw): PathsBasedInterface
     {
+        Assert::stringNotEmpty($sortMethodRaw);
+
         return $this->isNegativeDirection($sortMethodRaw)
             ? $this->parseNegativeDirection($sortMethodRaw)
             : $this->parsePositiveDirection($sortMethodRaw);

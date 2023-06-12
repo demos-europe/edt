@@ -2,35 +2,36 @@
 
 declare(strict_types=1);
 
-namespace EDT\Wrapping\Contracts\Types;
+namespace EDT\Querying\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
-use EDT\Querying\Utilities\ConditionEvaluator;
-use EDT\Querying\Utilities\Sorter;
-use EDT\Wrapping\Contracts\AccessException;
-use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Webmozart\Assert\Assert;
 
 /**
  * @template TCondition of FunctionInterface<bool>
  * @template TSorting of SortMethodInterface
- * @template TEntity of object
- *
- * @template-implements ReindexableTypeInterface<TCondition, TSorting, TEntity>
  */
-class PhpReindexableType implements ReindexableTypeInterface
+class Reindexer
 {
-    /**
-     * @param TypeInterface<TCondition, TSorting, TEntity>&FilteringTypeInterface<TCondition, TSorting> $type
-     */
     public function __construct(
-        protected readonly TypeInterface&FilteringTypeInterface $type,
-        protected readonly SchemaPathProcessor $schemaPathProcessor,
         protected readonly ConditionEvaluator $conditionEvaluator,
         protected readonly Sorter $sorter
     ) {}
 
+    /**
+     * @template TEntity of object
+     *
+     * @param list<TEntity> $entities
+     * @param list<TCondition> $conditions
+     * @param list<TSorting> $sortMethods
+     *
+     * @return list<TEntity>
+     *
+     * @throws SortException
+     */
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array
     {
         $entities = $this->applyFilterToEntities($entities, $conditions);
@@ -39,37 +40,46 @@ class PhpReindexableType implements ReindexableTypeInterface
         return $entities;
     }
 
+    /**
+     * @param list<object> $entities
+     * @param list<TCondition> $conditions
+     */
     public function assertMatchingEntities(array $entities, array $conditions): void
     {
         $filteredEntities = $this->applyFilterToEntities($entities, $conditions);
         Assert::count($filteredEntities, count($entities));
     }
 
+    /**
+     * @param list<TCondition> $conditions
+     */
     public function assertMatchingEntity(object $entity, array $conditions): void
     {
         Assert::true($this->isMatchingEntity($entity, $conditions));
     }
 
+    /**
+     * @param list<TCondition> $conditions
+     */
     public function isMatchingEntity(object $entity, array $conditions): bool
     {
         return null !== $this->applyFilterToEntity($entity, $conditions);
     }
 
     /**
+     * @template TEntity of object
+     *
      * @param TEntity $entity
      * @param list<TCondition> $conditions
+     *
      * @return TEntity|null
-     * @throws \EDT\Querying\Contracts\PathException
+     *
+     * @throws PathException
      */
     protected function applyFilterToEntity(
         object $entity,
         array $conditions,
     ): ?object {
-        if ([] !== $conditions) {
-            $this->schemaPathProcessor->mapFilterConditions($this->type, $conditions);
-        }
-        $conditions[] = $this->type->getAccessCondition();
-
         // if access is allowed, return the entity, otherwise return null
         return $this->conditionEvaluator->evaluateConditions($entity, $conditions)
             ? $entity
@@ -77,42 +87,36 @@ class PhpReindexableType implements ReindexableTypeInterface
     }
 
     /**
+     * @template TEntity of object
+     *
      * @param list<TEntity> $entities
      * @param list<TCondition> $conditions
+     *
      * @return list<TEntity>
-     * @throws \EDT\Querying\Contracts\PathException
      */
     protected function applyFilterToEntities(array $entities, array $conditions): array
     {
-        if ([] !== $conditions) {
-            $this->schemaPathProcessor->mapFilterConditions($this->type, $conditions);
+        if ([] === $conditions) {
+            return $entities;
         }
-        $conditions[] = $this->type->getAccessCondition();
 
         return array_values($this->conditionEvaluator->filterArray($entities, ...$conditions));
     }
 
     /**
+     * @template TEntity of object
+     *
      * @param list<TEntity> $entities
      * @param list<TSorting> $sortMethods
      *
      * @return list<TEntity>
      *
-     * @throws \EDT\Querying\Contracts\PathException
-     * @throws \EDT\Querying\Contracts\SortException
+     * @throws SortException
      */
     protected function applySortingToEntities(
         array $entities,
         array $sortMethods,
     ): array {
-        if ([] === $sortMethods) {
-            $sortMethods = $this->type->getDefaultSortMethods();
-        } elseif ($this->type instanceof SortingTypeInterface) {
-            $this->schemaPathProcessor->mapSorting($this->type, $sortMethods);
-        } else {
-            throw AccessException::typeNotSortable($this->type);
-        }
-
         if ([] === $sortMethods) {
             return $entities;
         }

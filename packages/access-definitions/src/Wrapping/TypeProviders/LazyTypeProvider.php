@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\TypeProviders;
 
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use InvalidArgumentException;
 
 /**
@@ -18,11 +18,11 @@ use InvalidArgumentException;
 class LazyTypeProvider implements TypeProviderInterface
 {
     /**
-     * @var array<non-empty-string, TypeInterface<TCondition, TSorting, object>>
+     * @var array<non-empty-string, EntityBasedInterface<object>>
      */
     protected array $types = [];
 
-    public function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface
+    public function getTypeByIdentifier(string $typeIdentifier): ?EntityBasedInterface
     {
         return $this->types[$typeIdentifier] ?? null;
     }
@@ -33,10 +33,10 @@ class LazyTypeProvider implements TypeProviderInterface
     }
 
     /**
-     * @param non-empty-string                            $identifier
-     * @param TypeInterface<TCondition, TSorting, object> $type
+     * @param non-empty-string $identifier
+     * @param EntityBasedInterface<object> $type
      */
-    public function setType(string $identifier, TypeInterface $type): void
+    public function setType(string $identifier, EntityBasedInterface $type): void
     {
         $this->types[$identifier] = $type;
     }

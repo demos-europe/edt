@@ -23,6 +23,7 @@ interface ReindexableTypeInterface extends SortableTypeInterface, FilterableType
      * @param list<TEntity> $entities
      * @param list<TCondition> $conditions
      * @param list<TSorting> $sortMethods
+     *
      * @return list<TEntity>
      */
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array;

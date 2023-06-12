@@ -11,8 +11,14 @@ use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\PropertyBuilderFactory;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\PropertyPaths\PropertyPath;
+use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\Sorter;
+use EDT\Querying\Utilities\TableJoiner;
+use EDT\Wrapping\Contracts\EntityFetcherInterface;
 use EDT\Wrapping\Contracts\Types\ReindexableTypeInterface;
+use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Psr\Log\LoggerInterface;
 use Tests\data\EmptyEntity;
 
@@ -35,14 +41,9 @@ class EmptyType extends AbstractResourceType
         return 'Foobar';
     }
 
-    public function getAccessCondition(): PathsBasedInterface
+    public function getAccessConditions(): array
     {
-        return $this->conditionFactory->false();
-    }
-
-    public function getDefaultSortMethods(): array
-    {
-        return [];
+        return [$this->conditionFactory->false()];
     }
 
     protected function getProperties(): array
@@ -57,16 +58,6 @@ class EmptyType extends AbstractResourceType
     protected function getPropertyBuilderFactory(): PropertyBuilderFactory
     {
         return $this->propertyBuilderFactory;
-    }
-
-    public function getEntityByIdentifier(string $identifier, array $conditions): object
-    {
-        throw new \RuntimeException();
-    }
-
-    public function getEntitiesByIdentifiers(array $identifiers, array $conditions, array $sortMethods): array
-    {
-        throw new \RuntimeException();
     }
 
     protected function getMessageFormatter(): MessageFormatter
@@ -94,8 +85,18 @@ class EmptyType extends AbstractResourceType
         throw new \RuntimeException();
     }
 
-    protected function getReindexableType(): ReindexableTypeInterface
+    protected function getSchemaPathProcessor(): SchemaPathProcessor
     {
         throw new \RuntimeException();
+    }
+
+    protected function getDefaultSortMethods(): array
+    {
+        throw new \RuntimeException();
+    }
+
+    protected function getEntityFetcher(): EntityFetcherInterface
+    {
+        // TODO: Implement getEntityFetcher() method.
     }
 }

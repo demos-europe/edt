@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace EDT\Wrapping\WrapperFactories;
 
 use EDT\JsonApi\RequestHandling\ContentField;
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\EntityVerificationTrait;
 use EDT\Wrapping\Properties\PropertyAccessibilityInterface;
 use Exception;
@@ -23,11 +23,10 @@ use function count;
 use function Safe\preg_match;
 
 /**
- * Wraps a given object, corresponding to a {@link TypeInterface}.
+ * Wraps a given object, corresponding to a {@link TransferableTypeInterface}.
  *
  * Instances will provide read and write access to specific properties of the given object.
  *
- * Read access will only be granted if the given {@link TypeInterface} implements {@link TransferableTypeInterface}.
  * The properties allowed to be read depend on the return of {@link TransferableTypeInterface::getReadableProperties()}.
  * Only those relationships will be readable whose target type return `true` in
  * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}
@@ -65,9 +64,9 @@ class WrapperObject
     }
 
     /**
-     * @return TypeInterface<TCondition, TSorting, TEntity>
+     * @return TransferableTypeInterface<TCondition, TSorting, TEntity>
      */
-    public function getResourceType(): TypeInterface
+    public function getResourceType(): TransferableTypeInterface
     {
         return $this->type;
     }
@@ -160,24 +159,22 @@ class WrapperObject
     {
         try {
             $propertyCollection = $this->type->getUpdatableProperties();
-            $setabilities = [
-                $propertyCollection->getAttributes(),
-                $propertyCollection->getToOneRelationships(),
-                $propertyCollection->getToManyRelationships(),
-            ];
+            $attributeSetabilities = $propertyCollection->getAttributes();
+            $toOneSetabilities = $propertyCollection->getToOneRelationships();
+            $toManySetabilities = $propertyCollection->getToManyRelationships();
 
-            if (array_key_exists($propertyName, $setabilities[0])) {
-                Assert::allKeyNotExists([$setabilities[1], $setabilities[2]], $propertyName);
-                $setability = $setabilities[0][$propertyName];
+            if (array_key_exists($propertyName, $attributeSetabilities)) {
+                Assert::allKeyNotExists([$toOneSetabilities, $toManySetabilities], $propertyName);
+                $setability = $attributeSetabilities[$propertyName];
                 $this->assertMatchingEntityConditions($setability);
                 $setability->updateAttributeValue($this->entity, $value);
 
                 return;
             }
 
-            if (array_key_exists($propertyName, $setabilities[1])) {
-                Assert::allKeyNotExists([$setabilities[0], $setabilities[2]], $propertyName);
-                $setability = $setabilities[1][$propertyName];
+            if (array_key_exists($propertyName, $toOneSetabilities)) {
+                Assert::allKeyNotExists([$attributeSetabilities, $toManySetabilities], $propertyName);
+                $setability = $toOneSetabilities[$propertyName];
                 $relationshipType = $setability->getRelationshipType();
                 $relationshipClass = $relationshipType->getEntityClass();
                 $relationship = $this->assertValidToOneValue($value, $relationshipClass);
@@ -199,9 +196,9 @@ class WrapperObject
                 return;
             }
 
-            if (array_key_exists($propertyName, $setabilities[2])) {
-                Assert::allKeyNotExists([$setabilities[0], $setabilities[1]], $propertyName);
-                $setability = $setabilities[2][$propertyName];
+            if (array_key_exists($propertyName, $toManySetabilities)) {
+                Assert::allKeyNotExists([$attributeSetabilities, $toOneSetabilities], $propertyName);
+                $setability = $toManySetabilities[$propertyName];
                 $relationshipType = $setability->getRelationshipType();
                 $relationshipClass = $relationshipType->getEntityClass();
                 $relationships = $this->assertValidToManyValue($value, $relationshipClass);
@@ -226,7 +223,13 @@ class WrapperObject
             throw PropertyAccessException::update($this->type, $propertyName, $exception);
         }
 
-        throw PropertyAccessException::propertyNotAvailableInUpdatableType($propertyName, $this->type, ...array_keys(array_merge(...$setabilities)));
+        $setabilityKeys = array_keys(array_merge(
+            $attributeSetabilities,
+            $toOneSetabilities,
+            $toManySetabilities,
+        ));
+
+        throw PropertyAccessException::propertyNotAvailableInUpdatableType($propertyName, $this->type, ...$setabilityKeys);
     }
 
     /**
@@ -323,7 +326,7 @@ class WrapperObject
     }
 
     /**
-     * Creates a wrapper around an instance of a {@link TypeInterface::getEntityClass() backing object}.
+     * Creates a wrapper around an instance of a {@link EntityBasedInterface::getEntityClass() backing object}.
      *
      * @template TRelationship of object
      *

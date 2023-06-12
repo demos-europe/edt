@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use Tests\data\AdModel\Birth;
 
-class BirthType implements TypeInterface
+class BirthType implements EntityBasedInterface
 {
     public function __construct(
         protected readonly PathsBasedConditionFactoryInterface $conditionFactory
@@ -21,12 +21,7 @@ class BirthType implements TypeInterface
         return Birth::class;
     }
 
-    public function getAccessCondition(): PathsBasedInterface
-    {
-        return $this->conditionFactory->true();
-    }
-
-    public function getDefaultSortMethods(): array
+    public function getAccessConditions(): array
     {
         return [];
     }

@@ -91,9 +91,9 @@ class AuthorType implements
         ];
     }
 
-    public function getAccessCondition(): PathsBasedInterface
+    public function getAccessConditions(): array
     {
-        return $this->conditionFactory->propertyHasNotSize(0, ['books']);
+        return [$this->conditionFactory->propertyHasNotSize(0, ['books'])];
     }
 
     public function getEntityClass(): string
@@ -104,11 +104,6 @@ class AuthorType implements
     public function isExposedAsRelationship(): bool
     {
         return true;
-    }
-
-    public function getDefaultSortMethods(): array
-    {
-        return [];
     }
 
     public function getUpdatableProperties(): UpdatablePropertyCollection
@@ -125,13 +120,10 @@ class AuthorType implements
                 'books' => new PathToManyRelationshipSetability(
                     self::class,
                     [],
-                    [
-                        $bookType->getAccessCondition()
-                    ],
+                    $bookType->getAccessConditions(),
                     $bookType,
                     ['books'],
-                    $this->propertyAccessor,
-                    $this->entityVerifier
+                    $this->propertyAccessor
                 ),
             ],
         );
@@ -147,7 +139,7 @@ class AuthorType implements
         throw new \RuntimeException();
     }
 
-    public function getEntitiesByIdentifiers(array $identifiers, array $conditions, array $sortMethods): array
+    public function getEntitiesForRelationship(array $identifiers, array $conditions, array $sortMethods): array
     {
         throw new \RuntimeException();
     }
@@ -171,19 +163,24 @@ class AuthorType implements
     {
         $tableJoiner = new TableJoiner($this->propertyAccessor);
         $conditionEvaluator = new ConditionEvaluator($tableJoiner);
-        $conditions[] = $this->getAccessCondition();
+        $conditions = array_merge($conditions, $this->getAccessConditions());
         Assert::true($conditionEvaluator->evaluateConditions($entity, $conditions));
     }
 
     public function isMatchingEntity(object $entity, array $conditions): bool
     {
-        $conditions[] = $this->getAccessCondition();
+        $conditions = array_merge($conditions, $this->getAccessConditions());
         $tableJoiner = new TableJoiner($this->propertyAccessor);
 
         return (new ConditionEvaluator($tableJoiner))->evaluateConditions($entity, $conditions);
     }
 
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array
+    {
+        throw new \RuntimeException();
+    }
+
+    public function getEntityForRelationship(string $identifier, array $conditions): object
     {
         throw new \RuntimeException();
     }

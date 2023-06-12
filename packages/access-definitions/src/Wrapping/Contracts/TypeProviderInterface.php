@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Contracts;
 
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
- * Returns {@link TypeInterface} instances for given Type identifiers.
+ * Returns {@link EntityBasedInterface} instances for given Type identifiers.
  *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
@@ -16,11 +16,11 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 interface TypeProviderInterface
 {
     /**
-     * @return TypeInterface<TCondition, TSorting, object>|null
+     * @return EntityBasedInterface<object>|null
      *
      * @throws TypeRetrievalAccessException
      */
-    public function getTypeByIdentifier(string $typeIdentifier): ?TypeInterface;
+    public function getTypeByIdentifier(string $typeIdentifier): ?EntityBasedInterface;
 
     /**
      * @return list<non-empty-string>

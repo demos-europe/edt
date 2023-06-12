@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Properties;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\IdRetrievableTypeInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
+use EDT\Wrapping\Contracts\Types\RelationshipFetchableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use InvalidArgumentException;
 
@@ -47,9 +47,9 @@ class ConstructorParameter implements ConstructorParameterInterface
     }
 
     /**
-     * @return NamedTypeInterface&IdRetrievableTypeInterface<TCondition, TSorting, object>
+     * @return NamedTypeInterface&RelationshipFetchableTypeInterface<TCondition, TSorting, object>
      */
-    public function getRelationshipType(): NamedTypeInterface&IdRetrievableTypeInterface
+    public function getRelationshipType(): NamedTypeInterface&RelationshipFetchableTypeInterface
     {
         return $this->relationship['relationshipType']
             ?? throw new InvalidArgumentException("Can't retrieve relationship type from attribute.");

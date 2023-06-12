@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Utilities;
 
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
@@ -11,14 +12,13 @@ use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Utilities\TypeAccessors\ExternFilterableProcessorConfig;
 use EDT\Wrapping\Utilities\TypeAccessors\ExternSortableProcessorConfig;
 use function array_key_exists;
 
 /**
  * Follows {@link PropertyPathAccessInterface} instances to check if access is
- * allowed in the context of a given root {@link TypeInterface} and maps
+ * allowed in the context of a given root {@link EntityBasedInterface} and maps
  * the paths according to the corresponding configured aliases.
  */
 class SchemaPathProcessor
@@ -33,13 +33,13 @@ class SchemaPathProcessor
      * @template TCondition of PathsBasedInterface
      * @template TSorting of PathsBasedInterface
      *
-     * @param FilteringTypeInterface<TCondition, TSorting>&TypeInterface<TCondition, TSorting, object> $type
-     * @param non-empty-list<TCondition>                                                               $conditions
+     * @param FilteringTypeInterface<TCondition, TSorting>&EntityBasedInterface<object> $type
+     * @param non-empty-list<TCondition> $conditions
      *
      * @throws PathException
      * @throws AccessException
      */
-    public function mapFilterConditions(FilteringTypeInterface&TypeInterface $type, array $conditions): void
+    public function mapFilterConditions(FilteringTypeInterface&EntityBasedInterface $type, array $conditions): void
     {
         $processorConfig = new ExternFilterableProcessorConfig($type);
         $processor = $this->propertyPathProcessorFactory->createPropertyPathProcessor($processorConfig);
@@ -53,7 +53,7 @@ class SchemaPathProcessor
      * @template TSorting of PathsBasedInterface
      *
      * @param SortingTypeInterface<TCondition, TSorting> $type
-     * @param non-empty-list<TSorting>                   $sortMethods
+     * @param non-empty-list<TSorting> $sortMethods
      *
      * @throws AccessException
      * @throws PathException

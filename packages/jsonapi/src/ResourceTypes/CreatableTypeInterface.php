@@ -21,11 +21,7 @@ interface CreatableTypeInterface extends NamedTypeInterface, ReadableTypeInterfa
     /**
      * The return defines what properties are needed and allowed to be set when a new instance of
      * the {@link EntityBasedInterface::getEntityClass() backing class} is to be created.
-     *
-     * @return InitializabilityCollection<TEntity, TCondition, TSorting>
      */
-    public function getInitializableProperties(): InitializabilityCollection;
-
     public function getExpectedInitializationProperties(): ExpectedPropertyCollection;
 
     /**

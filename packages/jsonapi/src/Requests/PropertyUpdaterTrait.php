@@ -6,8 +6,8 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\IdRetrievableTypeInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
+use EDT\Wrapping\Contracts\Types\RelationshipFetchableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AttributeSetabilityInterface;
 use EDT\Wrapping\Properties\RelationshipInterface;
@@ -124,7 +124,7 @@ trait PropertyUpdaterTrait
      * @template TCond of PathsBasedInterface
      * @template TSort of PathsBasedInterface
      *
-     * @param NamedTypeInterface&IdRetrievableTypeInterface<TCond, TSort, TRel> $relationshipType
+     * @param NamedTypeInterface&RelationshipFetchableTypeInterface<TCond, TSort, TRel> $relationshipType
      * @param list<TCond> $relationshipConditions
      * @param JsonApiRelationship|null $relationshipRef
      *
@@ -133,7 +133,7 @@ trait PropertyUpdaterTrait
      * @throws Exception
      */
     protected function determineToOneRelationshipValue(
-        NamedTypeInterface&IdRetrievableTypeInterface $relationshipType,
+        NamedTypeInterface&RelationshipFetchableTypeInterface $relationshipType,
         array $relationshipConditions,
         ?array $relationshipRef
     ): ?object {
@@ -145,7 +145,7 @@ trait PropertyUpdaterTrait
         $expectedType = $relationshipType->getTypeName();
         Assert::same($relationshipRef[ContentField::TYPE], $expectedType);
 
-        return $relationshipType->getEntityByIdentifier($relationshipRef[ContentField::ID], $relationshipConditions);
+        return $relationshipType->getEntityForRelationship($relationshipRef[ContentField::ID], $relationshipConditions);
     }
 
     /**
@@ -153,14 +153,14 @@ trait PropertyUpdaterTrait
      * @template TCond of PathsBasedInterface
      * @template TSort of PathsBasedInterface
      *
-     * @param NamedTypeInterface&IdRetrievableTypeInterface<TCond, TSort, TRel> $relationshipType
+     * @param NamedTypeInterface&RelationshipFetchableTypeInterface<TCond, TSort, TRel> $relationshipType
      * @param list<TCond> $relationshipConditions
      * @param list<JsonApiRelationship> $relationshipRefs
      *
      * @return list<TRel>
      */
     protected function determineToManyRelationshipValues(
-        NamedTypeInterface&IdRetrievableTypeInterface $relationshipType,
+        NamedTypeInterface&RelationshipFetchableTypeInterface $relationshipType,
         array $relationshipConditions,
         array $relationshipRefs
     ): array {
@@ -174,7 +174,7 @@ trait PropertyUpdaterTrait
         if ([] === $relationshipIds) {
             $relationshipValues = [];
         } else {
-            $relationshipValues = $relationshipType->getEntitiesByIdentifiers($relationshipIds, $relationshipConditions, []);
+            $relationshipValues = $relationshipType->getEntitiesForRelationship($relationshipIds, $relationshipConditions, []);
             Assert::count($relationshipValues, count($relationshipRefs), 'Tried to fetch %d entities, only %d were available for update according to the given identifiers and applied conditions.');
         }
 

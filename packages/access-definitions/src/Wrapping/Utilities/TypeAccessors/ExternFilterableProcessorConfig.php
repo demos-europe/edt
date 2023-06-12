@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Utilities\TypeAccessors;
 
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
-use EDT\Wrapping\Contracts\Types\TypeInterface;
 
 /**
  * @template-extends AbstractProcessorConfig<FilteringTypeInterface<PathsBasedInterface, PathsBasedInterface>>
@@ -14,10 +14,10 @@ use EDT\Wrapping\Contracts\Types\TypeInterface;
 class ExternFilterableProcessorConfig extends AbstractProcessorConfig
 {
     /**
-     * @param FilteringTypeInterface<PathsBasedInterface, PathsBasedInterface>&TypeInterface<PathsBasedInterface, PathsBasedInterface, object> $rootType
+     * @param FilteringTypeInterface<PathsBasedInterface, PathsBasedInterface>&EntityBasedInterface<object> $rootType
      */
     public function __construct(
-        FilteringTypeInterface&TypeInterface $rootType
+        FilteringTypeInterface&EntityBasedInterface $rootType
     ) {
         parent::__construct($rootType);
     }

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Contracts;
 
-use EDT\Wrapping\Contracts\Types\TypeInterface;
+use EDT\Querying\Contracts\EntityBasedInterface;
 use Exception;
 use Throwable;
 
 /**
- * @template TType of TypeInterface
+ * @template TType of EntityBasedInterface
  * @template-extends PropertyAccessException<TType>
  */
 class RelationshipAccessException extends PropertyAccessException
@@ -20,7 +20,7 @@ class RelationshipAccessException extends PropertyAccessException
      * @param non-empty-string $message
      */
     protected function __construct(
-        TypeInterface $type,
+        EntityBasedInterface $type,
         string $propertyName,
         string $message,
         Throwable $previous = null
@@ -34,7 +34,7 @@ class RelationshipAccessException extends PropertyAccessException
      *
      * @return RelationshipAccessException<TType>
      */
-    public static function relationshipTypeAccess(TypeInterface $type, string $property, TypeRetrievalAccessException $previous): self
+    public static function relationshipTypeAccess(EntityBasedInterface $type, string $property, TypeRetrievalAccessException $previous): self
     {
         $typeClass = $type::class;
 
@@ -47,7 +47,7 @@ class RelationshipAccessException extends PropertyAccessException
      *
      * @return RelationshipAccessException<TType>
      */
-    public static function updateRelationshipCondition(TypeInterface $type, string $propertyName, Exception $exception): self
+    public static function updateRelationshipCondition(EntityBasedInterface $type, string $propertyName, Exception $exception): self
     {
         return new self($type, $propertyName, "Failed to assert that the relationship instance is allowed to be set: $propertyName", $exception);
     }
@@ -58,7 +58,7 @@ class RelationshipAccessException extends PropertyAccessException
      *
      * @return RelationshipAccessException<TType>
      */
-    public static function updateRelationshipsCondition(TypeInterface $type, string $propertyName, Exception $exception): self
+    public static function updateRelationshipsCondition(EntityBasedInterface $type, string $propertyName, Exception $exception): self
     {
         return new self($type, $propertyName, "Failed to assert that all relationship instances are allowed to be set: $propertyName", $exception);
     }

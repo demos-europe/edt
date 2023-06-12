@@ -23,6 +23,8 @@ interface ToManyRelationshipReadabilityInterface extends RelationshipReadability
     /**
      * Returns the relationship entities of this to-many relationship property.
      *
+     * Conditions and sort methods are allowed to access any property of the entity.
+     *
      * @param TEntity $entity
      * @param list<TCondition> $conditions
      * @param list<TSorting> $sortMethods

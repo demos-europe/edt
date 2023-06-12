@@ -14,7 +14,6 @@ use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
-use EDT\Wrapping\Utilities\PhpEntityVerifier;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use EDT\Wrapping\WrapperFactories\WrapperArrayFactory;
@@ -245,7 +244,7 @@ class WrapperArrayFactoryTest extends ModelBasedTest
     private function listEntities(FilteringTypeInterface $type, array $conditions): array
     {
         $this->schemaPathProcessor->mapFilterConditions($type, $conditions);
-        $conditions[] = $type->getAccessCondition();
+        $conditions = array_merge($conditions, $type->getAccessConditions());
 
         return $this->authorProvider->getEntities($conditions, [], null);
     }

@@ -7,7 +7,7 @@ namespace EDT\Querying\Pagination;
 class OffsetPagination
 {
     /**
-     * @param int<0, max>  $offset
+     * @param int<0, max> $offset
      * @param positive-int $limit
      */
     public function __construct(
