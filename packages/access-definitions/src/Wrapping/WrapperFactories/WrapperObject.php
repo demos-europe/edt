@@ -144,7 +144,7 @@ class WrapperObject
         throw PropertyAccessException::propertyNotAvailableInReadableType(
             $propertyName,
             $this->type,
-            ...array_keys(array_merge(...$readableProperties))
+            array_keys(array_merge(...$readableProperties))
         );
     }
 

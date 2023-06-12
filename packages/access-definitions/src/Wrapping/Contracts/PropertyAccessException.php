@@ -40,9 +40,9 @@ class PropertyAccessException extends AccessException
 
     /**
      * @param non-empty-string $property
-     * @param non-empty-string ...$availableProperties
+     * @param list<non-empty-string> $availableProperties
      */
-    public static function propertyNotAvailableInReadableType(string $property, TransferableTypeInterface $type, string ...$availableProperties): self
+    public static function propertyNotAvailableInReadableType(string $property, TransferableTypeInterface $type, array $availableProperties): self
     {
         $typeClass = $type::class;
         $propertyList = implode(', ', $availableProperties);
