@@ -22,7 +22,7 @@ use function get_class;
 class JoinFinder
 {
     public function __construct(
-        private readonly ClassMetadataFactory $metadataFactory
+        protected readonly ClassMetadataFactory $metadataFactory
     ) {}
 
     /**

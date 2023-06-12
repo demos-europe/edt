@@ -78,10 +78,10 @@ class DynamicTransformer extends TransformerAbstract
      * @throws InvalidArgumentException
      */
     public function __construct(
-        private readonly TransferableTypeInterface $type,
-        private readonly WrapperObjectFactory $wrapperFactory,
-        private readonly MessageFormatter $messageFormatter,
-        private readonly ?LoggerInterface $logger
+        protected readonly TransferableTypeInterface $type,
+        protected readonly WrapperObjectFactory $wrapperFactory,
+        protected readonly MessageFormatter $messageFormatter,
+        protected readonly ?LoggerInterface $logger
     ) {
         [
             $this->attributeReadabilities,

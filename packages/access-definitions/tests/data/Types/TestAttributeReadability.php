@@ -10,8 +10,8 @@ use EDT\Wrapping\Properties\AttributeReadabilityInterface;
 class TestAttributeReadability implements AttributeReadabilityInterface
 {
     public function __construct(
-        private readonly array $propertyPath,
-        private readonly PropertyAccessorInterface $propertyAccessor
+        protected readonly array $propertyPath,
+        protected readonly PropertyAccessorInterface $propertyAccessor
     ) {}
 
     public function getPropertySchema(): array

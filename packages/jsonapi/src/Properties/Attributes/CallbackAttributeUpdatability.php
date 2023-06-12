@@ -22,8 +22,8 @@ class CallbackAttributeUpdatability implements AttributeUpdatabilityInterface
      * @param callable(TEntity, simple_primitive|array<int|string, mixed>|null): void $updateCallback
      */
     public function __construct(
-        private readonly array $entityConditions,
-        private readonly mixed $updateCallback
+        protected readonly array $entityConditions,
+        protected readonly mixed $updateCallback
     ) {}
 
     public function updateAttributeValue(object $entity, mixed $attributeValue): void

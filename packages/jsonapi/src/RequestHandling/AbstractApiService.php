@@ -41,9 +41,9 @@ abstract class AbstractApiService
      * @param TypeProviderInterface<TCondition, TSorting> $typeProvider
      */
     public function __construct(
-        private readonly FilterParserInterface $filterParser,
-        private readonly JsonApiSortingParser $sortingParser,
-        private readonly PaginatorFactory $paginatorFactory,
+        protected readonly FilterParserInterface $filterParser,
+        protected readonly JsonApiSortingParser $sortingParser,
+        protected readonly PaginatorFactory $paginatorFactory,
         protected readonly PropertyValuesGenerator $propertyValuesGenerator,
         protected readonly TypeProviderInterface $typeProvider,
         protected readonly MessageFormatter $messageFormatter,

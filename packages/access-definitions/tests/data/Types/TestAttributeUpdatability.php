@@ -11,8 +11,8 @@ use Webmozart\Assert\Assert;
 class TestAttributeUpdatability implements AttributeUpdatabilityInterface
 {
     public function __construct(
-        private readonly array $propertyPath,
-       private readonly PropertyAccessorInterface $propertyAccessor
+        protected readonly array $propertyPath,
+        protected readonly PropertyAccessorInterface $propertyAccessor
     ) {}
 
     public function updateAttributeValue(object $entity, mixed $value): void

@@ -31,11 +31,11 @@ use function count;
 final class OpenAPISchemaGenerator
 {
     public function __construct(
-        private readonly TypeProviderInterface $typeProvider,
-        private readonly RouterInterface $router,
-        private readonly SchemaStore $schemaStore,
-        private readonly TranslatorInterface $translator,
-        private readonly int $defaultPageSize
+        protected readonly TypeProviderInterface $typeProvider,
+        protected readonly RouterInterface $router,
+        protected readonly SchemaStore $schemaStore,
+        protected readonly TranslatorInterface $translator,
+        protected readonly int $defaultPageSize
     ) {}
 
     /**

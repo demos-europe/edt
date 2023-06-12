@@ -33,9 +33,9 @@ class FluentQuery
      */
     public function __construct(
         protected readonly ObjectProviderInterface $objectProvider,
-        private readonly ConditionDefinition $conditionDefinition,
-        private readonly SortDefinition $sortDefinition,
-        private readonly SliceDefinition $sliceDefinition
+        protected readonly ConditionDefinition $conditionDefinition,
+        protected readonly SortDefinition $sortDefinition,
+        protected readonly SliceDefinition $sliceDefinition
     ) {}
 
     /**

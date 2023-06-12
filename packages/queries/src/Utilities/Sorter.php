@@ -17,7 +17,7 @@ use function count;
 class Sorter
 {
     public function __construct(
-        private readonly TableJoiner $tableJoiner
+        protected readonly TableJoiner $tableJoiner
     ) {}
 
     /**

@@ -13,7 +13,7 @@ use EDT\Querying\PropertyPaths\PathInfo;
 class ConditionEvaluator
 {
     public function __construct(
-        private readonly TableJoiner $tableJoiner
+        protected readonly TableJoiner $tableJoiner
     ) {}
 
     /**

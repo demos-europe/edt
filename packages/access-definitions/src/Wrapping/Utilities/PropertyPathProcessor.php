@@ -28,7 +28,7 @@ class PropertyPathProcessor
      * @param AbstractProcessorConfig<TType> $processorConfig
      */
     public function __construct(
-        private readonly AbstractProcessorConfig $processorConfig
+        protected readonly AbstractProcessorConfig $processorConfig
     ) {}
 
     /**

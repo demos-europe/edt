@@ -29,8 +29,8 @@ class SchemaPathProcessor
      * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
      */
     public function __construct(
-        private readonly PropertyPathProcessorFactory $propertyPathProcessorFactory,
-        private readonly TypeProviderInterface $typeProvider
+        protected readonly PropertyPathProcessorFactory $propertyPathProcessorFactory,
+        protected readonly TypeProviderInterface $typeProvider
     ) {}
 
     /**

@@ -20,7 +20,7 @@ class Cardinality
      * @param 'toOne'|'toMany' $cardinalityType
      */
     private function __construct(
-        private readonly string $cardinalityType
+        protected readonly string $cardinalityType
     ) {}
 
     public static function getToMany(): Cardinality

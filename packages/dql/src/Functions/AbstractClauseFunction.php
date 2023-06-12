@@ -41,7 +41,7 @@ abstract class AbstractClauseFunction implements ClauseFunctionInterface
      * @param FunctionInterface<TOutput> $function
      */
     public function __construct(
-        private readonly FunctionInterface $function,
+        protected readonly FunctionInterface $function,
         ClauseInterface ...$clauses
     ) {
         $this->clauses = $clauses;

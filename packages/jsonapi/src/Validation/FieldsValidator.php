@@ -25,7 +25,7 @@ class FieldsValidator
     private array $propertiesConstraints;
 
     public function __construct(
-        private readonly ValidatorInterface $validator
+        protected readonly ValidatorInterface $validator
     ) {
         $this->typeConstraints = [
             new Assert\NotNull(),

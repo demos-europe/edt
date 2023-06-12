@@ -88,8 +88,8 @@ class QueryBuilderPreparer
      */
     public function __construct(
         string $mainEntityClass,
-        private readonly ClassMetadataFactory $metadataFactory,
-        private readonly JoinFinder $joinFinder
+        protected readonly ClassMetadataFactory $metadataFactory,
+        protected readonly JoinFinder $joinFinder
     ) {
         $this->mainClassMetadata = $metadataFactory->getMetadataFor($mainEntityClass);
     }

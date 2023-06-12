@@ -18,7 +18,7 @@ class StringContains extends AbstractMultiFunction
     public function __construct(
         FunctionInterface $contains,
         FunctionInterface $contained,
-        private readonly bool $caseSensitive
+        protected readonly bool $caseSensitive
     ) {
         parent::__construct($contains, $contained);
     }

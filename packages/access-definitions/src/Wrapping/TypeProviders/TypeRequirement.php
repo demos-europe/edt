@@ -21,10 +21,10 @@ class TypeRequirement
      * @param list<non-empty-string> $problems
      */
     public function __construct(
-        private ?TypeInterface $typedInstance,
-        private readonly ?TypeInterface $plainInstance,
-        private readonly string $identifier,
-        private array $problems
+        protected ?TypeInterface $typedInstance,
+        protected readonly ?TypeInterface $plainInstance,
+        protected readonly string $identifier,
+        protected array $problems
     ) {}
 
     /**

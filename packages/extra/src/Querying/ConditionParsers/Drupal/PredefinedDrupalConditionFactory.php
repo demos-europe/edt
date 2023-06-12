@@ -25,7 +25,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
      * @param PathsBasedConditionFactoryInterface<TCondition> $conditionFactory
      */
     public function __construct(
-        private readonly PathsBasedConditionFactoryInterface $conditionFactory
+        protected readonly PathsBasedConditionFactoryInterface $conditionFactory
     ) {
         $this->operatorFunctions = $this->getOperatorFunctions();
     }

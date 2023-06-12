@@ -23,8 +23,8 @@ class TagTypeParseException extends ParseException
      */
     protected function __construct(
         string $className,
-        private readonly string $tagName,
-        private readonly string $type,
+        protected readonly string $tagName,
+        protected readonly string $type,
         string $message,
         int $code = 0,
         Throwable $previous = null

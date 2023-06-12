@@ -20,9 +20,9 @@ class CallbackAttributeReadability implements AttributeReadabilityInterface
      * @param callable(TEntity): (simple_primitive|array<int|string, mixed>|null) $readCallback
      */
     public function __construct(
-        private readonly bool $defaultField,
-        private readonly mixed $readCallback,
-        private readonly AttributeTypeResolver $typeResolver
+        protected readonly bool $defaultField,
+        protected readonly mixed $readCallback,
+        protected readonly AttributeTypeResolver $typeResolver
     ) {}
 
     public function getValue(object $entity): mixed

@@ -35,9 +35,9 @@ class PropertyPath implements IteratorAggregate, PropertyPathAccessInterface
      * @throws PathException
      */
     public function __construct(
-        private readonly ?string $context,
-        private readonly string $salt,
-        private readonly int $accessDepth,
+        protected readonly ?string $context,
+        protected readonly string $salt,
+        protected readonly int $accessDepth,
         string|array|PropertyPathInterface $path
     ) {
         if (is_string($path)) {

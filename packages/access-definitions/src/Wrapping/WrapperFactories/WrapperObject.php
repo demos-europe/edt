@@ -49,9 +49,9 @@ class WrapperObject
      * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
      */
     public function __construct(
-        private readonly object $entity,
-        private readonly TransferableTypeInterface $type,
-        private readonly WrapperObjectFactory $wrapperFactory
+        protected readonly object $entity,
+        protected readonly TransferableTypeInterface $type,
+        protected readonly WrapperObjectFactory $wrapperFactory
     ) {}
 
     /**

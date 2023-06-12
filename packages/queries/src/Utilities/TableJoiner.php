@@ -25,7 +25,7 @@ use function is_int;
 class TableJoiner
 {
     public function __construct(
-        private readonly PropertyAccessorInterface $propertyAccessor
+        protected readonly PropertyAccessorInterface $propertyAccessor
     ) {}
 
     /**

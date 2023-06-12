@@ -14,8 +14,8 @@ use Symfony\Component\Routing\RouterInterface;
 class PaginatorFactory
 {
     public function __construct(
-        private readonly RequestStack $requestStack,
-        private readonly RouterInterface $router
+        protected readonly RequestStack $requestStack,
+        protected readonly RouterInterface $router
     ) {}
 
     /**

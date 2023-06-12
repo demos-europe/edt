@@ -24,7 +24,7 @@ abstract class AbstractProcessorConfig
      */
     public function __construct(
         protected readonly TypeProviderInterface $typeProvider,
-        private readonly TypeInterface $rootType
+        protected readonly TypeInterface $rootType
     ) {}
 
     /**

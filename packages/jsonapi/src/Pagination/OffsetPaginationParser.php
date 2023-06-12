@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class OffsetPaginationParser implements PaginationParserInterface
 {
     public function __construct(
-        private readonly ValidatorInterface $validator
+        protected readonly ValidatorInterface $validator
     ) {}
 
     /**

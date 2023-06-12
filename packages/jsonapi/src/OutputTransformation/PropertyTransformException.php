@@ -14,7 +14,7 @@ class PropertyTransformException extends Exception
     /**
      * @param non-empty-string $propertyName
      */
-    public function __construct(private readonly string $propertyName, Exception $previous)
+    public function __construct(protected readonly string $propertyName, Exception $previous)
     {
         parent::__construct("Failed to transform property '$this->propertyName'.", 0, $previous);
     }

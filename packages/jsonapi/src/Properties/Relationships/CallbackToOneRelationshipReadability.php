@@ -28,10 +28,10 @@ class CallbackToOneRelationshipReadability implements ToOneRelationshipReadabili
      * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      */
     public function __construct(
-        private readonly bool $defaultField,
-        private readonly bool $defaultInclude,
-        private readonly mixed $readCallback,
-        private readonly TransferableTypeInterface $relationshipType,
+        protected readonly bool $defaultField,
+        protected readonly bool $defaultInclude,
+        protected readonly mixed $readCallback,
+        protected readonly TransferableTypeInterface $relationshipType,
         protected readonly EntityVerifierInterface $entityVerifier
     ) {}
 

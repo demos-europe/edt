@@ -102,8 +102,8 @@ class DrupalFilterParser implements FilterParserInterface
      */
     public function __construct(
         protected readonly PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
-        private readonly ConditionParserInterface $conditionParser,
-        private readonly DrupalFilterValidator $filterValidator
+        protected readonly ConditionParserInterface $conditionParser,
+        protected readonly DrupalFilterValidator $filterValidator
     ) {}
 
     /**
