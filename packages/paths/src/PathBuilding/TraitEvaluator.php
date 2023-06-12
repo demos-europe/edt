@@ -75,7 +75,7 @@ class TraitEvaluator
      * @return list<class-string>
      * @throws SplException
      */
-    private function getAllParentClasses(string $class): array
+    protected function getAllParentClasses(string $class): array
     {
         return array_values(class_parents($class));
     }

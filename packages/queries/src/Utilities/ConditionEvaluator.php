@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace EDT\Querying\Utilities;
 
 use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\PathException;
 use EDT\Querying\PropertyPaths\PathInfo;
+use InvalidArgumentException;
 
 /**
  * @internal
@@ -13,7 +15,7 @@ use EDT\Querying\PropertyPaths\PathInfo;
 class ConditionEvaluator
 {
     public function __construct(
-        private readonly TableJoiner $tableJoiner
+        protected readonly TableJoiner $tableJoiner
     ) {}
 
     /**
@@ -36,6 +38,9 @@ class ConditionEvaluator
 
     /**
      * @param list<FunctionInterface<bool>> $conditions
+     *
+     * @throws PathException
+     * @throws InvalidArgumentException
      */
     public function evaluateConditions(object $target, array $conditions): bool
     {
@@ -52,6 +57,9 @@ class ConditionEvaluator
      * Will return `false` if `null` is given.
      *
      * @param FunctionInterface<bool> $condition
+     *
+     * @throws PathException
+     * @throws InvalidArgumentException
      */
     public function evaluateCondition(?object $target, FunctionInterface $condition): bool
     {
@@ -73,6 +81,9 @@ class ConditionEvaluator
 
     /**
      * @param FunctionInterface<bool> $condition
+     *
+     * @throws PathException
+     * @throws InvalidArgumentException
      */
     public function evaluateConditionInverted(?object $target, FunctionInterface $condition): bool
     {
@@ -96,8 +107,11 @@ class ConditionEvaluator
      * @param FunctionInterface<bool> $condition
      *
      * @return list<list<mixed>>
+     *
+     * @throws PathException
+     * @throws InvalidArgumentException
      */
-    private function getPropertyValueRows(object $target, FunctionInterface $condition): array
+    protected function getPropertyValueRows(object $target, FunctionInterface $condition): array
     {
         $propertyPaths = PathInfo::getPropertyPaths($condition);
 

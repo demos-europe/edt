@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
-use EDT\Querying\Contracts\ObjectProviderInterface;
+use EDT\Querying\Contracts\OffsetEntityProviderInterface;
 use EDT\Querying\Contracts\FluentQueryException;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortException;
+use EDT\Querying\Pagination\OffsetPagination;
+use const PHP_INT_MAX;
 
 /**
  * A query to retrieve objects of a specific type. Can be modified before being executed.
@@ -27,31 +29,35 @@ use EDT\Querying\Contracts\SortException;
 class FluentQuery
 {
     /**
-     * @param ObjectProviderInterface<TCondition, TSorting, TEntity> $objectProvider
+     * @param OffsetEntityProviderInterface<TCondition, TSorting, TEntity> $objectProvider
      * @param ConditionDefinition<TCondition> $conditionDefinition
      * @param SortDefinition<TSorting> $sortDefinition
      */
     public function __construct(
-        protected readonly ObjectProviderInterface $objectProvider,
-        private readonly ConditionDefinition $conditionDefinition,
-        private readonly SortDefinition $sortDefinition,
-        private readonly SliceDefinition $sliceDefinition
+        protected readonly OffsetEntityProviderInterface $objectProvider,
+        protected readonly ConditionDefinition $conditionDefinition,
+        protected readonly SortDefinition $sortDefinition,
+        protected readonly SliceDefinition $sliceDefinition
     ) {}
 
     /**
-     * @return iterable<TEntity>
+     * @return list<TEntity>
      *
      * @throws PathException
      * @throws PaginationException
      * @throws SortException
      */
-    public function getEntities(): iterable
+    public function getEntities(): array
     {
-        return $this->objectProvider->getObjects(
+        $offset = $this->sliceDefinition->getOffset();
+        $limit = $this->sliceDefinition->getLimit();
+
+        return $this->objectProvider->getEntities(
             $this->conditionDefinition->getConditions(),
             $this->sortDefinition->getSortMethods(),
-            $this->sliceDefinition->getOffset(),
-            $this->sliceDefinition->getLimit()
+            0 !== $offset || null !== $limit
+                ? new OffsetPagination($offset, $limit ?? PHP_INT_MAX)
+                : null
         );
     }
 

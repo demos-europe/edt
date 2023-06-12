@@ -25,7 +25,7 @@ class FieldsValidator
     private array $propertiesConstraints;
 
     public function __construct(
-        private readonly ValidatorInterface $validator
+        protected readonly ValidatorInterface $validator
     ) {
         $this->typeConstraints = [
             new Assert\NotNull(),
@@ -70,11 +70,13 @@ class FieldsValidator
 
         if (0 !== $violations->count()) {
             throw new FieldsException(
-                'Invalid format used for \'fields\' parameter.',
+                "Invalid format used for 'fields' parameter.",
                 0,
                 new ValidationFailedException($fieldValue, $violations)
             );
         }
+
+        \Webmozart\Assert\Assert::isArray($fieldValue);
 
         return $fieldValue;
     }
@@ -86,14 +88,14 @@ class FieldsValidator
      */
     public function getNonReadableProperties(string $propertiesString, TransferableTypeInterface $type): array
     {
-        if ('' === $propertiesString) {
-            return [];
-        }
+        return '' === $propertiesString
+            ? []
+            : array_values(
+                array_diff(
+                    explode(',', $propertiesString),
+                    $type->getReadableProperties()->getPropertyKeys()
+                )
+            );
 
-        $requestedProperties = explode(',', $propertiesString);
-        $readableProperties = array_merge(...$type->getReadableProperties());
-        $readablePropertyNames = array_keys($readableProperties);
-
-        return array_values(array_diff($requestedProperties, $readablePropertyNames));
     }
 }

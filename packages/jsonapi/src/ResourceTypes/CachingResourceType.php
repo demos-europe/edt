@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\Properties\ConfigCollection;
-use EDT\Querying\Contracts\FunctionInterface;
-use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
- * @template TCondition of FunctionInterface<bool>
- * @template TSorting of SortMethodInterface
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
  * @template-extends AbstractResourceType<TCondition, TSorting, TEntity>
@@ -18,16 +16,16 @@ use EDT\Querying\Contracts\SortMethodInterface;
 abstract class CachingResourceType extends AbstractResourceType
 {
     /**
-     * @var ConfigCollection<TCondition, TSorting, TEntity>|null
+     * @var array<non-empty-string, PropertyBuilder<TEntity, mixed, TCondition, TSorting>>|null
      */
-    private ?ConfigCollection $initializedConfiguration = null;
+    private ?array $properties = null;
 
-    protected function getInitializedConfiguration(): ConfigCollection
+    protected function getInitializedProperties(): array
     {
-        if (null === $this->initializedConfiguration) {
-            $this->initializedConfiguration = parent::getInitializedConfiguration();
+        if (null === $this->properties) {
+            $this->properties = parent::getInitializedProperties();
         }
 
-        return $this->initializedConfiguration;
+        return $this->properties;
     }
 }

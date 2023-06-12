@@ -21,7 +21,7 @@ class SortDefinition
      * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
     public function __construct(
-        private readonly SortMethodFactoryInterface $sortMethodFactory
+        protected readonly SortMethodFactoryInterface $sortMethodFactory
     ) {}
 
     /**

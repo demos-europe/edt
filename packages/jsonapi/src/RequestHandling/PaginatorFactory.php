@@ -10,12 +10,13 @@ use League\Fractal\Pagination\PaginatorInterface;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
+use Webmozart\Assert\Assert;
 
 class PaginatorFactory
 {
     public function __construct(
-        private readonly RequestStack $requestStack,
-        private readonly RouterInterface $router
+        protected readonly RequestStack $requestStack,
+        protected readonly RouterInterface $router
     ) {}
 
     /**
@@ -31,7 +32,9 @@ class PaginatorFactory
                     throw new InvalidArgumentException('No request available in request stack.');
                 }
                 $route = $request->attributes->get('_route');
+                Assert::stringNotEmpty($route);
                 $inputParams = $request->attributes->get('_route_params');
+                Assert::isArray($inputParams);
                 $newParams = array_merge($inputParams, $request->query->all());
                 $newParams[UrlParameter::PAGE] = $page;
 

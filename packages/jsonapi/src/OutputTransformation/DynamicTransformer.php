@@ -4,93 +4,91 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\OutputTransformation;
 
+use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\JsonApi\Schema\ContentField;
-use EDT\Querying\Contracts\FunctionInterface;
-use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
-use EDT\Wrapping\Contracts\AttributeAccessException;
-use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\AbstractRelationshipReadability;
-use EDT\Wrapping\Properties\AttributeReadability;
-use EDT\Wrapping\Properties\ToManyRelationshipReadability;
-use EDT\Wrapping\Properties\ToOneRelationshipReadability;
-use EDT\Wrapping\Utilities\PropertyReader;
-use EDT\Wrapping\WrapperFactories\WrapperObject;
-use EDT\Wrapping\WrapperFactories\WrapperObjectFactory;
-use League\Fractal\ParamBag;
-use Webmozart\Assert\Assert;
-use function gettype;
-use const ARRAY_FILTER_USE_BOTH;
-use const ARRAY_FILTER_USE_KEY;
-use function array_key_exists;
-use function count;
-use function in_array;
+use EDT\Wrapping\Properties\AttributeReadabilityInterface;
+use EDT\Wrapping\Properties\IdAttributeConflictException;
+use EDT\Wrapping\Properties\IdReadabilityInterface;
+use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
+use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
+use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
+use Exception;
 use InvalidArgumentException;
+use League\Fractal\ParamBag;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Resource\NullResource;
-use League\Fractal\Resource\ResourceAbstract;
 use League\Fractal\Scope;
 use League\Fractal\TransformerAbstract;
 use Psr\Log\LoggerInterface;
+use Webmozart\Assert\Assert;
+use function array_key_exists;
+use function count;
+use function in_array;
+use const ARRAY_FILTER_USE_BOTH;
+use const ARRAY_FILTER_USE_KEY;
 
 /**
- * Behavior can be configured on instantiation.
- *
  * This transformer takes a {@link TransferableTypeInterface} instance and uses the
- * {@link TransferableTypeInterface::getReadableProperties()} to transform given entities
- * corresponding to that type.
+ * {@link TransferableTypeInterface::getReadableProperties() readable properties} to transform given
+ * entities corresponding to that type.
  *
- * For example if only a single attribute 'title' is defined (and
- * set as default) then this transformer will transform the given entity into a format only
- * containing this single attribute. If additionally a single relationship include is
- * defined but not marked as default then the behavior stays the same, unless in the request it is
- * explicitly stated that that include should be part of the transformer result too.
+ * For example if only a single attribute 'title' is defined (and set as default) then this
+ * transformer will transform the given entity into a format only containing this single attribute.
+ * If additionally a single relationship include is defined but not marked as default then the
+ * behavior stays the same, unless in the request it is explicitly stated this include should be
+ * part of the transformer result too.
  *
- * If the given {@link TransferableTypeInterface} is mis-configured, e.g. contains readable properties
- * that do not exist in the entity to be transformed, then the behavior is undefined.
+ * If the given {@link TransferableTypeInterface} is mis-configured, e.g. contains readable
+ * properties that do not exist in the entity to be transformed, then the behavior is undefined.
  *
- * @template TCondition of FunctionInterface<bool>
- * @template TSorting of SortMethodInterface
  * @template TEntity of object
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 class DynamicTransformer extends TransformerAbstract
 {
     /**
-     * @var array<non-empty-string, AttributeReadability<TEntity>>
+     * @var array<non-empty-string, AttributeReadabilityInterface<TEntity>>
      */
     private array $attributeReadabilities;
 
     /**
-     * @var array<non-empty-string, ToOneRelationshipReadability<TCondition, TSorting, TEntity, object>>
+     * @var array<non-empty-string, ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object>>
      */
     private array $toOneRelationshipReadabilities;
 
     /**
-     * @var array<non-empty-string, ToManyRelationshipReadability<TCondition, TSorting, TEntity, object>>
+     * @var array<non-empty-string, ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object>>
      */
     private array $toManyRelationshipReadabilities;
 
     /**
+     * @var IdReadabilityInterface<TEntity>
+     */
+    private IdReadabilityInterface $idReadability;
+
+    /**
      * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
+     *
+     * @throws InvalidArgumentException
      */
     public function __construct(
-        private readonly TransferableTypeInterface $type,
-        private readonly WrapperObjectFactory $wrapperFactory,
-        private readonly MessageFormatter $messageFormatter,
-        private readonly ?LoggerInterface $logger
+        protected readonly TransferableTypeInterface $type,
+        protected readonly MessageFormatter $messageFormatter,
+        protected readonly ?LoggerInterface $logger
     ) {
-        $readableProperties = $type->getReadableProperties();
-        [
-            $this->attributeReadabilities,
-            $this->toOneRelationshipReadabilities,
-            $this->toManyRelationshipReadabilities
-        ] = $readableProperties;
+        $readabilityCollection = $this->type->getReadableProperties();
+        $this->attributeReadabilities = $readabilityCollection->getAttributes();
+        $this->toOneRelationshipReadabilities = $readabilityCollection->getToOneRelationships();
+        $this->toManyRelationshipReadabilities = $readabilityCollection->getToManyRelationships();
+        $this->idReadability = $readabilityCollection->getIdentifierReadability();
 
-        if (!array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
-            throw new InvalidArgumentException('An attribute definition for the `id` is required, as it is needed by Fractal');
+        if (array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
+            throw IdAttributeConflictException::create($type->getTypeName());
         }
 
         $relationshipReadabilities = array_merge(
@@ -101,170 +99,139 @@ class DynamicTransformer extends TransformerAbstract
         $this->setAvailableIncludes(array_keys($relationshipReadabilities));
         $this->setDefaultIncludes(array_keys(array_filter(
             $relationshipReadabilities,
-            static fn (AbstractRelationshipReadability $readability): bool => $readability->isDefaultInclude()))
+            static fn (RelationshipReadabilityInterface $readability): bool => $readability->isDefaultInclude()))
         );
     }
 
     /**
+     * Reads the attribute values via the {@link self::$attributeReadabilities}.
+     *
      * If no specific fields were requested the attributes marked as defaults will be returned. If
      * a specific set of fields was requested only attributes in that set will be returned.
      *
      * @param TEntity $entity
      *
-     * @return array<string, mixed>
+     * @return array<non-empty-string, mixed>
      *
-     * @throws TransformException
-     * @throws AttributeAccessException
+     * @throws InvalidArgumentException unexpected scope or entity given
+     * @throws PropertyTransformException transforming a specific attribute failed
      */
     public function transform($entity): array
     {
+        $scope = $this->getCurrentScope();
+        Assert::notNull($scope);
         Assert::isInstanceOf($entity, $this->type->getEntityClass());
 
-        $effectiveReadabilities = $this->getEffectiveAttributeReadabilities($this->attributeReadabilities);
+        $effectiveAttributes = $this->getEffectiveAttributeReadabilities($scope);
+        $effectiveAttributes[ContentField::ID] = $this->idReadability;
 
-        $attributesToReturn = [];
-        foreach ($effectiveReadabilities as $attributeName => $readability) {
-            $customReadCallable = $readability->getCustomReadCallback();
-            $attributeValue = null === $customReadCallable
-                // we should only get non-objects here, so there is no need to unwrap
-                ? $this->getValueViaWrapper($entity, $attributeName)
-                : $customReadCallable($entity);
-
-            if (!$readability->isValidValue($attributeValue)) {
-                throw AttributeAccessException::attributeValueForNameInvalid($attributeName, $attributeValue);
+        $resultAttributes = [];
+        foreach ($effectiveAttributes as $attributeName => $readability) {
+            try {
+                $resultAttributes[$attributeName] = $readability->getValue($entity);
+            } catch (Exception $exception) {
+                throw new PropertyTransformException($attributeName, $exception);
             }
-            $attributesToReturn[$attributeName] = $attributeValue;
         }
 
-        return $attributesToReturn;
+        return $resultAttributes;
     }
 
     /**
      * @param non-empty-string $methodName
      * @param array{0: TEntity, 1: ParamBag} $arguments
      *
-     * @throws TransformException
+     * @throws InvalidArgumentException include name could not be determined
+     * @throws PropertyTransformException transforming a specific relationship failed
+     *
+     * @see callIncludeMethod
      */
     public function __call(string $methodName, array $arguments): Collection|Item|NullResource
     {
         Assert::stringNotEmpty($methodName);
-        Assert::count($arguments, 2);
-        Assert::keyExists($arguments, 0);
-        Assert::keyExists($arguments, 1);
-
-        [$entity, $paramBag] = $arguments;
-
-        Assert::isInstanceOf($entity, $this->type->getEntityClass());
-        Assert::isInstanceOf($paramBag, ParamBag::class);
-
-        $includeName = $this->getIncludeName($methodName);
+        Assert::startsWith($methodName, 'include');
+        $includeName = lcfirst(substr($methodName, 7));
         Assert::stringNotEmpty($includeName);
 
-        if (array_key_exists($includeName, $this->toOneRelationshipReadabilities)) {
-            $relationshipReadability = $this->toOneRelationshipReadabilities[$includeName];
+        try {
+            Assert::count($arguments, 2);
+            Assert::keyExists($arguments, 0);
+            Assert::keyExists($arguments, 1);
 
-            return $this->handleToOneRelationship($relationshipReadability, $entity, $includeName);
+            [$entity, $paramBag] = $arguments;
+
+            Assert::isInstanceOf($entity, $this->type->getEntityClass());
+            Assert::isInstanceOf($paramBag, ParamBag::class);
+
+            if (array_key_exists($includeName, $this->toOneRelationshipReadabilities)) {
+                $relationshipReadability = $this->toOneRelationshipReadabilities[$includeName];
+                Assert::keyNotExists($this->toManyRelationshipReadabilities, $includeName);
+
+                return $this->retrieveRelationshipItem($relationshipReadability, $entity);
+            }
+
+            if (array_key_exists($includeName, $this->toManyRelationshipReadabilities)) {
+                $relationshipReadability = $this->toManyRelationshipReadabilities[$includeName];
+                Assert::keyNotExists($this->toOneRelationshipReadabilities, $includeName);
+
+                return $this->retrieveRelationshipCollection($relationshipReadability, $entity);
+            }
+
+            throw new InvalidArgumentException("Include '$includeName' is not available");
+        } catch (Exception $exception) {
+            throw new PropertyTransformException($includeName, $exception);
         }
-
-        if (array_key_exists($includeName, $this->toManyRelationshipReadabilities)) {
-            $relationshipReadability = $this->toManyRelationshipReadabilities[$includeName];
-
-            return $this->handleToManyRelationship($relationshipReadability, $entity, $includeName);
-        }
-
-        throw TransformException::includeNotAvailable($includeName);
     }
 
     /**
-     * @param ToOneRelationshipReadability<TCondition, TSorting, TEntity, object> $readability
+     * @param ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object> $readability
      * @param TEntity $entity
-     * @param non-empty-string $includeName
      *
-     * @return Item|NullResource
-     *
-     * @throws TransformException
-     * @throws RelationshipAccessException
+     * @throws InvalidArgumentException
      */
-    protected function handleToOneRelationship(
-        ToOneRelationshipReadability $readability,
-        object $entity,
-        string $includeName
-    ): ResourceAbstract {
-        $relationshipType = $readability->getRelationshipType();
-
-        $customReadCallable = $readability->getCustomReadCallback();
-        $value = null === $customReadCallable
-            ? $this->getValueViaWrapper($entity, $includeName)
-            : $customReadCallable($entity);
-
-        if (null === $value) {
+    protected function retrieveRelationshipItem(
+        ToOneRelationshipReadabilityInterface $readability,
+        object $entity
+    ): Item|NullResource {
+        $relationshipEntity = $readability->getValue($entity, []);
+        if (null === $relationshipEntity) {
             return $this->null();
         }
-
-        $entityClass = $relationshipType->getEntityClass();
-        $value = PropertyReader::verifyToOneEntity($value, $includeName, $entityClass);
+        $relationshipType = $readability->getRelationshipType();
         $transformer = $this->createRelationshipTransformer($relationshipType);
 
-        return new Item($value, $transformer, $relationshipType->getIdentifier());
+        return $this->item($relationshipEntity, $transformer, $relationshipType->getTypeName());
     }
 
     /**
-     * @param ToManyRelationshipReadability<TCondition, TSorting, TEntity, object> $readability
+     * @param ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object> $readability
      * @param TEntity $entity
-     * @param non-empty-string $includeName
      *
-     * @return Collection
-     *
-     * @throws TransformException
-     * @throws RelationshipAccessException
+     * @throws InvalidArgumentException
      */
-    protected function handleToManyRelationship(
-        ToManyRelationshipReadability $readability,
-        object $entity,
-        string $includeName
+    protected function retrieveRelationshipCollection(
+        ToManyRelationshipReadabilityInterface $readability,
+        object $entity
     ): Collection {
+        $relationshipEntities = $readability->getValue($entity, [], []);
         $relationshipType = $readability->getRelationshipType();
-        $entityClass = $relationshipType->getEntityClass();
-
-        $customReadCallable = $readability->getCustomReadCallback();
-        $values = null === $customReadCallable
-            ? $this->getValueViaWrapper($entity, $includeName)
-            : $customReadCallable($entity);
-
-        $values = PropertyReader::verifyToManyIterable($values, $includeName, $entityClass);
         $transformer = $this->createRelationshipTransformer($relationshipType);
 
-        return new Collection($values, $transformer, $relationshipType->getIdentifier());
+        return $this->collection($relationshipEntities, $transformer, $relationshipType->getTypeName());
     }
 
+    /**
+     * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
+     *
+     * @throws InvalidArgumentException
+     */
     protected function createRelationshipTransformer(TransferableTypeInterface $relationshipType): TransformerAbstract
     {
         return new DynamicTransformer(
             $relationshipType,
-            $this->wrapperFactory,
             $this->messageFormatter,
             $this->logger
         );
-    }
-
-    /**
-     * The application will pass raw entities into the transformer. This method will automatically
-     * wrap it to check authorizations when retrieving the property value via the wrapper.
-     *
-     * Note that because the next transformer may require the actual entity instance instead
-     * of the wrapper you need to unwrap returned {@link WrapperObject} instances.
-     *
-     * The alternative would be
-     * to either adjust all parameter types in the transformers to accept {@link WrapperObject}
-     * or to dynamically extend {@link WrapperObject} from the current entity class via eval().
-     *
-     * @param TEntity $entity
-     * @param non-empty-string $propertyName
-     */
-    protected function getValueViaWrapper(object $entity, string $propertyName): mixed
-    {
-        $entity = $this->wrapperFactory->createWrapper($entity, $this->type);
-        return $entity->getPropertyValue($propertyName);
     }
 
     /**
@@ -279,11 +246,9 @@ class DynamicTransformer extends TransformerAbstract
      * the default Fractal behavior to silently not include them, because the page will not work
      * and with the log message the cause is way more clear.
      *
-     * TODO: by validating the request before invoking the root transformer the warning logging in this class can be replaced with an exception, as it should never occur
-     *
-     * @throws ExcludeException
+     * @throws InvalidArgumentException
      */
-    public function processIncludedResources(Scope $scope, mixed $data): array|bool
+    public function processIncludedResources(Scope $scope, mixed $data): array|false
     {
         $this->validateExcludes($scope);
         $this->validateIncludes($scope);
@@ -292,36 +257,28 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param non-empty-string $includeMethodName
-     *
-     * @throws TransformException
+     * @throws InvalidArgumentException
      */
-    private function getIncludeName(string $includeMethodName): string
-    {
-        if (0 !== strncmp($includeMethodName, 'include', 7)) {
-            throw TransformException::noIncludeMethod($includeMethodName);
-        }
-
-        return lcfirst(substr($includeMethodName, 7));
-    }
-
-    /**
-     * @throws ExcludeException
-     */
-    private function validateExcludes(Scope $scope): void
+    protected function validateExcludes(Scope $scope): void
     {
         $requestedExcludes = $scope->getManager()->getRequestedExcludes();
         $requestedExcludesCount = count($requestedExcludes);
         if (1 < $requestedExcludesCount || (1 === $requestedExcludesCount && '' !== $requestedExcludes[0])) {
-            throw ExcludeException::notAllowed();
+            throw new InvalidArgumentException('Excluding relationships is not supported.');
         }
     }
 
+    /**
+     * TODO: by validating the request before invoking the root transformer the warning logging in this class can be replaced with an exception, as it should never occur
+     *
+     * @throws InvalidArgumentException
+     */
     public function validateIncludes(Scope $scope): void
     {
         $requestedIncludes = $scope->getManager()->getRequestedIncludes();
         $notAvailableIncludes = [];
         foreach ($requestedIncludes as $requestedInclude) {
+            Assert::stringNotEmpty($requestedInclude);
             if (!$scope->isRequested($requestedInclude)) {
                 // continue if the include was not requested for this specific type
                 continue;
@@ -343,10 +300,10 @@ class DynamicTransformer extends TransformerAbstract
     /**
      * @param non-empty-list<non-empty-string> $notAvailableIncludes
      */
-    private function createIncludeErrorMessage(array $notAvailableIncludes): string
+    protected function createIncludeErrorMessage(array $notAvailableIncludes): string
     {
         $notAvailableIncludesString = $this->messageFormatter->propertiesToString($notAvailableIncludes);
-        $message = "The following requested includes are not available in the resource type '{$this->type->getIdentifier()}': $notAvailableIncludesString.";
+        $message = "The following requested includes are not available in the resource type '{$this->type->getTypeName()}': $notAvailableIncludesString.";
 
         if ([] !== $this->availableIncludes) {
             $availableIncludesString = $this->messageFormatter->propertiesToString($this->availableIncludes);
@@ -359,29 +316,22 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param array<non-empty-string, AttributeReadability<TEntity>> $attributeReadabilities
+     * Get only those attributes from {@link self::$attributes} that are relevant for the response.
      *
-     * @return array<non-empty-string, AttributeReadability<TEntity>>
+     * I.e. if specific fields were requested return only the corresponding attributes for those.
+     * If no specific fields were requested, return only the attributes that are set as default
+     * field.
      *
-     * @throws TransformException
+     * @return array<non-empty-string, AttributeReadabilityInterface<TEntity>>
      */
-    protected function getEffectiveAttributeReadabilities(array $attributeReadabilities): array
+    protected function getEffectiveAttributeReadabilities(Scope $scope): array
     {
-        $scope = $this->getCurrentScope();
-        if (null === $scope) {
-            throw TransformException::nullScope();
-        }
-
-        $fieldsetBag = $scope->getManager()->getFieldset($this->type->getIdentifier());
+        $fieldsetBag = $scope->getManager()->getFieldset($this->type->getTypeName());
         if (null === $fieldsetBag) {
-            // default attribute fields
+            // if no fieldset was requested, return default attribute fields
             return array_filter(
-                $attributeReadabilities,
-                static fn (AttributeReadability $readability, string $attributeName): bool =>
-                    // always keep the 'id` attribute, it is required by Fractal
-                    ContentField::ID === $attributeName
-                    // keep the attributes that are to be returned by default
-                    || $readability->isDefaultField(),
+                $this->attributeReadabilities,
+                static fn (AttributeReadabilityInterface $readability, string $attributeName): bool => $readability->isDefaultField(),
                 ARRAY_FILTER_USE_BOTH
             );
         }
@@ -389,12 +339,8 @@ class DynamicTransformer extends TransformerAbstract
         // requested attribute fields
         $fieldset = Iterables::asArray($fieldsetBag);
         return array_filter(
-            $attributeReadabilities,
-            static fn (string $attributeName): bool =>
-                // always keep the 'id` attribute, it is required by Fractal
-                ContentField::ID === $attributeName
-                // keep the attributes that were requested
-                || in_array($attributeName, $fieldset, true),
+            $this->attributeReadabilities,
+            static fn (string $attributeName): bool => in_array($attributeName, $fieldset, true),
             ARRAY_FILTER_USE_KEY
         );
     }

@@ -1,15 +1,17 @@
+
 # Changelog
 
 # Unreleased
 
-* fix: consider and check return of `customReadCallback` and allow `WrapperObject` instances as relationship return
-  * `DynamicTransformer` may now throw `PropertyAccessException`s beside its `TransformException`s on usage
-  * `verifyToManyIterable` is now static
-  * remove multiple static constructor methods from `TransformException` 
+* refactor: restructure the "Type" interface hierarchy
+* refactor: rename `AbstractResourceType::getAccessCondition` to `getAccessConditions` and return list of conditions instead of a single (already merged) one
+* feature: apply more centralized and stricter request validation
+* refactor: remodel logic to be more flexible for different use cases
+* refactor: conditions/sort methods returned by `getAccessCondition`/`getDefaultSortMethods` must now access the schema of the backing entity instead of the schema of the type (i.e. the automatic de-aliasing was removed)
+* feature: a type property defined in `getFilterableProperties` and `getSortableProperties` can now use different property in the backing entity for filtering and sorting 
+* refactor: use type readabilities/updatabilities/initializabilities instances instead of using a predefined algorithm
+* refactor: separate `id` property from attributes; attributes MUST NOT return an `id` property but implement `IdentifiableTypeInterface::getIdentifierReadability` instead
 * fix: use correct property list when reading to-one relationships in `WrapperObject`
-* refactor: harmonize custom read and write callback namings to `customReadCallback` and `customWriteCallback`
-* refactor: rename `configureAttribute` to `configureJsonAttribute` in `ConfigCollection`/`TypedPathConfigCollection`
-* feature: allow `AttributeReadability` and `AttributeUpdatability` to check the output/input
 
 ## 0.17.4 - 2023-02-15
 

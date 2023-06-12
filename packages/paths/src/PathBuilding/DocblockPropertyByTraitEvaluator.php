@@ -22,9 +22,9 @@ class DocblockPropertyByTraitEvaluator
      * @param non-empty-list<PropertyTag> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      */
     public function __construct(
-        private readonly TraitEvaluator $traitEvaluator,
-        private readonly array $targetTraits,
-        private readonly array $targetTags
+        protected readonly TraitEvaluator $traitEvaluator,
+        protected readonly array $targetTraits,
+        protected readonly array $targetTags
     ) {}
 
     /**
@@ -62,7 +62,7 @@ class DocblockPropertyByTraitEvaluator
      * @throws ParseException
      * @throws PropertyTagException
      */
-    private function parsePropertiesOfClass(string $class): array
+    protected function parsePropertiesOfClass(string $class): array
     {
         if (!array_key_exists($class, $this->parsedClasses)) {
             $parser = new DocblockTagParser($class);
@@ -93,7 +93,7 @@ class DocblockPropertyByTraitEvaluator
      *
      * @throws ParseException
      */
-    private function parsePropertiesOfClasses(array $classes): array
+    protected function parsePropertiesOfClasses(array $classes): array
     {
         $nestedPropertiesByClass = array_map([$this, 'parsePropertiesOfClass'], $classes);
 
@@ -105,7 +105,7 @@ class DocblockPropertyByTraitEvaluator
      *
      * @param class-string $class
      */
-    private function isUsingRequiredTraits(string $class): bool
+    protected function isUsingRequiredTraits(string $class): bool
     {
         return $this->traitEvaluator->isClassUsingAllTraits($class, $this->targetTraits);
     }

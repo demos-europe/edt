@@ -4,39 +4,59 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
+use cebe\openapi\exceptions\TypeErrorException;
+use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
+use Exception;
+use Safe\Exceptions\StringsException;
 use function array_key_exists;
 use cebe\openapi\spec\Schema;
 
 /**
- * Store OpenAPI Schema Definitions for reuse.
+ * Create and store OpenAPI Schema Definitions for reuse.
  */
 class SchemaStore
 {
     /**
      * Schema definitions keyed by type name.
      *
-     * @var array<string, Schema>
+     * @var array<non-empty-string, Schema>
      */
     private array $schemas = [];
 
-    public function has(string $schemaName): bool
-    {
-        return array_key_exists($schemaName, $this->schemas);
-    }
-
     /**
+     * @param non-empty-string $schemaName
      * @param callable(): Schema $schemaBuilder
      */
     public function findOrCreate(string $schemaName, callable $schemaBuilder): Schema
     {
-        if (!$this->has($schemaName)) {
+        if (!array_key_exists($schemaName, $this->schemas)) {
             $value = $schemaBuilder();
-            $this->set($schemaName, $value);
+            $this->schemas[$schemaName] = $value;
 
             return $value;
         }
 
-        return $this->get($schemaName);
+        return $this->schemas[$schemaName];
+    }
+
+    /**
+     * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     *
+     * @return non-empty-string
+     *
+     * @throws StringsException
+     * @throws TypeErrorException
+     */
+    public function createTypeSchemaAndGetReference(TransferableTypeInterface $type): string
+    {
+        $typeIdentifier = $type->getTypeName();
+        if (!array_key_exists($typeIdentifier, $this->schemas)) {
+            $this->schemas[$typeIdentifier] = $this->createTypeSchema($type);
+        }
+
+        return $this->getReference($type->getTypeName());
     }
 
     /**
@@ -44,26 +64,44 @@ class SchemaStore
      *
      * @return non-empty-string
      */
-    public function getSchemaReference(string $schemaName): string
+    public function getReference(string $schemaName): string
     {
         return "#/components/schemas/$schemaName";
     }
 
-    public function get(string $schemaName): Schema
+    /**
+     * @return array<non-empty-string, Schema>
+     */
+    public function getSchemas(): array
     {
-        return $this->schemas[$schemaName];
-    }
-
-    public function set(string $offset, Schema $value): void
-    {
-        $this->schemas[$offset] = $value;
+        return $this->schemas;
     }
 
     /**
-     * @return array<string, Schema>
+     * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     *
+     * @throws TypeErrorException
+     * @throws StringsException
      */
-    public function all(): array
+    protected function createTypeSchema(TransferableTypeInterface $type): Schema
     {
-        return $this->schemas;
+        $readableProperties = $type->getReadableProperties();
+
+        $schemaProperties = array_map(
+            fn (RelationshipReadabilityInterface $readability): array => [
+                '$ref' => $this->createTypeSchemaAndGetReference($readability->getRelationshipType()),
+            ],
+            $readableProperties->getRelationships()
+        );
+
+        foreach ($readableProperties->getAttributes() as $propertyName => $readability) {
+            try {
+                $schemaProperties[$propertyName] = $readability->getPropertySchema();
+            } catch (Exception $exception) {
+                throw OpenApiGenerateException::attributeType($propertyName, $type->getTypeName(), $exception);
+            }
+        }
+
+        return new Schema(['type' => 'object', 'properties' => $schemaProperties]);
     }
 }

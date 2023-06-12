@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Validation;
 
-use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\Validation\FieldsException;
 use EDT\JsonApi\Validation\FieldsValidator;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
+use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
 use PHPUnit\Framework\TestCase;
@@ -27,9 +28,11 @@ class FieldsValidatorTest extends TestCase
         parent::setUp();
         $conditionFactory = new PhpConditionFactory();
         $lazyTypeProvider = new LazyTypeProvider();
+        $propertyAccessor = new ReflectionPropertyAccessor();
+        $attributeTypeResover = new AttributeTypeResolver();
         $this->typeProvider = new PrefilledTypeProvider([
-            new AuthorType($conditionFactory, $lazyTypeProvider),
-            new BookType($conditionFactory, $lazyTypeProvider),
+            new AuthorType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $attributeTypeResover),
+            new BookType($conditionFactory, $lazyTypeProvider, $propertyAccessor, $attributeTypeResover),
             new BirthType($conditionFactory),
         ]);
         $lazyTypeProvider->setAllTypes($this->typeProvider);
@@ -41,9 +44,7 @@ class FieldsValidatorTest extends TestCase
      */
     public function testGetNonReadableProperties(string $typeIdentifier, string $propertiesString, array $expectedNonReadables): void
     {
-        $type = $this->typeProvider->requestType($typeIdentifier)
-            ->instanceOf(ResourceTypeInterface::class)
-            ->getInstanceOrThrow();
+        $type = $this->typeProvider->getTypeByIdentifier($typeIdentifier);
         $nonReadables = $this->fieldsValidator->getNonReadableProperties($propertiesString, $type);
         self::assertSame($expectedNonReadables, $nonReadables);
     }

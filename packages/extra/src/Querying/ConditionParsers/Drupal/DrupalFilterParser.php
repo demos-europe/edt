@@ -102,8 +102,8 @@ class DrupalFilterParser implements FilterParserInterface
      */
     public function __construct(
         protected readonly PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
-        private readonly ConditionParserInterface $conditionParser,
-        private readonly DrupalFilterValidator $filterValidator
+        protected readonly ConditionParserInterface $conditionParser,
+        protected readonly DrupalFilterValidator $filterValidator
     ) {}
 
     /**
@@ -198,7 +198,7 @@ class DrupalFilterParser implements FilterParserInterface
     /**
      * @param array<non-empty-string, list<TCondition|null>> $conditions
      */
-    private function hasReachedRootGroup(array $conditions): bool
+    protected function hasReachedRootGroup(array $conditions): bool
     {
         return 1 === count($conditions) && self::ROOT === array_key_first($conditions);
     }
