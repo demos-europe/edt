@@ -8,10 +8,13 @@ use EDT\JsonApi\Schema\ContentField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\PropertyAccessException;
+use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TypeInterface;
 use EDT\Wrapping\Properties\EntityVerificationTrait;
+use EDT\Wrapping\Properties\RelationshipUpdatabilityInterface;
+use EDT\Wrapping\Utilities\EntityVerifierInterface;
 use InvalidArgumentException;
 use Safe\Exceptions\PcreException;
 use Webmozart\Assert\Assert;
@@ -47,11 +50,14 @@ class WrapperObject
     /**
      * @param TEntity $entity
      * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
+     * @param WrapperObjectFactory<TCondition, TSorting> $wrapperFactory
+     * @param EntityVerifierInterface<TCondition, TSorting> $entityVerifier
      */
     public function __construct(
         protected readonly object $entity,
         protected readonly TransferableTypeInterface $type,
-        protected readonly WrapperObjectFactory $wrapperFactory
+        protected readonly WrapperObjectFactory $wrapperFactory,
+        protected readonly EntityVerifierInterface $entityVerifier
     ) {}
 
     /**
@@ -166,8 +172,21 @@ class WrapperObject
             if (array_key_exists($propertyName, $updatabilities[1])) {
                 Assert::allKeyNotExists([$updatabilities[0], $updatabilities[2]], $propertyName);
                 $updatability = $updatabilities[1][$propertyName];
-                $relationshipClass = $updatability->getRelationshipType()->getEntityClass();
+                $relationshipType = $updatability->getRelationshipType();
+                $relationshipClass = $relationshipType->getEntityClass();
                 $relationship = $this->assertValidToOneValue($value, $relationshipClass);
+
+                $this->assertMatchingEntityConditions($updatability);
+
+                if (null !== $relationship) {
+                    $relationshipConditions = $updatability->getRelationshipConditions();
+                    $filteredRelationship = $this->entityVerifier
+                        ->filterEntity($relationship, $relationshipConditions, $relationshipType);
+                    if (null === $filteredRelationship) {
+                        throw RelationshipAccessException::updateRelationshipCondition($propertyName);
+                    }
+                }
+
                 $updatability->updateToOneRelationship($this->entity, $relationship);
 
                 return;
@@ -176,8 +195,21 @@ class WrapperObject
             if (array_key_exists($propertyName, $updatabilities[2])) {
                 Assert::allKeyNotExists([$updatabilities[0], $updatabilities[1]], $propertyName);
                 $updatability = $updatabilities[2][$propertyName];
-                $relationshipClass = $updatability->getRelationshipType()->getEntityClass();
+                $relationshipType = $updatability->getRelationshipType();
+                $relationshipClass = $relationshipType->getEntityClass();
                 $relationships = $this->assertValidToManyValue($value, $relationshipClass);
+
+                $this->assertMatchingEntityConditions($updatability);
+
+                if ([] !== $relationships) {
+                    $relationshipConditions = $updatability->getRelationshipConditions();
+                    $filteredRelationships = $this->entityVerifier
+                        ->filterEntities($relationships, $relationshipConditions, $relationshipType);
+                    if (count($relationships) !== count($filteredRelationships)) {
+                        throw RelationshipAccessException::updateRelationshipsCondition($propertyName);
+                    }
+                }
+
                 $updatability->updateToManyRelationship($this->entity, $relationships);
 
                 return;
@@ -187,6 +219,22 @@ class WrapperObject
         }
 
         throw PropertyAccessException::propertyNotAvailableInUpdatableType($propertyName, $this->type, ...array_keys(array_merge(...$updatabilities)));
+    }
+
+    /**
+     * @template TType of TransferableTypeInterface
+     *
+     * @param RelationshipUpdatabilityInterface<TCondition, TType> $updatability
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function assertMatchingEntityConditions(RelationshipUpdatabilityInterface $updatability): void
+    {
+        $entityConditions = $updatability->getEntityConditions();
+        $entity = $this->entityVerifier->filterEntity($this->entity, $entityConditions, $this->type);
+        if (null === $entity) {
+            throw new InvalidArgumentException('The entity to be updated did not meet all property conditions.');
+        }
     }
 
     /**

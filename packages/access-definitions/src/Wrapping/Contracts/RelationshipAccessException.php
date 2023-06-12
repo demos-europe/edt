@@ -90,6 +90,22 @@ class RelationshipAccessException extends PropertyAccessException
     }
 
     /**
+     * @param non-empty-string $propertyName
+     */
+    public static function updateRelationshipCondition(string $propertyName): self
+    {
+        return new self($propertyName, "The relationship instance did not meet all to-one property conditions: $propertyName");
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     */
+    public static function updateRelationshipsCondition(string $propertyName): self
+    {
+        return new self($propertyName, "At least one relationship instance did not meet all to-many property conditions: $propertyName");
+    }
+
+    /**
      * @return non-empty-string
      */
     private static function getToOneMessageType(mixed $actualValue): string

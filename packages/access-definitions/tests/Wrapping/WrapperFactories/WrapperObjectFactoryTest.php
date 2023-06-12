@@ -51,7 +51,7 @@ class WrapperObjectFactoryTest extends ModelBasedTest
             new BirthType($conditionFactory),
         ]);
         $lazyTypeProvider->setAllTypes($typeProvider);
-        $this->factory = new WrapperObjectFactory();
+        $this->factory = new WrapperObjectFactory($entityVerifier);
     }
 
     public function testAllowedPropertyAccess(): void

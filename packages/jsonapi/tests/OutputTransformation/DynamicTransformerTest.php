@@ -101,7 +101,7 @@ class DynamicTransformerTest extends ModelBasedTest
             new BirthType($conditionFactory),
         ]);
         $lazyTypeProvider->setAllTypes($typeProvider);
-        $this->wrapperFactory = new WrapperObjectFactory();
+        $this->wrapperFactory = new WrapperObjectFactory($entityVerifier);
         $this->propertyBuilderFactory = new PropertyBuilderFactory(
             $this->propertyAccessor,
             $this->typeResolver,

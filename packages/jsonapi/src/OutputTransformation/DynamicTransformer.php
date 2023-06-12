@@ -74,6 +74,7 @@ class DynamicTransformer extends TransformerAbstract
 
     /**
      * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
+     * @param WrapperObjectFactory<TCondition, TSorting> $wrapperFactory
      *
      * @throws InvalidArgumentException
      */

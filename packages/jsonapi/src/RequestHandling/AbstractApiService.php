@@ -39,6 +39,7 @@ abstract class AbstractApiService
      * @param JsonApiSortingParser<TSorting> $sortingParser
      * @param PropertyValuesGenerator<TCondition, TSorting> $propertyValuesGenerator
      * @param TypeProviderInterface<TCondition, TSorting> $typeProvider
+     * @param WrapperObjectFactory<TCondition, TSorting> $wrapperFactory
      */
     public function __construct(
         protected readonly FilterParserInterface $filterParser,
