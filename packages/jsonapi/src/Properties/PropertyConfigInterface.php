@@ -27,14 +27,20 @@ interface PropertyConfigInterface
      * An alias can redirect to a property in the backing entity or to the property of a different
      * entity, if there is a connection from the first entity to the latter one.
      *
-     * Simple example: if you define a property `id` for your resource but the actual entity property
-     * is stored in `ident`, then you can pass `ident` as `$aliasedPath`.
+     * Simple example: if you define a property `bookTitle` for your resource but the actual entity property
+     * is stored in `title`, then you can pass `title` as `$aliasedPath`.
      *
      * Advanced example: if you define an (alias) attribute `authorName` for your `Book`
-     * resource type, you can redirect it to `$this->author->name` if `Book` has a relationship to
+     * resource type, you can redirect it to `['author', 'name']` if `Book` has a relationship to
      * `Author` named `book` that is present in the entity backing the `Book` resource type and
      * `Author` has a property `name` that is present in the entity backing the `Author` resource
      * type.
+     *
+     * Note that the path in the alias will not be validated against the type schemas.
+     * With the example above that means that it does not matter if the `author` property is a
+     * readable property in the `BookType` or if the `name` property is a readable property in
+     * a potentially existing `AuthorType`. The `['author', 'name']` just needs to be a valid
+     * path into the backing `Book` and `Author` entities.
      *
      * @param PropertyPathInterface $aliasedPath all segments must have a corresponding property in the backing entity
      *
