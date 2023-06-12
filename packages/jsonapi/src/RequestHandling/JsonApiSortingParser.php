@@ -44,6 +44,7 @@ class JsonApiSortingParser
      * @return TSorting
      *
      * @throws PathException
+     * @throws InvalidArgumentException
      */
     protected function parseSortMethod(string $sortMethodRaw): PathsBasedInterface
     {

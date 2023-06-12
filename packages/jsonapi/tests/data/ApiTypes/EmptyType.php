@@ -97,6 +97,6 @@ class EmptyType extends AbstractResourceType
 
     protected function getEntityFetcher(): EntityFetcherInterface
     {
-        // TODO: Implement getEntityFetcher() method.
+        throw new \RuntimeException();
     }
 }
