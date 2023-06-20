@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.19.0 - 2023-06-20
 
 * refactor: require `AbstractResourceType::getIdentifierPropertyPath` to be implemented
 * refactor: restructure the "Type" interface hierarchy
