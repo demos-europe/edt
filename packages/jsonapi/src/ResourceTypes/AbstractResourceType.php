@@ -214,7 +214,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
             )
         );
 
-        $entity = $this->getEntityFetcher()->getEntityByIdentifier($requestBody->getId(), $entityConditions);
+        $entity = $this->getEntityFetcher()->getEntityByIdentifier($requestBody->getId(), $entityConditions, $this->getIdentifierPropertyPath());
 
         $sideEffects = [
             $this->updateAttributes($entity, $attributeSetabilities, $requestBody->getAttributes()),
@@ -606,14 +606,14 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $conditions = array_merge($conditions, $this->getAccessConditions());
         $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
 
-        return $this->getEntityFetcher()->getEntitiesByIdentifiers($identifiers, $conditions, $sortMethods);
+        return $this->getEntityFetcher()->getEntitiesByIdentifiers($identifiers, $conditions, $sortMethods, $this->getIdentifierPropertyPath());
     }
 
     public function getEntityForRelationship(string $identifier, array $conditions): object
     {
         $conditions = array_merge($conditions, $this->getAccessConditions());
 
-        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions);
+        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions, $this->getIdentifierPropertyPath());
     }
 
     public function getEntityByIdentifier(string $identifier, array $conditions): object
@@ -621,8 +621,15 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $this->mapPaths($conditions, []);
         $conditions = array_merge($conditions, $this->getAccessConditions());
 
-        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions);
+        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions, $this->getIdentifierPropertyPath());
     }
+
+    /**
+     * The property path to the property uniquely identifying an entity instance corresponding to this type.
+     *
+     * @return non-empty-list<non-empty-string>
+     */
+    abstract protected function getIdentifierPropertyPath(): array;
 
     public function getEntities(array $conditions, array $sortMethods): array
     {

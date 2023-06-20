@@ -1,8 +1,9 @@
 
 # Changelog
 
-# Unreleased
+## Unreleased
 
+* refactor: require `AbstractResourceType::getIdentifierPropertyPath` to be implemented
 * refactor: restructure the "Type" interface hierarchy
 * refactor: rename `AbstractResourceType::getAccessCondition` to `getAccessConditions` and return list of conditions instead of a single (already merged) one
 * feature: apply more centralized and stricter request validation
