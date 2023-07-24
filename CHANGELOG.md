@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: integrate event dispatching for resource creation and update into `AbstractResourceType`; implementation of `getEventDispatcher` is now required 
+
 ## 0.19.0 - 2023-06-20
 
 * refactor: require `AbstractResourceType::getIdentifierPropertyPath` to be implemented

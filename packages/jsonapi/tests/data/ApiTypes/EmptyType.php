@@ -13,6 +13,7 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Wrapping\Contracts\EntityFetcherInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Tests\data\EmptyEntity;
 
@@ -95,6 +96,11 @@ class EmptyType extends AbstractResourceType
     }
 
     protected function getIdentifierPropertyPath(): array
+    {
+        throw new \RuntimeException();
+    }
+
+    protected function getEventDispatcher(): EventDispatcherInterface
     {
         throw new \RuntimeException();
     }

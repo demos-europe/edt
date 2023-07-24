@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
+use EDT\JsonApi\Event\CreationEvent;
+use EDT\JsonApi\Event\UpdateEvent;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
@@ -42,6 +44,7 @@ use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Exception;
 use League\Fractal\TransformerAbstract;
 use Pagerfanta\Pagerfanta;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use ReflectionMethod;
@@ -216,13 +219,17 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         $entity = $this->getEntityFetcher()->getEntityByIdentifier($requestBody->getId(), $entityConditions, $this->getIdentifierPropertyPath());
 
-        $sideEffects = [
-            $this->updateAttributes($entity, $attributeSetabilities, $requestBody->getAttributes()),
-            $this->updateToOneRelationships($entity, $toOneRelationshipSetabilities, $requestBody->getToOneRelationships()),
-            $this->updateToManyRelationships($entity, $toManyRelationshipSetabilities, $requestBody->getToManyRelationships()),
-        ];
+        $updateEvent = new UpdateEvent(
+            $entity,
+            $attributeSetabilities,
+            $toOneRelationshipSetabilities,
+            $toManyRelationshipSetabilities,
+            $requestBody
+        );
 
-        return $this->mergeSideEffects($sideEffects)
+        $this->getEventDispatcher()->dispatch($updateEvent);
+
+        return $updateEvent->hasSideEffects()
             ? $entity
             : null;
     }
@@ -271,16 +278,20 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         $constructorArguments = $this->getConstructorArguments($orderedConstructorArguments, $requestBody);
 
-        $entity = new ($this->getEntityClass())(...$constructorArguments);
+        $creationEvent = new CreationEvent(
+            $this->getEntityClass(),
+            $constructorArguments,
+            $attributeSetabilities,
+            $toOneRelationshipSetabilities,
+            $toManyRelationshipSetabilities,
+            $requestBody
+        );
 
-        // update entity
-        $sideEffects = [
-            $this->updateAttributes($entity, $attributeSetabilities, $requestBody->getAttributes()),
-            $this->updateToOneRelationships($entity, $toOneRelationshipSetabilities, $requestBody->getToOneRelationships()),
-            $this->updateToManyRelationships($entity, $toManyRelationshipSetabilities, $requestBody->getToManyRelationships()),
-        ];
+        $this->getEventDispatcher()->dispatch($creationEvent);
+        $entity = $creationEvent->getEntity();
+        Assert::notNull($entity, 'Event did not contain a created entity after completion. Make sure to set-up a corresponding listener.');
 
-        return $this->mergeSideEffects($sideEffects) && null !== $requestBody->getId()
+        return $creationEvent->hasSideEffects() && null !== $requestBody->getId()
             ? $entity
             : null;
     }
@@ -423,6 +434,8 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
     abstract protected function getLogger(): LoggerInterface;
 
+    abstract protected function getEventDispatcher(): EventDispatcherInterface;
+
     /**
      * Array order: Even though the order of the properties returned within the array may have an
      * effect (e.g. determining the order of properties in JSON:API responses) you can not rely on
@@ -436,6 +449,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      * Get the sort methods to apply when a collection of this property is fetched and no sort methods were specified.
      *
      * The schema used in the sort methods must be the one of the {@link EntityBasedInterface::getEntityClass() backing entity class}.
+     * I.e. no aliases are available.
      *
      * Return an empty array to not define any default sorting.
      *
@@ -674,6 +688,10 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     public function isMatchingEntity(object $entity, array $conditions): bool
     {
         $conditions = array_merge($conditions, $this->getAccessConditions());
+
+        if ([] === $conditions) {
+            return true;
+        }
 
         return $this->getEntityFetcher()->isMatchingEntity($entity, $conditions);
     }
