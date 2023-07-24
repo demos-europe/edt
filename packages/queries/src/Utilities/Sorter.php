@@ -17,14 +17,14 @@ use function count;
 class Sorter
 {
     public function __construct(
-        private readonly TableJoiner $tableJoiner
+        protected readonly TableJoiner $tableJoiner
     ) {}
 
     /**
      * @template TKey of int|string
      * @template TEntity of object
      *
-     * @param array<TKey, TEntity>                $entitiesToSort
+     * @param array<TKey, TEntity> $entitiesToSort
      * @param non-empty-list<SortMethodInterface> $sortMethods
      *
      * @return array<TKey, TEntity>

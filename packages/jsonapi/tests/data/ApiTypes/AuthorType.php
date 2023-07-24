@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\data\ApiTypes;
 
-use EDT\JsonApi\Properties\JsonAttributeReadability;
+use EDT\JsonApi\Properties\Attributes\PathAttributeReadability;
+use EDT\JsonApi\Properties\Id\PathIdReadability;
+use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipReadability;
+use EDT\Wrapping\Properties\ReadabilityCollection;
+use League\Fractal\TransformerAbstract;
 
 class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInterface
 {
-    public function getIdentifier(): string
+    public function getTypeName(): string
     {
         return self::class;
     }
@@ -18,25 +21,54 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
     /**
      * Overwrites its parent relationships with reference to resource type implementations.
      */
-    public function getReadableProperties(): array
+    public function getReadableProperties(): ReadabilityCollection
     {
-        return [
+        return new ReadabilityCollection(
             [
-                'name' => new JsonAttributeReadability(false, false, null),
-                'pseudonym' => new JsonAttributeReadability(false, false, null),
-                'birthCountry' => new JsonAttributeReadability(false, false, null),
+                'name' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['name'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver
+                ),
+                'pseudonym' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['pseudonym'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver,
+                ),
+                'birthCountry' => new PathAttributeReadability(
+                    $this->getEntityClass(),
+                    ['birth', 'country'],
+                    false,
+                    $this->propertyAccessor,
+                    $this->typeResolver
+                ),
             ],
             [],
             [
-                'books' => new ToManyRelationshipReadability(false, false, false, null,
-                    $this->typeProvider->requestType(BookType::class)->getInstanceOrThrow()
+                'books' => new PathToManyRelationshipReadability(
+                    $this->getEntityClass(),
+                    ['books'],
+                    false,
+                    false,
+                    $this->typeProvider->getTypeByIdentifier(BookType::class),
+                    $this->propertyAccessor,
+                    $this->entityVerifier
                 ),
-            ]
-        ];
+            ],
+            new PathIdReadability(
+                $this->getEntityClass(),
+                ['id'],
+                $this->propertyAccessor,
+                $this->typeResolver
+            )
+        );
     }
 
-    public function isExposedAsPrimaryResource(): bool
+    public function getTransformer(): TransformerAbstract
     {
-        return true;
     }
 }

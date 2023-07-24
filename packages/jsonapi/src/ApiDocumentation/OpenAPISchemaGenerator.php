@@ -13,31 +13,29 @@ use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Tag;
-use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Properties\AbstractReadability;
-use EDT\Wrapping\Properties\AbstractRelationshipReadability;
-use EDT\Wrapping\Properties\AttributeReadability;
-use Psr\Log\LoggerInterface;
-use ReflectionException;
-use Safe\Exceptions\StringsException;
+use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Throwable;
-use UnexpectedValueException;
 use function count;
 
-final class OpenAPISchemaGenerator
+/**
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
+ */
+class OpenAPISchemaGenerator
 {
+    /**
+     * @param list<TransferableTypeInterface<TCondition, TSorting, object>> $primaryExposedResourceTypes
+     * @param int<0, max> $defaultPageSize
+     */
     public function __construct(
-        private readonly AttributeTypeResolver $typeResolver,
-        private readonly LoggerInterface $logger,
-        private readonly TypeProviderInterface $typeProvider,
-        private readonly RouterInterface $router,
-        private readonly SchemaStore $schemaStore,
-        private readonly TranslatorInterface $translator,
-        private readonly int $defaultPageSize
+        protected readonly array $primaryExposedResourceTypes,
+        protected readonly RouterInterface $router,
+        protected readonly SchemaStore $schemaStore,
+        protected readonly TranslatorInterface $translator,
+        protected readonly int $defaultPageSize
     ) {}
 
     /**
@@ -58,272 +56,202 @@ final class OpenAPISchemaGenerator
             ]
         );
 
-        $tags = array_map(
-            fn (string $identifier): ?ResourceTypeInterface => $this->typeProvider->requestType($identifier)
-                ->instanceOf(ResourceTypeInterface::class)
-                ->getInstanceOrNull(),
-            $this->typeProvider->getTypeIdentifiers()
-        );
-        $tags = array_filter(
-            $tags,
-            static fn (?ResourceTypeInterface $type): bool => null !== $type
-        );
-
-        $tags = array_map(function (ResourceTypeInterface $type): ResourceTypeInterface {
-            // create schema information for all resource types
-
-            $typeIdentifier = $type->getIdentifier();
-            if (!$this->schemaStore->has($typeIdentifier)) {
-                $schema = $this->createSchema($type);
-                $this->schemaStore->set($typeIdentifier, $schema);
-            }
-
-            return $type;
-        }, $tags);
         // remove non-directly accessible ones
-        $tags = array_filter($tags, static fn (ResourceTypeInterface $type) => $type->isExposedAsPrimaryResource());
-        $tags = array_map(function (ResourceTypeInterface $type) use ($openApi): Tag {
+        $openApi->tags = array_values(array_map(function (TransferableTypeInterface $type) use ($openApi): Tag {
             // add routing information for directly accessible resource types
-            $tag = $this->createTag($type);
+            $typeName = $type->getTypeName();
+            $tag = $this->createTag($typeName);
 
-            $listMethodPathItem = $this->createListMethodsPathItem($tag, $type);
+            $listMethodPathItem = new PathItem([]);
+            $this->addListOperation($tag, $type, $listMethodPathItem);
 
-            $entityMethodsPathItem = $this->createEntityMethodsPathItem($tag, $type);
+            $entityMethodsPathItem = $this->createEntityMethodsPathItem();
+            $this->addGetOperation($tag, $type, $entityMethodsPathItem);
 
             $baseUrl = $this->router->generate(
                 'api_resource_list',
-                ['resourceType' => $type->getIdentifier()]
+                ['resourceType' => $typeName]
             );
 
             $openApi->paths[$baseUrl] = $listMethodPathItem;
-
-            $openApi->paths[$baseUrl.'/{resourceId}/'] = $entityMethodsPathItem;
+            $openApi->paths["$baseUrl/{resourceId}/"] = $entityMethodsPathItem;
 
             return $tag;
-        }, $tags);
+        }, $this->primaryExposedResourceTypes));
 
-        $openApi->components = new Components(['schemas' => $this->schemaStore->all()]);
-        $openApi->tags = array_values($tags);
+        $openApi->components = new Components(['schemas' => $this->schemaStore->getSchemas()]);
 
         return $openApi;
     }
 
     /**
-     * @throws TypeErrorException
-     */
-    private function createTag(ResourceTypeInterface $type): Tag
-    {
-        return new Tag(
-            [
-                'name'         => $this->trans(
-                    'resource.section',
-                    ['type' => $type->getIdentifier()]
-                ),
-            ]
-        );
-    }
-
-    /**
-     * @throws TypeErrorException
-     */
-    private function addListOperation(
-        Tag $tag,
-        ResourceTypeInterface $resource,
-        PathItem $pathItem
-    ): void {
-        $okResponse = new Response(
-            [
-                'content' => [
-                    'application/vnd.api+json' => [
-                        'schema' => $this->wrapAsJsonApiResponseSchema(
-                            $resource,
-                            [
-                                'type'  => 'array',
-                                'items' => [
-                                    '$ref' => $this->schemaStore->getSchemaReference($resource->getIdentifier()),
-                                ],
-                            ],
-                            [],
-                            true
-                        ),
-                    ],
-                ],
-            ]
-        );
-
-        $pathItem->get = new Operation(
-            [
-                'description' => $this->trans(
-                    'method.list.description',
-                    ['type' => $resource->getIdentifier()]
-                ),
-                'parameters'  => array_merge(
-                    $this->getDefaultQueryParameters(),
-                    $this->getPaginationParameters(),
-                    $this->getFilterParameter()
-                ),
-                'responses'   => [
-                    SymfonyResponse::HTTP_OK => $okResponse,
-                ],
-                'tags'        => [$tag->name],
-            ]
-        );
-    }
-
-    /**
-     * @throws TypeErrorException
-     */
-    private function addGetOperation(
-        Tag $tag,
-        ResourceTypeInterface $resource,
-        PathItem $pathItem
-    ): void {
-        $okResponse = new Response(
-            [
-                'content' => [
-                    'application/vnd.api+json' => [
-                        'schema' => $this->wrapAsJsonApiResponseSchema(
-                            $resource,
-                            [
-                                '$ref' => $this->schemaStore->getSchemaReference($resource->getIdentifier()),
-                            ],
-                            [],
-                            false
-                        ),
-                    ],
-                ],
-            ]
-        );
-
-        $pathItem->get = new Operation(
-            [
-                'description' => $this->trans(
-                    'method.get.description',
-                    ['type' => $resource->getIdentifier()]
-                ),
-                'responses'   => [
-                    SymfonyResponse::HTTP_OK => $okResponse,
-                ],
-                'tags'        => [$tag->name],
-            ]
-        );
-    }
-
-    /**
-     * @throws TypeErrorException
-     */
-    private function createEntityMethodsPathItem(Tag $tag, ResourceTypeInterface $resource): PathItem
-    {
-        $entityMethodsPathItem = new PathItem(
-            [
-                'parameters' => array_merge(
-                    $this->getDefaultQueryParameters(),
-                    [
-                        new Parameter(
-                            [
-                                'in'          => 'path',
-                                'name'        => 'resourceId',
-                                'description' => $this->trans('resource.id'),
-                            ]
-                        ),
-                    ]
-                ),
-            ]
-        );
-
-        $this->addGetOperation($tag, $resource, $entityMethodsPathItem);
-
-        return $entityMethodsPathItem;
-    }
-
-    /**
-     * @throws TypeErrorException
-     */
-    private function createListMethodsPathItem(Tag $tag, ResourceTypeInterface $resource): PathItem
-    {
-        $listMethodPathItem = new PathItem([]);
-        $this->addListOperation($tag, $resource, $listMethodPathItem);
-
-        return $listMethodPathItem;
-    }
-
-    /**
-     * @throws ReflectionException
-     * @throws Throwable
-     * @throws TypeErrorException
-     * @throws StringsException
-     */
-    private function createSchema(ResourceTypeInterface $type): Schema
-    {
-        $properties = array_merge(...$type->getReadableProperties());
-
-        $properties = array_map(function (AbstractReadability $readability, string $propertyName) use ($type): array {
-            // TODO: this is probably incorrect for all aliases with a path longer than 1 element
-            $propertyName = $type->getAliases()[$propertyName][0] ?? $propertyName;
-
-            if ($readability instanceof AbstractRelationshipReadability) {
-                $relationshipTypeIdentifier = $readability->getRelationshipType()->getIdentifier();
-
-                return ['$ref' => $this->schemaStore->getSchemaReference($relationshipTypeIdentifier)];
-            }
-
-            return $this->resolveAttributeType($type, $propertyName, $readability);
-        }, $properties, array_keys($properties));
-
-        return new Schema(['type' => 'object', 'properties' => $properties]);
-    }
-
-    /**
-     * @param array{type: non-empty-string, items: array<non-empty-string, non-empty-string>}|array<non-empty-string, non-empty-string> $dataObjects
+     * @param non-empty-string $typeName
      *
      * @throws TypeErrorException
      */
-    private function wrapAsJsonApiResponseSchema(
-        ResourceTypeInterface $resource,
+    protected function createTag(string $typeName): Tag
+    {
+        return new Tag([
+            'name' => $this->trans(
+                'resource.section',
+                ['type' => $typeName]
+            ),
+        ]);
+    }
+
+    /**
+     * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     *
+     * @throws TypeErrorException
+     */
+    protected function addListOperation(
+        Tag $tag,
+        TransferableTypeInterface $type,
+        PathItem $pathItem
+    ): void {
+        $okResponse = new Response([
+            'content' => [
+                'application/vnd.api+json' => [
+                    'schema' => $this->wrapAsJsonApiResponseSchema(
+                        $type->getTypeName(),
+                        [
+                            'type'  => 'array',
+                            'items' => [
+                                '$ref' => $this->schemaStore->createTypeSchemaAndGetReference($type),
+                            ],
+                        ],
+                        [],
+                        true
+                    ),
+                ],
+            ],
+        ]);
+
+        $pathItem->get = new Operation([
+            'description' => $this->trans(
+                'method.list.description',
+                ['type' => $type->getTypeName()]
+            ),
+            'parameters' => array_merge(
+                $this->getDefaultQueryParameters(),
+                $this->getPaginationParameters(),
+                $this->getFilterParameter()
+            ),
+            'responses' => [
+                SymfonyResponse::HTTP_OK => $okResponse,
+            ],
+            'tags' => [$tag->name],
+        ]);
+    }
+
+    /**
+     * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     *
+     * @throws TypeErrorException
+     */
+    protected function addGetOperation(
+        Tag $tag,
+        TransferableTypeInterface $type,
+        PathItem $pathItem
+    ): void {
+        $okResponse = new Response([
+            'content' => [
+                'application/vnd.api+json' => [
+                    'schema' => $this->wrapAsJsonApiResponseSchema(
+                        $type->getTypeName(),
+                        [
+                            '$ref' => $this->schemaStore->createTypeSchemaAndGetReference($type),
+                        ],
+                        [],
+                        false
+                    ),
+                ],
+            ],
+        ]);
+
+        $pathItem->get = new Operation([
+            'description' => $this->trans(
+                'method.get.description',
+                ['type' => $type->getTypeName()]
+            ),
+            'responses'   => [
+                SymfonyResponse::HTTP_OK => $okResponse,
+            ],
+            'tags'        => [$tag->name],
+        ]);
+    }
+
+    /**
+     * @throws TypeErrorException
+     */
+    protected function createEntityMethodsPathItem(): PathItem
+    {
+        return new PathItem([
+            'parameters' => array_merge(
+                $this->getDefaultQueryParameters(),
+                [
+                    new Parameter(
+                        [
+                            'in'          => 'path',
+                            'name'        => 'resourceId',
+                            'description' => $this->trans('resource.id'),
+                        ]
+                    ),
+                ]
+            ),
+        ]);
+    }
+
+    /**
+     * @param non-empty-string $typeName
+     * @param array{type: non-empty-string, items: array<non-empty-string, non-empty-string>}|array<non-empty-string, non-empty-string> $dataObjects
+     * @param array<non-empty-string, mixed> $includedObjects
+     *
+     * @throws TypeErrorException
+     */
+    protected function wrapAsJsonApiResponseSchema(
+        string $typeName,
         array $dataObjects,
         array $includedObjects,
         bool $isList
     ): Schema {
         $data = [
-            'type'       => 'object',
+            'type' => 'object',
             'properties' => [
-                'type'       => ['type' => 'string', 'default' => $resource->getIdentifier()],
+                'type' => ['type' => 'string', 'default' => $typeName],
                 'attributes' => $dataObjects,
             ],
         ];
 
         if ($isList) {
             $data = [
-                'type'  => 'array',
+                'type' => 'array',
                 'items' => $data,
             ];
         }
 
-        $selfLink = $this->router->generate(
-            'api_resource_list',
-            ['resourceType' => $resource->getIdentifier()]
-        );
+        $selfLink = $this->router->generate('api_resource_list', ['resourceType' => $typeName]);
 
         if (!$isList) {
             $selfLink .= '{resourceId}/';
         }
 
         $jsonApiResponse = [
-            'type'       => 'object',
+            'type' => 'object',
             'properties' => [
                 'jsonapi' => [
-                    'type'       => 'object',
+                    'type' => 'object',
                     'properties' => [
                         'version' => ['type' => 'string', 'default' => '1.0'],
                     ],
                 ],
-                'data'    => $data,
-                'meta'    => ['type' => 'object'],
-                'links'   => [
-                    'type'       => 'object',
+                'data' => $data,
+                'meta' => ['type' => 'object'],
+                'links' => [
+                    'type' => 'object',
                     'properties' => [
                         'self' => [
-                            'type'    => 'string',
+                            'type' => 'string',
                             'default' => $selfLink,
                         ],
                     ],
@@ -333,7 +261,7 @@ final class OpenAPISchemaGenerator
 
         if (0 < count($includedObjects)) {
             $jsonApiResponse['properties']['included'] = [
-                'type'  => 'array',
+                'type' => 'array',
                 'items' => $includedObjects,
             ];
         }
@@ -342,34 +270,11 @@ final class OpenAPISchemaGenerator
     }
 
     /**
-     * @param non-empty-string $propertyName
-     * @param AttributeReadability<object> $readability
-     *
-     * @return array{type: string, format?: non-empty-string, description?: string}
-     *
-     * @throws ReflectionException
-     * @throws Throwable
-     */
-    private function resolveAttributeType(
-        ResourceTypeInterface $resource,
-        string $propertyName,
-        AttributeReadability $readability
-    ): array {
-        try {
-            return $this->typeResolver->getPropertyType($resource, $propertyName, $readability);
-        } catch (UnexpectedValueException $exception) {
-            $this->logger->warning("Could not determine attribute type of resource property {$resource->getIdentifier()}::$propertyName", [$exception]);
-
-            return ['type' => 'undetermined'];
-        }
-    }
-
-    /**
      * @return list<Parameter>
      *
      * @throws TypeErrorException
      */
-    private function getDefaultQueryParameters(): array
+    protected function getDefaultQueryParameters(): array
     {
         $this->schemaStore->findOrCreate(
             'parameters:include',
@@ -388,7 +293,7 @@ final class OpenAPISchemaGenerator
                     'name'        => 'include',
                     'description' => $this->trans('parameter.query.include'),
                     'schema'      => [
-                        '$ref' => $this->schemaStore->getSchemaReference('parameters:include'),
+                        '$ref' => $this->schemaStore->getReference('parameters:include'),
                     ],
                 ]
             ),
@@ -398,7 +303,7 @@ final class OpenAPISchemaGenerator
                     'name'        => 'exclude',
                     'description' => $this->trans('parameter.query.exclude'),
                     'schema'      => [
-                        '$ref' => $this->schemaStore->getSchemaReference('parameters:exclude'),
+                        '$ref' => $this->schemaStore->getReference('parameters:exclude'),
                     ],
                 ]
             ),
@@ -410,7 +315,7 @@ final class OpenAPISchemaGenerator
      *
      * @throws TypeErrorException
      */
-    private function getPaginationParameters(): array
+    protected function getPaginationParameters(): array
     {
         $this->schemaStore->findOrCreate(
             'parameter:pagination_number',
@@ -437,7 +342,7 @@ final class OpenAPISchemaGenerator
                     'name'        => 'page[number]',
                     'description' => $this->trans('parameter.query.page_number'),
                     'schema' => [
-                        '$ref' => $this->schemaStore->getSchemaReference('parameter:pagination_number'),
+                        '$ref' => $this->schemaStore->getReference('parameter:pagination_number'),
                     ],
                 ]
             ),
@@ -446,7 +351,7 @@ final class OpenAPISchemaGenerator
                 'name'        => 'page[size]',
                 'description' => $this->trans('parameter.query.page_size'),
                 'schema' => [
-                    '$ref' => $this->schemaStore->getSchemaReference('parameter:pagination_size'),
+                    '$ref' => $this->schemaStore->getReference('parameter:pagination_size'),
                 ],
             ]),
         ];
@@ -457,7 +362,7 @@ final class OpenAPISchemaGenerator
      *
      * @throws TypeErrorException
      */
-    private function getFilterParameter(): array
+    protected function getFilterParameter(): array
     {
         $this->schemaStore->findOrCreate(
             'parameter:filter',
@@ -473,7 +378,7 @@ final class OpenAPISchemaGenerator
                     'name'        => 'filter',
                     'description' => $this->trans('parameter.query.filter'),
                     'schema' => [
-                        '$ref' => $this->schemaStore->getSchemaReference('parameter:filter'),
+                        '$ref' => $this->schemaStore->getReference('parameter:filter'),
                     ],
                 ]
             ),
@@ -484,7 +389,7 @@ final class OpenAPISchemaGenerator
      * @param string               $id         #TranslationKey
      * @param array<string, mixed> $parameters
      */
-    private function trans(string $id, array $parameters = []): string
+    protected function trans(string $id, array $parameters = []): string
     {
         return trim($this->translator->trans($id, $parameters, 'openapi', 'en'));
     }

@@ -22,9 +22,8 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use ReflectionClass;
 use ReflectionProperty;
-use Reflector;
 use Safe\Exceptions\FilesystemException;
-use function count;
+use Webmozart\Assert\Assert;
 use function is_string;
 use function Safe\fopen;
 use function Safe\fclose;
@@ -117,30 +116,31 @@ class DocblockTagParser
     {
         $namespaceName = $this->reflectionClass->getNamespaceName();
 
-        return $this->getQualifiedNameOfClass($tag, $namespaceName);
+        try {
+            $class = $this->getQualifiedNameOfClass($tag, $namespaceName);
+            Assert::notNull($class);
+
+            return $class;
+        } catch (Exception $exception) {
+            throw new TagTypeParseException($this->reflectionClass->getName(), $tag, $exception);
+        }
     }
 
     /**
-     * @return class-string
+     * @return class-string|null
      *
      * @throws TagTypeParseException
+     * @throws InvalidArgumentException
      */
-    private function getQualifiedNameOfClass(TagWithType $tag, string $namespaceName): string
+    protected function getQualifiedNameOfClass(TagWithType $tag, string $namespaceName): ?string
     {
         $tagType = $tag->getType();
-        if ($tagType instanceof AggregatedType) {
-            throw TagTypeParseException::createForAggregatedType($tag, $tagType, $this->reflectionClass->getName());
-        }
-        if (!$tagType instanceof Object_) {
-            // not even an object as return type
-            throw TagTypeParseException::createForTagType($tag, (string)$tagType, $this->reflectionClass->getName());
-        }
+        Assert::notInstanceOf($tagType, AggregatedType::class);
+        Assert::isInstanceOf($tagType, Object_::class);
 
         $typeDeclaration = (string)$tagType->getFqsen();
         $qualifiedNameParts = explode('\\', $typeDeclaration);
-        if (2 > count($qualifiedNameParts)) {
-            throw TagTypeParseException::createForTagType($tag, (string)$tagType, $this->reflectionClass->getName());
-        }
+        Assert::minCount($qualifiedNameParts, 2);
 
         // look for return type in use statements
         $class = $qualifiedNameParts[1];
@@ -171,7 +171,7 @@ class DocblockTagParser
         }
 
         // giving up looking for return type
-        throw TagTypeParseException::createForTagType($tag, (string)$tagType, $this->reflectionClass->getName());
+        return null;
     }
 
     /**
@@ -179,7 +179,7 @@ class DocblockTagParser
      *
      * @throws FilesystemException
      */
-    private function readSourceCode(string $fileName): string
+    protected function readSourceCode(string $fileName): string
     {
         $file = fopen($fileName, 'r');
         $lineNumber = 0;
@@ -209,7 +209,7 @@ class DocblockTagParser
      *
      * @throws FilesystemException
      */
-    private function getUseStatements(): array
+    protected function getUseStatements(): array
     {
         $fileName = $this->reflectionClass->getFileName();
         if (!is_string($fileName)) {

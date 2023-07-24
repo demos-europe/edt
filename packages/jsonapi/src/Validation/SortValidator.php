@@ -17,7 +17,7 @@ class SortValidator
     private array $sortConstraints;
 
     public function __construct(
-        private readonly ValidatorInterface $validator
+        protected readonly ValidatorInterface $validator
     ) {
         $this->sortConstraints = [
             new Assert\NotBlank(null, null, false),
@@ -35,11 +35,13 @@ class SortValidator
 
         if (0 !== $violations->count()) {
             throw new SortException(
-                'Invalid format used for \'sort\' parameter.',
+                "Invalid format used for 'sort' parameter.",
                 0,
                 new ValidationFailedException($sortValue, $violations)
             );
         }
+
+        \Webmozart\Assert\Assert::stringNotEmpty($sortValue);
 
         return $sortValue;
     }

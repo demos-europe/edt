@@ -22,7 +22,7 @@ class Value implements FunctionInterface
 
     public function apply(array $propertyValues)
     {
-        Assert::count($propertyValues, 0);
+        Assert::isEmpty($propertyValues);
         return $this->value;
     }
 

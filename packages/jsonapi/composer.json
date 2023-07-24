@@ -5,16 +5,17 @@
     "type": "library",
     "require": {
         "php": "^8.1",
-        "demos-europe/edt-queries": "^0.18",
+        "demos-europe/edt-queries": "^0.21",
         "league/fractal": "^0.19",
         "psr/log": "^1.1.4",
         "doctrine/collections": "^1.5",
-        "demos-europe/edt-access-definitions": "^0.18",
+        "demos-europe/edt-access-definitions": "^0.21",
         "symfony/http-foundation": "^5.3.7,<6",
         "symfony/validator": "5.*.*",
-        "pagerfanta/pagerfanta": "^2.7",
         "symfony/routing": "^5.3,<6",
-        "cebe/php-openapi": "^1.5"
+        "cebe/php-openapi": "^1.5",
+        "ext-json": "*",
+        "psr/event-dispatcher": "^1.0.0"
     },
     "authors": [
         {

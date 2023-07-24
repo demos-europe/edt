@@ -16,7 +16,6 @@ interface FunctionInterface extends PathsBasedInterface
      *
      * @param list<mixed> $propertyValues
      * @return TOutput
-     * @throws FunctionException
      */
     public function apply(array $propertyValues);
 

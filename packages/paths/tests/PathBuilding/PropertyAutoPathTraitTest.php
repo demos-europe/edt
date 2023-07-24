@@ -34,7 +34,6 @@ class PropertyAutoPathTraitTest extends TestCase
         $this->expectException(PathBuildException::class);
         $dummyPath = new BrokenByNonNestedNsAlias();
         $dummyPath->aliasedNsNonNested->nonNested;
-        self::fail('expected exception');
     }
 
     public function testAliasNestedNs(): void
@@ -42,7 +41,6 @@ class PropertyAutoPathTraitTest extends TestCase
         $this->expectException(PathBuildException::class);
         $dummyPath = new BrokenByNestedNsAlias();
         $dummyPath->aliasedNsNested->nested;
-        self::fail('expected exception');
     }
 
     public function testGroupUseDeclaration(): void
@@ -50,7 +48,6 @@ class PropertyAutoPathTraitTest extends TestCase
         $this->expectException(PathBuildException::class);
         $dummyPath = new BrokenByGroupUseStatement();
         $dummyPath->groupUse->nested;
-        self::fail('expected exception');
     }
 
     public function testFqsenNested(): void
@@ -144,7 +141,6 @@ class PropertyAutoPathTraitTest extends TestCase
         $this->expectException(PathBuildException::class);
         $dummyPath = new BrokenByUnionTypeProperty();
         $dummyPath->unionType->nested;
-        self::fail('expected exception');
     }
 
     public function testUnionTypeNonNested(): void
@@ -152,7 +148,6 @@ class PropertyAutoPathTraitTest extends TestCase
         $this->expectException(PathBuildException::class);
         $dummyPath = new BrokenByUnionTypeProperty();
         $dummyPath->unionType->nonNested;
-        self::fail('expected exception');
     }
 
     public function testNonNestedOnly(): void
@@ -322,7 +317,6 @@ class PropertyAutoPathTraitTest extends TestCase
         $this->expectException(PathBuildException::class);
         $path = new BarResource('');
         $path->unavailableWithTrait;
-        self::fail('Expected exception');
     }
 
     public function testPropertyReadsFoo(): void
@@ -467,11 +461,6 @@ class PropertyAutoPathTraitTest extends TestCase
 
     public function testAliasing(): void
     {
-        $foo = new FooResource();
-        $aliases = $foo->getAliases();
-        self::assertEquals([
-            'barTitle' => ['bar', 'title'],
-        ], $aliases);
         $path = new ParamTagged();
         self::assertInstanceOf(End::class, $path->paramAttribute);
         self::assertInstanceOf(FooResource::class, $path->paramRelationship);

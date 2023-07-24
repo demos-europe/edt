@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
 
-      - uses: php-actions/composer@v5
+      - uses: php-actions/composer@v6
         with:
           php_version: 8.1
 

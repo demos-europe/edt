@@ -5,8 +5,9 @@
     "type": "library",
     "require": {
         "php": "^8.1",
-        "demos-europe/edt-queries": "^0.18",
-        "thecodingmachine/safe": "^2.4.0"
+        "demos-europe/edt-queries": "^0.21",
+        "thecodingmachine/safe": "^2.4.0",
+        "pagerfanta/pagerfanta": "^2.7"
     },
     "authors": [
         {

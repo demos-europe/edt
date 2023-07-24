@@ -10,6 +10,7 @@ class Person
      * @param list<Book> $books
      */
     public function __construct(
+        protected string $id,
         protected string $name,
         protected ?string $pseudonym,
         protected Birth $birth,

@@ -11,7 +11,7 @@ use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\FluentQueries\ConditionDefinition;
 use EDT\Querying\FluentQueries\SliceDefinition;
 use EDT\Querying\FluentQueries\SortDefinition;
-use EDT\Querying\ObjectProviders\PrefilledObjectProvider;
+use EDT\Querying\ObjectProviders\PrefilledEntityProvider;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\FluentQueries\FluentQuery;
 use EDT\Querying\SortMethodFactories\PhpSortMethodFactory;
@@ -25,7 +25,7 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
 {
     private PhpConditionFactory $conditionFactory;
 
-    private PrefilledObjectProvider $authorProvider;
+    private PrefilledEntityProvider $authorProvider;
 
     private PhpSortMethodFactory $sortMethodFactory;
 
@@ -34,7 +34,7 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
         parent::setUp();
         $this->conditionFactory = new PhpConditionFactory();
         $propertyAccessor = new ReflectionPropertyAccessor();
-        $this->authorProvider = new PrefilledObjectProvider(
+        $this->authorProvider = new PrefilledEntityProvider(
             new ConditionEvaluator(new TableJoiner($propertyAccessor)),
             new Sorter(new TableJoiner($propertyAccessor)),
             $this->authors
@@ -143,7 +143,5 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
             ->propertyHasValue('Manfred', ['name']);
 
         $fetchRequest->getUniqueEntity();
-
-        self::fail('Expected exception');
     }
 }

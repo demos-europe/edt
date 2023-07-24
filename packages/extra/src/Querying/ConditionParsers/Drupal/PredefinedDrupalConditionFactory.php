@@ -6,6 +6,7 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use Webmozart\Assert\Assert;
 use function array_key_exists;
 
 /**
@@ -25,7 +26,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
      * @param PathsBasedConditionFactoryInterface<TCondition> $conditionFactory
      */
     public function __construct(
-        private readonly PathsBasedConditionFactoryInterface $conditionFactory
+        protected readonly PathsBasedConditionFactoryInterface $conditionFactory
     ) {
         $this->operatorFunctions = $this->getOperatorFunctions();
     }
@@ -56,8 +57,24 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
             'STRING_CONTAINS_CASE_INSENSITIVE' => [$this->conditionFactory, 'propertyHasStringContainingCaseInsensitiveValue'],
             'IN' => [$this->conditionFactory, 'propertyHasAnyOfValues'],
             'NOT_IN' => [$this->conditionFactory, 'propertyHasNotAnyOfValues'],
-            'BETWEEN' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path),
-            'NOT BETWEEN' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyNotBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path),
+            'BETWEEN' => function ($conditionValue, array $path): PathsBasedInterface {
+                Assert::isArray($conditionValue);
+                Assert::keyExists($conditionValue, 0);
+                Assert::keyExists($conditionValue, 1);
+                Assert::numeric($conditionValue[0]);
+                Assert::numeric($conditionValue[1]);
+
+                return $this->conditionFactory->propertyBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path);
+            },
+            'NOT BETWEEN' => function ($conditionValue, array $path): PathsBasedInterface {
+                Assert::isArray($conditionValue);
+                Assert::keyExists($conditionValue, 0);
+                Assert::keyExists($conditionValue, 1);
+                Assert::numeric($conditionValue[0]);
+                Assert::numeric($conditionValue[1]);
+
+                return $this->conditionFactory->propertyNotBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path);
+            },
             'ARRAY_CONTAINS_VALUE' => [$this->conditionFactory, 'propertyHasStringAsMember'],
             'IS NULL' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNull($path),
             'IS NOT NULL' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull($path),

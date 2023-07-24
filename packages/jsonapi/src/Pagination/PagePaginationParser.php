@@ -21,8 +21,8 @@ class PagePaginationParser implements PaginationParserInterface
      * @param positive-int $defaultSize
      */
     public function __construct(
-        private readonly int $defaultSize,
-        private readonly ValidatorInterface $validator
+        protected readonly int $defaultSize,
+        protected readonly ValidatorInterface $validator
     ) {}
 
     /**
@@ -77,7 +77,8 @@ class PagePaginationParser implements PaginationParserInterface
             throw new ValidationFailedException($page, $violations);
         }
 
+        \Webmozart\Assert\Assert::isArray($page);
+
         return $page;
     }
-
 }

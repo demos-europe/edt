@@ -22,12 +22,6 @@ class JsonApiSortingParserTest extends TestCase
         $this->jsonApiSortingParser = new JsonApiSortingParser($sortMethodFactory);
     }
 
-    public function testNull(): void
-    {
-        $result = $this->jsonApiSortingParser->createFromQueryParamValue(null);
-        self::assertSame([], $result);
-    }
-
     public function testSingleSortDefinitionAsc(): void
     {
         $result = $this->jsonApiSortingParser->createFromQueryParamValue('a.b.c');
