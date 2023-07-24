@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.20.0 - 2023-07-24
 
 * feature: integrate event dispatching for resource creation and update into `AbstractResourceType`; implementation of `getEventDispatcher` is now required 
 
