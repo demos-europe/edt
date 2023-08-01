@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\Event\CreationEvent;
-use EDT\JsonApi\Event\UpdateEvent;
+use EDT\JsonApi\InputTransformation\EntityCreator;
+use EDT\JsonApi\InputTransformation\EntityUpdater;
+use EDT\JsonApi\InputTransformation\SetabilityCollection;
 use EDT\JsonApi\OutputTransformation\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
@@ -63,6 +64,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 {
     use PropertyUpdaterTrait;
     use SideEffectHandleTrait;
+
+    public function __construct(
+        protected EntityCreator $entityCreator = new EntityCreator(),
+        protected EntityUpdater $entityUpdater = new EntityUpdater()
+    ) {}
 
     public function getReadableProperties(): ReadabilityCollection
     {
@@ -187,49 +193,44 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         );
     }
 
-    public function updateEntity(UpdateRequestBody $requestBody): ?object
-    {
-        $updatableProperties = $this->getUpdatableProperties();
-
-        // remove irrelevant setability instances
-        $attributeSetabilities = array_intersect_key(
-            $updatableProperties->getAttributes(),
-            $requestBody->getAttributes()
-        );
-        $toOneRelationshipSetabilities = array_intersect_key(
-            $updatableProperties->getToOneRelationships(),
-            $requestBody->getToOneRelationships()
-        );
-        $toManyRelationshipSetabilities = array_intersect_key(
-            $updatableProperties->getToManyRelationships(),
-            $requestBody->getToManyRelationships()
-        );
-
-        $entityConditions = array_merge(
+    /**
+     * Simply merges all entity conditions given in the setabilities with the {@link self::getAccessConditions()} of
+     * this instance and returns the result.
+     *
+     * Does not process any paths, as both the access conditions and the setability entity conditions are expected to
+     * be hardcoded and not supplied via request.
+     *
+     * @param SetabilityCollection<TCondition, TSorting, TEntity> $setabilityCollection
+     *
+     * @return list<TCondition>
+     */
+    protected function aggregateUpdateEntityConditions(SetabilityCollection $setabilityCollection): array {
+        return array_merge(
             $this->getAccessConditions(),
             ...array_map(
                 static fn (PropertyAccessibilityInterface $accessibility): array => $accessibility->getEntityConditions(),
                 array_merge(
-                    $attributeSetabilities,
-                    $toOneRelationshipSetabilities,
-                    $toManyRelationshipSetabilities
+                    $setabilityCollection->getAttributeSetabilities(),
+                    $setabilityCollection->getToOneRelationshipSetabilities(),
+                    $setabilityCollection->getToManyRelationshipSetabilities()
                 )
             )
         );
+    }
 
-        $entity = $this->getEntityFetcher()->getEntityByIdentifier($requestBody->getId(), $entityConditions, $this->getIdentifierPropertyPath());
+    public function updateEntity(UpdateRequestBody $requestBody): ?object
+    {
+        $updatableProperties = $this->getUpdatableProperties();
+        $setabilities = SetabilityCollection::createForUpdate($requestBody, $updatableProperties);
 
-        $updateEvent = new UpdateEvent(
-            $entity,
-            $attributeSetabilities,
-            $toOneRelationshipSetabilities,
-            $toManyRelationshipSetabilities,
-            $requestBody
-        );
+        $id = $requestBody->getId();
+        $entityConditions = $this->aggregateUpdateEntityConditions($setabilities);
+        $identifierPropertyPath = $this->getIdentifierPropertyPath();
 
-        $this->getEventDispatcher()->dispatch($updateEvent);
+        $entity = $this->getEntityFetcher()->getEntityByIdentifier($id, $entityConditions, $identifierPropertyPath);
+        $sideEffects = $this->entityUpdater->updateEntity($entity, $requestBody, $setabilities);
 
-        return $updateEvent->hasSideEffects()
+        return $this->mergeSideEffects($sideEffects)
             ? $entity
             : null;
     }
@@ -259,39 +260,14 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     public function createEntity(CreationRequestBody $requestBody): ?object
     {
         $initializableProperties = $this->getInitializableProperties();
-
-        // remove irrelevant setability instances
-        $attributeSetabilities = array_intersect_key(
-            $initializableProperties->getNonConstructorAttributeSetabilities(),
-            $requestBody->getAttributes()
-        );
-        $toOneRelationshipSetabilities = array_intersect_key(
-            $initializableProperties->getNonConstructorToOneRelationshipSetabilities(),
-            $requestBody->getToOneRelationships()
-        );
-        $toManyRelationshipSetabilities = array_intersect_key(
-            $initializableProperties->getNonConstructorToManyRelationshipSetabilities(),
-            $requestBody->getToManyRelationships()
-        );
-
+        $setabilities = SetabilityCollection::createForCreation($requestBody, $initializableProperties);
         $orderedConstructorArguments = $initializableProperties->getOrderedConstructorArguments();
-
         $constructorArguments = $this->getConstructorArguments($orderedConstructorArguments, $requestBody);
 
-        $creationEvent = new CreationEvent(
-            $this->getEntityClass(),
-            $constructorArguments,
-            $attributeSetabilities,
-            $toOneRelationshipSetabilities,
-            $toManyRelationshipSetabilities,
-            $requestBody
-        );
+        $entity = $this->entityCreator->createEntity($this->getEntityClass(), $constructorArguments);
+        $sideEffects = $this->entityUpdater->updateEntity($entity, $requestBody, $setabilities);
 
-        $this->getEventDispatcher()->dispatch($creationEvent);
-        $entity = $creationEvent->getEntity();
-        Assert::notNull($entity, 'Event did not contain a created entity after completion. Make sure to set-up a corresponding listener.');
-
-        return $creationEvent->hasSideEffects() && null !== $requestBody->getId()
+        return $this->mergeSideEffects($sideEffects) && null !== $requestBody->getId()
             ? $entity
             : null;
     }
@@ -640,6 +616,8 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
     /**
      * The property path to the property uniquely identifying an entity instance corresponding to this type.
+     *
+     * Must return a path that directly corresponds to the backing entity. I.e. no aliases will be resolved by callers.
      *
      * @return non-empty-list<non-empty-string>
      */

@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* refactor: revoke previously added event support in favor of objects 
+
 ## 0.20.0 - 2023-07-24
 
 * feature: integrate event dispatching for resource creation and update into `AbstractResourceType`; implementation of `getEventDispatcher` is now required 
