@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.21.0 - 2023-08-01
 
 * refactor: revoke previously added event support in favor of objects 
 
