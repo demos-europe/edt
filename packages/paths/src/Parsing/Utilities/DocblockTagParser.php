@@ -38,16 +38,16 @@ class DocblockTagParser
     /**
      * @var ReflectionClass<object>
      */
-    private ReflectionClass $reflectionClass;
+    protected readonly ReflectionClass $reflectionClass;
 
-    private ?DocBlock $docBlock = null;
+    protected readonly ?DocBlock $docBlock;
 
-    private Parser $phpParser;
+    protected readonly Parser $phpParser;
 
     /**
      * @var array<non-empty-string, non-empty-string>
      */
-    private array $useStatements;
+    protected readonly array $useStatements;
 
     /**
      * @param class-string $class

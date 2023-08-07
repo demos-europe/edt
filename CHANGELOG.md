@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: allow read usage of `DocblockTagParser` properties
+
 ## 0.21.3 - 2023-08-07
 
 * refactor: allow child classes of `ClauseFunction` and `OrderBy` interface in `DoctrineOrmEntityProvider` template parameters
