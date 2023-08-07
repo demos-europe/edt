@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.21.2 - 2023-08-07
 
 * refactor: use reflection class as parameter instead of class name
 
