@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* refactor: use reflection class as parameter instead of class name
+
 ## 0.21.1 - 2023-08-07
 
 * feature: allow classes extending from `ReflectionSegmentFactory` to reuse parts of its logic

@@ -44,7 +44,8 @@ class ReflectionSegmentFactory implements SegmentFactoryInterface
         ?string $parentPropertyName,
         array $constructorArgs = []
     ): PropertyPathInterface {
-        $childPathSegment = self::createInstance($className, $constructorArgs);
+        $reflectionClass = new ReflectionClass($className);
+        $childPathSegment = self::createInstance($reflectionClass, $constructorArgs);
         self::setProperties($childPathSegment, $parent, $parentPropertyName);
 
         return $childPathSegment;
@@ -53,16 +54,15 @@ class ReflectionSegmentFactory implements SegmentFactoryInterface
     /**
      * @template TImpl of PropertyAutoPathInterface
      *
-     * @param class-string<TImpl> $className
+     * @param ReflectionClass<TImpl> $reflectionClass
      * @param list<mixed> $constructorArgs
      *
      * @return TImpl
      *
      * @throws Exception
      */
-    protected static function createInstance(string $className, array $constructorArgs): PropertyAutoPathInterface
+    protected static function createInstance(ReflectionClass $reflectionClass, array $constructorArgs): PropertyAutoPathInterface
     {
-        $reflectionClass = new ReflectionClass($className);
         if ([] === $constructorArgs) {
             $constructor = $reflectionClass->getConstructor();
             if (null === $constructor || 0 === $constructor->getNumberOfRequiredParameters()) {
