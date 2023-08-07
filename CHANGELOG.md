@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.21.4 - 2023-08-07
 
 * feature: allow read usage of `DocblockTagParser` properties
 
