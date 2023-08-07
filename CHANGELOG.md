@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* refactor: allow child classes of `ClauseFunction` and `OrderBy` interface in `DoctrineOrmEntityProvider` template parameters
+
 ## 0.21.2 - 2023-08-07
 
 * refactor: use reflection class as parameter instead of class name
