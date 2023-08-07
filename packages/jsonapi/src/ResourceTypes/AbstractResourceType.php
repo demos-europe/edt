@@ -610,8 +610,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     {
         $this->mapPaths($conditions, []);
         $conditions = array_merge($conditions, $this->getAccessConditions());
+        $identifierPropertyPath = $this->getIdentifierPropertyPath();
 
-        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions, $this->getIdentifierPropertyPath());
+        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions, $identifierPropertyPath);
     }
 
     /**
