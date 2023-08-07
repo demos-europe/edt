@@ -77,6 +77,9 @@ class ReflectionSegmentFactory implements SegmentFactoryInterface
         return $childPathSegment;
     }
 
+    /**
+     * @param non-empty-string|null $parentPropertyName
+     */
     protected static function setProperties(
         PropertyAutoPathInterface $childPathSegment,
         ?PropertyAutoPathInterface $parent,
