@@ -38,7 +38,29 @@ class ReflectionSegmentFactory implements SegmentFactoryInterface
      *
      * @throws Exception
      */
-    public static function createSegment(string $className, ?PropertyAutoPathInterface $parent, ?string $parentPropertyName, array $constructorArgs = []): PropertyPathInterface
+    public static function createSegment(
+        string $className,
+        ?PropertyAutoPathInterface $parent,
+        ?string $parentPropertyName,
+        array $constructorArgs = []
+    ): PropertyPathInterface {
+        $childPathSegment = self::createInstance($className, $constructorArgs);
+        self::setProperties($childPathSegment, $parent, $parentPropertyName);
+
+        return $childPathSegment;
+    }
+
+    /**
+     * @template TImpl of PropertyAutoPathInterface
+     *
+     * @param class-string<TImpl> $className
+     * @param list<mixed> $constructorArgs
+     *
+     * @return TImpl
+     *
+     * @throws Exception
+     */
+    protected static function createInstance(string $className, array $constructorArgs): PropertyAutoPathInterface
     {
         $reflectionClass = new ReflectionClass($className);
         if ([] === $constructorArgs) {
@@ -52,13 +74,19 @@ class ReflectionSegmentFactory implements SegmentFactoryInterface
             $childPathSegment = $reflectionClass->newInstanceArgs($constructorArgs);
         }
 
+        return $childPathSegment;
+    }
+
+    protected static function setProperties(
+        PropertyAutoPathInterface $childPathSegment,
+        ?PropertyAutoPathInterface $parent,
+        ?string $parentPropertyName
+    ): void {
         if (null !== $parent) {
             $childPathSegment->setParent($parent);
         }
         if (null !== $parentPropertyName) {
             $childPathSegment->setParentPropertyName($parentPropertyName);
         }
-
-        return $childPathSegment;
     }
 }
