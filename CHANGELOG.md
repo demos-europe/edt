@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.22.0 - 2023-08-08
 
 * refactor: adjust exceptions, interfaces and events
 
