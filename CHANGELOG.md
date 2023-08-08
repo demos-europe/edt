@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.22.2 - 2023-08-08
 
 * fix: use correct template parameter
 
