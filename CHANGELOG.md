@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.22.1 - 2023-08-08
 
 * fix: consider access conditions when deleting resources
 
