@@ -286,14 +286,14 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\OutputTransformation\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) return type has no value type specified in iterable type array\\.$#"
+            message: "#^Method EDT\\\\JsonApi\\\\OutputHandling\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) return type has no value type specified in iterable type array\\.$#"
             count: 1
-            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+            path: packages/jsonapi/src/OutputHandling/DynamicTransformer.php
 
         -
             message: "#^Parameter \\#1 \\$properties of method EDT\\\\JsonApi\\\\RequestHandling\\\\MessageFormatter\\:\\:propertiesToString\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>, non\\-empty\\-array given\\.$#"
             count: 1
-            path: packages/jsonapi/src/OutputTransformation/DynamicTransformer.php
+            path: packages/jsonapi/src/OutputHandling/DynamicTransformer.php
 
         -
             message: "#^Method EDT\\\\JsonApi\\\\Pagination\\\\OffsetPaginationParser\\:\\:getValidatedPage\\(\\) should return array\\{offset\\: numeric\\-string, limit\\: numeric\\-string\\} but returns array\\.$#"

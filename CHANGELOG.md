@@ -1,6 +1,23 @@
 
 # Changelog
 
+## Unreleased
+
+* refactor: adjust exceptions, interfaces and events
+
+Simplify exception handling in requests: Wrapping every
+exception to provide information the caller already has
+is unnecessary complicated.
+
+Add events (again): Events to execute code before or after
+request handling were added. These will probably be the
+target of heavy refactoring in the foreseeable future.
+
+Restructure/rename interfaces/namespaces: Using type
+interfaces directly corresponding to requests should make the
+hierarchy more understandable. The namespaces were adjusted
+for clarity.
+
 ## 0.21.4 - 2023-08-07
 
 * feature: allow read usage of `DocblockTagParser` properties

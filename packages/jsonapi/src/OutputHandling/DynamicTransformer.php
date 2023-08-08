@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EDT\JsonApi\OutputTransformation;
+namespace EDT\JsonApi\OutputHandling;
 
 use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\JsonApi\RequestHandling\MessageFormatter;

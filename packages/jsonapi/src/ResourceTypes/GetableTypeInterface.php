@@ -5,17 +5,29 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\IdRetrievableTypeInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
+use Exception;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
- *
- * @template-extends IdRetrievableTypeInterface<TCondition, TSorting, TEntity>
  */
-interface GetableTypeInterface extends ReadableTypeInterface, IdRetrievableTypeInterface, NamedTypeInterface
+interface GetableTypeInterface extends ReadableTypeInterface, NamedTypeInterface
 {
-
+    /**
+     * Get an instance of the entity corresponding to this type with the given identifier that matches the
+     * given conditions.
+     *
+     * Implementations are responsible to not return instances with restricted accessibility.
+     *
+     * The given conditions must only access properties that are allowed for external filtering usage.
+     *
+     * @param non-empty-string $identifier
+     *
+     * @return TEntity
+     *
+     * @throws Exception
+     */
+    public function getEntity(string $identifier): object;
 }

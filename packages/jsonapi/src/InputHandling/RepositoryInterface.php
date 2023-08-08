@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EDT\Wrapping\Contracts;
+namespace EDT\JsonApi\InputHandling;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Pagination\PagePagination;
@@ -10,13 +10,13 @@ use Exception;
 use Pagerfanta\Pagerfanta;
 
 /**
- * Allows to fetch entities and handle given ones regarding matching conditions and sort methods.
+ * Allows to fetch and manipulate entities, as well as handle given ones regarding matching conditions and sort methods.
  *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
-interface EntityFetcherInterface
+interface RepositoryInterface
 {
     /**
      * @param non-empty-string $id
@@ -57,6 +57,14 @@ interface EntityFetcherInterface
      * @return Pagerfanta<TEntity>
      */
     public function getEntitiesForPage(array $conditions, array $sortMethods, PagePagination $pagination): Pagerfanta;
+
+    /**
+     * @param non-empty-string $entityId
+     * @param non-empty-list<non-empty-string> $identifierPropertyPath
+     *
+     * @throws Exception If the deletion or corresponding side effects failed for some reason. As the caller is aware of the type name and given entity ID, there is no need to include them in the exception.
+     */
+    public function deleteEntityByIdentifier(string $entityId, array $identifierPropertyPath): void;
 
     /**
      * @param list<TEntity> $entities

@@ -4,10 +4,21 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\InputTransformation\EntityCreator;
-use EDT\JsonApi\InputTransformation\EntityUpdater;
-use EDT\JsonApi\InputTransformation\SetabilityCollection;
-use EDT\JsonApi\OutputTransformation\DynamicTransformer;
+use EDT\JsonApi\Event\AfterCreationEvent;
+use EDT\JsonApi\Event\AfterDeletionEvent;
+use EDT\JsonApi\Event\AfterGetEvent;
+use EDT\JsonApi\Event\AfterListEvent;
+use EDT\JsonApi\Event\AfterUpdateEvent;
+use EDT\JsonApi\Event\BeforeCreationEvent;
+use EDT\JsonApi\Event\BeforeDeletionEvent;
+use EDT\JsonApi\Event\BeforeGetEvent;
+use EDT\JsonApi\Event\BeforeListEvent;
+use EDT\JsonApi\Event\BeforeUpdateEvent;
+use EDT\JsonApi\InputHandling\EntityCreator;
+use EDT\JsonApi\InputHandling\EntityUpdater;
+use EDT\JsonApi\InputHandling\RepositoryInterface;
+use EDT\JsonApi\InputHandling\SetabilityCollection;
+use EDT\JsonApi\OutputHandling\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
@@ -20,10 +31,8 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Querying\Pagination\PagePagination;
 use EDT\Querying\PropertyPaths\PropertyLink;
-use EDT\Wrapping\Contracts\EntityFetcherInterface;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FetchableTypeInterface;
-use EDT\Wrapping\Contracts\Types\IdRetrievableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AttributeInitializabilityInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
@@ -58,9 +67,10 @@ use Webmozart\Assert\Assert;
  *
  * @template-implements ResourceTypeInterface<TCondition, TSorting, TEntity>
  * @template-implements FetchableTypeInterface<TCondition, TSorting, TEntity>
- * @template-implements IdRetrievableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements GetableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements CreatableTypeInterface<TCondition, TSorting, TEntity>
  */
-abstract class AbstractResourceType implements ResourceTypeInterface, FetchableTypeInterface, IdRetrievableTypeInterface
+abstract class AbstractResourceType implements ResourceTypeInterface, FetchableTypeInterface, GetableTypeInterface, DeletableTypeInterface, CreatableTypeInterface
 {
     use PropertyUpdaterTrait;
     use SideEffectHandleTrait;
@@ -171,9 +181,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     }
 
     /**
-     * @return EntityFetcherInterface<TCondition, TSorting, TEntity>
+     * @return RepositoryInterface<TCondition, TSorting, TEntity>
      */
-    abstract protected function getEntityFetcher(): EntityFetcherInterface;
+    abstract protected function getRepository(): RepositoryInterface;
 
     public function getExpectedUpdateProperties(): ExpectedPropertyCollection
     {
@@ -227,18 +237,24 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $entityConditions = $this->aggregateUpdateEntityConditions($setabilities);
         $identifierPropertyPath = $this->getIdentifierPropertyPath();
 
-        $entity = $this->getEntityFetcher()->getEntityByIdentifier($id, $entityConditions, $identifierPropertyPath);
+        $entity = $this->getRepository()->getEntityByIdentifier($id, $entityConditions, $identifierPropertyPath);
+
+        $beforeUpdateEvent = new BeforeUpdateEvent($this, $entity);
+        $this->getEventDispatcher()->dispatch($beforeUpdateEvent);
+
         $sideEffects = $this->entityUpdater->updateEntity($entity, $requestBody, $setabilities);
 
-        return $this->mergeSideEffects($sideEffects)
+        $afterUpdateEvent = new AfterUpdateEvent($this, $entity);
+        $this->getEventDispatcher()->dispatch($afterUpdateEvent);
+
+        return !$beforeUpdateEvent->hasSideEffects()
+            && !$afterUpdateEvent->hasSideEffects()
+            && $this->mergeSideEffects($sideEffects)
             ? $entity
             : null;
     }
 
-    /**
-     * @see CreatableTypeInterface::getExpectedInitializationProperties()
-     */
-    public function getExpectedInitializableProperties(): ExpectedPropertyCollection
+    public function getExpectedInitializationProperties(): ExpectedPropertyCollection
     {
         $initializableProperties = $this->getInitializableProperties();
 
@@ -252,11 +268,18 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         );
     }
 
-    /**
-     * @return TEntity|null
-     *
-     * @see CreatableTypeInterface::createEntity()
-     */
+    public function deleteEntity(string $entityIdentifier): void
+    {
+        $beforeDeletionEvent = new BeforeDeletionEvent($this, $entityIdentifier);
+        $this->getEventDispatcher()->dispatch($beforeDeletionEvent);
+
+        $identifierPropertyPath = $this->getIdentifierPropertyPath();
+        $this->getRepository()->deleteEntityByIdentifier($entityIdentifier, $identifierPropertyPath);
+
+        $afterDeletionEvent = new AfterDeletionEvent($this, $entityIdentifier);
+        $this->getEventDispatcher()->dispatch($afterDeletionEvent);
+    }
+
     public function createEntity(CreationRequestBody $requestBody): ?object
     {
         $initializableProperties = $this->getInitializableProperties();
@@ -264,10 +287,19 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $orderedConstructorArguments = $initializableProperties->getOrderedConstructorArguments();
         $constructorArguments = $this->getConstructorArguments($orderedConstructorArguments, $requestBody);
 
+        $beforeCreationEvent = new BeforeCreationEvent($this);
+        $this->getEventDispatcher()->dispatch($beforeCreationEvent);
+
         $entity = $this->entityCreator->createEntity($this->getEntityClass(), $constructorArguments);
         $sideEffects = $this->entityUpdater->updateEntity($entity, $requestBody, $setabilities);
 
-        return $this->mergeSideEffects($sideEffects) && null !== $requestBody->getId()
+        $afterCreationEvent = new AfterCreationEvent($this, $entity);
+        $this->getEventDispatcher()->dispatch($afterCreationEvent);
+
+        return !$beforeCreationEvent->hasSideEffects()
+            && !$afterCreationEvent->hasSideEffects()
+            && $this->mergeSideEffects($sideEffects)
+            && null === $requestBody->getId()
             ? $entity
             : null;
     }
@@ -596,23 +628,30 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $conditions = array_merge($conditions, $this->getAccessConditions());
         $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
 
-        return $this->getEntityFetcher()->getEntitiesByIdentifiers($identifiers, $conditions, $sortMethods, $this->getIdentifierPropertyPath());
+        return $this->getRepository()->getEntitiesByIdentifiers($identifiers, $conditions, $sortMethods, $this->getIdentifierPropertyPath());
     }
 
     public function getEntityForRelationship(string $identifier, array $conditions): object
     {
         $conditions = array_merge($conditions, $this->getAccessConditions());
 
-        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions, $this->getIdentifierPropertyPath());
+        return $this->getRepository()->getEntityByIdentifier($identifier, $conditions, $this->getIdentifierPropertyPath());
     }
 
-    public function getEntityByIdentifier(string $identifier, array $conditions): object
+    public function getEntity(string $identifier): object
     {
-        $this->mapPaths($conditions, []);
-        $conditions = array_merge($conditions, $this->getAccessConditions());
+        $beforeGetEvent = new BeforeGetEvent($this);
+        $this->getEventDispatcher()->dispatch($beforeGetEvent);
+
+        $conditions = $this->getAccessConditions();
         $identifierPropertyPath = $this->getIdentifierPropertyPath();
 
-        return $this->getEntityFetcher()->getEntityByIdentifier($identifier, $conditions, $identifierPropertyPath);
+        $entity = $this->getRepository()->getEntityByIdentifier($identifier, $conditions, $identifierPropertyPath);
+
+        $afterGetEvent = new AfterGetEvent($this, $entity);
+        $this->getEventDispatcher()->dispatch($afterGetEvent);
+
+        return $entity;
     }
 
     /**
@@ -626,11 +665,19 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
     public function getEntities(array $conditions, array $sortMethods): array
     {
+        $beforeListEvent = new BeforeListEvent($this);
+        $this->getEventDispatcher()->dispatch($beforeListEvent);
+
         $this->mapPaths($conditions, $sortMethods);
         $conditions = array_merge($conditions, $this->getAccessConditions());
         $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
 
-        return $this->getEntityFetcher()->getEntities($conditions, $sortMethods);
+        $entities = $this->getRepository()->getEntities($conditions, $sortMethods);
+
+        $afterListEvent = new AfterListEvent($this, $entities);
+        $this->getEventDispatcher()->dispatch($afterListEvent);
+
+        return $entities;
     }
 
     public function getEntitiesForPage(array $conditions, array $sortMethods, PagePagination $pagination): Pagerfanta
@@ -639,7 +686,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $conditions = array_merge($conditions, $this->getAccessConditions());
         $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
 
-        return $this->getEntityFetcher()->getEntitiesForPage($conditions, $sortMethods, $pagination);
+        return $this->getRepository()->getEntitiesForPage($conditions, $sortMethods, $pagination);
     }
 
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array
@@ -647,21 +694,21 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $conditions = array_merge($conditions, $this->getAccessConditions());
         $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
 
-        return $this->getEntityFetcher()->reindexEntities($entities, $conditions, $sortMethods);
+        return $this->getRepository()->reindexEntities($entities, $conditions, $sortMethods);
     }
 
     public function assertMatchingEntities(array $entities, array $conditions): void
     {
         $conditions = array_merge($conditions, $this->getAccessConditions());
 
-        $this->getEntityFetcher()->assertMatchingEntities($entities, $conditions);
+        $this->getRepository()->assertMatchingEntities($entities, $conditions);
     }
 
     public function assertMatchingEntity(object $entity, array $conditions): void
     {
         $conditions = array_merge($conditions, $this->getAccessConditions());
 
-        $this->getEntityFetcher()->assertMatchingEntity($entity, $conditions);
+        $this->getRepository()->assertMatchingEntity($entity, $conditions);
     }
 
     public function isMatchingEntity(object $entity, array $conditions): bool
@@ -672,6 +719,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
             return true;
         }
 
-        return $this->getEntityFetcher()->isMatchingEntity($entity, $conditions);
+        return $this->getRepository()->isMatchingEntity($entity, $conditions);
     }
 }

@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\RequestHandling\RequestTransformer;
-use EDT\Wrapping\Contracts\Types\IdDeletableTypeInterface;
-use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
+use EDT\JsonApi\ResourceTypes\DeletableTypeInterface;
 use Exception;
 
 class DeletionRequest
@@ -16,19 +15,13 @@ class DeletionRequest
     ) {}
 
     /**
-     * @param IdDeletableTypeInterface&NamedTypeInterface $type
      * @param non-empty-string $resourceId
      *
-     * @throws DeletionFailedException
+     * @throws Exception
      */
-    public function deleteResource(IdDeletableTypeInterface $type, string $resourceId): void
+    public function deleteResource(DeletableTypeInterface $type, string $resourceId): void
     {
-        $typeName = $type->getTypeName();
-        try {
-            $urlParams = $this->requestParser->getUrlParameters();
-            $type->deleteEntityByIdentifier($resourceId);
-        } catch (Exception $exception) {
-            throw new DeletionFailedException($resourceId, $typeName, $exception);
-        }
+        $urlParams = $this->requestParser->getUrlParameters();
+        $type->deleteEntity($resourceId);
     }
 }

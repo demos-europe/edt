@@ -44,37 +44,33 @@ class ListRequest
     /**
      * @param ListableTypeInterface<TCondition, TSorting, object> $type
      *
-     * @throws RequestException
+     * @throws Exception
      */
     public function listResources(ListableTypeInterface $type): Collection
     {
         $typeName = $type->getTypeName();
-        try {
-            $urlParams = $this->requestParser->getUrlParameters();
+        $urlParams = $this->requestParser->getUrlParameters();
 
-            $conditions = $this->getConditions($urlParams);
-            $sortMethods = $this->getSortMethods($urlParams);
-            $pagination = $this->paginationParser->getPagination($urlParams);
+        $conditions = $this->getConditions($urlParams);
+        $sortMethods = $this->getSortMethods($urlParams);
+        $pagination = $this->paginationParser->getPagination($urlParams);
 
-            $paginator = null;
-            if (null === $pagination) {
-                $entities = $type->getEntities($conditions, $sortMethods);
-            } else {
-                $paginator = $type->getEntitiesForPage($conditions, $sortMethods, $pagination);
-                $entities = $paginator->getCurrentPageResults();
-                $entities = array_values(Iterables::asArray($entities));
-            }
-
-            $collection = new Collection($entities, $type->getTransformer(), $typeName);
-            $collection->setMeta([]);
-            if (null !== $paginator) {
-                $collection->setPaginator($this->paginatorFactory->createPaginatorAdapter($paginator));
-            }
-
-            return $collection;
-        } catch (Exception $exception) {
-            throw new ListFailedException("Failed to list `$typeName` resources.", 0, $exception);
+        $paginator = null;
+        if (null === $pagination) {
+            $entities = $type->getEntities($conditions, $sortMethods);
+        } else {
+            $paginator = $type->getEntitiesForPage($conditions, $sortMethods, $pagination);
+            $entities = $paginator->getCurrentPageResults();
+            $entities = array_values(Iterables::asArray($entities));
         }
+
+        $collection = new Collection($entities, $type->getTransformer(), $typeName);
+        $collection->setMeta([]);
+        if (null !== $paginator) {
+            $collection->setPaginator($this->paginatorFactory->createPaginatorAdapter($paginator));
+        }
+
+        return $collection;
     }
 
     /**

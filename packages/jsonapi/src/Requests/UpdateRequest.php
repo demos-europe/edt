@@ -30,29 +30,24 @@ class UpdateRequest
      * @param UpdatableTypeInterface<TCondition, TSorting, object> $type
      * @param non-empty-string $resourceId the identifier of the resource to be updated, must match the corresponding `id` field in the request body
      *
-     * @throws RequestException
+     * @throws Exception
      */
     public function updateResource(UpdatableTypeInterface $type, string $resourceId): ?Item
     {
         $typeName = $type->getTypeName();
-        try {
-            $expectedProperties = $type->getExpectedUpdateProperties();
+        $expectedProperties = $type->getExpectedUpdateProperties();
 
-            // get request data
-            $requestBody = $this->requestTransformer
-                ->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
-            $urlParams = $this->requestTransformer->getUrlParameters();
+        // get request data
+        $requestBody = $this->requestTransformer->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
+        $urlParams = $this->requestTransformer->getUrlParameters();
 
-            $entity = $type->updateEntity($requestBody);
+        $entity = $type->updateEntity($requestBody);
 
-            if (null === $entity) {
-                // if there were no side effects, no response body is needed
-                return null;
-            }
-
-            return new Item($entity, $type->getTransformer(), $type->getTypeName());
-        } catch (Exception $exception) {
-            throw new UpdateFailedException("Failed to update `$typeName` resource with ID `$resourceId`.", 0, $exception);
+        if (null === $entity) {
+            // if there were no side effects, no response body is needed
+            return null;
         }
+
+        return new Item($entity, $type->getTransformer(), $type->getTypeName());
     }
 }

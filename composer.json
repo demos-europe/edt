@@ -17,7 +17,8 @@
         "symfony/validator": "5.*.*",
         "thecodingmachine/safe": "^2.4.0",
         "webmozart/assert": "^1.11",
-        "ext-json": "*"
+        "ext-json": "*",
+        "psr/event-dispatcher": "^1.0"
     },
     "authors": [
         {

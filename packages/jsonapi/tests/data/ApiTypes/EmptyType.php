@@ -6,12 +6,12 @@ namespace Tests\data\ApiTypes;
 
 use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
+use EDT\JsonApi\InputHandling\RepositoryInterface;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\ResourceTypes\PropertyBuilderFactory;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\PropertyPath;
-use EDT\Wrapping\Contracts\EntityFetcherInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
@@ -90,7 +90,7 @@ class EmptyType extends AbstractResourceType
         throw new \RuntimeException();
     }
 
-    protected function getEntityFetcher(): EntityFetcherInterface
+    protected function getRepository(): RepositoryInterface
     {
         throw new \RuntimeException();
     }

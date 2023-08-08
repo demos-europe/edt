@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EDT\JsonApi\InputTransformation;
+namespace EDT\JsonApi\InputHandling;
 
 class EntityCreator
 {

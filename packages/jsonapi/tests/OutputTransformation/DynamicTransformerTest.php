@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\OutputTransformation;
 
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
-use EDT\JsonApi\OutputTransformation\DynamicTransformer;
+use EDT\JsonApi\OutputHandling\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\JsonApi\ResourceTypes\PropertyBuilderFactory;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
