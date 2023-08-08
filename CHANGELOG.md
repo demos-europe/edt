@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: use correct template parameter
+
 ## 0.22.1 - 2023-08-08
 
 * fix: consider access conditions when deleting resources
