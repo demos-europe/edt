@@ -274,7 +274,8 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $this->getEventDispatcher()->dispatch($beforeDeletionEvent);
 
         $identifierPropertyPath = $this->getIdentifierPropertyPath();
-        $this->getRepository()->deleteEntityByIdentifier($entityIdentifier, $identifierPropertyPath);
+        $conditions = $this->getAccessConditions();
+        $this->getRepository()->deleteEntityByIdentifier($entityIdentifier, $conditions, $identifierPropertyPath);
 
         $afterDeletionEvent = new AfterDeletionEvent($this, $entityIdentifier);
         $this->getEventDispatcher()->dispatch($afterDeletionEvent);

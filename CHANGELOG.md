@@ -1,13 +1,17 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: consider access conditions when deleting resources
+
 ## 0.22.0 - 2023-08-08
 
 * refactor: adjust exceptions, interfaces and events
 
 Simplify exception handling in requests: Wrapping every
 exception to provide information the caller already has
-is unnecessary complicated.
+is unnecessarily complicated.
 
 Add events (again): Events to execute code before or after
 request handling were added. These will probably be the

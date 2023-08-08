@@ -59,12 +59,15 @@ interface RepositoryInterface
     public function getEntitiesForPage(array $conditions, array $sortMethods, PagePagination $pagination): Pagerfanta;
 
     /**
-     * @param non-empty-string $entityId
-     * @param non-empty-list<non-empty-string> $identifierPropertyPath
+     * Deletes an entity identified by the given identifier and conditions.
      *
-     * @throws Exception If the deletion or corresponding side effects failed for some reason. As the caller is aware of the type name and given entity ID, there is no need to include them in the exception.
+     * @param non-empty-string $entityIdentifier The entity's identifier.
+     * @param list<TCondition> $conditions Additional conditions for delete operation, all conditions must match.
+     * @param non-empty-list<non-empty-string> $identifierPropertyPath Property path used for entity identification.
+     *
+     * @throws Exception If deletion or its side effects fail.
      */
-    public function deleteEntityByIdentifier(string $entityId, array $identifierPropertyPath): void;
+    public function deleteEntityByIdentifier(string $entityIdentifier, array $conditions, array $identifierPropertyPath): void;
 
     /**
      * @param list<TEntity> $entities
