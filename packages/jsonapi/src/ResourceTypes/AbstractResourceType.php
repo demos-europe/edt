@@ -51,7 +51,6 @@ use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
 use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
 use EDT\Wrapping\Properties\UpdatablePropertyCollection;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
-use Exception;
 use League\Fractal\TransformerAbstract;
 use Pagerfanta\Pagerfanta;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -189,7 +188,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     {
         $updatabilityCollection = $this->getUpdatableProperties();
 
-        $attributeSetabilities = $updatabilityCollection->getAttributes();
+        $attributeSetabilities = $updatabilityCollection->getAttributeNames();
         $toOneRelationshipSetabilities = $updatabilityCollection->getToOneRelationships();
         $toManyRelationshipSetabilities = $updatabilityCollection->getToManyRelationships();
 
@@ -259,10 +258,10 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $initializableProperties = $this->getInitializableProperties();
 
         return new ExpectedPropertyCollection(
-            $initializableProperties->getRequiredAttributes(),
+            $initializableProperties->getRequiredAttributeNames(),
             $initializableProperties->getRequiredToOneRelationshipIdentifiers(),
             $initializableProperties->getRequiredToManyRelationshipIdentifiers(),
-            $initializableProperties->getOptionalAttributes(),
+            $initializableProperties->getOptionalAttributeNames(),
             $initializableProperties->getOptionalToOneRelationshipIdentifiers(),
             $initializableProperties->getOptionalToManyRelationshipIdentifiers()
         );
@@ -285,13 +284,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     {
         $initializableProperties = $this->getInitializableProperties();
         $setabilities = SetabilityCollection::createForCreation($requestBody, $initializableProperties);
-        $orderedConstructorArguments = $initializableProperties->getOrderedConstructorArguments();
-        $constructorArguments = $this->getConstructorArguments($orderedConstructorArguments, $requestBody);
 
         $beforeCreationEvent = new BeforeCreationEvent($this);
         $this->getEventDispatcher()->dispatch($beforeCreationEvent);
 
-        $entity = $this->entityCreator->createEntity($this->getEntityClass(), $constructorArguments);
+        $entity = $this->entityCreator->createEntity($this->getEntityClass(), $initializableProperties, $requestBody);
         $sideEffects = $this->entityUpdater->updateEntity($entity, $requestBody, $setabilities);
 
         $afterCreationEvent = new AfterCreationEvent($this, $entity);
@@ -303,43 +300,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
             && null === $requestBody->getId()
             ? $entity
             : null;
-    }
-
-    /**
-     * @param array<non-empty-string, ConstructorParameterInterface<TCondition, TSorting>> $constructorParameters
-     *
-     * @return list<mixed>
-     *
-     * @throws Exception
-     */
-    protected function getConstructorArguments(array $constructorParameters, CreationRequestBody $requestBody): array
-    {
-        $constructorArguments = [];
-        foreach ($constructorParameters as $propertyName => $constructorParameter) {
-            if (!$requestBody->hasProperty($propertyName)) {
-                break;
-            }
-
-            if ($constructorParameter->isAttribute()) {
-                $constructorArguments[] = $requestBody->getAttributeValue($propertyName);
-            } elseif ($constructorParameter->isToOneRelationship()) {
-                $relationshipRef = $requestBody->getToOneRelationshipReference($propertyName);
-                $constructorArguments[] = $this->determineToOneRelationshipValue(
-                    $constructorParameter->getRelationshipType(),
-                    $constructorParameter->getRelationshipConditions(),
-                    $relationshipRef
-                );
-            } else {
-                $relationshipRefs = $requestBody->getToManyRelationshipReferences($propertyName);
-                $constructorArguments[] = $this->determineToManyRelationshipValues(
-                    $constructorParameter->getRelationshipType(),
-                    $constructorParameter->getRelationshipConditions(),
-                    $relationshipRefs
-                );
-            }
-        }
-
-        return $constructorArguments;
     }
 
     /**

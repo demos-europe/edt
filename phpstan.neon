@@ -324,7 +324,17 @@ parameters:
             path: packages/jsonapi/src/ResourceTypes/AbstractResourceType.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:createConstructorParameter\\(\\) should return EDT\\\\Wrapping\\\\Properties\\\\ConstructorParameterInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\Wrapping\\\\Properties\\\\ConstructorParameter\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:createConstructorParameter\\(\\) should return EDT\\\\Wrapping\\\\Properties\\\\ConstructorParameterInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\Wrapping\\\\Properties\\\\AttributeConstructorParameter\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:createConstructorParameter\\(\\) should return EDT\\\\Wrapping\\\\Properties\\\\ConstructorParameterInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\Wrapping\\\\Properties\\\\ToManyRelationshipConstructorParameter\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
+            count: 1
+            path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
+
+        -
+            message: "#^Method EDT\\\\JsonApi\\\\ResourceTypes\\\\PropertyBuilder\\:\\:createConstructorParameter\\(\\) should return EDT\\\\Wrapping\\\\Properties\\\\ConstructorParameterInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> but returns EDT\\\\Wrapping\\\\Properties\\\\ToOneRelationshipConstructorParameter\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\.$#"
             count: 1
             path: packages/jsonapi/src/ResourceTypes/PropertyBuilder.php
 

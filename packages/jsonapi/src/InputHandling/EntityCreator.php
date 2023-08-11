@@ -4,18 +4,32 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\InputHandling;
 
+use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
+use EDT\JsonApi\Requests\PropertyUpdaterTrait;
+use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Properties\ConstructorParameterInterface;
+use EDT\Wrapping\Properties\InitializabilityCollection;
+
 class EntityCreator
 {
+    use PropertyUpdaterTrait;
+
     /**
-     * @template T of object
+     * @template TEntity of object
      *
-     * @param class-string<T> $entityClass
-     * @param list<mixed> $constructorArguments
+     * @param class-string<TEntity> $entityClass
+     * @param InitializabilityCollection<TEntity, PathsBasedInterface, PathsBasedInterface> $initializabilities
      *
-     * @return T
+     * @return TEntity
      */
-    public function createEntity(string $entityClass, array $constructorArguments): object
+    public function createEntity(string $entityClass, InitializabilityCollection $initializabilities, CreationRequestBody $requestBody): object
     {
+        $orderedConstructorArguments = $initializabilities->getOrderedConstructorArguments();
+        $constructorArguments = array_map(
+            static fn (ConstructorParameterInterface $constructorParameter): mixed => $constructorParameter->getValue($requestBody),
+            $orderedConstructorArguments
+        );
+
         return new $entityClass(...$constructorArguments);
     }
 }

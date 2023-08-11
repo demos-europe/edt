@@ -32,15 +32,17 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
+use EDT\Wrapping\Properties\AttributeConstructorParameter;
 use EDT\Wrapping\Properties\AttributeInitializabilityInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
 use EDT\Wrapping\Properties\AttributeSetabilityInterface;
-use EDT\Wrapping\Properties\ConstructorParameter;
 use EDT\Wrapping\Properties\ConstructorParameterInterface;
 use EDT\Wrapping\Properties\IdReadabilityInterface;
+use EDT\Wrapping\Properties\ToManyRelationshipConstructorParameter;
 use EDT\Wrapping\Properties\ToManyRelationshipInitializabilityInterface;
 use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
 use EDT\Wrapping\Properties\ToManyRelationshipSetabilityInterface;
+use EDT\Wrapping\Properties\ToOneRelationshipConstructorParameter;
 use EDT\Wrapping\Properties\ToOneRelationshipInitializabilityInterface;
 use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
 use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
@@ -123,6 +125,7 @@ class PropertyBuilder implements PropertyConfigInterface
     private array $initializeRelationshipConditions = [];
 
     /**
+     * @param PropertyPathInterface $path must contain exactly one segment
      * @param class-string<TEntity> $entityClass
      * @param array{relationshipType: ResourceTypeInterface<TCondition, TSorting, object>, defaultInclude: bool, toMany: bool}|null $relationship
      *
@@ -568,13 +571,21 @@ class PropertyBuilder implements PropertyConfigInterface
     protected function createConstructorParameter(): ConstructorParameterInterface
     {
         if (null === $this->relationship) {
-            return new ConstructorParameter(null);
+            return new AttributeConstructorParameter($this->name);
         }
 
-        return new ConstructorParameter([
-            'toMany' => $this->relationship['toMany'],
-            'relationshipType' => $this->relationship['relationshipType'],
-            'conditions' => [],
-        ]);
+        if ($this->relationship['toMany']) {
+            return new ToManyRelationshipConstructorParameter(
+                $this->name,
+                $this->relationship['relationshipType'],
+                []
+            );
+        }
+
+        return new ToOneRelationshipConstructorParameter(
+            $this->name,
+            $this->relationship['relationshipType'],
+            []
+        );
     }
 }

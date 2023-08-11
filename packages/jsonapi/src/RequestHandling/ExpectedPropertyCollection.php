@@ -12,10 +12,10 @@ class ExpectedPropertyCollection
     use RequestConstraintTrait;
 
     /**
-     * @param array<non-empty-string, mixed> $requiredAttributes only keys (property names) matter, values are ignored
+     * @param list<non-empty-string> $requiredAttributes list of property names
      * @param array<non-empty-string, non-empty-string> $requiredToOneRelationships
      * @param array<non-empty-string, non-empty-string> $requiredToManyRelationships
-     * @param array<non-empty-string, mixed> $optionalAttributes only keys (property names) matter, values are ignored
+     * @param list<non-empty-string> $optionalAttributes list of property names
      * @param array<non-empty-string, non-empty-string> $optionalToOneRelationships
      * @param array<non-empty-string, non-empty-string> $optionalToManyRelationships
      */
@@ -29,14 +29,11 @@ class ExpectedPropertyCollection
     ) {}
 
     /**
-     * The list of constraints is likely empty, as they are already present in
-     * {@link getAllowedAttributes} for all attributes and not just the required ones.
-     *
      * @return array<non-empty-string, list<Constraint>>
      */
     public function getRequiredAttributes(): array
     {
-        return array_map(static fn (mixed $value): array => [], $this->requiredAttributes);
+        return array_fill_keys($this->requiredAttributes, $this->getAttributeConstraints());
     }
 
     /**
@@ -44,9 +41,9 @@ class ExpectedPropertyCollection
      */
     public function getAllowedAttributes(): array
     {
-        return array_map(
-            fn (mixed $value): array => $this->getAttributeConstraints(),
-            array_merge($this->requiredAttributes, $this->optionalAttributes)
+        return array_fill_keys(
+            array_merge($this->requiredAttributes, $this->optionalAttributes),
+            $this->getAttributeConstraints()
         );
     }
 

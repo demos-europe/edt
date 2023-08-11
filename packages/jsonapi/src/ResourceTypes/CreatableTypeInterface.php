@@ -9,7 +9,6 @@ use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
-use EDT\Wrapping\Properties\InitializabilityCollection;
 
 /**
  * @template TCondition of PathsBasedInterface
