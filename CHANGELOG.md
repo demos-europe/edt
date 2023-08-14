@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.22.3 - 2023-08-14
 
 * feature: preserve context information in exception
 
