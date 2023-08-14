@@ -5,11 +5,11 @@
     "type": "library",
     "require": {
         "php": "^8.1",
-        "demos-europe/edt-queries": "^0.22.3",
+        "demos-europe/edt-queries": "^0.23",
         "league/fractal": "^0.19",
         "psr/log": "^1.1.4",
         "doctrine/collections": "^1.5",
-        "demos-europe/edt-access-definitions": "^0.22.3",
+        "demos-europe/edt-access-definitions": "^0.23",
         "symfony/http-foundation": "^5.3.7,<6",
         "symfony/validator": "5.*.*",
         "symfony/routing": "^5.3,<6",
