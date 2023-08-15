@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: allow `id` and `type` fields in update/creation request, as originally intended
+
 ## 0.22.3 - 2023-08-14
 
 * feature: preserve context information in exception
