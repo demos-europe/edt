@@ -28,12 +28,12 @@ class PathAttributeSetability extends AbstractAttributeSetability
     public function __construct(
         string $propertyName,
         protected readonly string $entityClass,
-        protected readonly array $entityConditions,
+        array $entityConditions,
         protected readonly mixed $propertyPath,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         bool $optional
     ) {
-        parent::__construct($propertyName, $optional);
+        parent::__construct($propertyName, $entityConditions, $optional);
     }
 
     protected function updateAttributeValue(object $entity, mixed $attributeValue): bool
@@ -49,10 +49,5 @@ class PathAttributeSetability extends AbstractAttributeSetability
         $this->propertyAccessor->setValue($target, $attributeValue, $propertyName);
 
         return false;
-    }
-
-    public function getEntityConditions(): array
-    {
-        return $this->entityConditions;
     }
 }

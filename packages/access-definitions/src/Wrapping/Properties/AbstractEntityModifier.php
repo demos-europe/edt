@@ -105,7 +105,7 @@ abstract class AbstractEntityModifier
      * @param list<PropertySetabilityInterface<PathsBasedInterface, TEnt>> $setabilities
      * @param TEnt $entity
      */
-    protected function getSetebilitiesSideEffect(array $setabilities, object $entity, EntityDataInterface $entityData): bool
+    protected function getSetabilitiesSideEffect(array $setabilities, object $entity, EntityDataInterface $entityData): bool
     {
         $nestedSideEffects = array_map(
             static fn (PropertySetabilityInterface $setability): bool => $setability->updateProperty($entity, $entityData),

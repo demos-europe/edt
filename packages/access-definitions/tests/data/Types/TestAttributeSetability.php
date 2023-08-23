@@ -16,7 +16,7 @@ class TestAttributeSetability extends AbstractAttributeSetability
         protected readonly PropertyAccessorInterface $propertyAccessor,
         bool $optional
     ) {
-        parent::__construct($propertyName, $optional);
+        parent::__construct($propertyName, [], $optional);
     }
 
     protected function updateAttributeValue(object $entity, mixed $value): bool
@@ -30,10 +30,5 @@ class TestAttributeSetability extends AbstractAttributeSetability
         $this->propertyAccessor->setValue($target, $value, $propertyName);
 
         return false;
-    }
-
-    public function getEntityConditions(): array
-    {
-        return [];
     }
 }

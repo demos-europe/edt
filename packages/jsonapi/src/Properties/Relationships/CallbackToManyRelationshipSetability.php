@@ -27,18 +27,13 @@ class CallbackToManyRelationshipSetability extends AbstractToManyRelationshipSet
      */
     public function __construct(
         string $propertyName,
-        protected readonly array $entityConditions,
+        array $entityConditions,
         protected readonly array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly mixed $setterCallback,
         bool $optional = false
     ) {
-        parent::__construct($propertyName, $optional);
-    }
-
-    public function getEntityConditions(): array
-    {
-        return $this->entityConditions;
+        parent::__construct($propertyName, $entityConditions, $optional);
     }
 
     public function getRelationshipType(): TransferableTypeInterface

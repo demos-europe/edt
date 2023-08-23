@@ -23,8 +23,7 @@ class EntityUpdatability extends AbstractEntityModifier
         protected readonly array $attributes,
         protected readonly array $toOneRelationships,
         protected readonly array $toManyRelationships
-    ) {
-    }
+    ) {}
 
     /**
      * Get all setabilities, that correspond to the given entity data.
@@ -75,7 +74,7 @@ class EntityUpdatability extends AbstractEntityModifier
     {
         $setabilities = $this->getRelevantSetabilities($entityData->getPropertyNames());
 
-        return $this->getSetebilitiesSideEffect($setabilities, $entity, $entityData);
+        return $this->getSetabilitiesSideEffect($setabilities, $entity, $entityData);
     }
 
     /**

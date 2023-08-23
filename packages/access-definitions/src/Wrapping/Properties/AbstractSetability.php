@@ -16,9 +16,16 @@ abstract class AbstractSetability implements PropertySetabilityInterface
 {
     /**
      * @param non-empty-string $propertyName the exposed property name accepted by this instance
+     * @param list<TCondition> $entityConditions
      */
     public function __construct(
         protected readonly string $propertyName,
+        protected readonly array $entityConditions,
         protected readonly bool $optional
     ) {}
+
+    public function getEntityConditions(): array
+    {
+        return $this->entityConditions;
+    }
 }

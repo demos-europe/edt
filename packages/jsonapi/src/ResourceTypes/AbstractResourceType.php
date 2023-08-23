@@ -85,11 +85,11 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
     public function updateEntity(string $entityId, EntityDataInterface $entityData): ?object
     {
-        $updatableProperties = $this->getUpdatability();
+        $updatability = $this->getUpdatability();
 
         $entityConditions = array_merge(
-            $this->getAccessConditions(),
-            $updatableProperties->getEntityConditions($entityData->getPropertyNames())
+            $updatability->getEntityConditions($entityData->getPropertyNames()),
+            $this->getAccessConditions()
         );
         $identifierPropertyPath = $this->getIdentifierPropertyPath();
 
@@ -98,7 +98,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $beforeUpdateEvent = new BeforeUpdateEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($beforeUpdateEvent);
 
-        $updateSideEffect = $updatableProperties->updateEntity($entity, $entityData);
+        $updateSideEffect = $updatability->updateEntity($entity, $entityData);
 
         $afterUpdateEvent = new AfterUpdateEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($afterUpdateEvent);
@@ -138,6 +138,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $constructorArguments = $initializability->getConstructorArguments($entityId, $entityData);
         $entity = $initializability->initializeEntity($constructorArguments);
         $fillSideEffect = $initializability->fillEntity($entityId, $entity, $entityData);
+        // FIXME: how to verify entity matches access conditions, when it is probably not flushed into the database yet?
 
         $afterCreationEvent = new AfterCreationEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($afterCreationEvent);

@@ -30,19 +30,14 @@ class PathToOneRelationshipSetability extends AbstractToOneRelationshipSetabilit
     public function __construct(
         string $propertyName,
         protected readonly string $entityClass,
-        protected readonly array $entityConditions,
+        array $entityConditions,
         protected readonly array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly array $propertyPath,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         bool $optional
     ) {
-        parent::__construct($propertyName, $optional);
-    }
-
-    public function getEntityConditions(): array
-    {
-        return $this->entityConditions;
+        parent::__construct($propertyName, $entityConditions, $optional);
     }
 
     public function getRelationshipType(): TransferableTypeInterface

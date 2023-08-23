@@ -24,20 +24,16 @@ class CallbackAttributeSetability extends AbstractAttributeSetability
      */
     public function __construct(
         string $propertyName,
-        protected readonly array $entityConditions,
+        array $entityConditions,
         protected readonly mixed $setterCallback,
         bool $optional
     ) {
-        parent::__construct($propertyName, $optional);}
+        parent::__construct($propertyName, $entityConditions, $optional);
+    }
 
     protected function updateAttributeValue(object $entity, mixed $attributeValue): bool
     {
         $attributeValue = $this->assertValidValue($attributeValue);
         return ($this->setterCallback)($entity, $attributeValue);
-    }
-
-    public function getEntityConditions(): array
-    {
-        return $this->entityConditions;
     }
 }
