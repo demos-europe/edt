@@ -54,8 +54,7 @@ class AuthorType implements
                     false,
                     false,
                     $this->typeProvider->getTypeByIdentifier(BookType::class),
-                    $this->propertyAccessor,
-                    $this->entityVerifier
+                    $this->propertyAccessor
                 ),
             ],
             new PathIdReadability(

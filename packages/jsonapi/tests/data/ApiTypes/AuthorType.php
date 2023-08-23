@@ -55,8 +55,7 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
                     false,
                     false,
                     $this->typeProvider->getTypeByIdentifier(BookType::class),
-                    $this->propertyAccessor,
-                    $this->entityVerifier
+                    $this->propertyAccessor
                 ),
             ],
             new PathIdReadability(

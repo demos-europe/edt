@@ -28,7 +28,6 @@
         }
     },
     "require-dev": {
-        "doctrine/cache": "^2.2"
     },
     "conflict": {
         "demos-europe/edt-extra": "<0.17.1",
