@@ -3,6 +3,12 @@
 
 ## Unreleased
 
+* refactor: apply object-oriented approach for entity modification
+  * consolidate up class/interface naming
+  * provide entity changing instances with more general data, thus allowing more abstraction and moving specific behavior into objects
+  * split constructor argument instances from setability instances for entity initialization
+  * add convenience methods to `WrapperObject`
+  * adjust `PropertyBuilder` (now `PropertyConfig`) API
 * fix: allow `id` and `type` fields in update/creation request, as originally intended
 
 ## 0.22.3 - 2023-08-14
