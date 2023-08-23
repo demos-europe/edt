@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Properties;
 
-use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ContentField;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
@@ -14,14 +14,14 @@ use function array_key_exists;
  * Collection of readable properties.
  *
  * For now set to be `final`, as extending classes may otherwise choose to return different
- * results for multiple calls of the same method or evne weaken sanity checks, which may
+ * results for multiple calls of the same method or even weaken sanity checks, which may
  * have unpredictable effects.
  *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
-final class ReadabilityCollection
+final class EntityReadability
 {
     /**
      * @param array<non-empty-string, AttributeReadabilityInterface<TEntity>> $attributes

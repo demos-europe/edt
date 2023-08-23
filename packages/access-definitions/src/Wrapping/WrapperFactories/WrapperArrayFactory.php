@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\WrapperFactories;
 
-use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\SortException;
 use EDT\Wrapping\Contracts\AccessException;
+use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
 use EDT\Wrapping\Properties\IdAttributeConflictException;
@@ -108,7 +108,7 @@ class WrapperArrayFactory
             $relationshipType = $readability->getRelationshipType();
             $relationshipEntities = $readability->getValue($entity, [], []);
             $wrapperArray[$propertyName] = array_map(
-                static fn (object $objectToWrap) => $relationshipWrapperFactory
+                static fn (object $objectToWrap): ?array => $relationshipWrapperFactory
                     ->createWrapper($objectToWrap, $relationshipType),
                 $relationshipEntities
             );

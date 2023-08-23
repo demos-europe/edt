@@ -76,4 +76,16 @@ final class Iterables
     {
         return is_array($iterable) ? $iterable : iterator_to_array($iterable);
     }
+
+    /**
+     * @template TValue of object
+     *
+     * @param array<non-empty-string, TValue|null> $values
+     *
+     * @return array<non-empty-string, TValue>
+     */
+    public static function removeNull(array $values): array
+    {
+        return array_filter($values, static fn (?object $value): bool => null !== $value);
+    }
 }

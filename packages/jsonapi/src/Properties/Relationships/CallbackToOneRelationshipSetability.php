@@ -6,7 +6,6 @@ namespace EDT\JsonApi\Properties\Relationships;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -14,22 +13,27 @@ use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-implements ToOneRelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
+ * @template-extends AbstractToOneRelationshipSetability<TCondition, TSorting, TEntity, TRelationship>
  */
-class CallbackToOneRelationshipSetability implements ToOneRelationshipSetabilityInterface
+class CallbackToOneRelationshipSetability extends AbstractToOneRelationshipSetability
 {
     /**
+     * @param non-empty-string $propertyName
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
      * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param callable(TEntity, TRelationship|null): bool $setterCallback
      */
     public function __construct(
+        string $propertyName,
         protected readonly array $entityConditions,
         protected readonly array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly mixed $setterCallback,
-    ) {}
+        bool $optional
+    ) {
+        parent::__construct($propertyName, $optional);
+    }
 
     public function getEntityConditions(): array
     {

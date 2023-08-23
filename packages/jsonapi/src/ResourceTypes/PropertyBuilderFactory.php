@@ -28,13 +28,13 @@ class PropertyBuilderFactory
      * @param class-string<TEntity> $entityClass
      * @param PropertyPathInterface $path
      *
-     * @return PropertyBuilder<TEntity, mixed, TCondition, TSorting>
+     * @return PropertyConfig<TEntity, mixed, TCondition, TSorting>
      *
      * @throws PathException
      */
-    public function createAttribute(string $entityClass, PropertyPathInterface $path): PropertyBuilder
+    public function createAttribute(string $entityClass, PropertyPathInterface $path): PropertyConfig
     {
-        return new PropertyBuilder(
+        return new PropertyConfig(
             $path,
             $entityClass,
             null,
@@ -50,7 +50,7 @@ class PropertyBuilderFactory
      * @param class-string<TEntity> $entityClass
      * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TCondition, TSorting, TRelationship> $path
      *
-     * @return PropertyBuilder<TEntity, TRelationship, TCondition, TSorting>
+     * @return PropertyConfig<TEntity, TRelationship, TCondition, TSorting>
      *
      * @throws PathException
      */
@@ -58,8 +58,8 @@ class PropertyBuilderFactory
         string $entityClass,
         PropertyPathInterface&ResourceTypeInterface $path,
         bool $defaultInclude
-    ): PropertyBuilder {
-        return new PropertyBuilder(
+    ): PropertyConfig {
+        return new PropertyConfig(
             $path,
             $entityClass,
             [
@@ -79,7 +79,7 @@ class PropertyBuilderFactory
      * @param class-string<TEntity> $entityClass
      * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TCondition, TSorting, TRelationship> $path
      *
-     * @return PropertyBuilder<TEntity, TRelationship, TCondition, TSorting>
+     * @return PropertyConfig<TEntity, TRelationship, TCondition, TSorting>
      *
      * @throws PathException
      */
@@ -87,8 +87,8 @@ class PropertyBuilderFactory
         string $entityClass,
         PropertyPathInterface&ResourceTypeInterface $path,
         bool $defaultInclude = false
-    ): PropertyBuilder {
-        return new PropertyBuilder(
+    ): PropertyConfig {
+        return new PropertyConfig(
             $path,
             $entityClass,
             [

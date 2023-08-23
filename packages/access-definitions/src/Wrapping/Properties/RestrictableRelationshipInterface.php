@@ -9,7 +9,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 /**
  * @template TCondition of PathsBasedInterface
  */
-interface RelationshipAccessibilityInterface
+interface RestrictableRelationshipInterface
 {
     /**
      * Usage of the relationship property corresponding to this instance shall be denied if

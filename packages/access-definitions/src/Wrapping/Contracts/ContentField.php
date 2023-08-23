@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EDT\JsonApi\RequestHandling;
+namespace EDT\Wrapping\Contracts;
 
 class ContentField
 {

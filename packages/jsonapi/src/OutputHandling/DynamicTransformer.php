@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\OutputHandling;
 
-use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
+use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\AttributeReadabilityInterface;
 use EDT\Wrapping\Properties\IdAttributeConflictException;

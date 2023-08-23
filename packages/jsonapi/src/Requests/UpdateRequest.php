@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\RequestHandling\RequestTransformer;
-use EDT\JsonApi\RequestHandling\SideEffectHandleTrait;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Properties\EntityVerificationTrait;
@@ -19,7 +18,6 @@ use League\Fractal\Resource\Item;
 class UpdateRequest
 {
     use EntityVerificationTrait;
-    use SideEffectHandleTrait;
     use PropertyUpdaterTrait;
 
     public function __construct(
@@ -41,7 +39,7 @@ class UpdateRequest
         $requestBody = $this->requestTransformer->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
-        $entity = $type->updateEntity($requestBody);
+        $entity = $type->updateEntity($requestBody->getId(), $requestBody);
 
         if (null === $entity) {
             // if there were no side effects, no response body is needed

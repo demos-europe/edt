@@ -6,7 +6,7 @@ namespace EDT\JsonApi\Properties\Relationships;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipSetabilityInterface;
+use EDT\Wrapping\Properties\RelationshipSetabilityInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -14,22 +14,27 @@ use EDT\Wrapping\Properties\ToManyRelationshipSetabilityInterface;
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-implements ToManyRelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
+ * @template-extends AbstractToManyRelationshipSetability<TCondition, TSorting, TEntity, TRelationship>
  */
-class CallbackToManyRelationshipSetability implements ToManyRelationshipSetabilityInterface
+class CallbackToManyRelationshipSetability extends AbstractToManyRelationshipSetability
 {
     /**
-     * @param list<TCondition>                                               $entityConditions
-     * @param list<TCondition>                                               $relationshipConditions
+     * @param non-empty-string $propertyName the exposed property name accepted by this instance
+     * @param list<TCondition> $entityConditions
+     * @param list<TCondition> $relationshipConditions
      * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-     * @param callable(TEntity, iterable<TRelationship>): bool               $setterCallback
+     * @param callable(TEntity, iterable<TRelationship>): bool $setterCallback
      */
     public function __construct(
+        string $propertyName,
         protected readonly array $entityConditions,
         protected readonly array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly mixed $setterCallback,
-    ) {}
+        bool $optional = false
+    ) {
+        parent::__construct($propertyName, $optional);
+    }
 
     public function getEntityConditions(): array
     {

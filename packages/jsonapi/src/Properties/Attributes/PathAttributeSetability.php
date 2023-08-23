@@ -6,32 +6,37 @@ namespace EDT\JsonApi\Properties\Attributes;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\Properties\AttributeSetabilityInterface;
+use EDT\Wrapping\Properties\AbstractAttributeSetability;
 use Webmozart\Assert\Assert;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements AttributeSetabilityInterface<TCondition, TEntity>
+ * @template-extends AbstractAttributeSetability<TCondition, TEntity>
  */
-class PathAttributeSetability implements AttributeSetabilityInterface
+class PathAttributeSetability extends AbstractAttributeSetability
 {
     use AttributeTrait;
 
     /**
+     * @param non-empty-string $propertyName
      * @param class-string<TEntity> $entityClass
      * @param list<TCondition> $entityConditions
      * @param non-empty-list<non-empty-string> $propertyPath
      */
     public function __construct(
+        string $propertyName,
         protected readonly string $entityClass,
         protected readonly array $entityConditions,
         protected readonly mixed $propertyPath,
-        protected readonly PropertyAccessorInterface $propertyAccessor
-    ) {}
+        protected readonly PropertyAccessorInterface $propertyAccessor,
+        bool $optional
+    ) {
+        parent::__construct($propertyName, $optional);
+    }
 
-    public function updateAttributeValue(object $entity, mixed $attributeValue): bool
+    protected function updateAttributeValue(object $entity, mixed $attributeValue): bool
     {
         $attributeValue = $this->assertValidValue($attributeValue);
 

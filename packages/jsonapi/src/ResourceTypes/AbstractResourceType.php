@@ -14,49 +14,29 @@ use EDT\JsonApi\Event\BeforeDeletionEvent;
 use EDT\JsonApi\Event\BeforeGetEvent;
 use EDT\JsonApi\Event\BeforeListEvent;
 use EDT\JsonApi\Event\BeforeUpdateEvent;
-use EDT\JsonApi\InputHandling\EntityCreator;
-use EDT\JsonApi\InputHandling\EntityUpdater;
 use EDT\JsonApi\InputHandling\RepositoryInterface;
-use EDT\JsonApi\InputHandling\SetabilityCollection;
 use EDT\JsonApi\OutputHandling\DynamicTransformer;
-use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
-use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
+use EDT\JsonApi\Properties\EntityInitializability;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\JsonApi\RequestHandling\SideEffectHandleTrait;
 use EDT\JsonApi\Requests\PropertyUpdaterTrait;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Querying\Pagination\PagePagination;
-use EDT\Querying\PropertyPaths\PropertyLink;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FetchableTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\AttributeInitializabilityInterface;
-use EDT\Wrapping\Properties\AttributeReadabilityInterface;
-use EDT\Wrapping\Properties\AttributeSetabilityInterface;
-use EDT\Wrapping\Properties\ConstructorParameterInterface;
-use EDT\Wrapping\Properties\IdReadabilityInterface;
-use EDT\Wrapping\Properties\InitializabilityCollection;
-use EDT\Wrapping\Properties\PropertyAccessibilityInterface;
-use EDT\Wrapping\Properties\ReadabilityCollection;
+use EDT\Wrapping\Properties\EntityDataInterface;
+use EDT\Wrapping\Properties\EntityReadability;
 use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipInitializabilityInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipSetabilityInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipInitializabilityInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
-use EDT\Wrapping\Properties\UpdatablePropertyCollection;
+use EDT\Wrapping\Properties\EntityUpdatability;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use League\Fractal\TransformerAbstract;
 use Pagerfanta\Pagerfanta;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use ReflectionClass;
-use ReflectionMethod;
 use Webmozart\Assert\Assert;
 
 /**
@@ -72,111 +52,25 @@ use Webmozart\Assert\Assert;
 abstract class AbstractResourceType implements ResourceTypeInterface, FetchableTypeInterface, GetableTypeInterface, DeletableTypeInterface, CreatableTypeInterface
 {
     use PropertyUpdaterTrait;
-    use SideEffectHandleTrait;
 
-    public function __construct(
-        protected EntityCreator $entityCreator = new EntityCreator(),
-        protected EntityUpdater $entityUpdater = new EntityUpdater()
-    ) {}
-
-    public function getReadableProperties(): ReadabilityCollection
+    public function getReadableProperties(): EntityReadability
     {
-        $configCollection = $this->getInitializedProperties();
-        $idReadabilities = array_filter(
-            array_map(
-                static fn (PropertyBuilder $property): ?IdReadabilityInterface => $property->getIdentifierReadability(),
-                $configCollection
-            ),
-            static fn (?IdReadabilityInterface $readability): bool => null !== $readability
-        );
-        Assert::count($idReadabilities, 1);
-
-        return new ReadabilityCollection(
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?AttributeReadabilityInterface => $property->getAttributeReadability(),
-                    $configCollection
-                ),
-                static fn (?AttributeReadabilityInterface $readability): bool => null !== $readability
-            ),
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?ToOneRelationshipReadabilityInterface => $property->getToOneRelationshipReadability(),
-                    $configCollection
-                ),
-                fn (?ToOneRelationshipReadabilityInterface $readability): bool => null !== $readability && $this->isExposedReadability($readability)
-            ),
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?ToManyRelationshipReadabilityInterface => $property->getToManyRelationshipReadability(),
-                    $configCollection
-                ),
-                fn (?ToManyRelationshipReadabilityInterface $readability): bool => null !== $readability && $this->isExposedReadability($readability)
-            ),
-            array_pop($idReadabilities)
-        );
+        return $this->getInitializedProperties()->getReadability();
     }
 
     public function getFilteringProperties(): array
     {
-        $propertyArray = $this->getInitializedProperties();
-        $propertyArray = array_map(
-            static fn (PropertyBuilder $property): PropertyLink => new PropertyLink(
-                $property->getPropertyPath(),
-                $property->getFilterableRelationshipType()
-            ),
-            array_filter(
-                $propertyArray,
-                static fn (PropertyBuilder $property): bool => $property->isFilterable()
-            )
-        );
-
-        return $this->keepExposedTypes($propertyArray);
+        return $this->getInitializedProperties()->getFilteringProperties();
     }
 
     public function getSortingProperties(): array
     {
-        $propertyArray = array_map(
-            static fn (PropertyBuilder $property): PropertyLink => new PropertyLink(
-                $property->getPropertyPath(),
-                $property->getSortableRelationshipType()
-            ),
-            array_filter(
-                $this->getInitializedProperties(),
-                static fn (PropertyBuilder $property): bool => $property->isSortable()
-            )
-        );
-
-        return $this->keepExposedTypes($propertyArray);
+        return $this->getInitializedProperties()->getSortingProperties();
     }
 
-    public function getUpdatableProperties(): UpdatablePropertyCollection
+    public function getUpdatability(): EntityUpdatability
     {
-        $properties = $this->getInitializedProperties();
-
-        return new UpdatablePropertyCollection(
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?AttributeSetabilityInterface => $property->getAttributeUpdatability(),
-                    $properties
-                ),
-                static fn (?AttributeSetabilityInterface $updatability): bool => null !== $updatability
-            ),
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?ToOneRelationshipSetabilityInterface => $property->getToOneRelationshipUpdatability(),
-                    $properties
-                ),
-                static fn (?ToOneRelationshipSetabilityInterface $updatability): bool => null !== $updatability
-            ),
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?ToManyRelationshipSetabilityInterface => $property->getToManyRelationshipUpdatability(),
-                    $properties
-                ),
-                static fn (?ToManyRelationshipSetabilityInterface $updatability): bool => null !== $updatability
-            )
-        );
+        return $this->getInitializedProperties()->getUpdatability();
     }
 
     /**
@@ -186,85 +80,39 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
     public function getExpectedUpdateProperties(): ExpectedPropertyCollection
     {
-        $updatabilityCollection = $this->getUpdatableProperties();
-
-        $attributeSetabilities = $updatabilityCollection->getAttributeNames();
-        $toOneRelationshipSetabilities = $updatabilityCollection->getToOneRelationships();
-        $toManyRelationshipSetabilities = $updatabilityCollection->getToManyRelationships();
-
-        return new ExpectedPropertyCollection(
-            [],
-            [],
-            [],
-            $attributeSetabilities,
-            $this->mapToRelationshipIdentifiers($toOneRelationshipSetabilities),
-            $this->mapToRelationshipIdentifiers($toManyRelationshipSetabilities)
-        );
+        return $this->getUpdatability()->getExpectedProperties();
     }
 
-    /**
-     * Simply merges all entity conditions given in the setabilities with the {@link self::getAccessConditions()} of
-     * this instance and returns the result.
-     *
-     * Does not process any paths, as both the access conditions and the setability entity conditions are expected to
-     * be hardcoded and not supplied via request.
-     *
-     * @param SetabilityCollection<TCondition, TSorting, TEntity> $setabilityCollection
-     *
-     * @return list<TCondition>
-     */
-    protected function aggregateUpdateEntityConditions(SetabilityCollection $setabilityCollection): array {
-        return array_merge(
-            $this->getAccessConditions(),
-            ...array_map(
-                static fn (PropertyAccessibilityInterface $accessibility): array => $accessibility->getEntityConditions(),
-                array_merge(
-                    $setabilityCollection->getAttributeSetabilities(),
-                    $setabilityCollection->getToOneRelationshipSetabilities(),
-                    $setabilityCollection->getToManyRelationshipSetabilities()
-                )
-            )
-        );
-    }
-
-    public function updateEntity(UpdateRequestBody $requestBody): ?object
+    public function updateEntity(string $entityId, EntityDataInterface $entityData): ?object
     {
-        $updatableProperties = $this->getUpdatableProperties();
-        $setabilities = SetabilityCollection::createForUpdate($requestBody, $updatableProperties);
+        $updatableProperties = $this->getUpdatability();
 
-        $id = $requestBody->getId();
-        $entityConditions = $this->aggregateUpdateEntityConditions($setabilities);
+        $entityConditions = array_merge(
+            $this->getAccessConditions(),
+            $updatableProperties->getEntityConditions($entityData->getPropertyNames())
+        );
         $identifierPropertyPath = $this->getIdentifierPropertyPath();
 
-        $entity = $this->getRepository()->getEntityByIdentifier($id, $entityConditions, $identifierPropertyPath);
+        $entity = $this->getRepository()->getEntityByIdentifier($entityId, $entityConditions, $identifierPropertyPath);
 
         $beforeUpdateEvent = new BeforeUpdateEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($beforeUpdateEvent);
 
-        $sideEffects = $this->entityUpdater->updateEntity($entity, $requestBody, $setabilities);
+        $updateSideEffect = $updatableProperties->updateEntity($entity, $entityData);
 
         $afterUpdateEvent = new AfterUpdateEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($afterUpdateEvent);
 
         return !$beforeUpdateEvent->hasSideEffects()
             && !$afterUpdateEvent->hasSideEffects()
-            && $this->mergeSideEffects($sideEffects)
+            && $updateSideEffect
             ? $entity
             : null;
     }
 
     public function getExpectedInitializationProperties(): ExpectedPropertyCollection
     {
-        $initializableProperties = $this->getInitializableProperties();
-
-        return new ExpectedPropertyCollection(
-            $initializableProperties->getRequiredAttributeNames(),
-            $initializableProperties->getRequiredToOneRelationshipIdentifiers(),
-            $initializableProperties->getRequiredToManyRelationshipIdentifiers(),
-            $initializableProperties->getOptionalAttributeNames(),
-            $initializableProperties->getOptionalToOneRelationshipIdentifiers(),
-            $initializableProperties->getOptionalToManyRelationshipIdentifiers()
-        );
+        return $this->getInitializability()->getExpectedProperties();
     }
 
     public function deleteEntity(string $entityIdentifier): void
@@ -280,94 +128,36 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $this->getEventDispatcher()->dispatch($afterDeletionEvent);
     }
 
-    public function createEntity(CreationRequestBody $requestBody): ?object
+    public function createEntity(?string $entityId, EntityDataInterface $entityData): ?object
     {
-        $initializableProperties = $this->getInitializableProperties();
-        $setabilities = SetabilityCollection::createForCreation($requestBody, $initializableProperties);
+        $initializability = $this->getInitializability();
 
         $beforeCreationEvent = new BeforeCreationEvent($this);
         $this->getEventDispatcher()->dispatch($beforeCreationEvent);
 
-        $entity = $this->entityCreator->createEntity($this->getEntityClass(), $initializableProperties, $requestBody);
-        $sideEffects = $this->entityUpdater->updateEntity($entity, $requestBody, $setabilities);
+        $constructorArguments = $initializability->getConstructorArguments($entityId, $entityData);
+        $entity = $initializability->initializeEntity($constructorArguments);
+        $fillSideEffect = $initializability->fillEntity($entityId, $entity, $entityData);
 
         $afterCreationEvent = new AfterCreationEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($afterCreationEvent);
 
         return !$beforeCreationEvent->hasSideEffects()
             && !$afterCreationEvent->hasSideEffects()
-            && $this->mergeSideEffects($sideEffects)
-            && null === $requestBody->getId()
+            && $fillSideEffect
+            && null === $entityId
             ? $entity
             : null;
     }
 
     /**
-     * @return InitializabilityCollection<TEntity, TCondition, TSorting>
+     * @return EntityInitializability<TEntity, TCondition, TSorting>
      *
      * @see CreatableTypeInterface::getInitializableProperties()
      */
-    protected function getInitializableProperties(): InitializabilityCollection
+    protected function getInitializability(): EntityInitializability
     {
-        $properties = $this->getInitializedProperties();
-
-        $requiredConstructorParameters = array_filter(
-            array_map(
-                static fn (PropertyBuilder $property): ?ConstructorParameterInterface => $property->getRequiredConstructorParameter(),
-                $properties
-            ),
-            static fn (?ConstructorParameterInterface $constructorParameter): bool => null !== $constructorParameter
-        );
-        $optionalConstructorParameters = array_filter(
-            array_map(
-                static fn (PropertyBuilder $property): ?ConstructorParameterInterface => $property->getOptionalConstructorParameter(),
-                $properties
-            ),
-            static fn (?ConstructorParameterInterface $constructorParameter): bool => null !== $constructorParameter
-        );
-
-        $sortedRequiredConstructorParameters = [];
-        $sortedOptionalConstructorParameters = [];
-        $constructor = $this->getConstructor(new ReflectionClass($this->getEntityClass()));
-        foreach (null === $constructor ? [] : $constructor->getParameters() as $reflectionParameter) {
-            $parameterName = $reflectionParameter->getName();
-            Assert::stringNotEmpty($parameterName);
-            // TODO: verify correct types
-            // TODO: throw exception on missing required parameters
-            if ($reflectionParameter->isOptional()) {
-                $constructorParameter = $optionalConstructorParameters[$parameterName];
-                $sortedOptionalConstructorParameters[$parameterName] = $constructorParameter;
-            } else {
-                $constructorParameter = $requiredConstructorParameters[$parameterName];
-                $sortedRequiredConstructorParameters[$parameterName] = $constructorParameter;
-            }
-        }
-
-        return new InitializabilityCollection(
-            $sortedRequiredConstructorParameters,
-            $sortedOptionalConstructorParameters,
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?AttributeSetabilityInterface => $property->getAttributeInitializability(),
-                    $properties
-                ),
-                static fn (?AttributeInitializabilityInterface $initializability): bool => null !== $initializability
-            ),
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?ToOneRelationshipSetabilityInterface => $property->getToOneRelationshipInitializability(),
-                    $properties
-                ),
-                static fn (?ToOneRelationshipInitializabilityInterface $initializability): bool => null !== $initializability
-            ),
-            array_filter(
-                array_map(
-                    static fn (PropertyBuilder $property): ?ToManyRelationshipSetabilityInterface => $property->getToManyRelationshipInitializability(),
-                    $properties
-                ),
-                static fn (?ToManyRelationshipInitializabilityInterface $initializability): bool => null !== $initializability
-            )
-        );
+        return $this->getInitializedProperties()->getInitializability();
     }
 
     public function getTransformer(): TransformerAbstract
@@ -410,7 +200,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      * effect (e.g. determining the order of properties in JSON:API responses) you can not rely on
      * these effects; they may be changed in the future.
      *
-     * @return list<PropertyBuilder<TEntity, mixed, TCondition, TSorting>>
+     * @return list<PropertyConfig<TEntity, mixed, TCondition, TSorting>>
      */
     abstract protected function getProperties(): array;
 
@@ -427,9 +217,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     abstract protected function getDefaultSortMethods(): array;
 
     /**
-     * @param list<PropertyBuilder<TEntity, mixed, TCondition, TSorting>> $properties
+     * @param list<PropertyConfig<TEntity, mixed, TCondition, TSorting>> $properties
      *
-     * @return list<PropertyBuilder<TEntity, mixed, TCondition, TSorting>>
+     * @return list<PropertyConfig<TEntity, mixed, TCondition, TSorting>>
      */
     protected function processProperties(array $properties): array
     {
@@ -438,9 +228,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     }
 
     /**
-     * @return PropertyBuilder<TEntity, mixed, TCondition, TSorting>
+     * @return PropertyConfig<TEntity, mixed, TCondition, TSorting>
      */
-    protected function createAttribute(PropertyPathInterface $path): PropertyBuilder
+    protected function createAttribute(PropertyPathInterface $path): PropertyConfig
     {
         return $this->getPropertyBuilderFactory()->createAttribute(
             $this->getEntityClass(),
@@ -453,12 +243,12 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      *
      * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TCondition, TSorting, object> $path
      *
-     * @return PropertyBuilder<TEntity, TRelationship, TCondition, TSorting>
+     * @return PropertyConfig<TEntity, TRelationship, TCondition, TSorting>
      */
     protected function createToOneRelationship(
         PropertyPathInterface&ResourceTypeInterface $path,
         bool $defaultInclude = false
-    ): PropertyBuilder {
+    ): PropertyConfig {
         return $this->getPropertyBuilderFactory()->createToOne(
             $this->getEntityClass(),
             $path,
@@ -471,12 +261,12 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      *
      * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TCondition, TSorting, object> $path
      *
-     * @return PropertyBuilder<TEntity, TRelationship, TCondition, TSorting>
+     * @return PropertyConfig<TEntity, TRelationship, TCondition, TSorting>
      */
     protected function createToManyRelationship(
         PropertyPathInterface&ResourceTypeInterface $path,
         bool $defaultInclude = false
-    ): PropertyBuilder {
+    ): PropertyConfig {
         return $this->getPropertyBuilderFactory()->createToMany(
             $this->getEntityClass(),
             $path,
@@ -490,36 +280,18 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     abstract protected function getPropertyBuilderFactory(): PropertyBuilderFactory;
 
     /**
-     * @return array<non-empty-string, PropertyBuilder<TEntity, mixed, TCondition, TSorting>>
+     * @return EntityConfig<TCondition, TSorting, TEntity>
      */
-    protected function getInitializedProperties(): array
+    protected function getInitializedProperties(): EntityConfig
     {
-        $properties = $this->getProperties();
+        $properties = [];
+        foreach ($this->processProperties($this->getProperties()) as $property) {
+            $name = $property->getName();
+            Assert::keyNotExists($properties, $name);
+            $properties[$name] = $property;
+        }
 
-        return $this->propertiesToArray($this->processProperties($properties));
-    }
-
-    /**
-     * Even if a relationship property was defined in this type, we do not allow its usage if the
-     * target type of the relationship is not set as exposed.
-     *
-     * @template TType of object
-     *
-     * @param array<non-empty-string, PropertyLink<TType>> $types
-     *
-     * @return array<non-empty-string, PropertyLink<TType>>
-     */
-    protected function keepExposedTypes(array $types): array
-    {
-        return array_filter(
-            $types,
-            static function (PropertyLink $property): bool {
-                $type = $property->getTargetType();
-                return null === $type
-                    || ($type instanceof ExposableRelationshipTypeInterface
-                    && $type->isExposedAsRelationship());
-            }
-        );
+        return new EntityConfig($this->getEntityClass(), $properties);
     }
 
     /**
@@ -531,38 +303,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         return $relationshipType instanceof ExposableRelationshipTypeInterface
             && $relationshipType->isExposedAsRelationship();
-    }
-
-    /**
-     * @param list<PropertyBuilder<TEntity, mixed, TCondition, TSorting>> $propertyList
-     *
-     * @return array<non-empty-string, PropertyBuilder<TEntity, mixed, TCondition, TSorting>>
-     */
-    protected function propertiesToArray(array $propertyList): array
-    {
-        $propertyArray = [];
-        foreach ($propertyList as $property) {
-            $propertyArray[$property->getName()] = $property;
-        }
-
-        return $propertyArray;
-    }
-
-    /**
-     * @param ReflectionClass<object> $class
-     */
-    protected function getConstructor(ReflectionClass $class): ?ReflectionMethod
-    {
-        $constructor = $class->getConstructor();
-        if (null === $constructor) {
-            $parent = $class->getParentClass();
-            if (false === $parent) {
-                return null;
-            }
-            return $this->getConstructor($parent);
-        }
-
-        return $constructor;
     }
 
     /**

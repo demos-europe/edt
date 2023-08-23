@@ -4,121 +4,15 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
-use EDT\JsonApi\RequestHandling\ContentField;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\Contracts\Types\RelationshipFetchableTypeInterface;
-use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\AttributeSetabilityInterface;
-use EDT\Wrapping\Properties\RelationshipInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipSetabilityInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipSetabilityInterface;
 use Exception;
-use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
 trait PropertyUpdaterTrait
 {
-    /**
-     * @template TEnt of object
-     *
-     * @param TEnt $entity
-     * @param array<non-empty-string, AttributeSetabilityInterface<PathsBasedInterface, TEnt>> $updatabilities
-     * @param array<non-empty-string, mixed> $requestAttributes
-     *
-     * @return list<bool> side effects corresponding to each updatability item
-     */
-    protected function updateAttributes(object $entity, array $updatabilities, array $requestAttributes): array
-    {
-        return array_map(
-            static function (
-                AttributeSetabilityInterface $updatability,
-                string $propertyName
-            ) use ($entity, $requestAttributes): bool {
-                try {
-                    return $updatability->updateAttributeValue($entity, $requestAttributes[$propertyName]);
-                } catch (Exception $exception) {
-                    throw new InvalidArgumentException("Update failed for attribute property '$propertyName'.", 0, $exception);
-                }
-            },
-            $updatabilities,
-            array_keys($updatabilities)
-        );
-    }
-
-    /**
-     * @template TEnt of object
-     *
-     * @param TEnt $entity
-     * @param array<non-empty-string, ToOneRelationshipSetabilityInterface<PathsBasedInterface, PathsBasedInterface, TEnt, object>> $updatabilities
-     * @param array<non-empty-string, JsonApiRelationship|null> $requestRelationships
-     *
-     * @return list<bool> side effect indicators corresponding to each updatability item
-     */
-    protected function updateToOneRelationships(object $entity, array $updatabilities, array $requestRelationships): array
-    {
-        return array_map(
-            function (
-                ToOneRelationshipSetabilityInterface $updatability,
-                string $propertyName
-            ) use ($requestRelationships, $entity): bool {
-                try {
-                    $relationshipReference = $requestRelationships[$propertyName];
-                    $relationshipValue = $this->determineToOneRelationshipValue(
-                        $updatability->getRelationshipType(),
-                        $updatability->getRelationshipConditions(),
-                        $relationshipReference
-                    );
-
-                    return $updatability->updateToOneRelationship($entity, $relationshipValue);
-                } catch (Exception $exception) {
-                    throw new InvalidArgumentException("Update failed for to-one relationship property '$propertyName'", 0, $exception);
-                }
-            },
-            $updatabilities,
-            array_keys($updatabilities)
-        );
-    }
-
-    /**
-     * @template TEnt of object
-     *
-     * @param TEnt $entity
-     * @param array<non-empty-string, ToManyRelationshipSetabilityInterface<PathsBasedInterface, PathsBasedInterface, TEnt, object>> $updatabilities
-     * @param array<non-empty-string, list<JsonApiRelationship>> $requestRelationships
-     *
-     * @return list<bool> side effect indicators corresponding to each updatability item
-     *
-     * @throws Exception
-     */
-    protected function updateToManyRelationships(
-        object $entity,
-        array $updatabilities,
-        array $requestRelationships
-    ): array {
-        return array_map(
-            function (
-                ToManyRelationshipSetabilityInterface $updatability,
-                string $relationshipName
-            ) use ($requestRelationships, $entity): bool {
-                try {
-                    $relationshipReferences = $requestRelationships[$relationshipName];
-                    $relationshipValues = $this->determineToManyRelationshipValues(
-                        $updatability->getRelationshipType(),
-                        $updatability->getRelationshipConditions(),
-                        $relationshipReferences
-                    );
-
-                    return $updatability->updateToManyRelationship($entity, $relationshipValues);
-                } catch (Exception $exception) {
-                    throw new InvalidArgumentException("Update failed for to-many relationship property '$relationshipName'.", 0, $exception);
-                }
-            },
-            $updatabilities,
-            array_keys($updatabilities)
-        );
-    }
-
     /**
      * @template TRel of object
      * @template TCond of PathsBasedInterface
@@ -179,18 +73,5 @@ trait PropertyUpdaterTrait
         }
 
         return $relationshipValues;
-    }
-
-    /**
-     * @param array<non-empty-string, RelationshipInterface<TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object>>> $updatabilities
-     *
-     * @return array<non-empty-string, non-empty-string>
-     */
-    protected function mapToRelationshipIdentifiers(array $updatabilities): array
-    {
-        return array_map(
-            static fn (RelationshipInterface $setability): string => $setability->getRelationshipType()->getTypeName(),
-            $updatabilities
-        );
     }
 }

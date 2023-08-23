@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace EDT\JsonApi\RequestHandling\Body;
+namespace EDT\Wrapping\Properties;
 
-use EDT\Wrapping\Properties\EntityDataInterface;
-
-abstract class RequestBody implements EntityDataInterface
+class EntityData implements EntityDataInterface
 {
     /**
      * @param non-empty-string $type
@@ -19,7 +17,8 @@ abstract class RequestBody implements EntityDataInterface
         protected readonly array $attributes,
         protected readonly array $toOneRelationships,
         protected readonly array $toManyRelationships
-    ) {}
+    ) {
+    }
 
     public function getType(): string
     {

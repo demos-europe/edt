@@ -18,14 +18,21 @@ class ToOneRelationshipConstructorParameter extends AbstractRelationshipConstruc
 {
     use PropertyUpdaterTrait;
 
-    public function getValue(CreationRequestBody $requestBody): ?object
+    public function getArgument(?string $entityId, EntityDataInterface $entityData): ?object
     {
-        $relationshipRef = $requestBody->getToOneRelationshipReference($this->parameterName);
+        $toOneRelationships = $entityData->getToOneRelationships();
+        $relationshipRef = $toOneRelationships[$this->propertyName]
+            ?? throw new \InvalidArgumentException("No to-one relationship '$this->propertyName' present.");
 
         return $this->determineToOneRelationshipValue(
             $this->getRelationshipType(),
             $this->getRelationshipConditions(),
             $relationshipRef
         );
+    }
+    
+    public function getRequiredToOneRelationships(): array
+    {
+        return [$this->propertyName => $this->relationshipType->getTypeName()];
     }
 }

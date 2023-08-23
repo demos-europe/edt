@@ -10,8 +10,9 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  * Provides general accessibility information for a specific property.
  *
  * @template TCondition of PathsBasedInterface
+ * @template TEntity of object
  */
-interface PropertyAccessibilityInterface
+interface PropertySetabilityInterface extends PropertyConstrainingInterface
 {
     /**
      * The entity to access a property of must match these conditions to be accessible by this instance.
@@ -21,4 +22,12 @@ interface PropertyAccessibilityInterface
      * @return list<TCondition>
      */
     public function getEntityConditions(): array;
+
+    /**
+     * @param TEntity $entity must match all conditions in {@link self::getEntityConditions()}
+     *
+     * @return bool `true` if the update had side effects, i.e. it changed properties other than
+     *               the one defined in the given entity data; `false` otherwise
+     */
+    public function updateProperty(object $entity, EntityDataInterface $entityData): bool;
 }

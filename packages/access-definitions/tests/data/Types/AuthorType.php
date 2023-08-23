@@ -9,9 +9,7 @@ use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\Properties\Id\PathIdReadability;
 use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
 use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipSetability;
-use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\PropertyLink;
 use EDT\Querying\Utilities\ConditionEvaluator;
@@ -21,8 +19,9 @@ use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\ReadabilityCollection;
-use EDT\Wrapping\Properties\UpdatablePropertyCollection;
+use EDT\Wrapping\Properties\EntityDataInterface;
+use EDT\Wrapping\Properties\EntityReadability;
+use EDT\Wrapping\Properties\EntityUpdatability;
 use Tests\data\Model\Person;
 use Webmozart\Assert\Assert;
 
@@ -39,9 +38,9 @@ class AuthorType implements
         protected readonly AttributeTypeResolver $typeResolver
     ) {}
 
-    public function getReadableProperties(): ReadabilityCollection
+    public function getReadableProperties(): EntityReadability
     {
-        return new ReadabilityCollection(
+        return new EntityReadability(
             [
                 'name' => new TestAttributeReadability(['name'], $this->propertyAccessor),
                 'pseudonym' => new TestAttributeReadability(['pseudonym'], $this->propertyAccessor),
@@ -106,24 +105,36 @@ class AuthorType implements
         return true;
     }
 
-    public function getUpdatableProperties(): UpdatablePropertyCollection
+    public function getUpdatability(): EntityUpdatability
     {
         $bookType = $this->typeProvider->getTypeByIdentifier(BookType::class);
 
-        return new UpdatablePropertyCollection(
+        return new EntityUpdatability(
             [
-                'name' => new TestAttributeSetability(['name'], $this->propertyAccessor),
-                'birthCountry' => new TestAttributeSetability(['birth', 'country'], $this->propertyAccessor),
+                'name' => new TestAttributeSetability(
+                    'name',
+                    ['name'],
+                    $this->propertyAccessor,
+                    true
+                ),
+                'birthCountry' => new TestAttributeSetability(
+                    'birthCountry',
+                    ['birth', 'country'],
+                    $this->propertyAccessor,
+                    true
+                ),
             ],
             [],
             [
                 'books' => new PathToManyRelationshipSetability(
+                    'books',
                     self::class,
                     [],
                     $bookType->getAccessConditions(),
                     $bookType,
                     ['books'],
-                    $this->propertyAccessor
+                    $this->propertyAccessor,
+                    true
                 ),
             ],
         );
@@ -144,7 +155,7 @@ class AuthorType implements
         throw new \RuntimeException();
     }
 
-    public function updateEntity(UpdateRequestBody $requestBody): ?object
+    public function updateEntity(string $entityId, EntityDataInterface $entityData): ?object
     {
         throw new \RuntimeException();
     }

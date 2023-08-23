@@ -16,16 +16,16 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 abstract class CachingResourceType extends AbstractResourceType
 {
     /**
-     * @var array<non-empty-string, PropertyBuilder<TEntity, mixed, TCondition, TSorting>>|null
+     * @var EntityConfig<TCondition, TSorting, TEntity>|null
      */
-    private ?array $properties = null;
+    private ?EntityConfig $entityConfig = null;
 
-    protected function getInitializedProperties(): array
+    protected function getInitializedProperties(): EntityConfig
     {
-        if (null === $this->properties) {
-            $this->properties = parent::getInitializedProperties();
+        if (null === $this->entityConfig) {
+            $this->entityConfig = parent::getInitializedProperties();
         }
 
-        return $this->properties;
+        return $this->entityConfig;
     }
 }

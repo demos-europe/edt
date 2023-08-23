@@ -9,6 +9,7 @@ use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
 use EDT\JsonApi\Requests\RequestException;
 use EDT\JsonApi\Validation\Patterns;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
 use JsonException;
 use Symfony\Component\HttpFoundation\ParameterBag;

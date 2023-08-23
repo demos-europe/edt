@@ -35,11 +35,6 @@ use function Safe\fclose;
  */
 class DocblockTagParser
 {
-    /**
-     * @var ReflectionClass<object>
-     */
-    protected readonly ReflectionClass $reflectionClass;
-
     protected readonly ?DocBlock $docBlock;
 
     protected readonly Parser $phpParser;
@@ -50,18 +45,19 @@ class DocblockTagParser
     protected readonly array $useStatements;
 
     /**
-     * @param class-string $class
+     * @param ReflectionClass<object> $reflectionClass
+     *
      * @throws ParseException
      */
-    public function __construct(string $class)
-    {
+    public function __construct(
+        protected readonly ReflectionClass $reflectionClass
+    ) {
         try {
             $this->phpParser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
-            $this->reflectionClass = new ReflectionClass($class);
             $this->docBlock = self::createDocblock($this->reflectionClass);
             $this->useStatements = $this->getUseStatements();
         } catch (Exception $exception) {
-            throw ParseException::docblockParsingFailed($class, $exception);
+            throw ParseException::docblockParsingFailed($this->reflectionClass->getName(), $exception);
         }
     }
 

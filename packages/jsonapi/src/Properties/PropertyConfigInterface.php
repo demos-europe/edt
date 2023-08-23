@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Properties;
 
+use EDT\JsonApi\ResourceTypes\PropertyBehaviorBuilderInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\Wrapping\Properties\ConstructorParameterInterface;
+use EDT\Wrapping\Properties\PropertySetabilityInterface;
 
 /**
  * @template TEntity of object
  * @template TValue
  * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 interface PropertyConfigInterface
 {
     /**
      * Set an alias to follow when this property is accessed.
      *
-     * Beside {@link PropertyBuilder::readable() custom read functions},
+     * Beside {@link PropertyConfig::readable() custom read functions},
      * aliases are another and the preferred way to slightly deviate from the schema of the backing
      * entity class when exposing properties. Their advantage over custom read functions is that
      * conditions and sort methods that are using aliases can still be executed in the database,
@@ -148,28 +152,33 @@ interface PropertyConfigInterface
     public function readable(bool $defaultField = false, callable $customReadCallback = null): self;
 
     /**
-     * @param list<TCondition> $entityConditions
-     * @param null|callable(TEntity, TValue): bool $customUpdateCallback
-     * @param list<TCondition> $relationshipConditions
+     * Connect this property to a behavior to be executed, if a value for that
+     * property is provided during an update.
+     *
+     * @param PropertyBehaviorBuilderInterface<PropertySetabilityInterface<TCondition, TEntity>> $builder $builder
      *
      * @return $this
      */
-    public function updatable(
-        array $entityConditions,
-        ?callable $customUpdateCallback,
-        array $relationshipConditions,
-    ): self;
+    public function setUpdatingSetability(PropertyBehaviorBuilderInterface $builder): self;
 
     /**
-     * Mark the property as initializable when creating a resource.
+     * Connect this property to a behavior to be executed, if a value for that
+     * property is provided during an initialization.
      *
-     * By default, properties marked as initializable are required to be present in a request when
-     * a resource is created. You can change that by setting the `$optional` parameter to `true`.
-     *
-     * @param list<TCondition> $relationshipConditions
-     * @param null|callable(TEntity, TValue): bool $customInitCallback
+     * @param PropertyBehaviorBuilderInterface<PropertySetabilityInterface<TCondition, TEntity>> $builder
      *
      * @return $this
      */
-    public function initializable(bool $optional = false, array $relationshipConditions = [], callable $customInitCallback = null): self;
+    public function setInitializingSetability(PropertyBehaviorBuilderInterface $builder): self;
+
+    /**
+     * Connect this property to a behavior to generate a corresponding constructor parameter, if a value for that
+     * property is provided during an initialization. All constructor parameters without a default value must be
+     * covered.
+     *
+     * @param PropertyBehaviorBuilderInterface<ConstructorParameterInterface<TCondition, TSorting>> $builder
+     *
+     * @return $this
+     */
+    public function setInitializingConstructorParameter(PropertyBehaviorBuilderInterface $builder): self;
 }

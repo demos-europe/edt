@@ -9,6 +9,7 @@ use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
+use EDT\Wrapping\Properties\EntityDataInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -24,7 +25,9 @@ interface CreatableTypeInterface extends NamedTypeInterface, ReadableTypeInterfa
     public function getExpectedInitializationProperties(): ExpectedPropertyCollection;
 
     /**
+     * @param non-empty-string|null $entityId
+     *
      * @return TEntity|null `null` if the entity was created exactly as defined by the request
      */
-    public function createEntity(CreationRequestBody $requestBody): ?object;
+    public function createEntity(?string $entityId, EntityDataInterface $entityData): ?object;
 }

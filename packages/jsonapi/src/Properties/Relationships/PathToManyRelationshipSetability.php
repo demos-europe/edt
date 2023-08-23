@@ -7,7 +7,7 @@ namespace EDT\JsonApi\Properties\Relationships;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipSetabilityInterface;
+use EDT\Wrapping\Properties\RelationshipSetabilityInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -16,11 +16,12 @@ use Webmozart\Assert\Assert;
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-implements ToManyRelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
+ * @template-extends AbstractToManyRelationshipSetability<TCondition, TSorting, TEntity, TRelationship>
  */
-class PathToManyRelationshipSetability implements ToManyRelationshipSetabilityInterface
+class PathToManyRelationshipSetability extends AbstractToManyRelationshipSetability
 {
     /**
+     * @param non-empty-string $propertyName
      * @param class-string<TEntity> $entityClass
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
@@ -28,14 +29,19 @@ class PathToManyRelationshipSetability implements ToManyRelationshipSetabilityIn
      * @param non-empty-list<non-empty-string> $propertyPath
      */
     public function __construct(
+        string $propertyName,
         protected readonly string $entityClass,
         protected readonly array $entityConditions,
         protected readonly array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly array $propertyPath,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-    ) {}
+        bool $optional
+    ) {
+        parent::__construct($propertyName, $optional);
+    }
 
+    // FIXME: type access conditions automatically applied everywhere?
     public function getEntityConditions(): array
     {
         return $this->entityConditions;

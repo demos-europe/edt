@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Wrapping\Contracts\Types;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Properties\UpdatablePropertyCollection;
+use EDT\Wrapping\Properties\EntityUpdatability;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -23,7 +23,7 @@ interface PropertyUpdatableTypeInterface
      *
      * Hint: You can merge the returned nested arrays via `array_merge(...$type->getUpdatableProperties())`.
      *
-     * @return UpdatablePropertyCollection<TCondition, TSorting, TEntity>
+     * @return EntityUpdatability<TCondition, TSorting, TEntity>
      */
-    public function getUpdatableProperties(): UpdatablePropertyCollection;
+    public function getUpdatability(): EntityUpdatability;
 }

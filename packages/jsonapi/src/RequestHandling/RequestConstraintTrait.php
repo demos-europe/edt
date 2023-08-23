@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
+use EDT\Wrapping\Contracts\ContentField;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 

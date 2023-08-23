@@ -8,7 +8,7 @@ use EDT\JsonApi\Properties\Attributes\PathAttributeReadability;
 use EDT\JsonApi\Properties\Id\PathIdReadability;
 use EDT\JsonApi\Properties\Relationships\PathToManyRelationshipReadability;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Wrapping\Properties\ReadabilityCollection;
+use EDT\Wrapping\Properties\EntityReadability;
 use League\Fractal\TransformerAbstract;
 
 class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInterface
@@ -21,9 +21,9 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
     /**
      * Overwrites its parent relationships with reference to resource type implementations.
      */
-    public function getReadableProperties(): ReadabilityCollection
+    public function getReadableProperties(): EntityReadability
     {
-        return new ReadabilityCollection(
+        return new EntityReadability(
             [
                 'name' => new PathAttributeReadability(
                     $this->getEntityClass(),

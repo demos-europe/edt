@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Properties;
 
-use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\Requests\PropertyUpdaterTrait;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
@@ -21,14 +20,21 @@ class ToManyRelationshipConstructorParameter extends AbstractRelationshipConstru
     /**
      * @return list<object>
      */
-    public function getValue(CreationRequestBody $requestBody): array
+    public function getArgument(?string $entityId, EntityDataInterface $entityData): array
     {
-        $relationshipRefs = $requestBody->getToManyRelationshipReferences($this->parameterName);
+        $toManyRelationships = $entityData->getToManyRelationships();
+        $relationshipRefs = $toManyRelationships[$this->propertyName]
+            ?? throw new \InvalidArgumentException("No to-many relationship '$this->propertyName' present.");
 
         return $this->determineToManyRelationshipValues(
             $this->getRelationshipType(),
             $this->getRelationshipConditions(),
             $relationshipRefs
         );
+    }
+
+    public function getRequiredToManyRelationships(): array
+    {
+        return [$this->propertyName => $this->relationshipType->getTypeName()];
     }
 }
