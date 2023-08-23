@@ -286,12 +286,22 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
+            message: "#^Method EDT\\\\JsonApi\\\\OutputHandling\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) never returns false so it can be removed from the return type\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputHandling/DynamicTransformer.php
+
+        -
             message: "#^Method EDT\\\\JsonApi\\\\OutputHandling\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) return type has no value type specified in iterable type array\\.$#"
             count: 1
             path: packages/jsonapi/src/OutputHandling/DynamicTransformer.php
 
         -
             message: "#^Parameter \\#1 \\$properties of method EDT\\\\JsonApi\\\\RequestHandling\\\\MessageFormatter\\:\\:propertiesToString\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>, non\\-empty\\-array given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/OutputHandling/DynamicTransformer.php
+
+        -
+            message: "#^Return type \\(array\\|false\\) of method EDT\\\\JsonApi\\\\OutputHandling\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) should be covariant with return type \\(array\\) of method League\\\\Fractal\\\\TransformerAbstract\\:\\:processIncludedResources\\(\\)$#"
             count: 1
             path: packages/jsonapi/src/OutputHandling/DynamicTransformer.php
 
