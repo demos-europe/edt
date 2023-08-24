@@ -79,15 +79,6 @@ interface RepositoryInterface
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array;
 
     /**
-     * @param list<TEntity> $entities
-     *
-     * @param list<TCondition> $conditions
-     *
-     * @throws Exception
-     */
-    public function assertMatchingEntities(array $entities, array $conditions): void;
-
-    /**
      * @param TEntity $entity
      * @param non-empty-list<TCondition> $conditions
      */

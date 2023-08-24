@@ -159,11 +159,6 @@ class AuthorType implements
         throw new \RuntimeException();
     }
 
-    public function assertMatchingEntities(array $entities, array $conditions): void
-    {
-        throw new \RuntimeException();
-    }
-
     public function assertMatchingEntity(object $entity, array $conditions): void
     {
         $tableJoiner = new TableJoiner($this->propertyAccessor);

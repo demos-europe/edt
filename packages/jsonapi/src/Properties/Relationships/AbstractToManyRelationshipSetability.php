@@ -25,6 +25,20 @@ abstract class AbstractToManyRelationshipSetability extends AbstractSetability i
     use PropertyUpdaterTrait;
 
     /**
+     * @param non-empty-string $propertyName
+     * @param list<TCondition> $entityConditions
+     * @param list<TCondition> $relationshipConditions
+     */
+    public function __construct(
+        string $propertyName,
+        array $entityConditions,
+        protected readonly array $relationshipConditions,
+        bool $optional
+    ) {
+        parent::__construct($propertyName, $entityConditions, $optional);
+    }
+
+    /**
      * Update the relationship property this instance corresponds to by replacing the list in the
      * given entity with the given list of relationship entities.
      *
@@ -47,7 +61,7 @@ abstract class AbstractToManyRelationshipSetability extends AbstractSetability i
         $relationshipReferences = $requestRelationships[$this->propertyName];
         $relationshipValues = $this->determineToManyRelationshipValues(
             $this->getRelationshipType(),
-            $this->getRelationshipConditions(),
+            $this->relationshipConditions,
             $relationshipReferences
         );
 

@@ -65,12 +65,8 @@ trait PropertyUpdaterTrait
 
         Assert::allSame(array_column($relationshipRefs, ContentField::TYPE), $relationshipType->getTypeName());
         $relationshipIds = array_column($relationshipRefs, ContentField::ID);
-        if ([] === $relationshipIds) {
-            $relationshipValues = [];
-        } else {
-            $relationshipValues = $relationshipType->getEntitiesForRelationship($relationshipIds, $relationshipConditions, []);
-            Assert::count($relationshipValues, count($relationshipRefs), 'Tried to fetch %d entities, only %d were available for update according to the given identifiers and applied conditions.');
-        }
+        $relationshipValues = $relationshipType->getEntitiesForRelationship($relationshipIds, $relationshipConditions, []);
+        Assert::count($relationshipValues, count($relationshipRefs), 'Tried to fetch %d entities, only %d were available for update according to the given identifiers and applied conditions.');
 
         return $relationshipValues;
     }

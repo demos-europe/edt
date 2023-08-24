@@ -9,7 +9,6 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\PropertyAccessException;
-use EDT\Wrapping\Contracts\RelationshipAccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\Properties\EntityData;
@@ -20,6 +19,7 @@ use Safe\Exceptions\PcreException;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 use function count;
+use function in_array;
 use function Safe\preg_match;
 
 /**
@@ -250,7 +250,7 @@ class WrapperObject
         $this->type->assertMatchingEntity($this->entity, $relevantEntityConditions);
 
         $entityData = new EntityData($this->type->getTypeName(), [$propertyName => $value], [], []);
-        $entityUpdatability->updateEntity($this->entity, $entityData);
+        $entityUpdatability->getAttribute($propertyName)->updateProperty($this->entity, $entityData);
     }
 
     /**
@@ -268,16 +268,6 @@ class WrapperObject
         $relevantEntityConditions = $entityUpdatability->getEntityConditions([$propertyName]);
         $this->type->assertMatchingEntity($this->entity, $relevantEntityConditions);
 
-        // TODO: how to disallow a `null` relationship?
-        if (null !== $relationship) {
-            $relationshipConditions = $setability->getRelationshipConditions();
-            try {
-                $relationshipType->assertMatchingEntity($relationship, $relationshipConditions);
-            } catch (Exception $exception) {
-                throw RelationshipAccessException::updateRelationshipCondition($this->type, $propertyName, $exception);
-            }
-        }
-
         $entityData = new EntityData($this->type->getTypeName(), [], [
             $propertyName => null === $relationship ? null : [
                 ContentField::ID => $relationshipType->getReadableProperties()->getIdentifierReadability()->getValue($relationship),
@@ -285,7 +275,7 @@ class WrapperObject
             ],
         ], []);
 
-        return $entityUpdatability->updateEntity($this->entity, $entityData);
+        return $setability->updateProperty($this->entity, $entityData);
     }
 
     /**
@@ -303,16 +293,6 @@ class WrapperObject
 
         $relevantEntityConditions = $entityUpdatability->getEntityConditions([$propertyName]);
         $this->type->assertMatchingEntity($this->entity, $relevantEntityConditions);
-
-        // TODO: how to disallow an empty relationship?
-        if ([] !== $relationships) {
-            $relationshipConditions = $setability->getRelationshipConditions();
-            try {
-                $relationshipType->assertMatchingEntities($relationships, $relationshipConditions);
-            } catch (Exception $exception) {
-                throw RelationshipAccessException::updateRelationshipsCondition($this->type, $propertyName, $exception);
-            }
-        }
 
         $relationshipTypeName = $relationshipType->getTypeName();
         $entityData = new EntityData($this->type->getTypeName(), [], [], [

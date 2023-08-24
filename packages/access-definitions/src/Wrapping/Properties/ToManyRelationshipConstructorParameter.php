@@ -6,6 +6,7 @@ namespace EDT\Wrapping\Properties;
 
 use EDT\JsonApi\Requests\PropertyUpdaterTrait;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -18,6 +19,21 @@ class ToManyRelationshipConstructorParameter extends AbstractRelationshipConstru
     use PropertyUpdaterTrait;
 
     /**
+     * @param non-empty-string $argumentName
+     * @param non-empty-string $propertyName
+     * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
+     * @param list<TCondition> $relationshipConditions
+     */
+    public function __construct(
+        string $argumentName,
+        string $propertyName,
+        TransferableTypeInterface $relationshipType,
+        protected readonly array $relationshipConditions
+    ) {
+        parent::__construct($argumentName, $propertyName, $relationshipType);
+    }
+
+    /**
      * @return list<object>
      */
     public function getArgument(?string $entityId, EntityDataInterface $entityData): array
@@ -28,7 +44,7 @@ class ToManyRelationshipConstructorParameter extends AbstractRelationshipConstru
 
         return $this->determineToManyRelationshipValues(
             $this->getRelationshipType(),
-            $this->getRelationshipConditions(),
+            $this->relationshipConditions,
             $relationshipRefs
         );
     }

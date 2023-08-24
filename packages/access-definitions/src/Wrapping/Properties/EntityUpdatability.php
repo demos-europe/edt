@@ -70,7 +70,7 @@ class EntityUpdatability extends AbstractEntityModifier
     /**
      * @param TEntity $entity
      */
-    public function updateEntity(object $entity, EntityDataInterface $entityData): bool
+    public function updateProperties(object $entity, EntityDataInterface $entityData): bool
     {
         $setabilities = $this->getRelevantSetabilities($entityData->getPropertyNames());
 
@@ -95,6 +95,17 @@ class EntityUpdatability extends AbstractEntityModifier
         );
 
         return array_merge([], ...$entityConditions);
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     *
+     * @return PropertySetabilityInterface<TCondition, TEntity>
+     */
+    public function getAttribute(string $propertyName): PropertySetabilityInterface
+    {
+        return $this->attributes[$propertyName]
+            ?? throw new InvalidArgumentException("To-one relationship `$propertyName` not available.");
     }
 
     /**

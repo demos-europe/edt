@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\Properties;
 
-use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\Requests\PropertyUpdaterTrait;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -16,6 +16,21 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  */
 class ToOneRelationshipConstructorParameter extends AbstractRelationshipConstructorParameter
 {
+    /**
+     * @param non-empty-string $argumentName
+     * @param non-empty-string $propertyName
+     * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
+     * @param list<TCondition> $relationshipConditions
+     */
+    public function __construct(
+        string $argumentName,
+        string $propertyName,
+        TransferableTypeInterface $relationshipType,
+        protected readonly array $relationshipConditions
+    ) {
+        parent::__construct($argumentName, $propertyName, $relationshipType);
+    }
+
     use PropertyUpdaterTrait;
 
     public function getArgument(?string $entityId, EntityDataInterface $entityData): ?object
@@ -26,7 +41,7 @@ class ToOneRelationshipConstructorParameter extends AbstractRelationshipConstruc
 
         return $this->determineToOneRelationshipValue(
             $this->getRelationshipType(),
-            $this->getRelationshipConditions(),
+            $this->relationshipConditions,
             $relationshipRef
         );
     }

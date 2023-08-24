@@ -152,11 +152,6 @@ class BookType implements
         throw new \RuntimeException();
     }
 
-    public function assertMatchingEntities(array $entities, array $conditions): void
-    {
-        $this->getReindexer()->assertMatchingEntities($entities, $conditions);
-    }
-
     public function assertMatchingEntity(object $entity, array $conditions): void
     {
         $this->getReindexer()->assertMatchingEntity($entity, $conditions);

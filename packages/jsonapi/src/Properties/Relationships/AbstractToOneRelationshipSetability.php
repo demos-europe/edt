@@ -25,6 +25,20 @@ abstract class AbstractToOneRelationshipSetability extends AbstractSetability im
     use PropertyUpdaterTrait;
 
     /**
+     * @param non-empty-string $propertyName
+     * @param list<TCondition> $entityConditions
+     * @param list<TCondition> $relationshipConditions
+     */
+    public function __construct(
+        string $propertyName,
+        array $entityConditions,
+        protected readonly array $relationshipConditions,
+        bool $optional
+    ) {
+        parent::__construct($propertyName, $entityConditions, $optional);
+    }
+
+    /**
      * Update the relationship property this instance corresponds to by replacing the value in the
      * given entity with the given relationship entity.
      *
@@ -47,7 +61,7 @@ abstract class AbstractToOneRelationshipSetability extends AbstractSetability im
         $relationshipReference = $requestRelationships[$this->propertyName];
         $relationshipValue = $this->determineToOneRelationshipValue(
             $this->getRelationshipType(),
-            $this->getRelationshipConditions(),
+            $this->relationshipConditions,
             $relationshipReference
         );
 

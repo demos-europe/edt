@@ -14,28 +14,20 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
  * @template TSorting of PathsBasedInterface
  *
  * @template-implements ConstructorParameterInterface<TCondition, TSorting>
- * @template-implements RestrictableRelationshipInterface<TCondition>
  * @template-implements RelationshipInterface<NamedTypeInterface&RelationshipFetchableTypeInterface<TCondition, TSorting, object>>
  */
-abstract class AbstractRelationshipConstructorParameter implements ConstructorParameterInterface, RestrictableRelationshipInterface, RelationshipInterface
+abstract class AbstractRelationshipConstructorParameter implements ConstructorParameterInterface, RelationshipInterface
 {
     /**
      * @param non-empty-string $argumentName
      * @param non-empty-string $propertyName
      * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
-     * @param list<TCondition> $relationshipConditions
      */
     public function __construct(
         protected readonly string $argumentName,
         protected readonly string $propertyName,
-        protected readonly TransferableTypeInterface $relationshipType,
-        protected readonly array $relationshipConditions
+        protected readonly TransferableTypeInterface $relationshipType
     ) {}
-
-    public function getRelationshipConditions(): array
-    {
-        return $this->relationshipConditions;
-    }
 
     /**
      * @return NamedTypeInterface&RelationshipFetchableTypeInterface<TCondition, TSorting, object>

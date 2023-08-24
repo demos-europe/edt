@@ -98,7 +98,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $beforeUpdateEvent = new BeforeUpdateEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($beforeUpdateEvent);
 
-        $updateSideEffect = $updatability->updateEntity($entity, $entityData);
+        $updateSideEffect = $updatability->updateProperties($entity, $entityData);
 
         $afterUpdateEvent = new AfterUpdateEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($afterUpdateEvent);
@@ -137,8 +137,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         $constructorArguments = $initializability->getConstructorArguments($entityId, $entityData);
         $entity = $initializability->initializeEntity($constructorArguments);
-        $fillSideEffect = $initializability->fillEntity($entityId, $entity, $entityData);
-        // FIXME: how to verify entity matches access conditions, when it is probably not flushed into the database yet?
+        $fillSideEffect = $initializability->fillProperties($entityId, $entity, $entityData);
+        // FIXME: how to verify the created entity matches all relevant conditions, when it is probably not flushed into the database yet?
+        // (entity conditions of setability instances and access conditions of this instance)
 
         $afterCreationEvent = new AfterCreationEvent($this, $entity);
         $this->getEventDispatcher()->dispatch($afterCreationEvent);
@@ -397,13 +398,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
 
         return $this->getRepository()->reindexEntities($entities, $conditions, $sortMethods);
-    }
-
-    public function assertMatchingEntities(array $entities, array $conditions): void
-    {
-        $conditions = array_merge($conditions, $this->getAccessConditions());
-
-        $this->getRepository()->assertMatchingEntities($entities, $conditions);
     }
 
     public function assertMatchingEntity(object $entity, array $conditions): void

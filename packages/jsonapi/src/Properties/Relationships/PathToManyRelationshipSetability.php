@@ -32,23 +32,18 @@ class PathToManyRelationshipSetability extends AbstractToManyRelationshipSetabil
         string $propertyName,
         protected readonly string $entityClass,
         array $entityConditions,
-        protected readonly array $relationshipConditions,
+        array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly array $propertyPath,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         bool $optional
     ) {
-        parent::__construct($propertyName, $entityConditions, $optional);
+        parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
     }
 
     public function getRelationshipType(): TransferableTypeInterface
     {
         return $this->relationshipType;
-    }
-
-    public function getRelationshipConditions(): array
-    {
-        return $this->relationshipConditions;
     }
 
     public function updateToManyRelationship(object $entity, array $relationships): bool

@@ -65,16 +65,6 @@ class EmptyType extends AbstractResourceType
         throw new \RuntimeException();
     }
 
-    public function assertMatchingEntities(array $entities, array $conditions): void
-    {
-        throw new \RuntimeException();
-    }
-
-    public function assertMatchingEntity(object $entity, array $conditions): void
-    {
-        throw new \RuntimeException();
-    }
-
     public function isMatchingEntity(object $entity, array $conditions): bool
     {
         throw new \RuntimeException();

@@ -41,16 +41,6 @@ class Reindexer
     }
 
     /**
-     * @param list<object> $entities
-     * @param list<TCondition> $conditions
-     */
-    public function assertMatchingEntities(array $entities, array $conditions): void
-    {
-        $filteredEntities = $this->applyFilterToEntities($entities, $conditions);
-        Assert::count($filteredEntities, count($entities));
-    }
-
-    /**
      * @param list<TCondition> $conditions
      */
     public function assertMatchingEntity(object $entity, array $conditions): void

@@ -68,7 +68,7 @@ class EntityInitializability extends AbstractEntityModifier
      * @param TEntity $entity
      */
     // FIXME: respect entityId
-    public function fillEntity(?string $entityId, object $entity, EntityDataInterface $entityData): bool
+    public function fillProperties(?string $entityId, object $entity, EntityDataInterface $entityData): bool
     {
         return $this->getSetabilitiesSideEffect($this->setabilities, $entity, $entityData);
     }
