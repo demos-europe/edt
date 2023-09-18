@@ -7,23 +7,24 @@ namespace Tests\data\ApiTypes;
 use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\InputHandling\RepositoryInterface;
-use EDT\JsonApi\RequestHandling\MessageFormatter;
+use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilder;
+use EDT\JsonApi\ResourceConfig\Builder\UnifiedResourceConfigBuilder;
+use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
-use EDT\JsonApi\ResourceTypes\PropertyBuilderFactory;
+use EDT\JsonApi\Utilities\PropertyBuilderFactory;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Log\LoggerInterface;
+use League\Fractal\TransformerAbstract;
 use Tests\data\EmptyEntity;
 
 class EmptyType extends AbstractResourceType
 {
     public function __construct(
         protected readonly ConditionFactoryInterface $conditionFactory,
-        protected readonly PropertyBuilderFactory $propertyBuilderFactory,
+        protected readonly PropertyBuilderFactory    $propertyBuilderFactory,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver $typeResolver
+        protected readonly AttributeTypeResolver     $typeResolver
     ) {}
 
     public function getEntityClass(): string
@@ -39,35 +40,6 @@ class EmptyType extends AbstractResourceType
     public function getAccessConditions(): array
     {
         return [$this->conditionFactory->false()];
-    }
-
-    protected function getProperties(): array
-    {
-        return [
-            $this->createAttribute(
-                new PropertyPath(null, '', PropertyPath::UNPACK, ['id'])
-            )->readable()
-        ];
-    }
-
-    protected function getPropertyBuilderFactory(): PropertyBuilderFactory
-    {
-        return $this->propertyBuilderFactory;
-    }
-
-    protected function getMessageFormatter(): MessageFormatter
-    {
-        throw new \RuntimeException();
-    }
-
-    protected function getLogger(): LoggerInterface
-    {
-        throw new \RuntimeException();
-    }
-
-    public function isMatchingEntity(object $entity, array $conditions): bool
-    {
-        throw new \RuntimeException();
     }
 
     protected function getSchemaPathProcessor(): SchemaPathProcessor
@@ -90,7 +62,25 @@ class EmptyType extends AbstractResourceType
         throw new \RuntimeException();
     }
 
-    protected function getEventDispatcher(): EventDispatcherInterface
+    protected function getResourceConfig(): ResourceConfigInterface
+    {
+        $idProperty = new IdentifierConfigBuilder(
+            $this->getEntityClass(),
+            $this->propertyAccessor,
+            $this->typeResolver
+        );
+        $idProperty->readable();
+        $properties = [
+            $idProperty,
+        ];
+
+        $resourceConfig = new UnifiedResourceConfigBuilder($this->getEntityClass());
+        $resourceConfig->setProperties($properties);
+
+        return $resourceConfig->build();
+    }
+
+    public function getTransformer(): TransformerAbstract
     {
         throw new \RuntimeException();
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling\Body;
 
-use EDT\Wrapping\Properties\EntityDataInterface;
+use EDT\Wrapping\EntityDataInterface;
 
 abstract class RequestBody implements EntityDataInterface
 {

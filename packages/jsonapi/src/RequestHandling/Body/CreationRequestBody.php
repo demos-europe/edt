@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling\Body;
 
-class CreationRequestBody extends RequestBody
+use EDT\Wrapping\CreationDataInterface;
+
+class CreationRequestBody extends RequestBody implements CreationDataInterface
 {
     /**
      * @param non-empty-string|null $entityId
@@ -23,10 +25,7 @@ class CreationRequestBody extends RequestBody
         parent::__construct($type, $attributes, $toOneRelationships, $toManyRelationships);
     }
 
-    /**
-     * @return non-empty-string|null
-     */
-    public function getEntityId(): ?string
+    public function getEntityIdentifier(): ?string
     {
         return $this->entityId;
     }

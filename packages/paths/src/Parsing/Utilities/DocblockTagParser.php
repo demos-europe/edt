@@ -12,10 +12,12 @@ use phpDocumentor\Reflection\DocBlock\Tags\Param;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
 use phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
 use phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
-use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use phpDocumentor\Reflection\DocBlockFactory;
-use phpDocumentor\Reflection\Types\AggregatedType;
+use phpDocumentor\Reflection\FqsenResolver;
+use phpDocumentor\Reflection\Type;
+use phpDocumentor\Reflection\TypeResolver;
+use phpDocumentor\Reflection\Types\ContextFactory;
 use phpDocumentor\Reflection\Types\Object_;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
@@ -44,6 +46,10 @@ class DocblockTagParser
      */
     protected readonly array $useStatements;
 
+    protected readonly TypeResolver $typeResolver;
+    protected readonly ContextFactory $contextFactory;
+    protected readonly string $sourceCode;
+
     /**
      * @param ReflectionClass<object> $reflectionClass
      *
@@ -55,7 +61,15 @@ class DocblockTagParser
         try {
             $this->phpParser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
             $this->docBlock = self::createDocblock($this->reflectionClass);
+            $fileName = $this->reflectionClass->getFileName();
+            $this->sourceCode = is_string($fileName)
+                ? $this->readSourceCode($fileName)
+                : throw new NoSourceException("No source code was found for the file name `$fileName`.");
             $this->useStatements = $this->getUseStatements();
+            $this->typeResolver = new TypeResolver();
+            $this->contextFactory = new ContextFactory();
+        } catch (NoSourceException $exception) {
+            throw $exception;
         } catch (Exception $exception) {
             throw ParseException::docblockParsingFailed($this->reflectionClass->getName(), $exception);
         }
@@ -104,35 +118,15 @@ class DocblockTagParser
     }
 
     /**
-     * @return class-string
-     *
-     * @throws TagTypeParseException
-     */
-    public function getPropertyType(TagWithType $tag): string
-    {
-        $namespaceName = $this->reflectionClass->getNamespaceName();
-
-        try {
-            $class = $this->getQualifiedNameOfClass($tag, $namespaceName);
-            Assert::notNull($class);
-
-            return $class;
-        } catch (Exception $exception) {
-            throw new TagTypeParseException($this->reflectionClass->getName(), $tag, $exception);
-        }
-    }
-
-    /**
      * @return class-string|null
      *
      * @throws TagTypeParseException
      * @throws InvalidArgumentException
+     * /
      */
-    protected function getQualifiedNameOfClass(TagWithType $tag, string $namespaceName): ?string
+    public function getQualifiedName(Object_ $tagType): ?string
     {
-        $tagType = $tag->getType();
-        Assert::notInstanceOf($tagType, AggregatedType::class);
-        Assert::isInstanceOf($tagType, Object_::class);
+        $namespaceName = $this->reflectionClass->getNamespaceName();
 
         $typeDeclaration = (string)$tagType->getFqsen();
         $qualifiedNameParts = explode('\\', $typeDeclaration);
@@ -167,6 +161,78 @@ class DocblockTagParser
         }
 
         // giving up looking for return type
+        return null;
+    }
+
+    /**
+     * @param non-empty-string $unresolvedType
+     */
+    public function getResolvedType(string $unresolvedType): Type
+    {
+        $namespace = $this->reflectionClass->getNamespaceName();
+        $context = $this->contextFactory->createForNamespace($namespace, $this->sourceCode);
+
+        return $this->typeResolver->resolve($unresolvedType, $context);
+    }
+
+    /**
+     * TODO: potential replacement for {@link self::getQualifiedName}, but does not work as required yet
+     *
+     * @return class-string|null
+     *
+     * @throws TagTypeParseException
+     * @throws InvalidArgumentException
+     *
+     * @internal
+     */
+    public function getQualifiedNameViaFqsenResolver(Type $tagType): ?string
+    {
+        $namespaceName = $this->reflectionClass->getNamespaceName();
+        Assert::isInstanceOf($tagType, Object_::class);
+
+        $tagTypeString = (string)$tagType;
+        $context = $this->contextFactory->createForNamespace($namespaceName, $this->sourceCode);
+        $fqsenResolver = new FqsenResolver();
+        $fqsen = $fqsenResolver->resolve($tagTypeString, $context);
+
+        $resolvedTypeString = (string)$fqsen;
+        // Check if the resolved type is an object and is a class or interface
+        if (class_exists($resolvedTypeString) || interface_exists($resolvedTypeString)) {
+            return $resolvedTypeString;
+        }
+
+        return null;
+    }
+
+    /**
+     * TODO: potential replacement for {@link self::getQualifiedName}, but does not work as required yet
+     *
+     * @return class-string|null
+     *
+     * @throws TagTypeParseException
+     * @throws InvalidArgumentException
+     *
+     * @internal
+     */
+    public function getQualifiedNameViaTypeResolver(Type $tagType): ?string
+    {
+        $namespaceName = $this->reflectionClass->getNamespaceName();
+        Assert::isInstanceOf($tagType, Object_::class);
+
+        $tagTypeString = (string)$tagType;
+        $context = $this->contextFactory->createForNamespace($namespaceName, $this->sourceCode);
+        $resolvedType = $this->typeResolver->resolve($tagTypeString, $context);
+
+        if (!$resolvedType instanceof Object_) {
+            return null;
+        }
+
+        $resolvedTypeString = (string)$resolvedType;
+        // Check if the resolved type is an object and is a class or interface
+        if (class_exists($resolvedTypeString) || interface_exists($resolvedTypeString)) {
+            return $resolvedTypeString;
+        }
+
         return null;
     }
 
@@ -216,8 +282,7 @@ class DocblockTagParser
              */
             return [];
         }
-        $sourceCode = $this->readSourceCode($fileName);
-        $ast = $this->phpParser->parse($sourceCode);
+        $ast = $this->phpParser->parse($this->sourceCode);
         $traverser = new NodeTraverser();
         $useCollector = new UseCollector();
         $traverser->addVisitor($useCollector);

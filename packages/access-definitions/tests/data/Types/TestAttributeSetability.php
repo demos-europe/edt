@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\data\Types;
 
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\Properties\AbstractAttributeSetability;
+use EDT\Wrapping\PropertyBehavior\Attribute\AbstractAttributeSetability;
 use Webmozart\Assert\Assert;
 
 class TestAttributeSetability extends AbstractAttributeSetability

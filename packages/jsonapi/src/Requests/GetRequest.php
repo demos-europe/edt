@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
+use EDT\JsonApi\Event\AfterGetEvent;
+use EDT\JsonApi\Event\BeforeGetEvent;
 use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\ResourceTypes\GetableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use Exception;
 use League\Fractal\Resource\Item;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * This request fetches a single resource by its `id` property value.
@@ -20,6 +23,7 @@ class GetRequest
 {
     public function __construct(
         protected readonly RequestTransformer $requestParser,
+        protected readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -31,7 +35,14 @@ class GetRequest
     public function getResource(GetableTypeInterface $type, string $resourceId): Item
     {
         $urlParams = $this->requestParser->getUrlParameters();
+
+        $beforeGetEvent = new BeforeGetEvent($type);
+        $this->eventDispatcher->dispatch($beforeGetEvent);
+
         $entity = $type->getEntity($resourceId);
+
+        $afterGetEvent = new AfterGetEvent($type, $entity);
+        $this->eventDispatcher->dispatch($afterGetEvent);
 
         return new Item($entity, $type->getTransformer(), $type->getTypeName());
     }

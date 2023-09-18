@@ -9,12 +9,12 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\AttributeReadabilityInterface;
-use EDT\Wrapping\Properties\IdAttributeConflictException;
-use EDT\Wrapping\Properties\IdReadabilityInterface;
-use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
-use EDT\Wrapping\Properties\ToManyRelationshipReadabilityInterface;
-use EDT\Wrapping\Properties\ToOneRelationshipReadabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
+use EDT\Wrapping\PropertyBehavior\IdAttributeConflictException;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipReadabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 use Exception;
 use InvalidArgumentException;
 use League\Fractal\ParamBag;
@@ -33,7 +33,7 @@ use const ARRAY_FILTER_USE_KEY;
 
 /**
  * This transformer takes a {@link TransferableTypeInterface} instance and uses the
- * {@link TransferableTypeInterface::getReadableProperties() readable properties} to transform given
+ * {@link TransferableTypeInterface::getReadability() readable properties} to transform given
  * entities corresponding to that type.
  *
  * For example if only a single attribute 'title' is defined (and set as default) then this
@@ -67,9 +67,9 @@ class DynamicTransformer extends TransformerAbstract
     private array $toManyRelationshipReadabilities;
 
     /**
-     * @var IdReadabilityInterface<TEntity>
+     * @var IdentifierReadabilityInterface<TEntity>
      */
-    private IdReadabilityInterface $idReadability;
+    private IdentifierReadabilityInterface $idReadability;
 
     /**
      * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
@@ -81,7 +81,7 @@ class DynamicTransformer extends TransformerAbstract
         protected readonly MessageFormatter $messageFormatter,
         protected readonly ?LoggerInterface $logger
     ) {
-        $readabilityCollection = $this->type->getReadableProperties();
+        $readabilityCollection = $this->type->getReadability();
         $this->attributeReadabilities = $readabilityCollection->getAttributes();
         $this->toOneRelationshipReadabilities = $readabilityCollection->getToOneRelationships();
         $this->toManyRelationshipReadabilities = $readabilityCollection->getToManyRelationships();

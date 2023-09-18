@@ -11,8 +11,8 @@ use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\PropertyAccessException;
 use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\EntityData;
-use EDT\Wrapping\Properties\EntityVerificationTrait;
+use EDT\Wrapping\EntityData;
+use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 use Exception;
 use InvalidArgumentException;
 use Safe\Exceptions\PcreException;
@@ -27,7 +27,7 @@ use function Safe\preg_match;
  *
  * Instances will provide read and write access to specific properties of the given object.
  *
- * The properties allowed to be read depend on the return of {@link TransferableTypeInterface::getReadableProperties()}.
+ * The properties allowed to be read depend on the return of {@link TransferableTypeInterface::getReadability()}.
  * Only those relationships will be readable whose target type return `true` in
  * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()}
  *
@@ -110,7 +110,7 @@ class WrapperObject
      */
     public function getIdentifier(): string
     {
-        return $this->type->getReadableProperties()->getIdentifierReadability()->getValue($this->entity);
+        return $this->type->getReadability()->getIdentifierReadability()->getValue($this->entity);
     }
 
     /**
@@ -121,7 +121,7 @@ class WrapperObject
     public function getAttribute(string $propertyName): mixed
     {
         // we allow reading of properties that are actually accessible
-        $readableProperties = $this->type->getReadableProperties();
+        $readableProperties = $this->type->getReadability();
 
         if (array_key_exists($propertyName, $readableProperties->getAttributes())) {
             return $readableProperties->getAttribute($propertyName)->getValue($this->entity);
@@ -139,7 +139,7 @@ class WrapperObject
     public function getToOneRelationship(string $propertyName, array $conditions = []): ?WrapperObject
     {
         // we allow reading of properties that are actually accessible
-        $readableProperties = $this->type->getReadableProperties();
+        $readableProperties = $this->type->getReadability();
 
         $readability = $readableProperties->getToOneRelationship($propertyName);
         $relationshipType = $readability->getRelationshipType();
@@ -172,7 +172,7 @@ class WrapperObject
     public function getToManyRelationships(string $propertyName, array $conditions = [], array $sortMethods = []): array
     {
         // we allow reading of properties that are actually accessible
-        $readableProperties = $this->type->getReadableProperties();
+        $readableProperties = $this->type->getReadability();
 
         $readability = $readableProperties->getToManyRelationship($propertyName);
         $relationshipType = $readability->getRelationshipType();
@@ -208,7 +208,7 @@ class WrapperObject
     public function __get(string $propertyName)
     {
         // we allow reading of properties that are actually accessible
-        $readableProperties = $this->type->getReadableProperties();
+        $readableProperties = $this->type->getReadability();
 
         // TODO: consider readability settings like default include and default field?
 
@@ -268,12 +268,20 @@ class WrapperObject
         $relevantEntityConditions = $entityUpdatability->getEntityConditions([$propertyName]);
         $this->type->assertMatchingEntity($this->entity, $relevantEntityConditions);
 
-        $entityData = new EntityData($this->type->getTypeName(), [], [
+        $attributes = [];
+        $toOneRelationships = [
             $propertyName => null === $relationship ? null : [
-                ContentField::ID => $relationshipType->getReadableProperties()->getIdentifierReadability()->getValue($relationship),
+                ContentField::ID => $relationshipType->getReadability()->getIdentifierReadability()->getValue($relationship),
                 ContentField::TYPE => $relationshipType->getTypeName(),
             ],
-        ], []);
+        ];
+        $toManyRelationships = [];
+        $entityData = new EntityData(
+            $this->type->getTypeName(),
+            $attributes,
+            $toOneRelationships,
+            $toManyRelationships
+        );
 
         return $setability->updateProperty($this->entity, $entityData);
     }
@@ -298,7 +306,7 @@ class WrapperObject
         $entityData = new EntityData($this->type->getTypeName(), [], [], [
             $propertyName => array_map(
                 static fn (object $relationship): array => [
-                    ContentField::ID => $relationshipType->getReadableProperties()->getIdentifierReadability()->getValue($relationship),
+                    ContentField::ID => $relationshipType->getReadability()->getIdentifierReadability()->getValue($relationship),
                     ContentField::TYPE => $relationshipTypeName,
                 ],
                 $relationships

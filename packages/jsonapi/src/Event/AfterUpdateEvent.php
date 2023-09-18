@@ -3,31 +3,32 @@
 declare(strict_types=1);
 
 namespace EDT\JsonApi\Event;
-use EDT\JsonApi\ResourceTypes\AbstractResourceType;
+
+use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
- *
- * @template-implements EntityCarryEventInterface<TEntity>
- * @template-implements TypeCarryEventInterface<TCondition, TSorting, TEntity>
  */
-class AfterUpdateEvent implements EntityCarryEventInterface, TypeCarryEventInterface
+class AfterUpdateEvent
 {
     use ModifyEventTrait;
 
     /**
-     * @param AbstractResourceType<TCondition, TSorting, TEntity> $type
+     * @param UpdatableTypeInterface<TCondition, TSorting, TEntity> $type
      * @param TEntity $entity
      */
     public function __construct(
-        protected readonly AbstractResourceType $type,
+        protected readonly UpdatableTypeInterface $type,
         protected readonly object $entity
     ) {}
 
-    public function getType(): AbstractResourceType
+    /**
+     * @return UpdatableTypeInterface<TCondition, TSorting, TEntity>
+     */
+    public function getType(): UpdatableTypeInterface
     {
         return $this->type;
     }

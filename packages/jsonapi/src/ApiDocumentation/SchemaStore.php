@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ApiDocumentation;
 
 use cebe\openapi\exceptions\TypeErrorException;
+use cebe\openapi\spec\Schema;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\RelationshipReadabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipReadabilityInterface;
 use Exception;
 use Safe\Exceptions\StringsException;
 use function array_key_exists;
-use cebe\openapi\spec\Schema;
 
 /**
  * Create and store OpenAPI Schema Definitions for reuse.
@@ -85,7 +85,7 @@ class SchemaStore
      */
     protected function createTypeSchema(TransferableTypeInterface $type): Schema
     {
-        $readableProperties = $type->getReadableProperties();
+        $readableProperties = $type->getReadability();
 
         $schemaProperties = array_map(
             fn (RelationshipReadabilityInterface $readability): array => [

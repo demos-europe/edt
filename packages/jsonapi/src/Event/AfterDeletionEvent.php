@@ -4,30 +4,27 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Event;
 
-use EDT\JsonApi\ResourceTypes\AbstractResourceType;
+use EDT\JsonApi\ResourceTypes\DeletableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
- *
- * @template-implements TypeCarryEventInterface<TCondition, TSorting, TEntity>
  */
-class AfterDeletionEvent implements TypeCarryEventInterface
+class AfterDeletionEvent
 {
     use ModifyEventTrait;
 
     /**
-     * @param AbstractResourceType<TCondition, TSorting, TEntity> $type
      * @param non-empty-string $entityIdentifier
      */
     public function __construct(
-        protected readonly AbstractResourceType $type,
+        protected readonly DeletableTypeInterface $type,
         protected readonly string $entityIdentifier
     ) {}
 
-    public function getType(): AbstractResourceType
+    public function getType(): DeletableTypeInterface
     {
         return $this->type;
     }

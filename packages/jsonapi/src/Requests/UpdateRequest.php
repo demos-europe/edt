@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
+use EDT\JsonApi\Event\AfterUpdateEvent;
+use EDT\JsonApi\Event\BeforeUpdateEvent;
 use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Properties\EntityVerificationTrait;
+use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 use Exception;
 use League\Fractal\Resource\Item;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -18,10 +21,9 @@ use League\Fractal\Resource\Item;
 class UpdateRequest
 {
     use EntityVerificationTrait;
-    use PropertyUpdaterTrait;
-
     public function __construct(
         protected readonly RequestTransformer $requestTransformer,
+        protected readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -39,9 +41,20 @@ class UpdateRequest
         $requestBody = $this->requestTransformer->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
-        $entity = $type->updateEntity($requestBody->getId(), $requestBody);
+        $beforeUpdateEvent = new BeforeUpdateEvent($type, $resourceId);
+        $this->eventDispatcher->dispatch($beforeUpdateEvent);
 
-        if (null === $entity) {
+        $modifiedEntity = $type->updateEntity($requestBody->getId(), $requestBody);
+        $entity = $modifiedEntity->getEntity();
+
+        $afterUpdateEvent = new AfterUpdateEvent($type, $entity);
+        $this->eventDispatcher->dispatch($afterUpdateEvent);
+
+        $sideEffects = $modifiedEntity->hasSideEffects()
+            || $beforeUpdateEvent->hasSideEffects()
+            || $afterUpdateEvent->hasSideEffects();
+
+        if (!$sideEffects) {
             // if there were no side effects, no response body is needed
             return null;
         }

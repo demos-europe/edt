@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
+use EDT\JsonApi\Event\AfterListEvent;
+use EDT\JsonApi\Event\BeforeListEvent;
 use EDT\JsonApi\Pagination\PagePaginationParser;
 use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\JsonApi\RequestHandling\JsonApiSortingParser;
@@ -19,6 +21,7 @@ use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Exception;
 use InvalidArgumentException;
 use League\Fractal\Resource\Collection;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webmozart\Assert\Assert;
 
@@ -39,6 +42,7 @@ class ListRequest
         protected readonly PagePaginationParser $paginationParser,
         protected readonly RequestTransformer $requestParser,
         protected readonly SchemaPathProcessor $schemaPathProcessor,
+        protected readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -55,6 +59,9 @@ class ListRequest
         $sortMethods = $this->getSortMethods($urlParams);
         $pagination = $this->paginationParser->getPagination($urlParams);
 
+        $beforeListEvent = new BeforeListEvent($type);
+        $this->eventDispatcher->dispatch($beforeListEvent);
+
         $paginator = null;
         if (null === $pagination) {
             $entities = $type->getEntities($conditions, $sortMethods);
@@ -63,6 +70,9 @@ class ListRequest
             $entities = $paginator->getCurrentPageResults();
             $entities = array_values(Iterables::asArray($entities));
         }
+
+        $afterListEvent = new AfterListEvent($type, $entities);
+        $this->eventDispatcher->dispatch($afterListEvent);
 
         $collection = new Collection($entities, $type->getTransformer(), $typeName);
         $collection->setMeta([]);

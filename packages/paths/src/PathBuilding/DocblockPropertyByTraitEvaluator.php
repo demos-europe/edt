@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use EDT\Parsing\Utilities\DocblockTagParser;
+use EDT\Parsing\Utilities\NoSourceException;
 use EDT\Parsing\Utilities\ParseException;
+use EDT\Parsing\Utilities\PropertyType;
+use InvalidArgumentException;
+use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use ReflectionClass;
 use function array_key_exists;
 
@@ -14,7 +18,7 @@ class DocblockPropertyByTraitEvaluator
     /**
      * Cache of already parsed classes
      *
-     * @var array<class-string, array<non-empty-string, class-string>>
+     * @var array<class-string, array<non-empty-string, PropertyType>>
      */
     private array $parsedClasses = [];
 
@@ -31,7 +35,7 @@ class DocblockPropertyByTraitEvaluator
     /**
      * @param class-string $class
      *
-     * @return array<non-empty-string, class-string>
+     * @return array<non-empty-string, PropertyType>
      *
      * @throws ParseException
      */
@@ -73,7 +77,7 @@ class DocblockPropertyByTraitEvaluator
      *
      * @param class-string $class
      *
-     * @return array<non-empty-string, class-string> mapping from the property name to its type
+     * @return array<non-empty-string, PropertyType> mapping from the property name to its type
      *
      * @throws ParseException
      * @throws PropertyTagException
@@ -81,18 +85,28 @@ class DocblockPropertyByTraitEvaluator
     protected function parsePropertiesOfClass(string $class): array
     {
         if (!array_key_exists($class, $this->parsedClasses)) {
-            $parser = new DocblockTagParser(new ReflectionClass($class));
-            $nestedProperties = array_map(function (PropertyTag $targetTag) use ($parser): array {
-                $propertyTags = $parser->getTags($targetTag->value);
-                $propertyTags = array_map([$targetTag, 'convertToCorrespondingType'], $propertyTags);
-                $propertyNames = array_map([$parser, 'getVariableNameOfTag'], $propertyTags);
-                $propertyTags = array_combine($propertyNames, $propertyTags);
-                $propertyTypes = array_map([$parser, 'getPropertyType'], $propertyTags);
+            try {
+                $parser = new DocblockTagParser(new ReflectionClass($class));
+                $nestedProperties = array_map(function (PropertyTag $targetTag) use ($parser): array {
+                    $propertyTags = $parser->getTags($targetTag->value);
+                    $propertyTags = array_map([$targetTag, 'convertToCorrespondingType'], $propertyTags);
+                    $propertyNames = array_map([$parser, 'getVariableNameOfTag'], $propertyTags);
+                    $propertyTags = array_combine($propertyNames, $propertyTags);
+                    $propertyTypes = array_map(
+                        static fn(TagWithType $tag): PropertyType => new PropertyType(
+                            $tag->getType() ?? throw new InvalidArgumentException("Type must not be null."),
+                            $parser
+                        ),
+                        $propertyTags
+                    );
 
-                return array_filter($propertyTypes, [$this, 'isUsingRequiredTraits']);
-            }, $this->targetTags);
+                    return array_filter($propertyTypes, [$this, 'isUsingRequiredTraits']);
+                }, $this->targetTags);
 
-            $this->parsedClasses[$class] = array_merge(...$nestedProperties);
+                $this->parsedClasses[$class] = array_merge(...$nestedProperties);
+            } catch (NoSourceException $exception) {
+                return [];
+            }
         }
 
         return $this->parsedClasses[$class];
@@ -105,7 +119,7 @@ class DocblockPropertyByTraitEvaluator
      *
      * @param non-empty-list<class-string> $classes
      *
-     * @return array<non-empty-string, class-string>
+     * @return array<non-empty-string, PropertyType>
      *
      * @throws ParseException
      */
@@ -118,11 +132,9 @@ class DocblockPropertyByTraitEvaluator
 
     /**
      * Accessed property classes must use all traits in {@link DocblockPropertyByTraitEvaluator::$targetTraits}.
-     *
-     * @param class-string $class
      */
-    protected function isUsingRequiredTraits(string $class): bool
+    protected function isUsingRequiredTraits(PropertyType $propertyType): bool
     {
-        return $this->traitEvaluator->isClassUsingAllTraits($class, $this->targetTraits);
+        return $this->traitEvaluator->isClassUsingAllTraits($propertyType->getFqcn(), $this->targetTraits);
     }
 }

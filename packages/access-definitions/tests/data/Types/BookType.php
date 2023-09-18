@@ -6,12 +6,12 @@ namespace Tests\data\Types;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
-use EDT\JsonApi\Properties\Id\PathIdReadability;
-use EDT\JsonApi\Properties\Relationships\PathToOneRelationshipReadability;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
+use EDT\JsonApi\RequestHandling\ModifiedEntity;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
-use EDT\Querying\PropertyPaths\PropertyLink;
+use EDT\Querying\PropertyPaths\NonRelationshipLink;
+use EDT\Querying\PropertyPaths\RelationshipLink;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Reindexer;
 use EDT\Querying\Utilities\Sorter;
@@ -21,9 +21,11 @@ use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\Properties\EntityDataInterface;
-use EDT\Wrapping\Properties\EntityReadability;
-use EDT\Wrapping\Properties\EntityUpdatability;
+use EDT\Wrapping\EntityDataInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipReadability;
+use EDT\Wrapping\ResourceBehavior\ResourceReadability;
+use EDT\Wrapping\ResourceBehavior\ResourceUpdatability;
 use Tests\data\Model\Book;
 use Webmozart\Assert\Assert;
 
@@ -51,9 +53,9 @@ class BookType implements
         protected readonly AttributeTypeResolver $typeResolver,
     ) {}
 
-    public function getReadableProperties(): EntityReadability
+    public function getReadability(): ResourceReadability
     {
-        return new EntityReadability(
+        return new ResourceReadability(
             [
                 'title' => new TestAttributeReadability(['title'], $this->propertyAccessor),
                 'tags' => new TestAttributeReadability(['tags'], $this->propertyAccessor),
@@ -68,7 +70,7 @@ class BookType implements
                 ),
             ],
             [],
-            new PathIdReadability(
+            new PathIdentifierReadability(
                 $this->getEntityClass(),
                 ['id'],
                 $this->propertyAccessor,
@@ -80,22 +82,26 @@ class BookType implements
     public function getFilteringProperties(): array
     {
         return [
-            'title' => new PropertyLink(['title'], null),
-            'author' => new PropertyLink(
+            'title' => new NonRelationshipLink(['title']),
+            'author' => new RelationshipLink(
                 ['author'],
-                $this->typeProvider->getTypeByIdentifier(AuthorType::class)
+                fn () => $this->typeProvider
+                    ->getTypeByIdentifier(AuthorType::class)
+                    ->getFilteringProperties()
             ),
-            'tags' => new PropertyLink(['tags'], null),
+            'tags' => new NonRelationshipLink(['tags']),
         ];
     }
 
     public function getSortingProperties(): array
     {
         return [
-            'title' => new PropertyLink(['title'], null),
-            'author' => new PropertyLink(
+            'title' => new NonRelationshipLink(['title']),
+            'author' => new RelationshipLink(
                 ['author'],
-                $this->typeProvider->getTypeByIdentifier(AuthorType::class)
+                fn () => $this->typeProvider
+                    ->getTypeByIdentifier(AuthorType::class)
+                    ->getSortingProperties()
             ),
         ];
     }
@@ -116,9 +122,9 @@ class BookType implements
         return $this->exposedAsRelationship;
     }
 
-    public function getUpdatability(): EntityUpdatability
+    public function getUpdatability(): ResourceUpdatability
     {
-        return new EntityUpdatability([], [], []);
+        return new ResourceUpdatability([], [], []);
     }
 
     public function getTypeName(): string
@@ -147,7 +153,7 @@ class BookType implements
         throw new \RuntimeException();
     }
 
-    public function updateEntity(string $entityId, EntityDataInterface $entityData): ?object
+    public function updateEntity(string $entityId, EntityDataInterface $entityData): ModifiedEntity
     {
         throw new \RuntimeException();
     }

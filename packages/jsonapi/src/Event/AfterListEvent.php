@@ -4,28 +4,29 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Event;
 
-use EDT\JsonApi\ResourceTypes\AbstractResourceType;
+use EDT\JsonApi\ResourceTypes\ListableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
- *
- * @template-implements TypeCarryEventInterface<TCondition, TSorting, TEntity>
  */
-class AfterListEvent implements TypeCarryEventInterface
+class AfterListEvent
 {
     /**
-     * @param AbstractResourceType<TCondition, TSorting, TEntity> $type
+     * @param ListableTypeInterface<TCondition, TSorting, TEntity> $type
      * @param list<TEntity> $entities
      */
     public function __construct(
-        protected readonly AbstractResourceType $type,
+        protected readonly ListableTypeInterface $type,
         protected readonly array $entities
     ) {}
 
-    public function getType(): AbstractResourceType
+    /**
+     * @return ListableTypeInterface<TCondition, TSorting, TEntity>
+     */
+    public function getType(): ListableTypeInterface
     {
         return $this->type;
     }

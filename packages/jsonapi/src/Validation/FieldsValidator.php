@@ -93,7 +93,7 @@ class FieldsValidator
             : array_values(
                 array_diff(
                     explode(',', $propertiesString),
-                    $type->getReadableProperties()->getPropertyKeys()
+                    $type->getReadability()->getPropertyKeys()
                 )
             );
 

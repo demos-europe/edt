@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
+use EDT\JsonApi\Event\AfterCreationEvent;
+use EDT\JsonApi\Event\BeforeCreationEvent;
 use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\ResourceTypes\CreatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use Exception;
 use League\Fractal\Resource\Item;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -16,10 +19,9 @@ use League\Fractal\Resource\Item;
  */
 class CreationRequest
 {
-    use PropertyUpdaterTrait;
-
     public function __construct(
         protected readonly RequestTransformer $requestTransformer,
+        protected readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -35,9 +37,20 @@ class CreationRequest
         $requestBody = $this->requestTransformer->getCreationRequestBody($typeName, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
-        $entity = $type->createEntity($requestBody->getEntityId(), $requestBody);
+        $beforeCreationEvent = new BeforeCreationEvent($type);
+        $this->eventDispatcher->dispatch($beforeCreationEvent);
 
-        if (null === $entity) {
+        $modifiedEntity = $type->createEntity($requestBody);
+        $entity = $modifiedEntity->getEntity();
+
+        $afterCreationEvent = new AfterCreationEvent($type, $entity);
+        $this->eventDispatcher->dispatch($afterCreationEvent);
+
+        $sideEffects = $modifiedEntity->hasSideEffects()
+            || $beforeCreationEvent->hasSideEffects()
+            || $afterCreationEvent->hasSideEffects();
+
+        if (!$sideEffects) {
             // if there were no side effects, no response body is needed
             return null;
         }

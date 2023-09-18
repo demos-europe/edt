@@ -7,7 +7,7 @@ namespace Tests\OutputTransformation;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\OutputHandling\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\JsonApi\ResourceTypes\PropertyBuilderFactory;
+use EDT\JsonApi\Utilities\PropertyBuilderFactory;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
@@ -30,12 +30,16 @@ class DynamicTransformerTest extends ModelBasedTest
     private PhpConditionFactory $conditionFactory;
 
     private PropertyBuilderFactory $propertyBuilderFactory;
+    private MessageFormatter $messageFormatter;
+    private ReflectionPropertyAccessor $propertyAccessor;
+    private AttributeTypeResolver $typeResolver;
+    private AuthorType $authorType;
 
     public function testEmpty(): void
     {
         $transformer = new DynamicTransformer(
             new EmptyType($this->conditionFactory, $this->propertyBuilderFactory, $this->propertyAccessor, $this->typeResolver),
-            new MessageFormatter(),
+            $this->messageFormatter,
             null
         );
 

@@ -6,6 +6,7 @@ namespace EDT\PathBuilding;
 
 use ArrayIterator;
 use EDT\Parsing\Utilities\ParseException;
+use EDT\Parsing\Utilities\PropertyType;
 use EDT\PathBuilding\SegmentFactories\ReflectionSegmentFactory;
 use EDT\PathBuilding\SegmentFactories\SegmentFactoryInterface;
 use EDT\Querying\Contracts\PathException;
@@ -216,9 +217,12 @@ trait PropertyAutoPathTrait
     protected function getAutoPathProperties(array $targetTags = [PropertyTag::PROPERTY_READ]): array
     {
         if (null === $this->properties) {
-            $this->properties = $this->getDocblockTraitEvaluator($targetTags)->parseProperties(
-                static::class,
-                true
+            $this->properties = array_map(
+                static fn (PropertyType $propertyType): string => $propertyType->getFqcn(),
+                $this->getDocblockTraitEvaluator($targetTags)->parseProperties(
+                    static::class,
+                    true
+                )
             );
         }
 

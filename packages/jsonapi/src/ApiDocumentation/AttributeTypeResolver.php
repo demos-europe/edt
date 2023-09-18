@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use EDT\Parsing\Utilities\DocblockTagParser;
+use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 use InvalidArgumentException;
-use ReflectionMethod;
-use ReflectionProperty;
-use Webmozart\Assert\Assert;
-use function array_key_exists;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Id;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
+use ReflectionMethod;
 use ReflectionNamedType;
-use RuntimeException;
-use Throwable;
+use ReflectionProperty;
 use UnexpectedValueException;
+use Webmozart\Assert\Assert;
+use function array_key_exists;
 use function is_array;
 use function is_string;
 use function strlen;
@@ -34,7 +33,7 @@ use function strlen;
  *
  * TODO: abstract this class away from the doctrine parts and move doctrine parts into separate class in separate package (service or subclass)
  */
-class AttributeTypeResolver
+class AttributeTypeResolver implements AttributeTypeResolverInterface
 {
     /**
      * @var array<class-string, ReflectionClass<object>>
@@ -48,16 +47,6 @@ class AttributeTypeResolver
         $this->annotationReader = new AnnotationReader();
     }
 
-    /**
-     * Return a valid `cebe\OpenApi` type declaration.
-     *
-     * @param class-string $rootEntityClass
-     * @param non-empty-list<non-empty-string> $propertyPath
-     *
-     * @return array{type: non-empty-string, format?: non-empty-string, description?: string}
-     *
-     * @throws ReflectionException
-     */
     public function resolveTypeFromEntityClass(
         string $rootEntityClass,
         array $propertyPath
@@ -183,15 +172,6 @@ class AttributeTypeResolver
         return $result;
     }
 
-    /**
-     * @template TEntity of object
-     *
-     * @param callable(TEntity): mixed $callable
-     *
-     * @return array{type: string} valid `cebe\OpenApi` type declaration
-     *
-     * @throws ReflectionException
-     */
     public function resolveReturnTypeFromCallable(callable $callable): array
     {
         $functionReflection = $this->reflectReturnOfCallable($callable);
@@ -210,7 +190,7 @@ class AttributeTypeResolver
      * @throws InvalidArgumentException if there is no return type hint or if it could not be determined
      *
      */
-    public function getReturnType(ReflectionMethod|ReflectionFunction $reflection): ReflectionNamedType
+    protected function getReturnType(ReflectionMethod|ReflectionFunction $reflection): ReflectionNamedType
     {
         if (!$reflection->hasReturnType()) {
             // OpenAPI and JSON do not support void/mixed types

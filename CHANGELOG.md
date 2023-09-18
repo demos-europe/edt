@@ -10,6 +10,8 @@
   * add convenience methods to `WrapperObject`
   * adjust `PropertyBuilder` (now `PropertyConfig`) API
 * fix: allow `id` and `type` fields in update/creation request, as originally intended
+* refactor: setting relationship properties as default include when `readable` must now be done on `readable` call and takes the place of the previously removed `bool` to disable sanity checks
+* feature: add new approach to configure resource properties
 
 ## 0.22.3 - 2023-08-14
 

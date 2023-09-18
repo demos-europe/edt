@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
+use EDT\JsonApi\RequestHandling\ModifiedEntity;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
-use EDT\Wrapping\Properties\EntityDataInterface;
+use EDT\Wrapping\CreationDataInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -24,10 +24,5 @@ interface CreatableTypeInterface extends NamedTypeInterface, ReadableTypeInterfa
      */
     public function getExpectedInitializationProperties(): ExpectedPropertyCollection;
 
-    /**
-     * @param non-empty-string|null $entityId
-     *
-     * @return TEntity|null `null` if the entity was created exactly as defined by the request
-     */
-    public function createEntity(?string $entityId, EntityDataInterface $entityData): ?object;
+    public function createEntity(CreationDataInterface $entityData): ModifiedEntity;
 }
