@@ -6,16 +6,16 @@ namespace EDT\Wrapping\PropertyBehavior\Attribute;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\EntityDataInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use Exception;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements PropertySetabilityInterface<TCondition, TEntity>
+ * @template-implements PropertyUpdatabilityInterface<TCondition, TEntity>
  */
-abstract class AbstractAttributeSetability implements PropertySetabilityInterface
+abstract class AbstractAttributeSetability implements PropertyUpdatabilityInterface
 {
     /**
      * @param non-empty-string $propertyName the exposed property name accepted by this instance

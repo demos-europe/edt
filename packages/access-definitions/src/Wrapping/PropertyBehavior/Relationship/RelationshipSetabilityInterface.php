@@ -7,7 +7,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\RelationshipInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
  * Provides updatability information and behavior for a to-many relationship property.
@@ -17,9 +17,9 @@ use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends PropertySetabilityInterface<TCondition, TEntity>
+ * @template-extends PropertyUpdatabilityInterface<TCondition, TEntity>
  * @template-extends RelationshipInterface<TransferableTypeInterface<TCondition, TSorting, TRelationship>>
  */
-interface RelationshipSetabilityInterface extends PropertySetabilityInterface, RelationshipInterface
+interface RelationshipSetabilityInterface extends PropertyUpdatabilityInterface, RelationshipInterface
 {
 }

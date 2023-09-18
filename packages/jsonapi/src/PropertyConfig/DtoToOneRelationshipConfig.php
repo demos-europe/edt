@@ -24,7 +24,7 @@ class DtoToOneRelationshipConfig implements ToOneRelationshipConfigInterface
     /**
      * @param ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null $readability
      * @param RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null $updatability
-     * @param PropertySetabilityInterface<TCondition, TEntity>|null $postInstantiability
+     * @param PropertySetabilityInterface<TEntity>|null $postInstantiability
      * @param PropertyLinkInterface|null $filterLink
      * @param PropertyLinkInterface|null $sortLink
      */

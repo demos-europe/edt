@@ -14,9 +14,9 @@ use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\CallbackIdentifierReadability;
 use EDT\Wrapping\PropertyBehavior\Identifier\DataProvidedIdentifierConstructorParameter;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
-use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierSetability;
+use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierPostInstantiability;
 
 /**
  * @template TEntity of object
@@ -31,7 +31,7 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
     protected $readabilityFactory;
 
     /**
-     * @var null|callable(non-empty-list<non-empty-string>, class-string<TEntity>): IdentifierSetabilityInterface<TEntity>
+     * @var null|callable(non-empty-list<non-empty-string>, class-string<TEntity>): IdentifierPostInstantiabilityInterface<TEntity>
      */
     protected $postInstantiabilityFactory;
 
@@ -135,11 +135,11 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
                  * @param non-empty-list<non-empty-string> $propertyPath
                  * @param class-string<TEntity> $entityClass
                  *
-                 * @return IdentifierSetabilityInterface<TEntity>
+                 * @return IdentifierPostInstantiabilityInterface<TEntity>
                  */
-                public function __invoke(array $propertyPath, string $entityClass): IdentifierSetabilityInterface
+                public function __invoke(array $propertyPath, string $entityClass): IdentifierPostInstantiabilityInterface
                 {
-                    return new PathIdentifierSetability(
+                    return new PathIdentifierPostInstantiability(
                         $entityClass,
                         $propertyPath,
                         $this->propertyAccessor,

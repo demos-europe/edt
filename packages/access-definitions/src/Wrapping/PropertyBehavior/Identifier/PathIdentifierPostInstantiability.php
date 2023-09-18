@@ -11,9 +11,9 @@ use Webmozart\Assert\Assert;
 /**
  * @template TEntity of object
  *
- * @template-implements IdentifierSetabilityInterface<TEntity>
+ * @template-implements IdentifierPostInstantiabilityInterface<TEntity>
  */
-class PathIdentifierSetability implements IdentifierSetabilityInterface
+class PathIdentifierPostInstantiability implements IdentifierPostInstantiabilityInterface
 {
     /**
      * @param class-string<TEntity> $entityClass

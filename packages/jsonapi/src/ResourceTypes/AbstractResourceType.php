@@ -98,11 +98,6 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $constructorArguments = $instantiability->getConstructorArguments($entityData);
         $entity = $instantiability->initializeEntity($constructorArguments);
         $fillSideEffect = $instantiability->fillProperties($entity, $entityData);
-        // FIXME: we can't reliably verify that the created entity matches the entity conditions,
-        // as it was probably not flushed into the database yet. Split classes, so that
-        // entity conditions can no longer be set for post instantiabilities. As for the
-        // getAccessConditions conditions, we may be able to apply them after we expect the
-        // created entities to have been flushed into the database.
 
         return new ModifiedEntity($entity, $fillSideEffect);
     }

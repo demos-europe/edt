@@ -24,7 +24,7 @@ class DtoToManyRelationshipConfig implements ToManyRelationshipConfigInterface
     /**
      * @param ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null $readability
      * @param RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null $updatability
-     * @param PropertySetabilityInterface<TCondition, TEntity>|null $postInstantiability
+     * @param PropertySetabilityInterface<TEntity>|null $postInstantiability
      */
     public function __construct(
         protected readonly ?ToManyRelationshipReadabilityInterface $readability,

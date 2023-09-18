@@ -105,7 +105,7 @@ abstract class AbstractResourceModifier
     /**
      * @template TEnt of object
      *
-     * @param list<PropertySetabilityInterface<PathsBasedInterface, TEnt>> $setabilities
+     * @param list<PropertySetabilityInterface<TEnt>> $setabilities
      * @param TEnt $entity
      */
     protected function getSetabilitiesSideEffect(array $setabilities, object $entity, EntityDataInterface $entityData): bool

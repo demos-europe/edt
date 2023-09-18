@@ -7,7 +7,7 @@ namespace Tests\Properties;
 use EDT\Wrapping\EntityData;
 use EDT\Wrapping\EntityDataInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeConstructorParameter;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
 use PHPUnit\Framework\TestCase;
 
@@ -22,7 +22,7 @@ class EntityInstantiabilityTest extends TestCase
             $className,
             [new AttributeConstructorParameter('type', 'type')],
             [],
-            new class implements IdentifierSetabilityInterface {
+            new class implements IdentifierPostInstantiabilityInterface {
 
                 public function setIdentifier(object $entity, EntityDataInterface $entityData): bool
                 {

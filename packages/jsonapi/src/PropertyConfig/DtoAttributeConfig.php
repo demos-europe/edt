@@ -9,6 +9,7 @@ use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -20,12 +21,12 @@ class DtoAttributeConfig implements AttributeConfigInterface
 {
     /**
      * @param AttributeReadabilityInterface<TEntity>|null $readability
-     * @param PropertySetabilityInterface<TCondition, TEntity>|null $updatability
-     * @param PropertySetabilityInterface<TCondition, TEntity>|null $postInstantiability
+     * @param PropertyUpdatabilityInterface<TCondition, TEntity>|null $updatability
+     * @param PropertySetabilityInterface<TEntity>|null $postInstantiability
      */
     public function __construct(
         protected readonly ?AttributeReadabilityInterface $readability,
-        protected readonly ?PropertySetabilityInterface $updatability,
+        protected readonly ?PropertyUpdatabilityInterface $updatability,
         protected readonly ?PropertySetabilityInterface $postInstantiability,
         protected readonly ?ConstructorParameterInterface $instantiability,
         protected readonly ?PropertyLinkInterface $filterLink,
@@ -37,7 +38,7 @@ class DtoAttributeConfig implements AttributeConfigInterface
         return $this->readability;
     }
 
-    public function getUpdatability(): ?PropertySetabilityInterface
+    public function getUpdatability(): ?PropertyUpdatabilityInterface
     {
         return $this->updatability;
     }

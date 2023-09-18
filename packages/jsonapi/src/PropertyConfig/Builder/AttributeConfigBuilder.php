@@ -19,6 +19,7 @@ use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeReadability;
 use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeSetability;
 use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -38,12 +39,12 @@ class AttributeConfigBuilder
     protected $readabilityFactory;
 
     /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): PropertySetabilityInterface<TCondition, TEntity>
+     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): PropertySetabilityInterface<TEntity>
      */
     protected $postInstantiabilityFactory;
 
     /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): PropertySetabilityInterface<TCondition, TEntity>
+     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): PropertyUpdatabilityInterface<TCondition, TEntity>
      */
     protected $updatabilityFactory;
 
@@ -121,7 +122,6 @@ class AttributeConfigBuilder
     }
 
     /**
-     * @param list<TCondition> $entityConditions
      * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $postInstantiationCallback
      * @param non-empty-string|null $argumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
      *
@@ -129,7 +129,6 @@ class AttributeConfigBuilder
      */
     public function instantiable(
         bool $optional = false,
-        array $entityConditions = [],
         callable $postInstantiationCallback = null,
         bool $argument = false,
         ?string $argumentName = null
@@ -161,7 +160,6 @@ class AttributeConfigBuilder
         $this->postInstantiabilityFactory = new class (
             $this->propertyAccessor,
             $optional,
-            $entityConditions,
             $postInstantiationCallback
         ) {
             /**
@@ -170,13 +168,11 @@ class AttributeConfigBuilder
             private $postInstantiationCallback;
 
             /**
-             * @param list<TCondition> $entityConditions
              * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $postInstantiationCallback
              */
             public function __construct(
                 protected readonly PropertyAccessorInterface $propertyAccessor,
                 protected readonly bool $optional,
-                protected readonly array $entityConditions,
                 callable $postInstantiationCallback = null
             ) {
                 $this->postInstantiationCallback = $postInstantiationCallback;
@@ -186,7 +182,7 @@ class AttributeConfigBuilder
              * @param non-empty-string $name
              * @param non-empty-list<non-empty-string> $propertyPath
              * @param class-string<TEntity> $entityClass
-             * @return PropertySetabilityInterface<TCondition, TEntity>
+             * @return PropertySetabilityInterface<TEntity>
              */
             public function __invoke(string $name, array $propertyPath, string $entityClass): PropertySetabilityInterface
             {
@@ -194,14 +190,14 @@ class AttributeConfigBuilder
                     ? new PathAttributeSetability(
                         $name,
                         $entityClass,
-                        $this->entityConditions,
+                        [],
                         $propertyPath,
                         $this->propertyAccessor,
                         $this->optional
                     )
                     : new CallbackAttributeSetability(
                         $name,
-                        $this->entityConditions,
+                        [],
                         $this->postInstantiationCallback,
                         $this->optional
                     );
@@ -246,9 +242,9 @@ class AttributeConfigBuilder
              * @param non-empty-list<non-empty-string> $propertyPath
              * @param class-string<TEntity> $entityClass
              *
-             * @return PropertySetabilityInterface<TCondition, TEntity>
+             * @return PropertyUpdatabilityInterface<TCondition, TEntity>
              */
-            public function __invoke(string $name, array $propertyPath, string $entityClass): PropertySetabilityInterface
+            public function __invoke(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
             {
                 return null === $this->updateCallback
                     ? new PathAttributeSetability(

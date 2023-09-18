@@ -7,7 +7,7 @@ namespace EDT\JsonApi\PropertyConfig;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
 
 /**
  * @template TEntity of object
@@ -15,9 +15,9 @@ use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierSetabilityInterface;
 interface IdentifierConfigInterface
 {
     /**
-     * @return IdentifierSetabilityInterface<TEntity>
+     * @return IdentifierPostInstantiabilityInterface<TEntity>
      */
-    public function getPostInstantiability(): ?IdentifierSetabilityInterface;
+    public function getPostInstantiability(): ?IdentifierPostInstantiabilityInterface;
 
     public function getInstantiability(): ?ConstructorParameterInterface;
 

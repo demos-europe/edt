@@ -6,7 +6,7 @@ namespace EDT\JsonApi\PropertyConfig;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -22,7 +22,7 @@ interface AttributeConfigInterface extends PropertyConfigInterface
     public function getReadability(): ?AttributeReadabilityInterface;
 
     /**
-     * @return PropertySetabilityInterface<TCondition, TEntity>|null
+     * @return PropertyUpdatabilityInterface<TCondition, TEntity>|null
      */
-    public function getUpdatability(): ?PropertySetabilityInterface;
+    public function getUpdatability(): ?PropertyUpdatabilityInterface;
 }

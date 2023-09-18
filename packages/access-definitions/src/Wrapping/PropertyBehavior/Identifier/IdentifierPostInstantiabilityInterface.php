@@ -10,7 +10,7 @@ use EDT\Wrapping\PropertyBehavior\PropertyConstrainingInterface;
 /**
  * @template TEntity of object
  */
-interface IdentifierSetabilityInterface extends PropertyConstrainingInterface
+interface IdentifierPostInstantiabilityInterface extends PropertyConstrainingInterface
 {
     /**
      * @param TEntity $entity

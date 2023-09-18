@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\ResourceBehavior;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyConstrainingInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
 use InvalidArgumentException;
@@ -20,7 +19,6 @@ use function array_key_exists;
 
 /**
  * @template TEntity of object
- * @template TCondition of PathsBasedInterface
  */
 class ResourceInstantiability extends AbstractResourceModifier
 {
@@ -37,14 +35,14 @@ class ResourceInstantiability extends AbstractResourceModifier
     /**
      * @param class-string<TEntity> $entityClass
      * @param array<non-empty-string, ConstructorParameterInterface> $constructorParameters mapping from resource property name to constructor parameter
-     * @param array<non-empty-string, PropertySetabilityInterface<TCondition, TEntity>> $postInstantiabilities mapping from resource property name to post instantiability instance
-     * @param IdentifierSetabilityInterface<TEntity>|null $identifierPostInstantiability
+     * @param array<non-empty-string, PropertySetabilityInterface<TEntity>> $postInstantiabilities mapping from resource property name to post instantiability instance
+     * @param IdentifierPostInstantiabilityInterface<TEntity>|null $identifierPostInstantiability
      */
     public function __construct(
         protected readonly string $entityClass,
         array $constructorParameters,
         protected readonly array $postInstantiabilities,
-        protected readonly ?IdentifierSetabilityInterface $identifierPostInstantiability
+        protected readonly ?IdentifierPostInstantiabilityInterface $identifierPostInstantiability
     ) {
         $reflectionClass = new ReflectionClass($this->entityClass);
         $constructor = $this->getConstructor($reflectionClass);

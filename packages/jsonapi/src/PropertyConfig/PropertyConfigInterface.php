@@ -16,7 +16,7 @@ use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
 interface PropertyConfigInterface
 {
     /**
-     * @return PropertySetabilityInterface<TCondition, TEntity>|null
+     * @return PropertySetabilityInterface<TEntity>|null
      */
     public function getPostInstantiability(): ?PropertySetabilityInterface;
 

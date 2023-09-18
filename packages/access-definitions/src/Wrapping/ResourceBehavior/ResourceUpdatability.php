@@ -7,6 +7,7 @@ namespace EDT\Wrapping\ResourceBehavior;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\EntityDataInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
 use InvalidArgumentException;
 
@@ -18,7 +19,7 @@ use InvalidArgumentException;
 class ResourceUpdatability extends AbstractResourceModifier
 {
     /**
-     * @param array<non-empty-string, PropertySetabilityInterface<TCondition, TEntity>> $attributes
+     * @param array<non-empty-string, PropertyUpdatabilityInterface<TCondition, TEntity>> $attributes
      * @param array<non-empty-string, RelationshipSetabilityInterface<TCondition, TSorting, TEntity, object>> $toOneRelationships
      * @param array<non-empty-string, RelationshipSetabilityInterface<TCondition, TSorting, TEntity, object>> $toManyRelationships
      */
@@ -33,7 +34,7 @@ class ResourceUpdatability extends AbstractResourceModifier
      *
      * @param list<non-empty-string> $propertyNames
      *
-     * @return list<PropertySetabilityInterface<TCondition, TEntity>>
+     * @return list<PropertyUpdatabilityInterface<TCondition, TEntity>>
      */
     protected function getRelevantSetabilities(array $propertyNames): array
     {
@@ -103,9 +104,9 @@ class ResourceUpdatability extends AbstractResourceModifier
     /**
      * @param non-empty-string $propertyName
      *
-     * @return PropertySetabilityInterface<TCondition, TEntity>
+     * @return PropertyUpdatabilityInterface<TCondition, TEntity>
      */
-    public function getAttribute(string $propertyName): PropertySetabilityInterface
+    public function getAttribute(string $propertyName): PropertyUpdatabilityInterface
     {
         return $this->attributes[$propertyName]
             ?? throw new InvalidArgumentException("To-one relationship `$propertyName` not available.");

@@ -66,7 +66,6 @@ class ToOneRelationshipConfigBuilder
     }
 
     /**
-     * @param list<TCondition> $entityConditions
      * @param null|callable(TEntity, TRelationship|null): bool $postInstantiationCallback
      * @param non-empty-string|null $argumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
      * @param list<TCondition> $relationshipConditions
@@ -75,7 +74,6 @@ class ToOneRelationshipConfigBuilder
      */
     public function instantiable(
         bool $optional = false,
-        array $entityConditions = [],
         callable $postInstantiationCallback = null,
         bool $argument = false,
         ?string $argumentName = null,
@@ -117,7 +115,6 @@ class ToOneRelationshipConfigBuilder
 
         $this->postInstantiabilityFactory = new class (
             $postInstantiationCallback,
-            $entityConditions,
             $relationshipConditions,
             $optional,
             $this->propertyAccessor,
@@ -129,12 +126,10 @@ class ToOneRelationshipConfigBuilder
 
             /**
              * @param null|callable(TEntity, TRelationship|null): bool $postInstantiationCallback
-             * @param list<TCondition> $entityConditions
              * @param list<TCondition> $relationshipConditions
              */
             public function __construct(
                 ?callable $postInstantiationCallback,
-                protected readonly array $entityConditions,
                 protected readonly array $relationshipConditions,
                 protected readonly bool $optional,
                 protected readonly PropertyAccessorInterface $propertyAccessor,
@@ -156,7 +151,7 @@ class ToOneRelationshipConfigBuilder
                     ? new PathToOneRelationshipSetability(
                         $name,
                         $entityClass,
-                        $this->entityConditions,
+                        [],
                         $this->relationshipConditions,
                         $relationshipType,
                         $propertyPath,
@@ -165,7 +160,7 @@ class ToOneRelationshipConfigBuilder
                     )
                     : new CallbackToOneRelationshipSetability(
                         $name,
-                        $this->entityConditions,
+                        [],
                         $this->relationshipConditions,
                         $relationshipType,
                         $this->postInstantiationCallback,

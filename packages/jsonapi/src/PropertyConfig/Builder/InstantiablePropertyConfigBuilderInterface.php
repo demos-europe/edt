@@ -14,7 +14,6 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 interface InstantiablePropertyConfigBuilderInterface
 {
     /**
-     * @param list<TCondition> $entityConditions
      * @param null|callable(TEntity, TValue): bool $postInstantiationCallback
      * @param bool $argument `true` if the value of this property is expected as constructor parameter of the corresponding entity
      * @param non-empty-string|null $argumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
@@ -23,7 +22,6 @@ interface InstantiablePropertyConfigBuilderInterface
      */
     public function instantiable(
         bool $optional = false,
-        array $entityConditions = [],
         callable $postInstantiationCallback = null,
         bool $argument = false,
         ?string $argumentName = null

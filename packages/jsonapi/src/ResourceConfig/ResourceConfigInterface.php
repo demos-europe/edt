@@ -24,7 +24,7 @@ use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
 interface ResourceConfigInterface extends PropertyUpdatableTypeInterface, FilteringTypeInterface, SortingTypeInterface, PropertyReadableTypeInterface
 {
     /**
-     * @return ResourceInstantiability<TEntity, TCondition>
+     * @return ResourceInstantiability<TEntity>
      */
     public function getInstantiability(): ResourceInstantiability;
 }
