@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\PathGeneration;
+namespace Tests\ClassGeneration;
 
 use Doctrine\ORM\Mapping as ORM;
 

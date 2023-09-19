@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-namespace EDT\DqlQuerying\PathGeneration;
+namespace EDT\DqlQuerying\ClassGeneration;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -15,10 +13,8 @@ use EDT\PathBuilding\End;
 use EDT\PathBuilding\PropertyAutoPathInterface;
 use EDT\PathBuilding\PropertyAutoPathTrait;
 use Nette\PhpGenerator\PhpFile;
-use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Webmozart\Assert\Assert;
 
 /**
@@ -30,6 +26,8 @@ use Webmozart\Assert\Assert;
  */
 class PathClassFromEntityGenerator
 {
+    use EntityBasedGeneratorTrait;
+
     /**
      * Generates a class with methods to start each given path class.
      *
@@ -86,65 +84,18 @@ class PathClassFromEntityGenerator
         $class->addImplement(PropertyAutoPathInterface::class);
         $class->addTrait(PropertyAutoPathTrait::class);
 
-        // Iterate over the properties of the entity class
-        foreach ($reflectionClass->getProperties() as $property) {
-            $annotations = $this->parseAnnotations($property);
-            $attributes = $this->parseAttributes($property);
-
-            Assert::lessThanEq(count($annotations) + count($attributes), 1);
-            if ([] !== $annotations) {
-                $used = $annotations;
-            } elseif ([] !== $attributes) {
-                $used = $attributes;
-            } else {
-                continue;
+        $this->processProperties(
+            $reflectionClass->getProperties(),
+            function (
+                ReflectionProperty $property,
+                Column|OneToMany|OneToOne|ManyToOne|ManyToMany $doctrineClass
+            ) use ($class): void {
+                $propertyType = $this->mapToClass($doctrineClass);
+                $class->addComment("@property-read $propertyType \${$property->getName()}");
             }
-            $propertyType = $this->mapToClass(array_pop($used));
-            $class->addComment("@property-read $propertyType \${$property->getName()}");
-        }
+        );
 
         return $newFile;
-    }
-
-    /**
-     * @return list<Column|OneToMany|OneToOne|ManyToOne|ManyToMany>
-     */
-    protected function parseAnnotations(ReflectionProperty $property): array
-    {
-        $annotationReader = new AnnotationReader();
-        $cacheProvider = new ArrayAdapter();
-        $reader = new PsrCachedReader($annotationReader, $cacheProvider);
-
-        return array_filter(
-            array_values($reader->getPropertyAnnotations($property)),
-            static fn (object $input): bool => $input instanceof Column
-                || $input instanceof OneToMany
-                || $input instanceof OneToOne
-                || $input instanceof ManyToOne
-                || $input instanceof ManyToMany
-        );
-    }
-
-    /**
-     * @return list<Column|OneToMany|OneToOne|ManyToOne|ManyToMany>
-     */
-    protected function parseAttributes(ReflectionProperty $property): array
-    {
-        $attributes = array_map(
-            static fn (
-                ReflectionAttribute $reflectionAttribute
-            ): object => $reflectionAttribute->newInstance(),
-            array_values($property->getAttributes())
-        );
-
-        return array_filter(
-            $attributes,
-            static fn (object $input): bool => $input instanceof Column
-                || $input instanceof OneToMany
-                || $input instanceof OneToOne
-                || $input instanceof ManyToOne
-                || $input instanceof ManyToMany
-        );
     }
 
     /**

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\PathGeneration;
+namespace Tests\ClassGeneration;
 
-use EDT\DqlQuerying\PathGeneration\PathClassFromEntityGenerator;
+use EDT\DqlQuerying\ClassGeneration\PathClassFromEntityGenerator;
 use PHPUnit\Framework\TestCase;
 
 class PathClassFromEntityGeneratorTest extends TestCase
@@ -23,15 +23,15 @@ namespace Foobar;
  * create an extending class and add them there.
  *
  * @property-read EDT\PathBuilding\End $propertyA
- * @property-read Tests\PathGeneration\EntityBPath $propertyB
- * @property-read Tests\PathGeneration\EntityBPath $propertyC
- * @property-read Tests\PathGeneration\EntityBPath $propertyD
- * @property-read Tests\PathGeneration\EntityBPath $propertyE
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyB
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyC
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyD
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyE
  * @property-read EDT\PathBuilding\End $propertyF
- * @property-read Tests\PathGeneration\EntityBPath $propertyG
- * @property-read Tests\PathGeneration\EntityBPath $propertyH
- * @property-read Tests\PathGeneration\EntityBPath $propertyI
- * @property-read Tests\PathGeneration\EntityBPath $propertyJ
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyG
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyH
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyI
+ * @property-read Tests\ClassGeneration\EntityBPath $propertyJ
  */
 class EntityAPath implements \EDT\PathBuilding\PropertyAutoPathInterface
 {
