@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.23.0 - 2023-09-19
 
 * refactor: apply object-oriented approach for entity modification
   * consolidate up class/interface naming

@@ -27,8 +27,6 @@
             "Tests\\": "tests/"
         }
     },
-    "require-dev": {
-    },
     "conflict": {
         "demos-europe/edt-extra": "<0.17.1",
         "demos-europe/edt-access-definitions": "<0.17.1",
