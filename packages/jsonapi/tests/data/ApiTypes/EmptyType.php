@@ -74,8 +74,7 @@ class EmptyType extends AbstractResourceType
             $idProperty,
         ];
 
-        $resourceConfig = new UnifiedResourceConfigBuilder($this->getEntityClass());
-        $resourceConfig->setProperties($properties);
+        $resourceConfig = new UnifiedResourceConfigBuilder($this->getEntityClass(), $properties);
 
         return $resourceConfig->build();
     }

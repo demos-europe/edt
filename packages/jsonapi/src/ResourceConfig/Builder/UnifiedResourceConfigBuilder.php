@@ -6,15 +6,21 @@ namespace EDT\JsonApi\ResourceConfig\Builder;
 
 use EDT\JsonApi\PropertyConfig\AttributeConfigInterface;
 use EDT\JsonApi\PropertyConfig\Builder\AttributeConfigBuilder;
+use EDT\JsonApi\PropertyConfig\Builder\AttributeConfigBuilderInterface;
+use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilder;
+use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilder;
+use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceConfig\ResourceConfig;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ContentField;
 use Webmozart\Assert\Assert;
+use function array_key_exists;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -26,23 +32,17 @@ use Webmozart\Assert\Assert;
 class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
 {
     /**
-     * @var array<non-empty-string, IdentifierConfigBuilder<TEntity>|AttributeConfigBuilder<TCondition, TEntity>|ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>>
-     */
-    protected array $properties = [];
-
-    /**
      * @param class-string<TEntity> $entityClass
+     * @param array<non-empty-string, IdentifierConfigBuilder<TEntity>|AttributeConfigBuilder<TCondition, TEntity>|ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>> $properties
      */
     public function __construct(
-        protected readonly string $entityClass
-    ) {}
-
-    /**
-     * @param array<non-empty-string, IdentifierConfigBuilder<TEntity>|IdentifierConfigBuilder<TEntity>|AttributeConfigBuilder<TCondition, TEntity>|ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>> $properties
-     */
-    public function setProperties(array $properties): void
-    {
-        $this->properties = $properties;
+        protected readonly string $entityClass,
+        protected array $properties
+    ) {
+        if (array_key_exists(ContentField::ID, $this->properties)) {
+            Assert::isInstanceOf($this->properties[ContentField::ID], IdentifierConfigBuilder::class);
+        }
+        Assert::keyNotExists($this->properties, ContentField::TYPE);
     }
 
     public function build(): ResourceConfigInterface
@@ -85,5 +85,77 @@ class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
             $toOneRelationshipConfigs,
             $toManyRelationshipConfig
         );
+    }
+
+    public function getAttributeConfigBuilder(string $propertyName): ?AttributeConfigBuilderInterface
+    {
+        if (!array_key_exists($propertyName, $this->properties)) {
+            return null;
+        }
+
+        $builder = $this->properties[$propertyName];
+        Assert::isInstanceOf($builder, AttributeConfigBuilder::class);
+
+        return $builder;
+    }
+
+    public function getToOneRelationshipConfigBuilder(string $propertyName): ?ToOneRelationshipConfigBuilderInterface
+    {
+        if (!array_key_exists($propertyName, $this->properties)) {
+            return null;
+        }
+
+        $builder = $this->properties[$propertyName];
+        Assert::isInstanceOf($builder, ToOneRelationshipConfigBuilder::class);
+
+        return $builder;
+    }
+
+    public function getToManyRelationshipConfigBuilder(string $propertyName): ?ToManyRelationshipConfigBuilderInterface
+    {
+        if (!array_key_exists($propertyName, $this->properties)) {
+            return null;
+        }
+
+        $builder = $this->properties[$propertyName];
+        Assert::isInstanceOf($builder, ToManyRelationshipConfigBuilder::class);
+
+        return $builder;
+    }
+
+    public function getIdentifierConfigBuilder(): ?IdentifierConfigBuilderInterface
+    {
+        $builder = $this->properties[ContentField::ID] ?? null;
+        if (null === $builder) {
+            return null;
+        }
+
+        Assert::isInstanceOf($builder, IdentifierConfigBuilder::class);
+
+        return $builder;
+    }
+
+    public function setIdentifierConfigBuilder(IdentifierConfigBuilder $builder): void
+    {
+        Assert::keyNotExists($this->properties, ContentField::ID);
+        $this->properties[ContentField::ID] = $builder;
+    }
+
+    public function setAttributeConfigBuilder(string $propertyName, AttributeConfigBuilder $builder): void
+    {
+        Assert::keyNotExists($this->properties, $propertyName);
+        $this->properties[$propertyName] = $builder;
+    }
+
+    public function setToOneRelationshipConfigBuilder(string $propertyName, ToOneRelationshipConfigBuilder $builder): void
+    {
+        Assert::keyNotExists($this->properties, $propertyName);
+        $this->properties[$propertyName] = $builder;
+    }
+
+    public function setToManyRelationshipConfigBuilder(string $propertyName, ToManyRelationshipConfigBuilder $builder): void
+    {
+        Assert::keyNotExists($this->properties, $propertyName);
+        $this->properties[$propertyName] = $builder;
     }
 }

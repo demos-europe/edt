@@ -42,29 +42,11 @@ use function array_key_exists;
  * @template TEntity of object
  *
  * @property-read IdentifierConfigBuilderInterface<TEntity> $id
+ *
+ * @template-extends AbstractResourceConfigBuilder<TCondition, TSorting, TEntity>
  */
-abstract class MagicResourceConfigBuilder
+abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 {
-    /**
-     * @var IdentifierConfigBuilder<TEntity>
-     */
-    protected readonly IdentifierConfigBuilder $identifier;
-
-    /**
-     * @var array<non-empty-string, AttributeConfigBuilder<TCondition, TEntity>>
-     */
-    protected array $attributes = [];
-
-    /**
-     * @var array<non-empty-string, ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>>
-     */
-    protected array $toOneRelationships = [];
-
-    /**
-     * @var array<non-empty-string, ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>>
-     */
-    protected array $toManyRelationships = [];
-
     private ?DocblockPropertyByTraitEvaluator $docblockTraitEvaluator = null;
 
     /**
@@ -73,7 +55,7 @@ abstract class MagicResourceConfigBuilder
      * @param ResourceTypeByClassProviderInterface<TCondition, TSorting> $typeProvider must provide
      */
     public function __construct(
-        protected readonly string $entityClass,
+        string $entityClass,
         protected readonly PropertyBuilderFactory $propertyBuilderFactory,
         protected readonly ResourceTypeByClassProviderInterface $typeProvider
     ) {
@@ -82,7 +64,7 @@ abstract class MagicResourceConfigBuilder
 
         // ensure only `id` is of identifier type
         Assert::isInstanceOf($parsedProperties[ContentField::ID], IdentifierConfigBuilderInterface::class);
-        $this->identifier = $this->propertyBuilderFactory->createIdentifier($this->entityClass);
+        parent::__construct($entityClass, $this->propertyBuilderFactory->createIdentifier($entityClass));
         unset($parsedProperties[ContentField::ID]);
 
         foreach ($parsedProperties as $propertyName => $propertyType) {
@@ -163,46 +145,5 @@ abstract class MagicResourceConfigBuilder
             || array_key_exists($name, $this->attributes)
             || array_key_exists($name, $this->toOneRelationships)
             || array_key_exists($name, $this->toManyRelationships);
-    }
-
-    /**
-     * @return IdentifierConfigInterface<TEntity>
-     */
-    protected function getBuiltIdentifierConfig(): IdentifierConfigInterface
-    {
-        return $this->identifier->build();
-    }
-
-    /**
-     * @return array<non-empty-string, AttributeConfigInterface<TCondition, TEntity>>
-     */
-    protected function getBuiltAttributeConfigs(): array
-    {
-        return array_map(
-            static fn (AttributeConfigBuilder $property): AttributeConfigInterface => $property->build(),
-            $this->attributes
-        );
-    }
-
-    /**
-     * @return array<non-empty-string, ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, object>>
-     */
-    protected function getBuiltToOneRelationshipConfigs(): array
-    {
-        return array_map(
-            static fn (ToOneRelationshipConfigBuilder $property): ToOneRelationshipConfigInterface => $property->build(),
-            $this->toOneRelationships
-        );
-    }
-
-    /**
-     * @return array<non-empty-string, ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, object>>
-     */
-    protected function getBuiltToManyRelationshipConfigs(): array
-    {
-        return array_map(
-            static fn (ToManyRelationshipConfigBuilder $property): ToManyRelationshipConfigInterface => $property->build(),
-            $this->toManyRelationships
-        );
     }
 }
