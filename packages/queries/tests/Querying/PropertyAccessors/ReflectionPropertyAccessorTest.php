@@ -13,6 +13,7 @@ use function array_slice;
 class ReflectionPropertyAccessorTest extends ModelBasedTest
 {
     private ReflectionPropertyAccessor $propertyAccessor;
+    private \ReflectionMethod $restructureNesting;
 
     protected function setUp(): void
     {

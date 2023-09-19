@@ -9,19 +9,16 @@ use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Querying\Utilities\TableJoiner;
 use InvalidArgumentException;
 use ReflectionMethod;
-use Tests\data\Model\Publisher;
 use Tests\ModelBasedTest;
 use function PHPUnit\Framework\assertCount;
 
 class TableJoinerTest extends ModelBasedTest
 {
     private TableJoiner $tableJoiner;
-
     private ReflectionMethod $cartesianProduct;
-
     private ReflectionMethod $setReferences;
-
     private ReflectionMethod $setDeReferencing;
+    private ReflectionMethod $insertValue;
 
     protected function setUp(): void
     {

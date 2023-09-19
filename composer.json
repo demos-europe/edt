@@ -84,8 +84,7 @@
     "config": {
         "bin-dir": "bin",
         "allow-plugins": {
-            "repman-io/composer-plugin": true,
-            "symfony/runtime": false
+            "repman-io/composer-plugin": true
         }
     },
     "scripts": {
