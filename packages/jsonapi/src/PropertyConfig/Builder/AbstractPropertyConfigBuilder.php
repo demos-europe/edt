@@ -81,4 +81,12 @@ abstract class AbstractPropertyConfigBuilder implements PropertyConfigBuilderInt
     {
         return $this->aliasedPath ?? [$this->name];
     }
+
+    /**
+     * @return non-empty-string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
