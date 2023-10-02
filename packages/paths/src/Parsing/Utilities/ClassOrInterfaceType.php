@@ -16,16 +16,23 @@ use Webmozart\Assert\Assert;
 class ClassOrInterfaceType implements TypeInterface
 {
     /**
-     * @template TObject of object
-     * @param class-string<TObject> $fqcn
-     * @param ReflectionClass<TObject> $reflectionClass
+     * @var non-empty-string
+     */
+    private readonly string $shortClassName;
+
+    /**
+     * @param class-string $fullyQualifiedName
      * @param list<TypeInterface> $templateParameters
      */
     protected function __construct(
-        protected readonly string $fqcn,
-        protected readonly ReflectionClass $reflectionClass,
-        protected readonly array $templateParameters
-    ) {}
+        protected readonly string $fullyQualifiedName,
+        protected readonly array  $templateParameters
+    ) {
+        $pathNames = explode('\\', $fullyQualifiedName);
+        $shortClassName = array_pop($pathNames);
+        Assert::stringNotEmpty($shortClassName);
+        $this->shortClassName = $shortClassName;
+    }
 
     /**
      * FIXME: phpDocumentor currently does not support proper generics. Classes/interfaces with
@@ -59,7 +66,7 @@ class ClassOrInterfaceType implements TypeInterface
      */
     public static function fromFqcn(string $class, array $templateParameters = []): self
     {
-        return new self($class, new ReflectionClass($class), $templateParameters);
+        return new self($class, $templateParameters);
     }
 
     /**
@@ -81,7 +88,7 @@ class ClassOrInterfaceType implements TypeInterface
      */
     public function getFullyQualifiedName(): string
     {
-        return $this->fqcn;
+        return $this->fullyQualifiedName;
     }
 
     /**
@@ -114,22 +121,11 @@ class ClassOrInterfaceType implements TypeInterface
     }
 
     /**
-     * @return list<ReflectionProperty>
-     */
-    public function getProperties(): array
-    {
-        return $this->reflectionClass->getProperties();
-    }
-
-    /**
      * @return non-empty-string
      */
     public function getShortClassName(): string
     {
-        $shortName = $this->reflectionClass->getShortName();
-        Assert::stringNotEmpty($shortName);
-
-        return $shortName;
+        return $this->shortClassName;
     }
 
     public function getAllFullyQualifiedNames(): array
@@ -139,7 +135,7 @@ class ClassOrInterfaceType implements TypeInterface
             $this->templateParameters
         );
         $fqcns = array_merge([], ...$nestedFqcns);
-        $fqcns[] = $this->fqcn;
+        $fqcns[] = $this->fullyQualifiedName;
 
         return $fqcns;
     }
@@ -147,8 +143,8 @@ class ClassOrInterfaceType implements TypeInterface
     public function getFullString(bool $withSimpleClassNames): string
     {
         $className = $withSimpleClassNames
-            ? $this->getShortClassName()
-            : $this->fqcn;
+            ? $this->shortClassName
+            : $this->fullyQualifiedName;
 
         if ([] === $this->templateParameters) {
             return $className;
