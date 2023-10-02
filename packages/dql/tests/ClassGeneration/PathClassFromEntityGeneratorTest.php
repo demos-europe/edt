@@ -93,7 +93,8 @@ class Paths
                 ])
             ],
             'Paths',
-            'Bar'
+            'Bar',
+            static fn (ClassOrInterfaceType $pathClass): string => lcfirst($pathClass->getShortClassName())
         );
         self::assertSame(self::PATHS, (string) $file);
     }
