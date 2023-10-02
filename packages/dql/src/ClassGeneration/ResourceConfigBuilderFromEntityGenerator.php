@@ -52,7 +52,7 @@ class ResourceConfigBuilderFromEntityGenerator
         $class->addComment('To add additional properties, you may want to');
         $class->addComment("create an extending class and add them there.\n");
 
-        $class->setExtends($this->parentClass->getShortClassName());
+        $class->setExtends($this->parentClass->getFullyQualifiedName());
         $class->addComment("@template-extends {$this->parentClass->getFullString(true)}");
         $class->addComment('');
 
