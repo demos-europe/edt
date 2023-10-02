@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
-use EDT\Parsing\Utilities\DocblockTagParser;
+use EDT\Parsing\Utilities\DocblockTagResolver;
 use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 use InvalidArgumentException;
 use ReflectionClass;
@@ -242,7 +242,7 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
      */
     protected function formatDescriptionFromDocblock(ReflectionProperty $reflectionProperty): string
     {
-        $docblock = DocblockTagParser::createDocblock($reflectionProperty);
+        $docblock = DocblockTagResolver::createDocblock($reflectionProperty);
         if (null === $docblock) {
             return '';
         }

@@ -4,21 +4,14 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceConfig\Builder;
 
-use EDT\JsonApi\PropertyConfig\AttributeConfigInterface;
-use EDT\JsonApi\PropertyConfig\Builder\AttributeConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\AttributeConfigBuilderInterface;
-use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilderInterface;
-use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilderInterface;
-use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilderInterface;
-use EDT\JsonApi\PropertyConfig\IdentifierConfigInterface;
-use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
-use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\Utilities\PropertyBuilderFactory;
 use EDT\JsonApi\Utilities\ResourceTypeByClassProviderInterface;
-use EDT\Parsing\Utilities\PropertyType;
+use EDT\Parsing\Utilities\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\TypeInterface;
 use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
 use EDT\PathBuilding\PropertyEvaluatorPool;
 use EDT\PathBuilding\PropertyTag;
@@ -67,8 +60,14 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
         parent::__construct($entityClass, $this->propertyBuilderFactory->createIdentifier($entityClass));
         unset($parsedProperties[ContentField::ID]);
 
+        // ignore unusable types, maybe subclasses know how to handle them
+        $parsedProperties = array_filter(
+            $parsedProperties,
+            static fn (TypeInterface $type): bool => $type instanceof ClassOrInterfaceType
+        );
+
         foreach ($parsedProperties as $propertyName => $propertyType) {
-            $propertyBaseClass = $propertyType->getFqcn();
+            $propertyBaseClass = $propertyType->getFullyQualifiedName();
             switch ($propertyBaseClass) {
                 case AttributeConfigBuilderInterface::class:
                     $this->attributes[$propertyName] = $this->propertyBuilderFactory
@@ -94,10 +93,13 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
     /**
      * @return class-string
      */
-    protected function getRelationshipClass(PropertyType $propertyType): string
+    protected function getRelationshipClass(ClassOrInterfaceType $propertyType): string
     {
         // we expect the last template parameter to be the relationship class
-        return $propertyType->getTemplateParameterFqcn(-1);
+        $templateParameter = $propertyType->getTemplateParameter(-1);
+        Assert::isInstanceOf($templateParameter, ClassOrInterfaceType::class);
+
+        return $templateParameter->getFullyQualifiedName();
     }
 
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator

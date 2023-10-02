@@ -356,12 +356,7 @@ parameters:
         -
             message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
             count: 1
-            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
-
-        -
-            message: "#^Parameter \\#1 \\$renderedProperty of static method EDT\\\\Parsing\\\\Utilities\\\\TagNameParseException\\:\\:createForEmptyVariableName\\(\\) expects non\\-empty\\-string, string given\\.$#"
-            count: 1
-            path: packages/paths/src/Parsing/Utilities/DocblockTagParser.php
+            path: packages/paths/src/Parsing/Utilities/TypeResolver.php
 
         -
             message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> and 'EDT\\\\\\\\PathBuilding\\\\\\\\PropertyAutoPathInterface' will always evaluate to true\\.$#"

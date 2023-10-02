@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use ArrayIterator;
+use EDT\Parsing\Utilities\TypeInterface;
 use EDT\Parsing\Utilities\ParseException;
-use EDT\Parsing\Utilities\PropertyType;
+use EDT\Parsing\Utilities\ClassOrInterfaceType;
 use EDT\PathBuilding\SegmentFactories\ReflectionSegmentFactory;
 use EDT\PathBuilding\SegmentFactories\SegmentFactoryInterface;
 use EDT\Querying\Contracts\PathException;
@@ -207,7 +208,9 @@ trait PropertyAutoPathTrait
     }
 
     /**
-     * Provides all property-read tags from the docblock of the class this method was invoked on and its parent classes/interfaces.
+     * Provides property-read tags from the docblock of the class this method was invoked on and its parent classes/interfaces.
+     *
+     * Will ignore tags whose type does not extend {@link PropertyAutoPathInterface}.
      *
      * @param non-empty-list<PropertyTag> $targetTags
      *
@@ -217,12 +220,19 @@ trait PropertyAutoPathTrait
     protected function getAutoPathProperties(array $targetTags = [PropertyTag::PROPERTY_READ]): array
     {
         if (null === $this->properties) {
+            $properties = $this->getDocblockTraitEvaluator($targetTags)->parseProperties(
+                static::class,
+                true
+            );
+
+            $properties = array_filter(
+                $properties,
+                static fn (TypeInterface $type): bool => $type instanceof ClassOrInterfaceType
+            );
+
             $this->properties = array_map(
-                static fn (PropertyType $propertyType): string => $propertyType->getFqcn(),
-                $this->getDocblockTraitEvaluator($targetTags)->parseProperties(
-                    static::class,
-                    true
-                )
+                static fn (ClassOrInterfaceType $propertyType): string => $propertyType->getFullyQualifiedName(),
+                $properties
             );
         }
 

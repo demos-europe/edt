@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace EDT\PathBuilding;
 
-use EDT\Parsing\Utilities\DocblockTagParser;
+use EDT\Parsing\Utilities\DocblockTagResolver;
+use EDT\Parsing\Utilities\TypeInterface;
+use EDT\Parsing\Utilities\TypeResolver;
 use EDT\Parsing\Utilities\NoSourceException;
 use EDT\Parsing\Utilities\ParseException;
-use EDT\Parsing\Utilities\PropertyType;
-use InvalidArgumentException;
+use EDT\Parsing\Utilities\ClassOrInterfaceType;
 use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use ReflectionClass;
+use Webmozart\Assert\Assert;
 use function array_key_exists;
 
 class DocblockPropertyByTraitEvaluator
@@ -18,7 +20,7 @@ class DocblockPropertyByTraitEvaluator
     /**
      * Cache of already parsed classes
      *
-     * @var array<class-string, array<non-empty-string, PropertyType>>
+     * @var array<class-string, array<non-empty-string, ClassOrInterfaceType>>
      */
     private array $parsedClasses = [];
 
@@ -35,7 +37,7 @@ class DocblockPropertyByTraitEvaluator
     /**
      * @param class-string $class
      *
-     * @return array<non-empty-string, PropertyType>
+     * @return array<non-empty-string, TypeInterface>
      *
      * @throws ParseException
      */
@@ -63,40 +65,35 @@ class DocblockPropertyByTraitEvaluator
      * Searches the class-docblock of the given class for the kind of tags that were set
      * in {@link self::$targetTags} and which type uses all the traits set in {@link self::$targetTraits}.
      *
-     * Example in which only `property-read` was set in {@link self::$targetTags}. So only
-     * `$propertyA` would be returned:
-     *
-     * ```
-     * @property-read TypeThatUsesAllTheSetTraits $propertyA
-     * @property-read TypeWithoutAllTheSetTraits $propertyB
-     * @property-write TypeThatUsesAllTheSetTraits $propertyC
-     * ```
+     * Docblock tags that fail to do either will be ignored. Tags that do both will be returned.
      *
      * The result for the given class will be cached in this instance and directly
-     * returned on consecutive calls.
+     * returned on consecutive calls, without repeated docblock processing.
      *
      * @param class-string $class
      *
-     * @return array<non-empty-string, PropertyType> mapping from the property name to its type
+     * @return array<non-empty-string, TypeInterface> mapping from the property name to its type
      *
      * @throws ParseException
-     * @throws PropertyTagException
      */
     protected function parsePropertiesOfClass(string $class): array
     {
         if (!array_key_exists($class, $this->parsedClasses)) {
             try {
-                $parser = new DocblockTagParser(new ReflectionClass($class));
-                $nestedProperties = array_map(function (PropertyTag $targetTag) use ($parser): array {
-                    $propertyTags = $parser->getTags($targetTag->value);
+                $reflectionClass = new ReflectionClass($class);
+                $typeResolver = new TypeResolver($reflectionClass);
+                $docblockTagResolver = new DocblockTagResolver($reflectionClass);
+                $nestedProperties = array_map(function (PropertyTag $targetTag) use ($typeResolver, $docblockTagResolver): array {
+                    $propertyTags = $docblockTagResolver->getTags($targetTag->value);
                     $propertyTags = array_map([$targetTag, 'convertToCorrespondingType'], $propertyTags);
-                    $propertyNames = array_map([$parser, 'getVariableNameOfTag'], $propertyTags);
+                    $propertyNames = array_map([$docblockTagResolver, 'getVariableNameOfTag'], $propertyTags);
                     $propertyTags = array_combine($propertyNames, $propertyTags);
                     $propertyTypes = array_map(
-                        static fn(TagWithType $tag): PropertyType => new PropertyType(
-                            $tag->getType() ?? throw new InvalidArgumentException("Type must not be null."),
-                            $parser
-                        ),
+                        static function(TagWithType $tag) use ($typeResolver): ClassOrInterfaceType {
+                            $tagType = $tag->getType();
+                            Assert::notNull($tagType);
+                            return ClassOrInterfaceType::fromType($tagType, $typeResolver);
+                        },
                         $propertyTags
                     );
 
@@ -119,7 +116,7 @@ class DocblockPropertyByTraitEvaluator
      *
      * @param non-empty-list<class-string> $classes
      *
-     * @return array<non-empty-string, PropertyType>
+     * @return array<non-empty-string, TypeInterface>
      *
      * @throws ParseException
      */
@@ -133,8 +130,8 @@ class DocblockPropertyByTraitEvaluator
     /**
      * Accessed property classes must use all traits in {@link DocblockPropertyByTraitEvaluator::$targetTraits}.
      */
-    protected function isUsingRequiredTraits(PropertyType $propertyType): bool
+    protected function isUsingRequiredTraits(ClassOrInterfaceType $propertyType): bool
     {
-        return $this->traitEvaluator->isClassUsingAllTraits($propertyType->getFqcn(), $this->targetTraits);
+        return $this->traitEvaluator->isClassUsingAllTraits($propertyType->getFullyQualifiedName(), $this->targetTraits);
     }
 }

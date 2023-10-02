@@ -6,39 +6,29 @@ namespace EDT\Parsing\Utilities;
 
 use Exception;
 use InvalidArgumentException;
-use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Tag;
-use phpDocumentor\Reflection\DocBlock\Tags\Param;
-use phpDocumentor\Reflection\DocBlock\Tags\Property;
-use phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
-use phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
-use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\Type;
-use phpDocumentor\Reflection\TypeResolver;
 use phpDocumentor\Reflection\Types\ContextFactory;
 use phpDocumentor\Reflection\Types\Object_;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use ReflectionClass;
-use ReflectionProperty;
 use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\PcreException;
 use Webmozart\Assert\Assert;
+use function array_key_exists;
 use function is_string;
 use function Safe\fopen;
 use function Safe\fclose;
+use function Safe\preg_match_all;
+use function Safe\preg_split;
 
 /**
- * Provides parsing capabilities for tags, especially for such with an associated type.
- *
  * @internal
  */
-class DocblockTagParser
+class TypeResolver
 {
-    protected readonly ?DocBlock $docBlock;
-
     protected readonly Parser $phpParser;
 
     /**
@@ -46,7 +36,7 @@ class DocblockTagParser
      */
     protected readonly array $useStatements;
 
-    protected readonly TypeResolver $typeResolver;
+    protected readonly \phpDocumentor\Reflection\TypeResolver $typeResolver;
     protected readonly ContextFactory $contextFactory;
     protected readonly string $sourceCode;
 
@@ -56,17 +46,16 @@ class DocblockTagParser
      * @throws ParseException
      */
     public function __construct(
-        protected readonly ReflectionClass $reflectionClass
+        protected readonly ReflectionClass $reflectionClass,
     ) {
         try {
             $this->phpParser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
-            $this->docBlock = self::createDocblock($this->reflectionClass);
             $fileName = $this->reflectionClass->getFileName();
             $this->sourceCode = is_string($fileName)
                 ? $this->readSourceCode($fileName)
                 : throw new NoSourceException("No source code was found for the file name `$fileName`.");
             $this->useStatements = $this->getUseStatements();
-            $this->typeResolver = new TypeResolver();
+            $this->typeResolver = new \phpDocumentor\Reflection\TypeResolver();
             $this->contextFactory = new ContextFactory();
         } catch (NoSourceException $exception) {
             throw $exception;
@@ -76,59 +65,16 @@ class DocblockTagParser
     }
 
     /**
-     * @param ReflectionClass<object>|ReflectionProperty $commented
-     */
-    public static function createDocblock(ReflectionClass|ReflectionProperty $commented): ?DocBlock
-    {
-        $docBlock = $commented->getDocComment();
-        if (!is_string($docBlock) || '' === $docBlock) {
-            return null;
-        }
-
-        return DocBlockFactory::createInstance()->create($docBlock);
-    }
-
-    /**
-     * @param non-empty-string $tagName
-     *
-     * @return list<Tag>
-     */
-    public function getTags(string $tagName): array
-    {
-        if (null === $this->docBlock) {
-            return [];
-        }
-
-        return array_values($this->docBlock->getTagsByName($tagName));
-    }
-
-    /**
-     * @return non-empty-string
-     *
-     * @throws TagNameParseException
-     */
-    public function getVariableNameOfTag(PropertyRead|PropertyWrite|Property|Param|Var_ $tag): string
-    {
-        $variableName = $tag->getVariableName();
-        if (null === $variableName || '' === $variableName) {
-            throw TagNameParseException::createForEmptyVariableName($tag->render(), $this->reflectionClass->getName());
-        }
-
-        return $variableName;
-    }
-
-    /**
      * @return class-string|null
      *
-     * @throws TagTypeParseException
      * @throws InvalidArgumentException
      * /
      */
-    public function getQualifiedName(Object_ $tagType): ?string
+    public function getQualifiedName(Object_ $type): ?string
     {
         $namespaceName = $this->reflectionClass->getNamespaceName();
 
-        $typeDeclaration = (string)$tagType->getFqsen();
+        $typeDeclaration = (string)$type->getFqsen();
         $qualifiedNameParts = explode('\\', $typeDeclaration);
         Assert::minCount($qualifiedNameParts, 2);
 
@@ -264,6 +210,56 @@ class DocblockTagParser
         fclose($file);
 
         return $sourceCode;
+    }
+
+    /**
+     * The target of this method is to get an empty list of template parameters if the backing
+     * type is of the format `SomeType` and a *non-empty* list of *non-empty* strings
+     * if it is of the format `SomeType<...>`.
+     *
+     * As this method works with strings only (i.e. does not check if a type actually exists), it
+     * will accept some invalid template parameter definitions like `SomeType<<>` (resulting in `['SomeType', ['<']]`),
+     * but not `SomeType<Foo,>` (would result in `['SomeType', ['Foo', '']]` which does not matches the return type
+     * and thus results in an exception instead).
+     *
+     * @param non-empty-string $rawTypeString
+     *
+     * @return array{non-empty-string, list<non-empty-string>} the part of the input string without the template parameters as first item and the list of template parameters as second item
+     *
+     * @throws PcreException
+     * @throws InvalidArgumentException
+     */
+    public static function getSplitOffTemplateParameters(string $rawTypeString): array
+    {
+        $matches = [];
+
+        $pattern = '/^(\\\\?(?:\w\\\\)*\w+)(?:<(.+)>)?$/';
+        $matching = preg_match_all($pattern, $rawTypeString, $matches);
+        Assert::same($matching, 1, "The string `$rawTypeString` did not match the following pattern: $pattern");
+        Assert::isArray($matches);
+
+        $classNameMatches = $matches[1];
+        Assert::isArray($classNameMatches);
+        Assert::count($classNameMatches, 1);
+        $className = $classNameMatches[0];
+        Assert::stringNotEmpty($className);
+
+        Assert::keyExists($matches, 2);
+        $templatesMatches = $matches[2];
+        Assert::isArray($templatesMatches);
+        Assert::count($templatesMatches, 1);
+        Assert::keyExists($templatesMatches, 0);
+        $templateParametersString = $templatesMatches[0];
+        Assert::string($templateParametersString);
+
+        if ('' === $templateParametersString) {
+            return [$className, []];
+        }
+
+        $templateParameters = array_map('trim', explode(',', $templateParametersString));
+        Assert::allStringNotEmpty($templateParameters);
+
+        return [$className, array_values($templateParameters)];
     }
 
     /**

@@ -4,56 +4,98 @@ declare(strict_types=1);
 
 namespace Tests\Utilities;
 
-use EDT\Parsing\Utilities\DocblockTagParser;
-use EDT\Parsing\Utilities\PropertyType;
+use EDT\Parsing\Utilities\DocblockTagResolver;
+use EDT\Parsing\Utilities\TypeResolver;
+use EDT\Parsing\Utilities\ClassOrInterfaceType;
 use EDT\PathBuilding\End;
 use EDT\PathBuilding\PropertyTag;
 use PHPUnit\Framework\TestCase;
+use Tests\data\Paths\AmbiguouslyNamedResource;
+use Tests\data\Paths\BarResource;
 use Tests\data\Paths\DummyResource;
+use Tests\data\Paths\nestedNamespace\NestedOnlyResource;
+use Tests\data\Paths\NonNestedOnlyResource;
 
 class DocblockTagParserTest extends TestCase
 {
-    public function testGetType(): void
+    /**
+     * @dataProvider getGetTypeData
+     */
+    public function testGetType(string $class, array $expectedTypes): void
     {
-        $parser = new DocblockTagParser(new \ReflectionClass(DummyResource::class));
-        $propertyReadTags = $parser->getTags(PropertyTag::PROPERTY_READ->value);
-        self::assertCount(10, $propertyReadTags);
-        $qualifiedName = $parser->getQualifiedName($propertyReadTags[1]->getType());
-        self::assertSame($qualifiedName, End::class);
+        $reflectionClass = new \ReflectionClass($class);
+        $tagResolver = new DocblockTagResolver($reflectionClass);
+        $typeResolver = new TypeResolver($reflectionClass);
+        $propertyReadTags = $tagResolver->getTags(PropertyTag::PROPERTY_READ->value);
+        $expectedCount = count($expectedTypes);
+        self::assertCount($expectedCount, $propertyReadTags);
+        for ($i = 0; $i < $expectedCount; $i++) {
+            $type = ClassOrInterfaceType::fromType($propertyReadTags[$i]->getType(), $typeResolver);
+            $actual = ltrim($type->getFullString(false), '\\');
+            $actual = str_replace('"', "'", $actual);
+            $expected = ltrim($expectedTypes[$i], '\\');
+            self::assertSame($expected, $actual, "Expected `$expected`, got `$actual` for i=$i.");
+        }
+    }
+
+    public function getGetTypeData(): array
+    {
+        return [
+            [DummyResource::class, [
+                End::class,
+                End::class,
+                BarResource::class,
+                AmbiguouslyNamedResource::class,
+                \Tests\data\Paths\nestedNamespace\AmbiguouslyNamedResource::class,
+                \Tests\data\Paths\nestedNamespace\AmbiguouslyNamedResource::class,
+                AmbiguouslyNamedResource::class,
+                \Tests\data\Paths\nestedNamespace\AmbiguouslyNamedResource::class,
+                NonNestedOnlyResource::class,
+                NestedOnlyResource::class,
+            ]],
+        ];
     }
 
     /**
      * @dataProvider getValidPropertyTypeTestData
      */
-    public function testPropertyType(string $input, array $output): void
+    public function testGetSplitOffTemplateParametersWithValidData(string $rawInputString, string $expectedClassName, array $expectedTemplateParameters): void
     {
-        $array = PropertyType::getTemplateParameterStrings($input);
-        self::assertEquals($output, $array);
+        [$actualClassName, $actualTemplateParameters] = TypeResolver::getSplitOffTemplateParameters($rawInputString);
+        self::assertSame($expectedClassName, $actualClassName);
+        $templateParameterCount = count($expectedTemplateParameters);
+        self::assertCount($templateParameterCount, $actualTemplateParameters);
+        for ($i = 0; $i < $templateParameterCount; $i++) {
+            $actualTemplateParameter = $actualTemplateParameters[$i];
+            $expectedTemplateParameter = $expectedTemplateParameters[$i];
+            self::assertSame($expectedTemplateParameter, $actualTemplateParameter);
+        }
     }
+
     /**
      * @dataProvider getInvalidPropertyTypeTestData
      */
-    public function testInvalidPropertyType(string $input): void
+    public function testGetSplitOffTemplateParametersWithInvalidData(string $rawInputString): void
     {
-        $this->expectException(\Exception::class);
-        PropertyType::getTemplateParameterStrings($input);
+        $this->expectException(\InvalidArgumentException::class);
+        TypeResolver::getSplitOffTemplateParameters($rawInputString);
     }
 
     public function getValidPropertyTypeTestData(): array
     {
         return [
-            ['MyClass<Foo>', ['Foo']],
-            ['MyClass<Foo, Bar>', ['Foo', 'Bar']],
-            ['MyClass<Foo, \'bar\'>', ['Foo', '\'bar\'']],
-            ['MyClass', []],
-            ['MyClass_', []],
-            ['MyClass<  Foo  ,    Bar   >', ['Foo', 'Bar']],
-            ['MyClass<Foo<Bar>>', ['Foo<Bar>']],
+            ['MyClass<Foo>', 'MyClass', ['Foo']],
+            ['MyClass<Foo, Bar>', 'MyClass', ['Foo', 'Bar']],
+            ['MyClass<Foo, \'bar\'>', 'MyClass', ['Foo', '\'bar\'']],
+            ['MyClass', 'MyClass', []],
+            ['MyClass_', 'MyClass_', []],
+            ['MyClass<  Foo  ,    Bar   >', 'MyClass', ['Foo', 'Bar']],
+            ['MyClass<Foo<Bar>>', 'MyClass', ['Foo<Bar>']],
             // not valid as final result, but at least valid in the limited task of the tested method
-            ['MyClass<>>', ['>']],
-            ['MyClass<Foo>Bar>', ['Foo>Bar']],
-            ['MyClass<<>', ['<']],
-            ['MyClass<Foo<Bar>', ['Foo<Bar']],
+            ['MyClass<>>', 'MyClass', ['>']],
+            ['MyClass<Foo>Bar>', 'MyClass', ['Foo>Bar']],
+            ['MyClass<<>', 'MyClass', ['<']],
+            ['MyClass<Foo<Bar>', 'MyClass', ['Foo<Bar']],
         ];
     }
 
