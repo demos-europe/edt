@@ -32,9 +32,7 @@ class ClassOrInterfaceType implements TypeInterface
      * template parameters will result in a {@link Collection} instance. That class however silently
      * omits all template parameters except the last two, and thus is not reliable to use.
      *
-     * In practice this means that the current implementation supports {@link Object_} only.
-     *
-     * @param TypeResolver $typeResolver*
+     * @param TypeResolver $typeResolver
      *
      * @see https://github.com/phpDocumentor/phpDocumentor/issues/2122
      */
@@ -44,7 +42,15 @@ class ClassOrInterfaceType implements TypeInterface
             return self::fromObjectType($type, [], $typeResolver);
         }
 
-        throw new InvalidArgumentException("Failed to resolve class or interface from given type: {$type->__toString()}. Currently only `" . Object_::class . '` is supported.');
+        if ($type instanceof Collection) {
+            $mainTypeName = (string)$type->getFqsen();
+            Assert::stringNotEmpty($mainTypeName);
+            $resolvedType = $typeResolver->getResolvedType($mainTypeName);
+
+            return self::fromType($resolvedType, $typeResolver);
+        }
+
+        throw new InvalidArgumentException("Failed to resolve class or interface from given type: {$type->__toString()}. Currently only `" . Object_::class . '` and (with limitations) `'. Collection::class . '` are supported.');
     }
 
     /**

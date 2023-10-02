@@ -25,7 +25,7 @@ class DocblockPropertyByTraitEvaluator
     private array $parsedClasses = [];
 
     /**
-     * @param list<non-empty-string> $targetTraits
+     * @param list<non-empty-string> $targetTraits set to empty list to not filter by traits
      * @param non-empty-list<PropertyTag> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      */
     public function __construct(

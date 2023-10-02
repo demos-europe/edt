@@ -25,6 +25,7 @@ namespace Foobar;
  * To add additional properties, you may want to
  * create an extending class and add them there.
  *
+ * @property-read EDT\PathBuilding\End $id
  * @property-read EDT\PathBuilding\End $propertyA
  * @property-read Tests\ClassGeneration\EntityBPath $propertyB
  * @property-read Tests\ClassGeneration\EntityBPath $propertyC
