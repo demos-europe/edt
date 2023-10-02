@@ -69,8 +69,8 @@ class ResourceConfigBuilderFromEntityGenerator
                 array_map([$namespace, 'addUse'], $targetType->getAllFullyQualifiedNames());
 
                 // build reference
-                $shortClassName = $targetType->getShortClassName();
-                $reference = "{@link $shortClassName::$propertyName}";
+                $referencedClass = $entityType->getShortClassName();
+                $reference = "{@link $referencedClass::$propertyName}";
 
                 // add property-read tag
                 $shortString = $targetType->getFullString(true);
@@ -95,6 +95,12 @@ class ResourceConfigBuilderFromEntityGenerator
 
         $targetEntityClass = $annotationOrAttribute->targetEntity;
         Assert::notNull($targetEntityClass);
+        if (!interface_exists($targetEntityClass) && !class_exists($targetEntityClass)) {
+            throw new \InvalidArgumentException(
+                "Doctrine relationship was defined via annotation/attribute, but the class set as target entity (`$targetEntityClass`) could not be found. Make sure it uses the fully qualified name. The problematic relationship is: `{$entityClass->getFullString(false)}::$annotationOrAttribute->name`."
+            );
+        }
+
         $templateParameters = [
             $this->conditionType,
             $this->sortingType,

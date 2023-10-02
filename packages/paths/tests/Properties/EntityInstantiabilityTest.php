@@ -10,13 +10,14 @@ use EDT\Wrapping\PropertyBehavior\Attribute\AttributeConstructorParameter;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class EntityInstantiabilityTest extends TestCase
 {
     public function test__construct()
     {
         $className = EntityData::class;
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new ReflectionClass($className);
 
         $instantiability = new ResourceInstantiability(
             $className,

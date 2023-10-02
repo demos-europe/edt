@@ -10,6 +10,7 @@ use EDT\Parsing\Utilities\ClassOrInterfaceType;
 use EDT\PathBuilding\End;
 use EDT\PathBuilding\PropertyTag;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use Tests\data\Paths\AmbiguouslyNamedResource;
 use Tests\data\Paths\BarResource;
 use Tests\data\Paths\DummyResource;
@@ -23,7 +24,7 @@ class DocblockTagParserTest extends TestCase
      */
     public function testGetType(string $class, array $expectedTypes): void
     {
-        $reflectionClass = new \ReflectionClass($class);
+        $reflectionClass = new ReflectionClass($class);
         $tagResolver = new DocblockTagResolver($reflectionClass);
         $typeResolver = new TypeResolver($reflectionClass);
         $propertyReadTags = $tagResolver->getTags(PropertyTag::PROPERTY_READ->value);
