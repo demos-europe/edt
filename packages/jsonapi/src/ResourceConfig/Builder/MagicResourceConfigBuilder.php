@@ -9,7 +9,6 @@ use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilderInterface;
 use EDT\JsonApi\Utilities\PropertyBuilderFactory;
-use EDT\JsonApi\Utilities\ResourceTypeByClassProviderInterface;
 use EDT\Parsing\Utilities\ClassOrInterfaceType;
 use EDT\Parsing\Utilities\TypeInterface;
 use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
@@ -45,12 +44,10 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
     /**
      * @param class-string<TEntity> $entityClass
      * @param PropertyBuilderFactory<TCondition, TSorting> $propertyBuilderFactory
-     * @param ResourceTypeByClassProviderInterface<TCondition, TSorting> $typeProvider must provide
      */
     public function __construct(
         string $entityClass,
         protected readonly PropertyBuilderFactory $propertyBuilderFactory,
-        protected readonly ResourceTypeByClassProviderInterface $typeProvider
     ) {
         $parsedProperties = $this->getDocblockTraitEvaluator()->parseProperties(static::class, true);
         Assert::keyExists($parsedProperties, ContentField::ID);
