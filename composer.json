@@ -7,7 +7,7 @@
         "doctrine/collections": "^1.5",
         "doctrine/orm": "^2.5",
         "ext-json": "*",
-        "league/fractal": "^0.19",
+        "league/fractal": "^0.20",
         "nette/php-generator": "^4.0",
         "nikic/php-parser": "^4.14",
         "pagerfanta/pagerfanta": "^2.7",
