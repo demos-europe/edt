@@ -16,7 +16,7 @@
         "psr/event-dispatcher": "^1.0",
         "psr/log": "^1.1.4",
         "symfony/cache": "^5",
-        "symfony/http-foundation": "^5.3.7,<6",
+        "symfony/http-foundation": "^6.1.12",
         "symfony/routing": "^5.3,<6",
         "symfony/validator": "5.*.*",
         "thecodingmachine/safe": "^2.4.0",
