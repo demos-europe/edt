@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.3 - 2023-10-16
 
 * feature: improve exception message
 
