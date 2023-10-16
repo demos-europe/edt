@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: improve exception message
+
 ## 0.24.2 - 2023-10-16
 
 * fix: generate correct docblock `param` tag
