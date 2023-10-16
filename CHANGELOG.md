@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.1 - 2023-10-16
 
 * feature: restore previously removed exception methods for backward compatibility
 
