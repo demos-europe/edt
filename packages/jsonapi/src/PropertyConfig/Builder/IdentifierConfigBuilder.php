@@ -10,13 +10,11 @@ use EDT\JsonApi\PropertyConfig\IdentifierConfigInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
 use EDT\Wrapping\Contracts\ContentField;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\CallbackIdentifierReadability;
-use EDT\Wrapping\PropertyBehavior\Identifier\DataProvidedIdentifierConstructorParameter;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
-use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierPostInstantiability;
 
 /**
  * @template TEntity of object
@@ -31,14 +29,14 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
     protected $readabilityFactory;
 
     /**
-     * @var null|callable(non-empty-list<non-empty-string>, class-string<TEntity>): IdentifierPostInstantiabilityInterface<TEntity>
+     * @var list<callable(non-empty-list<non-empty-string>, class-string<TEntity>): IdentifierPostConstructorBehaviorInterface<TEntity>>
      */
-    protected $postInstantiabilityFactory;
+    protected array $postConstructorBehaviorFactories = [];
 
     /**
-     * @var null|callable(non-empty-list<non-empty-string>, class-string<TEntity>): ConstructorParameterInterface
+     * @var list<callable(non-empty-list<non-empty-string>, class-string<TEntity>): ConstructorBehaviorInterface>
      */
-    protected $instantiabilityFactory;
+    protected array $constructorBehaviorFactories = [];
 
     /**
      * @param class-string<TEntity> $entityClass
@@ -96,71 +94,24 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
     }
 
     /**
-     * @return $this
-     */
-    public function instantiable(
-        bool $postInstantiationSetting,
-        bool $argument = false,
-        ?string $argumentName = null
-    ): self {
-        if ($argument) {
-            $this->instantiabilityFactory = new class ($argumentName) {
-                /**
-                 * @param non-empty-string|null $argumentName
-                 */
-                public function __construct(
-                    protected readonly ?string $argumentName
-                ) {}
-
-                /**
-                 * @param non-empty-list<non-empty-string> $propertyPath
-                 * @param class-string<TEntity> $entityClass
-                 */
-                public function __invoke(array $propertyPath, string $entityClass): ConstructorParameterInterface
-                {
-                    return new DataProvidedIdentifierConstructorParameter(
-                        $this->argumentName ?? ContentField::ID
-                    );
-                }
-            };
-        }
-
-        if ($postInstantiationSetting) {
-            $this->postInstantiabilityFactory = new class ($this->propertyAccessor) {
-                public function __construct(
-                    protected readonly PropertyAccessorInterface $propertyAccessor,
-                ) {}
-
-                /**
-                 * @param non-empty-list<non-empty-string> $propertyPath
-                 * @param class-string<TEntity> $entityClass
-                 *
-                 * @return IdentifierPostInstantiabilityInterface<TEntity>
-                 */
-                public function __invoke(array $propertyPath, string $entityClass): IdentifierPostInstantiabilityInterface
-                {
-                    return new PathIdentifierPostInstantiability(
-                        $entityClass,
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        true
-                    );
-                }
-            };
-        }
-
-        return $this;
-    }
-
-    /**
      * @return IdentifierConfigInterface<TEntity>
      */
     public function build(): IdentifierConfigInterface
     {
+        $postConstructorBehaviors = array_map(
+            fn(callable $factory): IdentifierPostConstructorBehaviorInterface => $factory($this->getPropertyPath(), $this->entityClass),
+            $this->postConstructorBehaviorFactories
+        );
+
+        $constructorBehaviors = array_map(
+            fn(callable $factory): ConstructorBehaviorInterface => $factory($this->getPropertyPath(), $this->entityClass),
+            $this->constructorBehaviorFactories
+        );
+
         return new DtoIdentifierConfig(
             ($this->readabilityFactory ?? static fn () => null)($this->getPropertyPath(), $this->entityClass),
-            ($this->postInstantiabilityFactory ?? static fn () => null)($this->getPropertyPath(), $this->entityClass),
-            ($this->instantiabilityFactory ?? static fn () => null)($this->getPropertyPath(), $this->entityClass),
+            $postConstructorBehaviors,
+            $constructorBehaviors,
             $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null,
             $this->sortable ? new NonRelationshipLink($this->getPropertyPath()) : null
         );

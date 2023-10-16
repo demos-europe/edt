@@ -26,7 +26,7 @@ class ClassOrInterfaceType implements TypeInterface
      */
     protected function __construct(
         protected readonly string $fullyQualifiedName,
-        protected readonly array  $templateParameters
+        protected readonly array $templateParameters
     ) {
         $pathNames = explode('\\', $fullyQualifiedName);
         $shortClassName = array_pop($pathNames);
@@ -134,7 +134,7 @@ class ClassOrInterfaceType implements TypeInterface
             static fn (TypeInterface $parameter): array => $parameter->getAllFullyQualifiedNames(),
             $this->templateParameters
         );
-        $fqcns = array_merge([], ...$nestedFqcns);
+        $fqcns = array_merge(...$nestedFqcns);
         $fqcns[] = $this->fullyQualifiedName;
 
         return $fqcns;

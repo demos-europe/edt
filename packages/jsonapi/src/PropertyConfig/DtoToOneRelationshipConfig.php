@@ -6,9 +6,9 @@ namespace EDT\JsonApi\PropertyConfig;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 
 /**
@@ -23,16 +23,17 @@ class DtoToOneRelationshipConfig implements ToOneRelationshipConfigInterface
 {
     /**
      * @param ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null $readability
-     * @param RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null $updatability
-     * @param PropertySetabilityInterface<TEntity>|null $postInstantiability
+     * @param list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>> $updateBehaviors
+     * @param list<PropertySetBehaviorInterface<TEntity>> $postConstructorBehaviors
+     * @param list<ConstructorBehaviorInterface> $constructorBehaviors
      * @param PropertyLinkInterface|null $filterLink
      * @param PropertyLinkInterface|null $sortLink
      */
     public function __construct(
         protected readonly ?ToOneRelationshipReadabilityInterface $readability,
-        protected readonly ?PropertySetabilityInterface $updatability,
-        protected readonly ?PropertySetabilityInterface $postInstantiability,
-        protected readonly ?ConstructorParameterInterface $instantiability,
+        protected readonly array $updateBehaviors,
+        protected readonly array $postConstructorBehaviors,
+        protected readonly array $constructorBehaviors,
         protected readonly ?PropertyLinkInterface $filterLink,
         protected readonly ?PropertyLinkInterface $sortLink
     ) {}
@@ -42,19 +43,19 @@ class DtoToOneRelationshipConfig implements ToOneRelationshipConfigInterface
         return $this->readability;
     }
 
-    public function getUpdatability(): ?RelationshipSetabilityInterface
+    public function getUpdateBehaviors(): array
     {
-        return $this->updatability;
+        return $this->updateBehaviors;
     }
 
-    public function getPostInstantiability(): ?PropertySetabilityInterface
+    public function getPostConstructorBehaviors(): array
     {
-        return $this->postInstantiability;
+        return $this->postConstructorBehaviors;
     }
 
-    public function getInstantiability(): ?ConstructorParameterInterface
+    public function getConstructorBehaviors(): array
     {
-        return $this->instantiability;
+        return $this->constructorBehaviors;
     }
 
     public function getFilterLink(): ?PropertyLinkInterface

@@ -13,13 +13,11 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  * @template TRelationship of object
  *
  * @template-extends ReadablePropertyConfigBuilderInterface<TEntity, list<TRelationship>>
- * @template-extends InstantiablePropertyConfigBuilderInterface<TCondition, TEntity, list<TRelationship>>
- * @template-extends RelationshipConfigBuilderInterface<TCondition, TSorting, TRelationship>
+ * @template-extends RelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
  */
 interface ToManyRelationshipConfigBuilderInterface extends
     PropertyConfigBuilderInterface,
     ReadablePropertyConfigBuilderInterface,
-    InstantiablePropertyConfigBuilderInterface,
     RelationshipConfigBuilderInterface
 {
     /**
@@ -30,4 +28,19 @@ interface ToManyRelationshipConfigBuilderInterface extends
      * @return $this
      */
     public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): self;
+
+    /**
+     * @param null|callable(TEntity, list<TRelationship>): bool $postConstructorCallback
+     * @param non-empty-string|null $customConstructorArgumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
+     * @param list<TCondition> $relationshipConditions
+     *
+     * @return $this
+     */
+    public function creatable(
+        bool $optionalAfterConstructor = false,
+        callable $postConstructorCallback = null,
+        bool $constructorArgument = false,
+        ?string $customConstructorArgumentName = null,
+        array $relationshipConditions = []
+    ): self;
 }

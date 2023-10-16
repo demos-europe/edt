@@ -15,9 +15,6 @@ use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
@@ -64,45 +61,44 @@ class ResourceConfig implements ResourceConfigInterface
 
     public function getInstantiability(): ResourceInstantiability
     {
-        $constructorParameterConfigs = Iterables::removeNull(array_map(
-            static fn (PropertyConfigInterface $property): ?ConstructorParameterInterface => $property->getInstantiability(),
+        $constructorParameterConfigs = array_map(
+            static fn (PropertyConfigInterface $property): array => $property->getConstructorBehaviors(),
             $this->propertyConfigs
-        ));
+        );
 
-        $setabilities = Iterables::removeNull(array_map(
-            static fn (PropertyConfigInterface $property): ?PropertySetabilityInterface => $property->getPostInstantiability(),
+        $setabilities = array_map(
+            static fn (PropertyConfigInterface $property): array => $property->getPostConstructorBehaviors(),
             $this->propertyConfigs
-        ));
+        );
 
-        $identifierInstantiability = $this->identifierConfig->getInstantiability();
-        if (null !== $identifierInstantiability) {
-            $constructorParameterConfigs[ContentField::ID] = $identifierInstantiability;
-        }
+        Assert::keyNotExists($constructorParameterConfigs, ContentField::ID);
+        $identifierConstructorBehavior = $this->identifierConfig->getConstructorBehaviors();
+        $constructorParameterConfigs[ContentField::ID] = $identifierConstructorBehavior;
 
         return new ResourceInstantiability(
             $this->entityClass,
             $constructorParameterConfigs,
             $setabilities,
-            $this->identifierConfig->getPostInstantiability()
+            $this->identifierConfig->getPostConstructorBehaviors()
         );
     }
 
     public function getUpdatability(): ResourceUpdatability
     {
-        return new ResourceUpdatability(
-            Iterables::removeNull(array_map(
-                static fn (AttributeConfigInterface $property): ?PropertySetabilityInterface => $property->getUpdatability(),
-                $this->attributeConfigs
-            )),
-            Iterables::removeNull(array_map(
-                static fn (ToOneRelationshipConfigInterface $property): ?RelationshipSetabilityInterface => $property->getUpdatability(),
-                $this->toOneRelationshipConfigs
-            )),
-            Iterables::removeNull(array_map(
-                static fn (ToManyRelationshipConfigInterface $property): ?RelationshipSetabilityInterface => $property->getUpdatability(),
-                $this->toManyRelationshipConfigs
-            ))
+        $attributes = array_map(
+            static fn(AttributeConfigInterface $property): array => $property->getUpdateBehaviors(),
+            $this->attributeConfigs
         );
+        $toOneRelationships = array_map(
+            static fn(ToOneRelationshipConfigInterface $property): array => $property->getUpdateBehaviors(),
+            $this->toOneRelationshipConfigs
+        );
+        $toManyRelationships = array_map(
+            static fn(ToManyRelationshipConfigInterface $property): array => $property->getUpdateBehaviors(),
+            $this->toManyRelationshipConfigs
+        );
+
+        return new ResourceUpdatability($attributes, $toOneRelationships, $toManyRelationships);
     }
 
     public function getReadability(): ResourceReadability

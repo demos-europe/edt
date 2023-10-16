@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* refactor: refactor: restructure classes and API for resource property configuration
+
 ## 0.23.0 - 2023-09-19
 
 * refactor: apply object-oriented approach for entity modification

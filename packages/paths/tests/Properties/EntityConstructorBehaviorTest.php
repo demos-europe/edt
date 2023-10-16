@@ -6,13 +6,13 @@ namespace Tests\Properties;
 
 use EDT\Wrapping\EntityData;
 use EDT\Wrapping\EntityDataInterface;
-use EDT\Wrapping\PropertyBehavior\Attribute\AttributeConstructorParameter;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Attribute\AttributeConstructorBehavior;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-class EntityInstantiabilityTest extends TestCase
+class EntityConstructorBehaviorTest extends TestCase
 {
     public function test__construct()
     {
@@ -21,45 +21,45 @@ class EntityInstantiabilityTest extends TestCase
 
         $instantiability = new ResourceInstantiability(
             $className,
-            [new AttributeConstructorParameter('type', 'type')],
+            ['f' => [new AttributeConstructorBehavior('type', 'type', null)]],
             [],
-            new class implements IdentifierPostInstantiabilityInterface {
+            [new class implements IdentifierPostConstructorBehaviorInterface {
 
                 public function setIdentifier(object $entity, EntityDataInterface $entityData): bool
                 {
-                    // TODO: Implement setIdentifier() method.
+                    return false;
                 }
 
                 public function getRequiredAttributes(): array
                 {
-                    // TODO: Implement getRequiredAttributes() method.
+                    return [];
                 }
 
                 public function getOptionalAttributes(): array
                 {
-                    // TODO: Implement getOptionalAttributes() method.
+                    return [];
                 }
 
                 public function getRequiredToOneRelationships(): array
                 {
-                    // TODO: Implement getRequiredToOneRelationships() method.
+                    return [];
                 }
 
                 public function getOptionalToOneRelationships(): array
                 {
-                    // TODO: Implement getOptionalToOneRelationships() method.
+                    return [];
                 }
 
                 public function getRequiredToManyRelationships(): array
                 {
-                    // TODO: Implement getRequiredToManyRelationships() method.
+                    return [];
                 }
 
                 public function getOptionalToManyRelationships(): array
                 {
-                    // TODO: Implement getOptionalToManyRelationships() method.
+                    return [];
                 }
-            }
+            }]
         );
 
         $expected = $instantiability->getExpectedProperties();

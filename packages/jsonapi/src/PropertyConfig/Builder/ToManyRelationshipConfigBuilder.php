@@ -9,12 +9,15 @@ use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipSetability;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\CallbackToManyRelationshipSetBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\PathToManyRelationshipSetBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\ToManyRelationshipConstructorBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipSetability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipConstructorParameter;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 use InvalidArgumentException;
 
@@ -33,18 +36,19 @@ class ToManyRelationshipConfigBuilder
     implements ToManyRelationshipConfigBuilderInterface, BuildableInterface
 {
     /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
+     * @var list<RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
      */
-    protected $updatabilityFactory;
-    /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): ToManyRelationshipConstructorParameter<TCondition, TSorting>
-     */
-    protected $instantiabilityFactory;
+    protected array $updateBehaviorFactories = [];
 
     /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
+     * @var list<RelationshipConstructorBehaviorFactoryInterface<TCondition>>
      */
-    protected $postInstantiabilityFactory;
+    protected array $constructorBehaviorFactories = [];
+
+    /**
+     * @var list<RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
+     */
+    protected array $postConstructorBehaviorFactories = [];
 
     /**
      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
@@ -66,108 +70,29 @@ class ToManyRelationshipConfigBuilder
     }
 
     /**
-     * @param null|callable(TEntity, list<TRelationship>): bool $postInstantiationCallback
-     * @param non-empty-string|null $argumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
-     * @param list<TCondition> $relationshipConditions
-     *
      * @return $this
      */
-    public function instantiable(
-        bool $optional = false,
-        callable $postInstantiationCallback = null,
-        bool $argument = false,
-        ?string $argumentName = null,
+    public function creatable(
+        bool $optionalAfterConstructor = false,
+        callable $postConstructorCallback = null,
+        bool $constructorArgument = false,
+        ?string $customConstructorArgumentName = null,
         array $relationshipConditions = []
     ): self {
-        if ($argument) {
-            $this->instantiabilityFactory = new class (
-                $argumentName,
-                $relationshipConditions
-            ) {
-                /**
-                 * @param non-empty-string|null $argumentName
-                 * @param list<TCondition> $relationshipConditions
-                 */
-                public function __construct(
-                    protected readonly ?string $argumentName,
-                    protected readonly array $relationshipConditions
-                ) {}
-
-                /**
-                 * @param non-empty-string $name
-                 * @param non-empty-list<non-empty-string> $propertyPath
-                 * @param class-string<TEntity> $entityClass
-                 * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-                 *
-                 * @return ToManyRelationshipConstructorParameter<TCondition, TSorting>
-                 */
-                public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ToManyRelationshipConstructorParameter
-                {
-                    return new ToManyRelationshipConstructorParameter(
-                        $this->argumentName ?? $name,
-                        $name,
-                        $relationshipType,
-                        $this->relationshipConditions
-                    );
-                }
-            };
+        if ($constructorArgument) {
+            $this->addConstructorBehavior(
+                new ToManyRelationshipConstructorBehaviorFactory(
+                    $customConstructorArgumentName,
+                    $relationshipConditions,
+                    null
+                )
+            );
         }
 
-        $this->postInstantiabilityFactory = new class (
-            $postInstantiationCallback,
-            $relationshipConditions,
-            $optional,
-            $this->propertyAccessor,
-        ) {
-            /**
-             * @var null|callable(TEntity, list<TRelationship>): bool
-             */
-            private $postInstantiationCallback;
-
-            /**
-             * @param null|callable(TEntity, list<TRelationship>): bool $postInstantiationCallback
-             * @param list<TCondition> $relationshipConditions
-             */
-            public function __construct(
-                ?callable $postInstantiationCallback,
-                protected readonly array $relationshipConditions,
-                protected readonly bool $optional,
-                protected readonly PropertyAccessorInterface $propertyAccessor,
-            ) {
-                $this->postInstantiationCallback = $postInstantiationCallback;
-            }
-
-            /**
-             * @param non-empty-string $name
-             * @param non-empty-list<non-empty-string> $propertyPath
-             * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-             *
-             * @return RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
-             */
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetabilityInterface
-            {
-                return null === $this->postInstantiationCallback
-                    ? new PathToManyRelationshipSetability(
-                        $name,
-                        $entityClass,
-                        [],
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        $this->optional
-                    )
-                    : new CallbackToManyRelationshipSetability(
-                        $name,
-                        [],
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $this->postInstantiationCallback,
-                        $this->optional
-                    );
-            }
-        };
+        $this->addPostConstructorBehavior(null === $postConstructorCallback
+            ? new PathToManyRelationshipSetBehaviorFactory($relationshipConditions, $optionalAfterConstructor, $this->propertyAccessor, [])
+            : new CallbackToManyRelationshipSetBehaviorFactory($postConstructorCallback, $relationshipConditions, $optionalAfterConstructor, [])
+        );
 
         return $this;
     }
@@ -237,74 +162,15 @@ class ToManyRelationshipConfigBuilder
     }
 
     /**
-     * @param list<TCondition> $entityConditions
-     * @param list<TCondition> $relationshipConditions
-     * @param null|callable(TEntity, list<TRelationship>): bool $updateCallback
-     *
      * @return $this
      */
     public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): self
     {
-        $this->updatabilityFactory = new class(
-            $this->propertyAccessor,
-            $entityConditions,
-            $relationshipConditions,
-            $updateCallback
-        ) {
-            /**
-             * @var null|callable(TEntity, list<TRelationship>): bool
-             */
-            private $updateCallback;
-
-            /**
-             * @param list<TCondition> $entityConditions
-             * @param list<TCondition> $relationshipConditions
-             * @param null|callable(TEntity, list<TRelationship>): bool $updateCallback
-             */
-            public function __construct(
-                protected readonly PropertyAccessorInterface $propertyAccessor,
-                protected readonly array $entityConditions,
-                protected readonly array $relationshipConditions,
-                ?callable $updateCallback
-            ) {
-                $this->updateCallback = $updateCallback;
-            }
-
-            /**
-             * @param non-empty-string $name
-             * @param non-empty-list<non-empty-string> $propertyPath
-             * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-             *
-             * @return RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
-             */
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetabilityInterface
-            {
-                return  null === $this->updateCallback
-                    ? new PathToManyRelationshipSetability(
-                        $name,
-                        $entityClass,
-                        $this->entityConditions,
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        true
-                    )
-                    : new CallbackToManyRelationshipSetability(
-                        $name,
-                        $this->entityConditions,
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $this->updateCallback,
-                        true
-                    );
-            }
-        };
-
-        return $this;
+        return $this->addUpdateBehavior(null === $updateCallback
+            ? new PathToManyRelationshipSetBehaviorFactory($relationshipConditions, true, $this->propertyAccessor, $entityConditions)
+            : new CallbackToManyRelationshipSetBehaviorFactory($updateCallback, $relationshipConditions, true, $entityConditions)
+        );
     }
-
 
     public function build(): ToManyRelationshipConfigInterface
     {
@@ -312,13 +178,70 @@ class ToManyRelationshipConfigBuilder
             throw new InvalidArgumentException('The relationship type must be set before a config can be build.');
         }
 
+        $postConstructorBehaviors = array_map(fn (
+            RelationshipSetBehaviorFactoryInterface $factory
+        ): RelationshipSetBehaviorInterface => $factory->createSetBehavior(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass,
+            $this->relationshipType
+        ), $this->postConstructorBehaviorFactories);
+
+        $constructorBehaviors = array_map(fn(
+            RelationshipConstructorBehaviorFactoryInterface $factory
+        ): ConstructorBehaviorInterface => $factory->createRelationshipConstructorBehavior(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass,
+            $this->relationshipType
+        ), $this->constructorBehaviorFactories);
+
+        $updateBehaviors = array_map(fn(
+            RelationshipSetBehaviorFactoryInterface $factory
+        ): RelationshipSetBehaviorInterface => $factory->createSetBehavior(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass,
+            $this->relationshipType
+        ), $this->updateBehaviorFactories);
+
         return new DtoToManyRelationshipConfig(
             ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
-            ($this->updatabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
-            ($this->postInstantiabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
-            ($this->instantiabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
+            $updateBehaviors,
+            $postConstructorBehaviors,
+            $constructorBehaviors,
             $this->getFilterLink($this->relationshipType),
             $this->getSortLink($this->relationshipType)
         );
+    }
+
+    /**
+     * @return $this
+     */
+    public function addConstructorBehavior(RelationshipConstructorBehaviorFactoryInterface $behaviorFactory): ToManyRelationshipConfigBuilderInterface
+    {
+        $this->constructorBehaviorFactories[] = $behaviorFactory;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addPostConstructorBehavior(RelationshipSetBehaviorFactoryInterface $behaviorFactory): ToManyRelationshipConfigBuilderInterface
+    {
+        $this->postConstructorBehaviorFactories[] = $behaviorFactory;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addUpdateBehavior(RelationshipSetBehaviorFactoryInterface $behaviorFactory): ToManyRelationshipConfigBuilderInterface
+    {
+        $this->updateBehaviorFactories[] = $behaviorFactory;
+
+        return $this;
     }
 }

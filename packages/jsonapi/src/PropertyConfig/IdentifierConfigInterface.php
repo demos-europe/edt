@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig;
 
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
 
 /**
  * @template TEntity of object
@@ -15,11 +15,14 @@ use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterf
 interface IdentifierConfigInterface
 {
     /**
-     * @return IdentifierPostInstantiabilityInterface<TEntity>
+     * @return list<IdentifierPostConstructorBehaviorInterface<TEntity>>
      */
-    public function getPostInstantiability(): ?IdentifierPostInstantiabilityInterface;
+    public function getPostConstructorBehaviors(): array;
 
-    public function getInstantiability(): ?ConstructorParameterInterface;
+    /**
+     * @return list<ConstructorBehaviorInterface>
+     */
+    public function getConstructorBehaviors(): array;
 
     /**
      * @return IdentifierReadabilityInterface<TEntity>

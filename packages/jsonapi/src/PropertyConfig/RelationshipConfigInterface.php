@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -19,12 +19,12 @@ use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
 interface RelationshipConfigInterface extends PropertyConfigInterface
 {
     /**
-     * @return PropertySetabilityInterface<TEntity>|null
+     * @return list<PropertySetBehaviorInterface<TEntity>>
      */
-    public function getPostInstantiability(): ?PropertySetabilityInterface;
+    public function getPostConstructorBehaviors(): array;
 
     /**
-     * @return RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null
+     * @return list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>>
      */
-    public function getUpdatability(): ?RelationshipSetabilityInterface;
+    public function getUpdateBehaviors(): array;
 }

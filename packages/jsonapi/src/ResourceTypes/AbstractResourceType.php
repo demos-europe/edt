@@ -97,6 +97,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         $constructorArguments = $instantiability->getConstructorArguments($entityData);
         $entity = $instantiability->initializeEntity($constructorArguments);
+        // FIXME: check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
         $fillSideEffect = $instantiability->fillProperties($entity, $entityData);
 
         return new ModifiedEntity($entity, $fillSideEffect);
