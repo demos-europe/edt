@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.0 - 2023-10-16
 
 * refactor: refactor: restructure classes and API for resource property configuration
 
