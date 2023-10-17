@@ -37,6 +37,21 @@ trait EntityBasedGeneratorTrait
             $annotations = $this->parseAnnotations($property);
             $attributes = $this->parseAttributes($property);
 
+            // remove redundant annotations
+            // TODO: O(n*m)
+            $annotations = array_filter(
+                $annotations,
+                function (Column|OneToMany|OneToOne|ManyToOne|ManyToMany $annotation) use ($attributes): bool {
+                    foreach ($attributes as $attribute) {
+                        if ($annotation instanceof $attribute) {
+                            return !$this->isEqual($annotation, $attribute);
+                        }
+                    }
+
+                    return true;
+                }
+            );
+
             $totalCount = count($annotations) + count($attributes);
             Assert::lessThanEq($totalCount, 1, "Found $totalCount annotation and/or attribute on property `{$property->getName()}`, expected none or one.");
             if ([] !== $annotations) {
@@ -52,6 +67,62 @@ trait EntityBasedGeneratorTrait
         }
 
         return $result;
+    }
+
+    protected function isEqual(
+        Column|OneToMany|OneToOne|ManyToOne|ManyToMany $annotation,
+        Column|OneToMany|OneToOne|ManyToOne|ManyToMany $attribute
+    ): bool {
+        if ($annotation instanceof OneToMany
+            || $annotation instanceof OneToOne
+            || $annotation instanceof ManyToMany) {
+            if ($annotation->targetEntity !== $attribute->targetEntity
+                || $annotation->cascade !== $attribute->cascade
+                || $annotation->fetch !== $attribute->fetch
+                || $annotation->orphanRemoval !== $attribute->orphanRemoval
+                || $annotation->mappedBy !== $attribute->mappedBy) {
+                return false;
+            }
+        }
+        if ($annotation instanceof OneToMany
+            || $annotation instanceof ManyToMany) {
+            if ($annotation->indexBy !== $attribute->indexBy) {
+                return false;
+            }
+        }
+        if ($annotation instanceof ManyToMany
+            || $annotation instanceof OneToOne
+            || $annotation instanceof ManyToOne) {
+            if ($annotation->inversedBy !== $attribute->inversedBy) {
+                return false;
+            }
+        }
+        if ($annotation instanceof ManyToOne) {
+            if ($annotation->targetEntity !== $attribute->targetEntity
+                || $annotation->cascade !== $attribute->cascade
+                || $annotation->fetch !== $attribute->fetch) {
+                return false;
+            }
+        }
+        if ($annotation instanceof Column) {
+            if ($annotation->insertable !== $attribute->insertable
+                || $annotation->updatable !== $attribute->updatable
+                || $annotation->type !== $attribute->type
+                || $annotation->nullable !== $attribute->nullable
+                || $annotation->generated !== $attribute->generated
+                || $annotation->columnDefinition !== $attribute->columnDefinition
+                || $annotation->name !== $attribute->name
+                || $annotation->enumType !== $attribute->enumType
+                || $annotation->length !== $attribute->length
+                || $annotation->precision !== $attribute->precision
+                || $annotation->scale !== $attribute->scale
+                || $annotation->options !== $attribute->options
+                || $annotation->unique !== $attribute->unique) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: add support for redundant attributes/annotations
+
 ## 0.24.3 - 2023-10-16
 
 * feature: improve exception message
