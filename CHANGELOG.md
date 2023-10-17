@@ -4,6 +4,7 @@
 ## Unreleased
 
 * feature: add support for redundant attributes/annotations
+* refactor: use interfaces instead of callables
 
 ## 0.24.3 - 2023-10-16
 
