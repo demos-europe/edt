@@ -177,7 +177,7 @@ class ToOneRelationshipConfigBuilder
 
         $postConstructorBehaviors = array_map(fn (
             RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createSetBehavior(
+        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,
@@ -195,7 +195,7 @@ class ToOneRelationshipConfigBuilder
 
         $updateBehaviors = array_map(fn (
             RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createSetBehavior(
+        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,

@@ -180,7 +180,7 @@ class ToManyRelationshipConfigBuilder
 
         $postConstructorBehaviors = array_map(fn (
             RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createSetBehavior(
+        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,
@@ -198,7 +198,7 @@ class ToManyRelationshipConfigBuilder
 
         $updateBehaviors = array_map(fn(
             RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createSetBehavior(
+        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,
