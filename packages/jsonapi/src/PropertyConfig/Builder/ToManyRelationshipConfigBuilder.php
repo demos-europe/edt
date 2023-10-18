@@ -9,10 +9,8 @@ use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipReadability;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\CallbackToManyRelationshipSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\PathToManyRelationshipSetBehaviorFactory;
@@ -27,7 +25,7 @@ use InvalidArgumentException;
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TRelationship>
+ * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship>
  * @template-implements ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
  * @template-implements BuildableInterface<ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, TRelationship>>
  */
@@ -35,21 +33,6 @@ class ToManyRelationshipConfigBuilder
     extends RelationshipConfigBuilder
     implements ToManyRelationshipConfigBuilderInterface, BuildableInterface
 {
-    /**
-     * @var list<RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
-     */
-    protected array $updateBehaviorFactories = [];
-
-    /**
-     * @var list<RelationshipConstructorBehaviorFactoryInterface<TCondition>>
-     */
-    protected array $constructorBehaviorFactories = [];
-
-    /**
-     * @var list<RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
-     */
-    protected array $postConstructorBehaviorFactories = [];
-
     /**
      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
      */
@@ -174,36 +157,11 @@ class ToManyRelationshipConfigBuilder
 
     public function build(): ToManyRelationshipConfigInterface
     {
-        if (null === $this->relationshipType) {
-            throw new InvalidArgumentException('The relationship type must be set before a config can be build.');
-        }
+        $this->assertRelationship();
 
-        $postConstructorBehaviors = array_map(fn (
-            RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
-            $this->name,
-            $this->getPropertyPath(),
-            $this->entityClass,
-            $this->relationshipType
-        ), $this->postConstructorBehaviorFactories);
-
-        $constructorBehaviors = array_map(fn(
-            RelationshipConstructorBehaviorFactoryInterface $factory
-        ): ConstructorBehaviorInterface => $factory->createRelationshipConstructorBehavior(
-            $this->name,
-            $this->getPropertyPath(),
-            $this->entityClass,
-            $this->relationshipType
-        ), $this->constructorBehaviorFactories);
-
-        $updateBehaviors = array_map(fn(
-            RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
-            $this->name,
-            $this->getPropertyPath(),
-            $this->entityClass,
-            $this->relationshipType
-        ), $this->updateBehaviorFactories);
+        $postConstructorBehaviors = $this->getPostConstructorBehaviors();
+        $constructorBehaviors = $this->getConstructorBehaviors();
+        $updateBehaviors = $this->getUpdateBehaviors();
 
         return new DtoToManyRelationshipConfig(
             ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
