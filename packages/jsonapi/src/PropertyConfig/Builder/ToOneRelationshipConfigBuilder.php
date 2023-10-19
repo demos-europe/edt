@@ -45,12 +45,12 @@ class ToOneRelationshipConfigBuilder
      * @param non-empty-string $name
      */
     public function __construct(
-        protected readonly string $entityClass,
+        string $entityClass,
         protected readonly string $relationshipClass,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         string $name
     ) {
-        parent::__construct($name);
+        parent::__construct($entityClass, $name);
     }
 
     /**
@@ -155,19 +155,17 @@ class ToOneRelationshipConfigBuilder
 
     public function build(): ToOneRelationshipConfigInterface
     {
-        $this->assertRelationship();
-
         $postConstructorBehaviors = $this->getPostConstructorBehaviors();
         $constructorBehaviors = $this->getConstructorBehaviors();
         $updateBehaviors = $this->getUpdateBehaviors();
 
         return new DtoToOneRelationshipConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
+            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->getFinalRelationshipType()),
             $updateBehaviors,
             $postConstructorBehaviors,
             $constructorBehaviors,
-            $this->getFilterLink($this->relationshipType),
-            $this->getSortLink($this->relationshipType)
+            $this->getFilterLink($this->getFinalRelationshipType()),
+            $this->getSortLink($this->getFinalRelationshipType())
         );
     }
 

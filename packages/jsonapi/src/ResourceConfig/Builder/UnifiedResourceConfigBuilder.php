@@ -19,6 +19,8 @@ use EDT\JsonApi\ResourceConfig\ResourceConfig;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 
@@ -31,6 +33,16 @@ use function array_key_exists;
  */
 class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
 {
+    /**
+     * @var list<ConstructorBehaviorInterface>
+     */
+    protected array $generalConstructorBehavior = [];
+
+    /**
+     * @var list<PropertySetBehaviorInterface<TEntity>>
+     */
+    protected array $generalPostConstructorBehavior = [];
+
     /**
      * @param class-string<TEntity> $entityClass
      * @param array<non-empty-string, IdentifierConfigBuilder<TEntity>|AttributeConfigBuilder<TCondition, TEntity>|ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>> $properties
@@ -83,7 +95,9 @@ class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
             $identifierConfig->build(),
             $attributeConfigs,
             $toOneRelationshipConfigs,
-            $toManyRelationshipConfig
+            $toManyRelationshipConfig,
+            $this->generalConstructorBehavior,
+            $this->generalPostConstructorBehavior
         );
     }
 
@@ -157,5 +171,19 @@ class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
     {
         Assert::keyNotExists($this->properties, $propertyName);
         $this->properties[$propertyName] = $builder;
+    }
+
+    public function addConstructorBehavior(ConstructorBehaviorInterface $behavior): ResourceConfigBuilderInterface
+    {
+        $this->generalConstructorBehavior[] = $behavior;
+
+        return $this;
+    }
+
+    public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): ResourceConfigBuilderInterface
+    {
+        $this->generalPostConstructorBehavior[] = $behavior;
+
+        return $this;
     }
 }

@@ -23,6 +23,8 @@ class EntityConstructorBehaviorTest extends TestCase
             $className,
             ['f' => [new AttributeConstructorBehavior('type', 'type', null)]],
             [],
+            [],
+            [],
             [new class implements IdentifierPostConstructorBehaviorInterface {
 
                 public function setIdentifier(object $entity, EntityDataInterface $entityData): bool

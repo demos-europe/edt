@@ -67,7 +67,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $updatability = $this->getUpdatability();
 
         $entityConditions = array_merge(
-            $updatability->getEntityConditions($entityData->getPropertyNames()),
+            $updatability->getEntityConditions($entityData),
             $this->getAccessConditions()
         );
         $identifierPropertyPath = $this->getIdentifierPropertyPath();
@@ -95,8 +95,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     {
         $instantiability = $this->getResourceConfig()->getInstantiability();
 
-        $constructorArguments = $instantiability->getConstructorArguments($entityData);
-        $entity = $instantiability->initializeEntity($constructorArguments);
+        $entity = $instantiability->initializeEntity($entityData);
         // FIXME: check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
         $fillSideEffect = $instantiability->fillProperties($entity, $entityData);
 

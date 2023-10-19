@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\ResourceBehavior;
 
+use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
+use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use EDT\Wrapping\EntityDataInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
+use function array_key_exists;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -96,15 +100,13 @@ class ResourceUpdatability extends AbstractResourceModifier
      * Does not process any paths, as the set-behavior entity conditions are expected to
      * be hardcoded and not supplied via request.
      *
-     * @param list<non-empty-string> $propertyNames the properties for which values are to be set
-     *
      * @return list<TCondition>
      */
-    public function getEntityConditions(array $propertyNames): array
+    public function getEntityConditions(EntityDataInterface $entityData): array
     {
         $entityConditions = array_map(
-            static fn (PropertySetBehaviorInterface $accessibility): array => $accessibility->getEntityConditions(),
-            $this->getRelevantSetabilities($propertyNames)
+            static fn (PropertySetBehaviorInterface $accessibility): array => $accessibility->getEntityConditions($entityData),
+            $this->getRelevantSetabilities($entityData->getPropertyNames())
         );
 
         return array_merge(...$entityConditions);
@@ -113,34 +115,53 @@ class ResourceUpdatability extends AbstractResourceModifier
     /**
      * @param non-empty-string $propertyName
      *
-     * @return list<PropertyUpdatabilityInterface<TCondition, TEntity>>
+     * @return array<non-empty-string, PropertyReadableTypeInterface<TCondition, TSorting, object>&NamedTypeInterface&EntityBasedInterface<object>>
      */
-    public function getAttribute(string $propertyName): array
+    public function getToOneRelationshipTypes(string $propertyName): array
     {
-        return $this->attributes[$propertyName]
+        $behaviors = $this->toOneRelationships[$propertyName]
             ?? throw new InvalidArgumentException("To-one relationship `$propertyName` not available.");
+
+        return $this->extractRelationshipTypes($behaviors);
     }
 
     /**
      * @param non-empty-string $propertyName
      *
-     * @return list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, object>>
+     * @return array<non-empty-string, PropertyReadableTypeInterface<TCondition, TSorting, object>&NamedTypeInterface&EntityBasedInterface<object>>
      */
-    public function getToOneRelationship(string $propertyName): array
+    public function getToManyRelationshipTypes(string $propertyName): array
     {
-        return $this->toOneRelationships[$propertyName]
-            ?? throw new InvalidArgumentException("To-one relationship `$propertyName` not available.");
-    }
-
-    /**
-     * @param non-empty-string $propertyName
-     *
-     * @return list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, object>>
-     */
-    public function getToManyRelationship(string $propertyName): array
-    {
-        return $this->toManyRelationships[$propertyName]
+        $behaviors = $this->toManyRelationships[$propertyName]
             ?? throw new InvalidArgumentException("To-many relationship `$propertyName` not available");
+
+        return $this->extractRelationshipTypes($behaviors);
+    }
+
+    /**
+     * @template TRelationship of object
+     *
+     * @param list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>> $behaviors
+     *
+     * @return array<non-empty-string, PropertyReadableTypeInterface<TCondition, TSorting, TRelationship>&NamedTypeInterface&EntityBasedInterface<TRelationship>>
+     */
+    protected function extractRelationshipTypes(array $behaviors): array
+    {
+        $relationshipTypes = [];
+
+        foreach ($behaviors as $behavior) {
+            $relationshipType = $behavior->getRelationshipType();
+            $typeName = $relationshipType->getTypeName();
+            if (array_key_exists($typeName, $relationshipTypes)) {
+                if ($relationshipTypes[$typeName] !== $relationshipType) {
+                    throw new InvalidArgumentException("There are at least two update behaviors configured for the same property that have set different relationship type implementations with the same name `$typeName`. This is currently not supported.");
+                }
+            } else {
+                $relationshipTypes[$typeName] = $relationshipType;
+            }
+        }
+
+        return $relationshipTypes;
     }
 
     protected function getParameterConstrains(): array

@@ -17,6 +17,7 @@ use ReflectionAttribute;
 use ReflectionProperty;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Webmozart\Assert\Assert;
+use function get_class;
 
 trait EntityBasedGeneratorTrait
 {
@@ -44,7 +45,22 @@ trait EntityBasedGeneratorTrait
                 function (Column|OneToMany|OneToOne|ManyToOne|ManyToMany $annotation) use ($attributes): bool {
                     foreach ($attributes as $attribute) {
                         if ($annotation instanceof $attribute) {
-                            return !$this->isEqual($annotation, $attribute);
+                            if ($attribute instanceof Column && $annotation instanceof Column) {
+                                return !$this->isEqualColumn($annotation, $attribute);
+                            }
+                            if ($attribute instanceof OneToOne && $annotation instanceof OneToOne) {
+                                return !$this->isEqualOneToOne($annotation, $attribute);
+                            }
+                            if ($attribute instanceof OneToMany && $annotation instanceof OneToMany) {
+                                return !$this->isEqualOneToMany($annotation, $attribute);
+                            }
+                            if ($attribute instanceof ManyToOne && $annotation instanceof ManyToOne) {
+                                return !$this->isEqualManyToOne($annotation, $attribute);
+                            }
+                            if ($attribute instanceof ManyToMany && $annotation instanceof ManyToMany) {
+                                return !$this->isEqualManyToMany($annotation, $attribute);
+                            }
+                            throw new InvalidArgumentException(get_class($annotation) . ', ' . get_class($attribute));
                         }
                     }
 
@@ -53,7 +69,7 @@ trait EntityBasedGeneratorTrait
             );
 
             $totalCount = count($annotations) + count($attributes);
-            Assert::lessThanEq($totalCount, 1, "Found $totalCount annotation and/or attribute on property `{$property->getName()}`, expected none or one.");
+            Assert::lessThanEq($totalCount, 1, "Found $totalCount relevant annotations and/or attributes on property `{$property->getName()}`, expected none or one.");
             if ([] !== $annotations) {
                 $used = $annotations;
             } elseif ([] !== $attributes) {
@@ -69,60 +85,60 @@ trait EntityBasedGeneratorTrait
         return $result;
     }
 
-    protected function isEqual(
-        Column|OneToMany|OneToOne|ManyToOne|ManyToMany $annotation,
-        Column|OneToMany|OneToOne|ManyToOne|ManyToMany $attribute
-    ): bool {
-        if ($annotation instanceof OneToMany
-            || $annotation instanceof OneToOne
-            || $annotation instanceof ManyToMany) {
-            if ($annotation->targetEntity !== $attribute->targetEntity
-                || $annotation->cascade !== $attribute->cascade
-                || $annotation->fetch !== $attribute->fetch
-                || $annotation->orphanRemoval !== $attribute->orphanRemoval
-                || $annotation->mappedBy !== $attribute->mappedBy) {
-                return false;
-            }
-        }
-        if ($annotation instanceof OneToMany
-            || $annotation instanceof ManyToMany) {
-            if ($annotation->indexBy !== $attribute->indexBy) {
-                return false;
-            }
-        }
-        if ($annotation instanceof ManyToMany
-            || $annotation instanceof OneToOne
-            || $annotation instanceof ManyToOne) {
-            if ($annotation->inversedBy !== $attribute->inversedBy) {
-                return false;
-            }
-        }
-        if ($annotation instanceof ManyToOne) {
-            if ($annotation->targetEntity !== $attribute->targetEntity
-                || $annotation->cascade !== $attribute->cascade
-                || $annotation->fetch !== $attribute->fetch) {
-                return false;
-            }
-        }
-        if ($annotation instanceof Column) {
-            if ($annotation->insertable !== $attribute->insertable
-                || $annotation->updatable !== $attribute->updatable
-                || $annotation->type !== $attribute->type
-                || $annotation->nullable !== $attribute->nullable
-                || $annotation->generated !== $attribute->generated
-                || $annotation->columnDefinition !== $attribute->columnDefinition
-                || $annotation->name !== $attribute->name
-                || $annotation->enumType !== $attribute->enumType
-                || $annotation->length !== $attribute->length
-                || $annotation->precision !== $attribute->precision
-                || $annotation->scale !== $attribute->scale
-                || $annotation->options !== $attribute->options
-                || $annotation->unique !== $attribute->unique) {
-                return false;
-            }
-        }
+    protected function isEqualOneToOne(OneToOne $annotation, OneToOne $attribute): bool
+    {
+        return $annotation->targetEntity === $attribute->targetEntity
+            && $annotation->cascade === $attribute->cascade
+            && $annotation->fetch === $attribute->fetch
+            && $annotation->orphanRemoval === $attribute->orphanRemoval
+            && $annotation->mappedBy === $attribute->mappedBy
+            && $annotation->inversedBy === $attribute->inversedBy;
+    }
 
-        return true;
+    protected function isEqualOneToMany(OneToMany $annotation, OneToMany $attribute): bool
+    {
+        return $annotation->targetEntity === $attribute->targetEntity
+            && $annotation->cascade === $attribute->cascade
+            && $annotation->fetch === $attribute->fetch
+            && $annotation->orphanRemoval === $attribute->orphanRemoval
+            && $annotation->mappedBy === $attribute->mappedBy
+            && $annotation->indexBy !== $attribute->indexBy;
+    }
+
+    protected function isEqualColumn(Column $annotation, Column $attribute): bool
+    {
+        return $annotation->insertable === $attribute->insertable
+            && $annotation->updatable === $attribute->updatable
+            && $annotation->type === $attribute->type
+            && $annotation->nullable === $attribute->nullable
+            && $annotation->generated === $attribute->generated
+            && $annotation->columnDefinition === $attribute->columnDefinition
+            && $annotation->name === $attribute->name
+            && $annotation->enumType === $attribute->enumType
+            && $annotation->length === $attribute->length
+            && $annotation->precision === $attribute->precision
+            && $annotation->scale === $attribute->scale
+            && $annotation->options === $attribute->options
+            && $annotation->unique === $attribute->unique;
+    }
+
+    protected function isEqualManyToOne(ManyToOne $annotation, ManyToOne $attribute): bool
+    {
+         return $annotation->inversedBy === $attribute->inversedBy
+             && $annotation->targetEntity === $attribute->targetEntity
+             && $annotation->cascade === $attribute->cascade
+             && $annotation->fetch === $attribute->fetch;
+    }
+
+    protected function isEqualManyToMany(ManyToMany $annotation, ManyToMany $attribute): bool
+    {
+        return $annotation->targetEntity === $attribute->targetEntity
+            && $annotation->cascade === $attribute->cascade
+            && $annotation->fetch === $attribute->fetch
+            && $annotation->orphanRemoval === $attribute->orphanRemoval
+            && $annotation->mappedBy === $attribute->mappedBy
+            && $annotation->indexBy === $attribute->indexBy
+            && $annotation->inversedBy === $attribute->inversedBy;
     }
 
     /**

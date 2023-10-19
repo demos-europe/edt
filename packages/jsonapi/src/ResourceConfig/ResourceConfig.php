@@ -15,6 +15,8 @@ use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
@@ -42,21 +44,29 @@ class ResourceConfig implements ResourceConfigInterface
      * @param array<non-empty-string, AttributeConfigInterface<TCondition, TEntity>> $attributeConfigs
      * @param array<non-empty-string, ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, object>> $toOneRelationshipConfigs
      * @param array<non-empty-string, ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, object>> $toManyRelationshipConfigs
+     * @param list<ConstructorBehaviorInterface> $generalConstructorBehaviors
+     * @param list<PropertySetBehaviorInterface<TEntity>> $generalPostConstructorBehaviors
      */
     public function __construct(
         protected readonly string $entityClass,
         protected readonly IdentifierConfigInterface $identifierConfig,
         protected readonly array $attributeConfigs,
         protected readonly array $toOneRelationshipConfigs,
-        protected readonly array $toManyRelationshipConfigs
+        protected readonly array $toManyRelationshipConfigs,
+        protected readonly array $generalConstructorBehaviors,
+        protected readonly array $generalPostConstructorBehaviors
     ) {
-        $this->propertyConfigs =  array_merge(
+        $this->propertyConfigs = array_merge(
             $this->attributeConfigs,
             $this->toOneRelationshipConfigs,
             $this->toManyRelationshipConfigs
         );
         Assert::keyNotExists($this->propertyConfigs, ContentField::ID);
         Assert::keyNotExists($this->propertyConfigs, ContentField::TYPE);
+        Assert::count(
+            $this->propertyConfigs,
+            count($this->attributeConfigs) + count($this->toOneRelationshipConfigs) + count($this->toManyRelationshipConfigs)
+        );
     }
 
     public function getInstantiability(): ResourceInstantiability
@@ -78,7 +88,9 @@ class ResourceConfig implements ResourceConfigInterface
         return new ResourceInstantiability(
             $this->entityClass,
             $constructorParameterConfigs,
+            $this->generalConstructorBehaviors,
             $setabilities,
+            $this->generalPostConstructorBehaviors,
             $this->identifierConfig->getPostConstructorBehaviors()
         );
     }

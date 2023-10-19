@@ -44,12 +44,12 @@ class ToManyRelationshipConfigBuilder
      * @param non-empty-string $name
      */
     public function __construct(
-        protected readonly string $entityClass,
+        string $entityClass,
         protected readonly string $relationshipClass,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         string $name
     ) {
-        parent::__construct($name);
+        parent::__construct($entityClass, $name);
     }
 
     /**
@@ -157,19 +157,19 @@ class ToManyRelationshipConfigBuilder
 
     public function build(): ToManyRelationshipConfigInterface
     {
-        $this->assertRelationship();
+        $relationshipType = $this->getFinalRelationshipType();
 
         $postConstructorBehaviors = $this->getPostConstructorBehaviors();
         $constructorBehaviors = $this->getConstructorBehaviors();
         $updateBehaviors = $this->getUpdateBehaviors();
 
         return new DtoToManyRelationshipConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
+            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $relationshipType),
             $updateBehaviors,
             $postConstructorBehaviors,
             $constructorBehaviors,
-            $this->getFilterLink($this->relationshipType),
-            $this->getSortLink($this->relationshipType)
+            $this->getFilterLink($relationshipType),
+            $this->getSortLink($relationshipType)
         );
     }
 

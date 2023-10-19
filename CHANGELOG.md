@@ -3,6 +3,8 @@
 
 ## Unreleased
 
+* feature: add support for general creation behaviors
+* feature: allow creation-configuration of ID config builders
 * feature: add support for redundant attributes/annotations
 * refactor: use interfaces instead of callables
 

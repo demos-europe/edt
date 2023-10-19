@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\PropertyBehavior\NonRelationshipConstructorBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
 
 /**
@@ -19,7 +19,7 @@ interface AttributeConfigBuilderInterface extends PropertyConfigBuilderInterface
     /**
      * @return $this
      */
-    public function addConstructorBehavior(NonRelationshipConstructorBehaviorFactoryInterface $behaviorFactory): self;
+    public function addConstructorBehavior(ConstructorBehaviorFactoryInterface $behaviorFactory): self;
 
     /**
      * @param PropertyUpdatabilityFactoryInterface<TCondition> $behaviorFactory

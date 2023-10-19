@@ -17,7 +17,7 @@ use EDT\Wrapping\PropertyBehavior\Attribute\Factory\AttributeConstructorBehavior
 use EDT\Wrapping\PropertyBehavior\Attribute\Factory\CallbackAttributeSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\Factory\PathAttributeSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeReadability;
-use EDT\Wrapping\PropertyBehavior\NonRelationshipConstructorBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
@@ -51,7 +51,7 @@ class AttributeConfigBuilder
     protected array $updateBehaviorFactories = [];
 
     /**
-     * @var list<NonRelationshipConstructorBehaviorFactoryInterface>
+     * @var list<ConstructorBehaviorFactoryInterface>
      */
     protected array $constructorBehaviorFactories = [];
 
@@ -171,8 +171,8 @@ class AttributeConfigBuilder
         ), $this->postConstructorBehaviorFactories);
 
         $constructorBehaviors = array_map(fn (
-            NonRelationshipConstructorBehaviorFactoryInterface $factory
-        ): ConstructorBehaviorInterface => $factory->createNonRelationshipConstructorBehavior(
+            ConstructorBehaviorFactoryInterface $factory
+        ): ConstructorBehaviorInterface => $factory->createConstructorBehavior(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass
@@ -197,7 +197,7 @@ class AttributeConfigBuilder
         );
     }
 
-    public function addConstructorBehavior(NonRelationshipConstructorBehaviorFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
+    public function addConstructorBehavior(ConstructorBehaviorFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
     {
         $this->constructorBehaviorFactories[] = $behaviorFactory;
 

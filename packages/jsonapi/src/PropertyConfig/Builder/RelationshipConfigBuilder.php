@@ -44,6 +44,16 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
     protected array $updateBehaviorFactories = [];
 
     /**
+     * @param class-string<TEntity> $entityClass
+     */
+    public function __construct(
+        protected readonly string $entityClass,
+        string $name
+    ) {
+        parent::__construct($name);
+    }
+
+    /**
      * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      *
      * @return static
@@ -114,7 +124,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,
-            $this->relationshipType
+            $this->getFinalRelationshipType()
         ), $this->postConstructorBehaviorFactories);
     }
 
@@ -129,12 +139,12 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,
-            $this->relationshipType
+            $this->getFinalRelationshipType()
         ), $this->constructorBehaviorFactories);
     }
 
     /**
-     * @return list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>
+     * @return list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>>
      */
     protected function getUpdateBehaviors(): array
     {
@@ -144,12 +154,17 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,
-            $this->relationshipType
+            $this->getFinalRelationshipType()
         ), $this->updateBehaviorFactories);
     }
 
-    protected function assertRelationship(): void
+    /**
+     * @return ResourceTypeInterface<TCondition, TSorting, TRelationship>
+     */
+    protected function getFinalRelationshipType(): ResourceTypeInterface
     {
         Assert::notNull($this->relationshipType, 'The relationship type must be set before a config can be build.');
+
+        return $this->relationshipType;
     }
 }
