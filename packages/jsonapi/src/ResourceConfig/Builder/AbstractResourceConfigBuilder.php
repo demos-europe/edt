@@ -18,10 +18,10 @@ use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceConfig\ResourceConfig;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
-use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -56,6 +56,11 @@ abstract class AbstractResourceConfigBuilder implements ResourceConfigBuilderInt
      * @var list<PropertySetBehaviorInterface<TEntity>>
      */
     protected array $generalPostConstructorBehavior = [];
+
+    /**
+     * @var list<PropertyUpdatabilityInterface<TCondition, TEntity>>
+     */
+    protected array $generalUpdateBehaviors = [];
 
     /**
      * @param class-string<TEntity> $entityClass
@@ -118,7 +123,8 @@ abstract class AbstractResourceConfigBuilder implements ResourceConfigBuilderInt
             $this->getBuiltToOneRelationshipConfigs(),
             $this->getBuiltToManyRelationshipConfigs(),
             $this->generalConstructorBehavior,
-            $this->generalPostConstructorBehavior
+            $this->generalPostConstructorBehavior,
+            $this->generalUpdateBehaviors
         );
     }
 
@@ -173,6 +179,13 @@ abstract class AbstractResourceConfigBuilder implements ResourceConfigBuilderInt
     public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): ResourceConfigBuilderInterface
     {
         $this->generalPostConstructorBehavior[] = $behavior;
+
+        return $this;
+    }
+
+    public function addUpdateBehavior(PropertyUpdatabilityInterface $updateBehavior): ResourceConfigBuilderInterface
+    {
+        $this->generalUpdateBehaviors[] = $updateBehavior;
 
         return $this;
     }

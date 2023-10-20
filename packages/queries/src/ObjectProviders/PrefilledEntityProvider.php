@@ -54,7 +54,7 @@ class PrefilledEntityProvider implements OffsetEntityProviderInterface
             return $list;
         }
 
-        return $this->sorter->sortArray($list, $sortMethods);
+        return array_values($this->sorter->sortArray($list, $sortMethods));
     }
 
     /**
@@ -66,7 +66,7 @@ class PrefilledEntityProvider implements OffsetEntityProviderInterface
     protected function filter(array $list, array $conditions): array
     {
         if ([] !== $conditions) {
-            $list = $this->conditionEvaluator->filterArray($list, ...$conditions);
+            $list = array_values($this->conditionEvaluator->filterArray($list, ...$conditions));
         }
 
         return $list;

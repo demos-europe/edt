@@ -150,14 +150,14 @@ trait EntityBasedGeneratorTrait
         $cacheProvider = new ArrayAdapter();
         $reader = new PsrCachedReader($annotationReader, $cacheProvider);
 
-        return array_filter(
-            array_values($reader->getPropertyAnnotations($property)),
+        return array_values(array_filter(
+            $reader->getPropertyAnnotations($property),
             static fn (object $input): bool => $input instanceof Column
                 || $input instanceof OneToMany
                 || $input instanceof OneToOne
                 || $input instanceof ManyToOne
                 || $input instanceof ManyToMany
-        );
+        ));
     }
 
     /**
@@ -172,14 +172,14 @@ trait EntityBasedGeneratorTrait
             array_values($property->getAttributes())
         );
 
-        return array_filter(
+        return array_values(array_filter(
             $attributes,
             static fn (object $input): bool => $input instanceof Column
                 || $input instanceof OneToMany
                 || $input instanceof OneToOne
                 || $input instanceof ManyToOne
                 || $input instanceof ManyToMany
-        );
+        ));
     }
 
     /**

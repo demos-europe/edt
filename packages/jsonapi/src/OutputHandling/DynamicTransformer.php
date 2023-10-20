@@ -337,7 +337,7 @@ class DynamicTransformer extends TransformerAbstract
         }
 
         // requested attribute fields
-        $fieldset = Iterables::asArray($fieldsetBag);
+        $fieldset = iterator_to_array($fieldsetBag);
         return array_filter(
             $this->attributeReadabilities,
             static fn (string $attributeName): bool => in_array($attributeName, $fieldset, true),

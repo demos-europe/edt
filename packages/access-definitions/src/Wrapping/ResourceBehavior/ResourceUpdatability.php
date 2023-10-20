@@ -27,11 +27,13 @@ class ResourceUpdatability extends AbstractResourceModifier
      * @param array<non-empty-string, list<PropertyUpdatabilityInterface<TCondition, TEntity>>> $attributes
      * @param array<non-empty-string, list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, object>>> $toOneRelationships
      * @param array<non-empty-string, list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, object>>> $toManyRelationships
+     * @param list<PropertyUpdatabilityInterface<TCondition, TEntity>> $generalUpdateBehaviors
      */
     public function __construct(
         protected readonly array $attributes,
         protected readonly array $toOneRelationships,
-        protected readonly array $toManyRelationships
+        protected readonly array $toManyRelationships,
+        protected readonly array $generalUpdateBehaviors
     ) {
         Assert::isEmpty(array_intersect_key($this->attributes, $this->toOneRelationships));
         Assert::isEmpty(array_intersect_key($this->attributes, $this->toManyRelationships));
@@ -54,6 +56,7 @@ class ResourceUpdatability extends AbstractResourceModifier
         $relevantToManyRelationships = array_intersect_key($this->toManyRelationships, $allowedKeys);
 
         return array_merge(
+            $this->generalUpdateBehaviors,
             array_merge(...array_values($relevantAttributes)),
             array_merge(...array_values($relevantToOneRelationships)),
             array_merge(...array_values($relevantToManyRelationships))

@@ -21,6 +21,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 
@@ -42,6 +43,11 @@ class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
      * @var list<PropertySetBehaviorInterface<TEntity>>
      */
     protected array $generalPostConstructorBehavior = [];
+
+    /**
+     * @var list<PropertyUpdatabilityInterface<TCondition, TEntity>>
+     */
+    protected array $generalUpdateBehaviors = [];
 
     /**
      * @param class-string<TEntity> $entityClass
@@ -97,7 +103,8 @@ class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
             $toOneRelationshipConfigs,
             $toManyRelationshipConfig,
             $this->generalConstructorBehavior,
-            $this->generalPostConstructorBehavior
+            $this->generalPostConstructorBehavior,
+            $this->generalUpdateBehaviors
         );
     }
 
@@ -183,6 +190,13 @@ class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
     public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): ResourceConfigBuilderInterface
     {
         $this->generalPostConstructorBehavior[] = $behavior;
+
+        return $this;
+    }
+
+    public function addUpdateBehavior(PropertyUpdatabilityInterface $updateBehavior): ResourceConfigBuilderInterface
+    {
+        $this->generalUpdateBehaviors[] = $updateBehavior;
 
         return $this;
     }

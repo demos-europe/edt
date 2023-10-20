@@ -162,7 +162,7 @@ class RequestTransformer
                     \Webmozart\Assert\Assert::stringNotEmpty($id);
                     $type = $data[ContentField::TYPE];
                     \Webmozart\Assert\Assert::stringNotEmpty($type);
-                    $toManyRelationships[$propertyName][$index] = [
+                    $toManyRelationships[$propertyName][] = [
                         ContentField::ID   => $id,
                         ContentField::TYPE => $type,
                     ];

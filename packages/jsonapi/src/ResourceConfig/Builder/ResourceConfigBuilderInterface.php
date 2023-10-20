@@ -16,6 +16,7 @@ use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -84,6 +85,13 @@ interface ResourceConfigBuilderInterface
      * @return $this
      */
     public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): self;
+
+    /**
+     * @param PropertyUpdatabilityInterface<TCondition, TEntity> $updateBehavior
+     *
+     * @return $this
+     */
+    public function addUpdateBehavior(PropertyUpdatabilityInterface $updateBehavior): self;
 
     /**
      * @return ResourceConfigInterface<TCondition, TSorting, TEntity>

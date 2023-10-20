@@ -17,6 +17,7 @@ use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
@@ -46,6 +47,7 @@ class ResourceConfig implements ResourceConfigInterface
      * @param array<non-empty-string, ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, object>> $toManyRelationshipConfigs
      * @param list<ConstructorBehaviorInterface> $generalConstructorBehaviors
      * @param list<PropertySetBehaviorInterface<TEntity>> $generalPostConstructorBehaviors
+     * @param list<PropertyUpdatabilityInterface<TCondition, TEntity>> $generalUpdateBehaviors
      */
     public function __construct(
         protected readonly string $entityClass,
@@ -54,7 +56,8 @@ class ResourceConfig implements ResourceConfigInterface
         protected readonly array $toOneRelationshipConfigs,
         protected readonly array $toManyRelationshipConfigs,
         protected readonly array $generalConstructorBehaviors,
-        protected readonly array $generalPostConstructorBehaviors
+        protected readonly array $generalPostConstructorBehaviors,
+        protected readonly array $generalUpdateBehaviors
     ) {
         $this->propertyConfigs = array_merge(
             $this->attributeConfigs,
@@ -110,7 +113,7 @@ class ResourceConfig implements ResourceConfigInterface
             $this->toManyRelationshipConfigs
         );
 
-        return new ResourceUpdatability($attributes, $toOneRelationships, $toManyRelationships);
+        return new ResourceUpdatability($attributes, $toOneRelationships, $toManyRelationships, $this->generalUpdateBehaviors);
     }
 
     public function getReadability(): ResourceReadability

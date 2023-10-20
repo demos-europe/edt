@@ -316,6 +316,16 @@ parameters:
             path: packages/jsonapi/src/Pagination/PagePaginationParser.php
 
         -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\IdentifierConfigBuilder\\<TEntity of object\\>\\:\\:addConstructorBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\IdentifierConstructorBehaviorFactoryInterface\\<TEntity of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\DataProvidedIdentifierConstructorBehaviorFactory\\<object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/IdentifierConfigBuilder.php
+
+        -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\IdentifierConfigBuilder\\<TEntity of object\\>\\:\\:addPostConstructorBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\IdentifierPostConstructorBehaviorFactoryInterface\\<TEntity of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\PathIdentifierPostConstructorBehaviorFactory\\<object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/IdentifierConfigBuilder.php
+
+        -
             message: """
                 #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
                 will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadability\\(\\)\\} instead$#
