@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.4 - 2023-10-20
 
 * feature: add support for general update behaviors
 * feature: add support for general creation behaviors
