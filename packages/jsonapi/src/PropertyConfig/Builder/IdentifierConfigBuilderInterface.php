@@ -38,7 +38,7 @@ interface IdentifierConfigBuilderInterface extends PropertyConfigBuilderInterfac
      *
      * @return $this
      */
-    public function creatable(
+    public function initializable(
         bool $optionalAfterConstructor = false,
         bool $constructorArgument = false,
         ?string $customConstructorArgumentName = null

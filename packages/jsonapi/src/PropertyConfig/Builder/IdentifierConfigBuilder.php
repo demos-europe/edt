@@ -151,7 +151,7 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
         return $this;
     }
 
-    public function creatable(bool $optionalAfterConstructor = false, bool $constructorArgument = false, ?string $customConstructorArgumentName = null): IdentifierConfigBuilderInterface
+    public function initializable(bool $optionalAfterConstructor = false, bool $constructorArgument = false, ?string $customConstructorArgumentName = null): IdentifierConfigBuilderInterface
     {
         if ($constructorArgument) {
             $this->addConstructorBehavior(

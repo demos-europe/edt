@@ -56,7 +56,7 @@ class ToOneRelationshipConfigBuilder
     /**
      * @return $this
      */
-    public function creatable(
+    public function initializable(
         bool $optionalAfterConstructor = false,
         callable $postConstructorCallback = null,
         bool $constructorArgument = false,
