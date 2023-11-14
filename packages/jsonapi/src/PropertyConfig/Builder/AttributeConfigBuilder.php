@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
-use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\PropertyConfig\AttributeConfigInterface;
 use EDT\JsonApi\PropertyConfig\DtoAttributeConfig;
 use EDT\Querying\Contracts\PathsBasedInterface;
@@ -22,6 +21,7 @@ use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
+use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -63,7 +63,7 @@ class AttributeConfigBuilder
         string $name,
         protected readonly string $entityClass,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver $typeResolver
+        protected readonly AttributeTypeResolverInterface $typeResolver
     ) {
         parent::__construct($name);
         Assert::notSame($this->name, ContentField::ID);
@@ -115,7 +115,7 @@ class AttributeConfigBuilder
              */
             public function __construct(
                 protected readonly PropertyAccessorInterface $propertyAccessor,
-                protected readonly AttributeTypeResolver $typeResolver,
+                protected readonly AttributeTypeResolverInterface $typeResolver,
                 protected readonly bool $defaultField,
                 callable $customReadCallback = null
             ) {

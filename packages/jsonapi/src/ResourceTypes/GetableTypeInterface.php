@@ -21,8 +21,6 @@ interface GetableTypeInterface extends ReadableTypeInterface, NamedTypeInterface
      *
      * Implementations are responsible to not return instances with restricted accessibility.
      *
-     * The given conditions must only access properties that are allowed for external filtering usage.
-     *
      * @param non-empty-string $identifier
      *
      * @return TEntity
