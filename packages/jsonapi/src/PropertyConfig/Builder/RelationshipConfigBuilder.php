@@ -8,7 +8,6 @@ use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\PropertyPaths\RelationshipLink;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
@@ -74,10 +73,6 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
             return null;
         }
 
-        if ($this->isExposedType()) {
-            return null;
-        }
-
         return new RelationshipLink(
             $this->getPropertyPath(),
             static fn (): array => $relationshipType->getFilteringProperties()
@@ -93,24 +88,10 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
             return null;
         }
 
-        if ($this->isExposedType()) {
-            return null;
-        }
-
         return new RelationshipLink(
             $this->getPropertyPath(),
             static fn (): array => $relationshipType->getSortingProperties()
         );
-    }
-
-    /**
-     * Even if a relationship property was defined in a type, we do not allow its usage if the
-     * target type of the relationship is not set as exposed.
-     */
-    protected function isExposedType(): bool
-    {
-        return $this->relationshipType instanceof ExposableRelationshipTypeInterface
-            && $this->relationshipType->isExposedAsRelationship();
     }
 
     /**
