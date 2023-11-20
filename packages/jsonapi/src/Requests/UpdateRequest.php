@@ -50,12 +50,14 @@ class UpdateRequest
         $afterUpdateEvent = new AfterUpdateEvent($type, $entity);
         $this->eventDispatcher->dispatch($afterUpdateEvent);
 
-        $sideEffects = $modifiedEntity->hasSideEffects()
-            || $beforeUpdateEvent->hasSideEffects()
-            || $afterUpdateEvent->hasSideEffects();
+        $requestDeviations = array_merge(
+            $modifiedEntity->getRequestDeviations(),
+            $beforeUpdateEvent->getRequestDeviations(),
+            $afterUpdateEvent->getRequestDeviations()
+        );
 
-        if (!$sideEffects) {
-            // if there were no side effects, no response body is needed
+        if ([] === $requestDeviations) {
+            // if there were no request deviations, no response body is needed
             return null;
         }
 

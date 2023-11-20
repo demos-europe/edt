@@ -6,15 +6,24 @@ namespace EDT\JsonApi\Event;
 
 trait ModifyEventTrait
 {
-    protected bool $sideEffects = false;
+    /**
+     * @var list<non-empty-string>
+     */
+    protected array $requestDeviations = [];
 
-    public function hasSideEffects(): bool
+    /**
+     * @return list<non-empty-string>
+     */
+    public function getRequestDeviations(): array
     {
-        return $this->sideEffects;
+        return $this->requestDeviations;
     }
 
-    public function setSideEffects(bool $sideEffects): void
+    /**
+     * @param list<non-empty-string> $requestDeviations
+     */
+    public function setRequestDeviations(array $requestDeviations): void
     {
-        $this->sideEffects = $sideEffects;
+        $this->requestDeviations = $requestDeviations;
     }
 }

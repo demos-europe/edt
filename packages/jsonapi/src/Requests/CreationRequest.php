@@ -46,12 +46,14 @@ class CreationRequest
         $afterCreationEvent = new AfterCreationEvent($type, $entity);
         $this->eventDispatcher->dispatch($afterCreationEvent);
 
-        $sideEffects = $modifiedEntity->hasSideEffects()
-            || $beforeCreationEvent->hasSideEffects()
-            || $afterCreationEvent->hasSideEffects();
+        $requestDeviations = array_merge(
+            $modifiedEntity->getRequestDeviations(),
+            $beforeCreationEvent->getRequestDeviations(),
+            $afterCreationEvent->getRequestDeviations()
+        );
 
-        if (!$sideEffects) {
-            // if there were no side effects, no response body is needed
+        if ([] === $requestDeviations) {
+            // if there were no request deviations, no response body is needed
             return null;
         }
 

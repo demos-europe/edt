@@ -27,9 +27,9 @@ class EntityConstructorBehaviorTest extends TestCase
             [],
             [new class implements IdentifierPostConstructorBehaviorInterface {
 
-                public function setIdentifier(object $entity, EntityDataInterface $entityData): bool
+                public function setIdentifier(object $entity, EntityDataInterface $entityData): array
                 {
-                    return false;
+                    return [];
                 }
 
                 public function getRequiredAttributes(): array

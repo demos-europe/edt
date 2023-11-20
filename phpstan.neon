@@ -326,14 +326,6 @@ parameters:
             path: packages/jsonapi/src/PropertyConfig/Builder/IdentifierConfigBuilder.php
 
         -
-            message: """
-                #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
-                will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadability\\(\\)\\} instead$#
-            """
-            count: 1
-            path: packages/jsonapi/src/PropertyConfig/Builder/RelationshipConfigBuilder.php
-
-        -
             message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToManyRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,TRelationship of object\\>\\:\\:addPostConstructorBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\RelationshipSetBehaviorFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToMany\\\\Factory\\\\CallbackToManyRelationshipSetBehaviorFactory\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\|EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToMany\\\\Factory\\\\PathToManyRelationshipSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, object\\> given\\.$#"
             count: 1
             path: packages/jsonapi/src/PropertyConfig/Builder/ToManyRelationshipConfigBuilder.php

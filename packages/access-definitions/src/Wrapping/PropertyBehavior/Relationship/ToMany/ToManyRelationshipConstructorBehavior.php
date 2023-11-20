@@ -22,11 +22,13 @@ class ToManyRelationshipConstructorBehavior extends AbstractRelationshipConstruc
     use PropertyUpdaterTrait;
 
     /**
+     * @template TRelationship of object
+     *
      * @param non-empty-string $argumentName
      * @param non-empty-string $propertyName
-     * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param list<TCondition> $relationshipConditions
-     * @param null|callable(CreationDataInterface): list<TransferableTypeInterface<TCondition, TSorting, object>> $fallback
+     * @param null|callable(CreationDataInterface): list<TRelationship> $fallback
      */
     public function __construct(
         string $argumentName,

@@ -23,14 +23,14 @@ interface ToOneRelationshipConfigBuilderInterface extends
     /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
-     * @param null|callable(TEntity, TRelationship|null): bool $updateCallback
+     * @param null|callable(TEntity, TRelationship|null): list<non-empty-string> $updateCallback
      *
      * @return $this
      */
     public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): self;
 
     /**
-     * @param null|callable(TEntity, TRelationship|null): bool $postConstructorCallback
+     * @param null|callable(TEntity, TRelationship|null): list<non-empty-string> $postConstructorCallback
      * @param non-empty-string|null $customConstructorArgumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
      * @param list<TCondition> $relationshipConditions
      *

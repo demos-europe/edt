@@ -37,7 +37,7 @@ interface AttributeConfigBuilderInterface extends PropertyConfigBuilderInterface
 
     /**
      * @param list<TCondition> $entityConditions
-     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $updateCallback
+     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): list<non-empty-string> $updateCallback
      *
      * @return $this
      */
@@ -45,7 +45,7 @@ interface AttributeConfigBuilderInterface extends PropertyConfigBuilderInterface
 
 
     /**
-     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $postConstructorCallback
+     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): list<non-empty-string> $postConstructorCallback
      * @param non-empty-string|null $customConstructorArgumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
      *
      * @return $this

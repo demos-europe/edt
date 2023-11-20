@@ -59,17 +59,18 @@ class ResourceInstantiability extends AbstractResourceModifier
 
     /**
      * @param TEntity $entity
+     *
+     * @return list<non-empty-string>
      */
-    public function fillProperties(object $entity, CreationDataInterface $entityData): bool
+    public function fillProperties(object $entity, CreationDataInterface $entityData): array
     {
-        $idSideEffect = false;
-
+        $nestedIdRequestDeviations = [];
         // if a specific ID was provided, check if it can be set either via constructor
         // parameter or post instantiation setter, if not throw an exception
         if (null !== $entityData->getEntityIdentifier()) {
             if ([] !== $this->identifierPostConstructorBehaviors) {
                 foreach ($this->identifierPostConstructorBehaviors as $identifierPostConstructorBehavior) {
-                    $idSideEffect = $identifierPostConstructorBehavior->setIdentifier($entity, $entityData) || $idSideEffect;
+                    $nestedIdRequestDeviations[] = $identifierPostConstructorBehavior->setIdentifier($entity, $entityData);
                 }
             } elseif (!array_key_exists(ContentField::ID, $this->propertyConstructorBehaviors)) {
                 // TODO: MUST return 403 Forbidden (https://jsonapi.org/format/#crud-creating-client-ids)
@@ -79,10 +80,10 @@ class ResourceInstantiability extends AbstractResourceModifier
 
         $flattenedPostConstructorBehaviors = $this->getFlattenedValues($this->propertyPostConstructorBehaviors);
         $flattenedPostConstructorBehaviors = array_merge($this->generalPostConstructorBehaviors, $flattenedPostConstructorBehaviors);
-        $propertySideEffects = $this
-            ->getSetabilitiesSideEffect($flattenedPostConstructorBehaviors, $entity, $entityData);
+        $requestDeviations = $this
+            ->getSetabilitiesRequestDeviations($flattenedPostConstructorBehaviors, $entity, $entityData);
 
-        return $idSideEffect && $propertySideEffects;
+        return array_unique(array_merge($requestDeviations, ...$nestedIdRequestDeviations));
     }
 
     protected function getParameterConstrains(): array

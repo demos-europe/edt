@@ -19,12 +19,16 @@ use function array_key_exists;
  */
 class ToOneRelationshipConstructorBehavior extends AbstractRelationshipConstructorBehavior
 {
+    use PropertyUpdaterTrait;
+
     /**
+     * @template TRelationship of object
+     *
      * @param non-empty-string $argumentName
      * @param non-empty-string $propertyName
-     * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param list<TCondition> $relationshipConditions
-     * @param null|callable(CreationDataInterface): (TransferableTypeInterface<TCondition, TSorting, object>|null) $fallback
+     * @param null|callable(CreationDataInterface): (TRelationship|null) $fallback
      */
     public function __construct(
         string $argumentName,
@@ -35,8 +39,6 @@ class ToOneRelationshipConstructorBehavior extends AbstractRelationshipConstruct
     ) {
         parent::__construct($argumentName, $propertyName, $relationshipType);
     }
-
-    use PropertyUpdaterTrait;
 
     /**
      * @param CreationDataInterface $entityData

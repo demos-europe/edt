@@ -74,9 +74,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         $entity = $this->getRepository()->getEntityByIdentifier($entityId, $entityConditions, $identifierPropertyPath);
 
-        $updateSideEffect = $updatability->updateProperties($entity, $entityData);
+        $requestDeviations = $updatability->updateProperties($entity, $entityData);
 
-        return new ModifiedEntity($entity, $updateSideEffect);
+        return new ModifiedEntity($entity, $requestDeviations);
     }
 
     public function getExpectedInitializationProperties(): ExpectedPropertyCollection
@@ -97,9 +97,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         $entity = $instantiability->initializeEntity($entityData);
         // FIXME: check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
-        $fillSideEffect = $instantiability->fillProperties($entity, $entityData);
+        $fillRequestDeviations = $instantiability->fillProperties($entity, $entityData);
 
-        return new ModifiedEntity($entity, $fillSideEffect);
+        return new ModifiedEntity($entity, $fillRequestDeviations);
     }
 
     /**

@@ -6,7 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Attribute;
 
 use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
-use Webmozart\Assert\Assert;
+use function array_key_exists;
 
 /**
  * When used, instances require a specific attribute to be present in the request, which will
@@ -43,12 +43,20 @@ class AttributeConstructorBehavior implements ConstructorBehaviorInterface
 
     public function getRequiredAttributes(): array
     {
-        return [$this->attributeName];
+        if (null === $this->fallback) {
+            return [$this->attributeName];
+        }
+
+        return [];
     }
 
     public function getOptionalAttributes(): array
     {
-        return [];
+        if (null === $this->fallback) {
+            return [];
+        }
+
+        return [$this->attributeName];
     }
 
     public function getRequiredToOneRelationships(): array
