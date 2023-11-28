@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.8 - 2023-11-28
 
 * feature: when setting to-many relationship properties with `ProxyPropertyAccessor`, automatically convert `array`s to Doctrine `Collection`s
 * refactor: `PropertySetBehaviorInterface::executeBehavior` must now return the list of properties that were not adjusted according to the request instead of the previously returned `bool` that implied if any properties were not adjusted according to the request
