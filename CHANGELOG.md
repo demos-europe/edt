@@ -3,9 +3,9 @@
 
 ## Unreleased
 
-* feature: when setting to-many relationship properties with `ProxyPropertyAccessor` automatically convert `array`s to Doctrine `Collection`s
+* feature: when setting to-many relationship properties with `ProxyPropertyAccessor`, automatically convert `array`s to Doctrine `Collection`s
 * refactor: `PropertySetBehaviorInterface::executeBehavior` must now return the list of properties that were not adjusted according to the request instead of the previously returned `bool` that implied if any properties were not adjusted according to the request
-  * due to these changes the following classes will now expect a callables whose return such list in their constructors:
+  * due to these changes the following classes will now expect callables in their constructors returning such list:
     * `FixedSetBehavior`
     * `CallbackAttributeSetBehaviorFactory`
     * `CallbackAttributeSetBehavior`
@@ -17,6 +17,16 @@
     * `AttributeConfigBuilderInterface`
     * `ToOneRelationshipConfigBuilderInterface`
     * `ToManyRelationshipConfigBuilderInterface`
+* refactor: for similar reasons as stated above, the `callable` parameters in following classes must now include a list of properties that were not set according to the request in their return
+  * `AttributeConstructorBehaviorFactory`
+  * `AttributeConstructorBehavior`
+  * `FixedConstructorBehaviorFactory`
+  * `RequiredRelationshipConstructorBehavior`
+  * `RequiredToOneRelationshipConstructorBehaviorFactory`
+  * `ToManyRelationshipConstructorBehavior`
+  * `ToManyRelationshipConstructorBehaviorFactory`
+  * `ToOneRelationshipConstructorBehavior`
+  * `ToOneRelationshipConstructorBehaviorFactory`
 
 ## 0.24.4 - 2023-10-20
 

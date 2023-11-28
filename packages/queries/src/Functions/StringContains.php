@@ -7,7 +7,7 @@ namespace EDT\Querying\Functions;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
- * @template-extends AbstractMultiFunction<bool, string|null, array{0: string|null, 1: string|null}>
+ * @template-extends AbstractMultiFunction<bool, string|null, array{string|null, string|null}>
  */
 class StringContains extends AbstractMultiFunction
 {

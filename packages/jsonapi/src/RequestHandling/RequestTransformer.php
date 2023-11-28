@@ -135,7 +135,7 @@ class RequestTransformer
     /**
      * @param JsonApiRelationships $relationships
      *
-     * @return array{0: array<non-empty-string, JsonApiRelationship|null>, 1: array<non-empty-string, list<JsonApiRelationship>>}
+     * @return array{array<non-empty-string, JsonApiRelationship|null>, array<non-empty-string, list<JsonApiRelationship>>}
      */
     protected function splitRelationships(array $relationships): array
     {

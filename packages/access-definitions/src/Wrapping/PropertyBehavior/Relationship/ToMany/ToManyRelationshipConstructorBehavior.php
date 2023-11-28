@@ -9,6 +9,7 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdaterTrait;
 use EDT\Wrapping\PropertyBehavior\Relationship\AbstractRelationshipConstructorBehavior;
+use InvalidArgumentException;
 use function array_key_exists;
 
 /**
@@ -28,7 +29,7 @@ class ToManyRelationshipConstructorBehavior extends AbstractRelationshipConstruc
      * @param non-empty-string $propertyName
      * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param list<TCondition> $relationshipConditions
-     * @param null|callable(CreationDataInterface): list<TRelationship> $fallback
+     * @param null|callable(CreationDataInterface): array{list<TRelationship>, list<non-empty-string>} $fallback
      */
     public function __construct(
         string $argumentName,
@@ -40,9 +41,6 @@ class ToManyRelationshipConstructorBehavior extends AbstractRelationshipConstruc
         parent::__construct($argumentName, $propertyName, $relationshipType);
     }
 
-    /**
-     * @return array<non-empty-string, list<object>>
-     */
     public function getArguments(CreationDataInterface $entityData): array
     {
         $toManyRelationships = $entityData->getToManyRelationships();
@@ -52,15 +50,14 @@ class ToManyRelationshipConstructorBehavior extends AbstractRelationshipConstruc
                 $this->relationshipConditions,
                 $toManyRelationships[$this->propertyName]
             );
+            $propertyDeviations = [];
         } elseif (null !== $this->fallback) {
-            $relationshipValues = ($this->fallback)($entityData);
+            [$relationshipValues, $propertyDeviations] = ($this->fallback)($entityData);
         } else {
-            throw new \InvalidArgumentException("No to-many relationship '$this->propertyName' present and no fallback set.");
+            throw new InvalidArgumentException("No to-many relationship '$this->propertyName' present and no fallback set.");
         }
 
-        return [
-            $this->argumentName => $relationshipValues,
-        ];
+        return [$this->argumentName => [$relationshipValues, $propertyDeviations]];
     }
 
     public function getRequiredToManyRelationships(): array

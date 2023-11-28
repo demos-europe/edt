@@ -139,7 +139,7 @@ class DynamicTransformer extends TransformerAbstract
 
     /**
      * @param non-empty-string $methodName
-     * @param array{0: TEntity, 1: ParamBag} $arguments
+     * @param array{TEntity, ParamBag} $arguments
      *
      * @throws InvalidArgumentException include name could not be determined
      * @throws PropertyTransformException transforming a specific relationship failed

@@ -95,11 +95,12 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     {
         $instantiability = $this->getResourceConfig()->getInstantiability();
 
-        $entity = $instantiability->initializeEntity($entityData);
+        [$entity, $requestDeviations] = $instantiability->initializeEntity($entityData);
         // FIXME: check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
         $fillRequestDeviations = $instantiability->fillProperties($entity, $entityData);
+        $requestDeviations = array_merge($requestDeviations, $fillRequestDeviations);
 
-        return new ModifiedEntity($entity, $fillRequestDeviations);
+        return new ModifiedEntity($entity, $requestDeviations);
     }
 
     /**

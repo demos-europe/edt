@@ -27,7 +27,7 @@ class MissingPropertiesException extends Exception
     }
 
     /**
-     * @param array{0: list<non-empty-string>, 1: list<non-empty-string>, 2: list<non-empty-string>} $nonAvailableProperties
+     * @param array{list<non-empty-string>, 1: list<non-empty-string>, list<non-empty-string>} $nonAvailableProperties
      */
     public static function nonAvailableProperties(array $nonAvailableProperties): self
     {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Functions;
 
 /**
- * @template-extends AbstractMultiFunction<bool, mixed, array{0: mixed, 1: mixed}>
+ * @template-extends AbstractMultiFunction<bool, mixed, array{mixed, mixed}>
  */
 class Smaller extends AbstractMultiFunction
 {

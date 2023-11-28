@@ -21,7 +21,7 @@ class ToOneRelationshipConstructorBehaviorFactory implements RelationshipConstru
     /**
      * @param non-empty-string|null $argumentName
      * @param list<TCondition> $relationshipConditions
-     * @param null|callable(CreationDataInterface): (object|null) $fallback
+     * @param null|callable(CreationDataInterface): array{object|null, list<non-empty-string>} $fallback
      */
     public function __construct(
         protected readonly ?string $argumentName,

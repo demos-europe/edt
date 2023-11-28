@@ -17,7 +17,7 @@ use EDT\Wrapping\PropertyBehavior\Relationship\RequiredRelationshipConstructorBe
 class RequiredToOneRelationshipConstructorBehaviorFactory implements RelationshipConstructorBehaviorFactoryInterface
 {
     /**
-     * @param callable(CreationDataInterface): mixed $callback
+     * @param callable(CreationDataInterface): array{mixed, list<non-empty-string>} $callback
      */
     public function __construct(
         protected readonly mixed $callback

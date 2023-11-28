@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Functions;
 
 /**
- * @template-extends AbstractMultiFunction<bool, mixed|null, array{0: mixed|null, 1: mixed|null, 2: mixed|null}>
+ * @template-extends AbstractMultiFunction<bool, mixed|null, array{mixed|null, mixed|null, mixed|null}>
  */
 class BetweenInclusive extends AbstractMultiFunction
 {

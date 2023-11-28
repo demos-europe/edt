@@ -12,15 +12,14 @@ class RequiredRelationshipConstructorBehavior extends FixedConstructorBehavior
 {
     /**
      * @param non-empty-string $argumentName
-     * @param callable(CreationDataInterface): mixed $callback
+     * @param callable(CreationDataInterface): array{mixed, list<non-empty-string>} $callback
      */
     public function __construct(
         string $argumentName,
         callable $callback,
         protected readonly NamedTypeInterface $relationshipType,
         protected readonly bool $toOne
-    )
-    {
+    ) {
         parent::__construct($argumentName, $callback);
     }
 

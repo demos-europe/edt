@@ -426,7 +426,7 @@ class WrapperObject
      *
      * @param non-empty-string $methodName
      *
-     * @return array{0: 'set'|'get', 1: non-empty-string}
+     * @return array{'set'|'get', non-empty-string}
      *
      * @throws AccessException
      * @throws InvalidArgumentException

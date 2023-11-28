@@ -7,11 +7,11 @@ namespace EDT\JsonApi\RequestHandling;
 class ModifiedEntity
 {
     /**
-     * @param list<non-empty-string> $sideEffects
+     * @param list<non-empty-string> $requestDeviations
      */
     public function __construct(
         protected readonly object $entity,
-        protected readonly array $sideEffects
+        protected readonly array $requestDeviations
     ) {}
 
     public function getEntity(): object
@@ -24,6 +24,6 @@ class ModifiedEntity
      */
     public function getRequestDeviations(): array
     {
-        return $this->sideEffects;
+        return $this->requestDeviations;
     }
 }

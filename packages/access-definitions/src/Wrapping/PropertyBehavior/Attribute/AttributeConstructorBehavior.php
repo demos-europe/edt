@@ -17,7 +17,7 @@ class AttributeConstructorBehavior implements ConstructorBehaviorInterface
     /**
      * @param non-empty-string $attributeName
      * @param non-empty-string $argumentName
-     * @param null|callable(CreationDataInterface): mixed $fallback
+     * @param null|callable(CreationDataInterface): array{mixed, list<non-empty-string>} $fallback
      */
     public function __construct(
         protected readonly string $attributeName,
@@ -30,15 +30,14 @@ class AttributeConstructorBehavior implements ConstructorBehaviorInterface
         $attributes = $entityData->getAttributes();
         if (array_key_exists($this->attributeName, $attributes)) {
             $attributeValue = $attributes[$this->attributeName];
+            $propertyDeviations = [];
         } elseif (null !== $this->fallback) {
-            $attributeValue = ($this->fallback)($entityData);
+            [$attributeValue, $propertyDeviations] = ($this->fallback)($entityData);
         } else {
             throw new \InvalidArgumentException("No attribute '$this->attributeName' present and no fallback set.");
         }
 
-        return [
-            $this->argumentName => $attributeValue,
-        ];
+        return [$this->argumentName => [$attributeValue, $propertyDeviations]];
     }
 
     public function getRequiredAttributes(): array
