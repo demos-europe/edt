@@ -82,9 +82,6 @@ class ToOneRelationshipConfigBuilder
     }
 
     /**
-     * @param bool $defaultField the field is to be returned in responses by default
-     * @param null|callable(TEntity): (TRelationship|null) $customReadCallback to be set if this property needs special handling when read
-     *
      * @return $this
      */
     public function readable(

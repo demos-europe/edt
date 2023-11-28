@@ -21,6 +21,17 @@ interface ToManyRelationshipConfigBuilderInterface extends
     RelationshipConfigBuilderInterface
 {
     /**
+     * @param null|callable(TEntity): list<TRelationship> $customReadCallback to be set if this property needs special handling when read
+     *
+     * @return $this
+     */
+    public function readable(
+        bool $defaultField = false,
+        callable $customReadCallback = null,
+        bool $defaultInclude = false
+    ): self;
+
+    /**
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
      * @param null|callable(TEntity, list<TRelationship>): list<non-empty-string> $updateCallback
