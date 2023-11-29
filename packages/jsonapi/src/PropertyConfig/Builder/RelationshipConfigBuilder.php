@@ -19,8 +19,10 @@ use Webmozart\Assert\Assert;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
+ *
+ * @template-implements RelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
  */
-abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
+abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder implements RelationshipConfigBuilderInterface
 {
     /**
      * @var ResourceTypeInterface<TCondition, TSorting, TRelationship>|null
@@ -55,7 +57,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder
     /**
      * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
      *
-     * @return static
+     * @return $this
      */
     public function setRelationshipType(ResourceTypeInterface $relationshipType): self
     {
