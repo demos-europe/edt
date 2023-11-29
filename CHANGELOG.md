@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.13 - 2023-11-29
 
 * fix: implement necessary interface
 * fix: add missing type check
