@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.10 - 2023-11-29
 
 * feature: move logic into separate functions to improve support for adjustments in child classes
 
