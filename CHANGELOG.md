@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: add missing method call
+
 ## 0.24.13 - 2023-11-29
 
 * fix: implement necessary interface

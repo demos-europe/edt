@@ -58,7 +58,10 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
         Assert::keyExists($parsedProperties, ContentField::ID);
 
         // ensure only `id` is of identifier type
-        Assert::isInstanceOf($parsedProperties[ContentField::ID], IdentifierConfigBuilderInterface::class);
+        Assert::isInstanceOf(
+            $parsedProperties[ContentField::ID]->getFullString(false),
+            IdentifierConfigBuilderInterface::class
+        );
         parent::__construct($entityClass, $this->propertyBuilderFactory->createIdentifier($entityClass));
         unset($parsedProperties[ContentField::ID]);
 
