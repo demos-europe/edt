@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.15 - 2023-11-29
 
 * fix: consider type correctly in assertion
 
