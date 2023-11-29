@@ -17,7 +17,6 @@ use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\PathToManyRelation
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\ToManyRelationshipConstructorBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipReadability;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
-use InvalidArgumentException;
 
 /**
  * @template TCondition of PathsBasedInterface

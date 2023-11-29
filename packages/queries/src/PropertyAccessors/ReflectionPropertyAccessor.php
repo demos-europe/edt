@@ -39,16 +39,23 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
             return null;
         }
 
-        $newTarget = $this->getReflectionProperty($this->getClass($target), $property)->getValue($target);
+        $class = $this->getClass($target);
+        $reflectionProperty = $this->getReflectionProperty($class, $property);
+        $newTarget = $reflectionProperty->getValue($target);
 
         // if there are no more paths to follow we return the new target
         if ([] === $properties) {
-            return $newTarget;
+            return $this->adjustReturnValue($newTarget, $reflectionProperty);
         }
 
         Assert::object($newTarget);
 
         return $this->getValueByPropertyPath($newTarget, ...$properties);
+    }
+
+    protected function adjustReturnValue(mixed $value, ReflectionProperty $reflectionProperty): mixed
+    {
+        return $value;
     }
 
     /**
