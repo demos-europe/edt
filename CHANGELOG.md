@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.11 - 2023-11-29
 
 * feature: add `Iso8601PropertyAccessor` to automatically convert Doctrine `datetime` to ISO8601 strings 
 
