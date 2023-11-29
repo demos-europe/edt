@@ -6,7 +6,7 @@
     "require": {
         "php": "^8.1",
         "phpdocumentor/reflection-docblock": "^5.1.0",
-        "demos-europe/edt-queries": "^0.25",
+        "demos-europe/edt-queries": "^0.24.12",
         "nikic/php-parser": "^4.14",
         "thecodingmachine/safe": "^2.4.0"
     },

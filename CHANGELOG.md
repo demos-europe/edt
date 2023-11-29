@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.12 - 2023-11-29
 
 * fix: use correct return type
 
