@@ -155,18 +155,20 @@ class ToManyRelationshipConfigBuilder
     public function build(): ToManyRelationshipConfigInterface
     {
         $relationshipType = $this->getFinalRelationshipType();
-
+        $readability = $this->getReadability($relationshipType);
         $postConstructorBehaviors = $this->getPostConstructorBehaviors();
         $constructorBehaviors = $this->getConstructorBehaviors();
         $updateBehaviors = $this->getUpdateBehaviors();
+        $filterLink = $this->getFilterLink($relationshipType);
+        $sortLink = $this->getSortLink($relationshipType);
 
         return new DtoToManyRelationshipConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $relationshipType),
+            $readability,
             $updateBehaviors,
             $postConstructorBehaviors,
             $constructorBehaviors,
-            $this->getFilterLink($relationshipType),
-            $this->getSortLink($relationshipType)
+            $filterLink,
+            $sortLink
         );
     }
 
@@ -198,5 +200,15 @@ class ToManyRelationshipConfigBuilder
         $this->updateBehaviorFactories[] = $behaviorFactory;
 
         return $this;
+    }
+
+    /**
+     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     *
+     * @return ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null
+     */
+    protected function getReadability(ResourceTypeInterface $relationshipType): ?ToManyRelationshipReadabilityInterface
+    {
+        return ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $relationshipType);
     }
 }

@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: move logic into separate functions to improve support for adjustments in child classes
+
 ## 0.24.8 - 2023-11-28
 
 * feature: when setting to-many relationship properties with `ProxyPropertyAccessor`, automatically convert `array`s to Doctrine `Collection`s

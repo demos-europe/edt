@@ -152,17 +152,21 @@ class ToOneRelationshipConfigBuilder
 
     public function build(): ToOneRelationshipConfigInterface
     {
+        $relationshipType = $this->getFinalRelationshipType();
+        $readability = $this->getReadability($relationshipType);
         $postConstructorBehaviors = $this->getPostConstructorBehaviors();
         $constructorBehaviors = $this->getConstructorBehaviors();
         $updateBehaviors = $this->getUpdateBehaviors();
+        $filterLink = $this->getFilterLink($relationshipType);
+        $sortLink = $this->getSortLink($relationshipType);
 
         return new DtoToOneRelationshipConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->getFinalRelationshipType()),
+            $readability,
             $updateBehaviors,
             $postConstructorBehaviors,
             $constructorBehaviors,
-            $this->getFilterLink($this->getFinalRelationshipType()),
-            $this->getSortLink($this->getFinalRelationshipType())
+            $filterLink,
+            $sortLink
         );
     }
 
@@ -194,5 +198,15 @@ class ToOneRelationshipConfigBuilder
         $this->updateBehaviorFactories[] = $behaviorFactory;
 
         return $this;
+    }
+
+    /**
+     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     *
+     * @return ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null
+     */
+    protected function getReadability($relationshipType): ?ToOneRelationshipReadabilityInterface
+    {
+        return ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $relationshipType);
     }
 }

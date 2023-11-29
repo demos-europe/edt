@@ -9,6 +9,7 @@ use EDT\JsonApi\PropertyConfig\DtoAttributeConfig;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
+use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\CallbackAttributeReadability;
@@ -162,38 +163,20 @@ class AttributeConfigBuilder
 
     public function build(): AttributeConfigInterface
     {
-        $postConstructorBehaviors = array_map(fn (
-            PropertyUpdatabilityFactoryInterface $factory
-        ): PropertySetBehaviorInterface => $factory->createUpdatability(
-            $this->name,
-            $this->getPropertyPath(),
-            $this->entityClass
-        ), $this->postConstructorBehaviorFactories);
-
-        $constructorBehaviors = array_map(fn (
-            ConstructorBehaviorFactoryInterface $factory
-        ): ConstructorBehaviorInterface => $factory->createConstructorBehavior(
-            $this->name,
-            $this->getPropertyPath(),
-            $this->entityClass
-        ), $this->constructorBehaviorFactories);
-
-        $updateBehaviors = array_map(fn (
-            PropertyUpdatabilityFactoryInterface $factory
-        ): PropertyUpdatabilityInterface => $factory->createUpdatability(
-            $this->name,
-            $this->getPropertyPath(),
-            $this->entityClass
-        ), $this->updateBehaviorFactories);
-
+        $readability = $this->getReadability();
+        $updateBehaviors = $this->getUpdateBehaviors();
+        $postConstructorBehaviors = $this->getPostConstructorBehaviors();
+        $constructorBehaviors = $this->getConstructorBehaviors();
+        $filterLink = $this->getFilterLink();
+        $sortLink = $this->getSortLink();
 
         return new DtoAttributeConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass),
+            $readability,
             $updateBehaviors,
             $postConstructorBehaviors,
             $constructorBehaviors,
-            $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null,
-            $this->sortable ? new NonRelationshipLink($this->getPropertyPath()) : null
+            $filterLink,
+            $sortLink
         );
     }
 
@@ -216,5 +199,65 @@ class AttributeConfigBuilder
         $this->updateBehaviorFactories[] = $behaviorFactory;
 
         return $this;
+    }
+
+    /**
+     * @return list<PropertySetBehaviorInterface<TEntity>>
+     */
+    protected function getPostConstructorBehaviors(): array
+    {
+        return array_map(fn (
+            PropertyUpdatabilityFactoryInterface $factory
+        ): PropertySetBehaviorInterface => $factory->createUpdatability(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass
+        ), $this->postConstructorBehaviorFactories);
+    }
+
+    /**
+     * @return list<ConstructorBehaviorInterface>
+     */
+    protected function getConstructorBehaviors(): array
+    {
+        return array_map(fn (
+            ConstructorBehaviorFactoryInterface $factory
+        ): ConstructorBehaviorInterface => $factory->createConstructorBehavior(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass
+        ), $this->constructorBehaviorFactories);
+    }
+
+    /**
+     * @return list<PropertyUpdatabilityInterface<TCondition, TEntity>>
+     */
+    protected function getUpdateBehaviors(): array
+    {
+        return array_map(fn (
+            PropertyUpdatabilityFactoryInterface $factory
+        ): PropertyUpdatabilityInterface => $factory->createUpdatability(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass
+        ), $this->updateBehaviorFactories);
+    }
+
+    /**
+     * @return AttributeReadabilityInterface<TEntity>|null
+     */
+    protected function getReadability(): ?AttributeReadabilityInterface
+    {
+        return ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass);
+    }
+
+    protected function getFilterLink(): ?PropertyLinkInterface
+    {
+        return $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null;
+    }
+
+    protected function getSortLink(): ?PropertyLinkInterface
+    {
+        return $this->sortable ? new NonRelationshipLink($this->getPropertyPath()) : null;
     }
 }
