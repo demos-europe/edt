@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.14 - 2023-11-29
 
 * fix: add missing method call
 
