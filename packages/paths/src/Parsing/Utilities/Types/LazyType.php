@@ -11,6 +11,9 @@ use phpDocumentor\Reflection\Types\Object_;
 
 class LazyType implements TypeInterface
 {
+    /**
+     * @var ClassOrInterfaceType|NonClassOrInterfaceType|null
+     */
     protected ?TypeInterface $type = null;
 
     /**
@@ -31,7 +34,7 @@ class LazyType implements TypeInterface
         return $this->getType()->getAllFullyQualifiedNames();
     }
 
-    protected function getType(): TypeInterface
+    protected function getType(): ClassOrInterfaceType|NonClassOrInterfaceType
     {
         if (null === $this->type) {
             $this->type = $this->determineType();
@@ -40,7 +43,7 @@ class LazyType implements TypeInterface
         return $this->type;
     }
 
-    protected function determineType(): TypeInterface
+    protected function determineType(): ClassOrInterfaceType|NonClassOrInterfaceType
     {
         try {
             $type = $this->typeResolver->getResolvedType($this->typeString);
@@ -52,5 +55,15 @@ class LazyType implements TypeInterface
         }
 
         return NonClassOrInterfaceType::fromRawString($this->typeString);
+    }
+
+    public function getFullyQualifiedName(): ?string
+    {
+        return $this->getType()->getFullyQualifiedName();
+    }
+
+    public function getTemplateParameter(int $index): TypeInterface
+    {
+        return $this->getType()->getTemplateParameter($index);
     }
 }

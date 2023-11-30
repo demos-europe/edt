@@ -55,24 +55,28 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
         protected readonly PropertyBuilderFactory $propertyBuilderFactory,
     ) {
         $parsedProperties = $this->getDocblockTraitEvaluator()->parseProperties(static::class, true);
-        Assert::keyExists($parsedProperties, ContentField::ID);
+
+        // ignore unusable types, maybe subclasses know how to handle them
+        $parsedProperties = array_map(
+            static fn (TypeInterface $type): array => [$type, $type->getFullyQualifiedName()],
+            $parsedProperties
+        );
+        $parsedProperties = array_filter(
+            $parsedProperties,
+            static fn (array $type): bool => null !== $type[1]
+        );
 
         // ensure only `id` is of identifier type
+        Assert::keyExists($parsedProperties, ContentField::ID);
         Assert::isAOf(
-            $parsedProperties[ContentField::ID]->getFullString(false),
+            $parsedProperties[ContentField::ID][1],
             IdentifierConfigBuilderInterface::class
         );
+
         parent::__construct($entityClass, $this->propertyBuilderFactory->createIdentifier($entityClass));
         unset($parsedProperties[ContentField::ID]);
 
-        // ignore unusable types, maybe subclasses know how to handle them
-        $parsedProperties = array_filter(
-            $parsedProperties,
-            static fn (TypeInterface $type): bool => $type instanceof ClassOrInterfaceType
-        );
-
-        foreach ($parsedProperties as $propertyName => $propertyType) {
-            $propertyBaseClass = $propertyType->getFullyQualifiedName();
+        foreach ($parsedProperties as $propertyName => [$propertyType, $propertyBaseClass]) {
             switch ($propertyBaseClass) {
                 case AttributeConfigBuilderInterface::class:
                     $this->attributes[$propertyName] = $this->propertyBuilderFactory
@@ -98,13 +102,14 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
     /**
      * @return class-string
      */
-    protected function getRelationshipClass(ClassOrInterfaceType $propertyType): string
+    protected function getRelationshipClass(TypeInterface $propertyType): string
     {
         // we expect the last template parameter to be the relationship class
         $templateParameter = $propertyType->getTemplateParameter(-1);
-        Assert::isInstanceOf($templateParameter, ClassOrInterfaceType::class);
+        $fqcn = $templateParameter->getFullyQualifiedName();
+        Assert::notNull($fqcn);
 
-        return $templateParameter->getFullyQualifiedName();
+        return $fqcn;
     }
 
     protected function getDocblockTraitEvaluator(): DocblockPropertyByTraitEvaluator

@@ -33,4 +33,15 @@ class NonClassOrInterfaceType implements TypeInterface
     {
         return [];
     }
+
+    public function getFullyQualifiedName(): ?string
+    {
+        return null;
+    }
+
+    public function getTemplateParameter(int $index): TypeInterface
+    {
+        // TODO
+        throw new \InvalidArgumentException('Support for template parameters of non-classes and non-interfaces was not implemented yet.');
+    }
 }

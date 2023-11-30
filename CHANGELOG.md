@@ -1,6 +1,12 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: check array size correctly
+* refactor: provide `getFullyQualifiedName` and `getTemplateParameter` methods in all `TypeInterface` implementations, adjust usages accordingly
+* fix: add support for non-classes/non-interfaces to `DocblockPropertyByTraitEvaluator`
+
 ## 0.24.16 - 2023-11-30
 
 * feature: improve docblock parsing support, Types in tags like `propert-read` now support more cases of template parameter usages

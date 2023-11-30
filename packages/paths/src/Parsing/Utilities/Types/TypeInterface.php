@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\Parsing\Utilities\Types;
 
+use OutOfBoundsException;
+
 interface TypeInterface
 {
     /**
@@ -27,4 +29,20 @@ interface TypeInterface
      * @return list<class-string>
      */
     public function getAllFullyQualifiedNames(): array;
+
+    /**
+     * Returns `null` if the backing type of this instance does not allow for a single FQCN.
+     *
+     * @return class-string|null the fully qualified class name or `null` if such does not exist for this instance
+     */
+    public function getFullyQualifiedName(): ?string;
+
+    /**
+     * Expects that the given index denotes a template parameter.
+     *
+     * @param int $index starts with 0, negative values will denote the template parameters in reverse (i.e. from the end to the front); overflows (in either direction) are not allowed
+     *
+     * @throws OutOfBoundsException if the given index does not denote any existing template parameter
+     */
+    public function getTemplateParameter(int $index): TypeInterface;
 }

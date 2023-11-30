@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace EDT\Parsing\Utilities\Types;
 
 use EDT\Parsing\Utilities\TypeResolver;
-use OutOfBoundsException;
 use phpDocumentor\Reflection\Types\Collection;
 use phpDocumentor\Reflection\Types\Object_;
 use Webmozart\Assert\Assert;
@@ -89,8 +88,6 @@ class ClassOrInterfaceType implements TypeInterface
     }
 
     /**
-     * Throws an exception if the backing type of this instance does not allow for a single FQCN.
-     *
      * @return class-string the fully qualified class name
      */
     public function getFullyQualifiedName(): string
@@ -108,18 +105,11 @@ class ClassOrInterfaceType implements TypeInterface
         return $this->templateParameters;
     }
 
-    /**
-     * Expects that the given index denotes a template parameter.
-     *
-     * @param int $index starts with 0, negative values will denote the template parameters in reverse (i.e. from the end to the front); overflows (in either direction) are not allowed
-     *
-     * @throws OutOfBoundsException if the given index does not denote any existing template parameter
-     */
     public function getTemplateParameter(int $index): TypeInterface
     {
-        $message = "Expected type `$this->fullyQualifiedName` to contain %d template parameters. Got: %d.";
+        $message = "Expected type `$this->fullyQualifiedName` to contain at least %d template parameters. Got: %d.";
         if ($index < 0) {
-            Assert::count($this->templateParameters, -$index, $message);
+            Assert::greaterThanEq($this->templateParameters, -$index, $message);
             $index = count($this->templateParameters) + $index;
         } else {
             Assert::count($this->templateParameters, $index + 1, $message);
