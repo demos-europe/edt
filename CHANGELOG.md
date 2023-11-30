@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.20 - 2023-11-30
 
 * fix: enable filtering for resource identifier set as filterable
 * fix: create property builder correctly
