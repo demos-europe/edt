@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.16 - 2023-11-30
 
 * feature: improve docblock parsing support, Types in tags like `propert-read` now support more cases of template parameter usages
 * refactor: move `TypeInterface` and its implementations in different namespace
