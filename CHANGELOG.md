@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.18 - 2023-11-30
 
 * fix: check array size correctly
 * refactor: provide `getFullyQualifiedName` and `getTemplateParameter` methods in all `TypeInterface` implementations, adjust usages accordingly
