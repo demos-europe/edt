@@ -137,17 +137,31 @@ class ResourceConfig implements ResourceConfigInterface
 
     public function getSortingProperties(): array
     {
-        return Iterables::removeNull(array_map(
+        $properties = Iterables::removeNull(array_map(
             static fn (AttributeConfigInterface|RelationshipConfigInterface $property): ?PropertyLinkInterface => $property->getSortLink(),
             $this->propertyConfigs
         ));
+
+        $identifierSortLink = $this->identifierConfig->getSortLink();
+        if (null !== $identifierSortLink) {
+            $properties[ContentField::ID] = $identifierSortLink;
+        }
+
+        return $properties;
     }
 
     public function getFilteringProperties(): array
     {
-        return Iterables::removeNull(array_map(
+        $properties = Iterables::removeNull(array_map(
             static fn (AttributeConfigInterface|RelationshipConfigInterface $property): ?PropertyLinkInterface => $property->getFilterLink(),
             $this->propertyConfigs
         ));
+
+        $identifierFilterLink = $this->identifierConfig->getFilterLink();
+        if (null !== $identifierFilterLink) {
+            $properties[ContentField::ID] = $identifierFilterLink;
+        }
+
+        return $properties;
     }
 }

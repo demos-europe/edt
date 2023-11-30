@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: enable filtering for resource identifier set as filterable
+
 ## 0.24.19 - 2023-11-30
 
 * fix: do not automatically create config builders for all properties detected by `MagicResourceConfigBuilder`, as otherwise unused relationships will have no relationship type set when needed
