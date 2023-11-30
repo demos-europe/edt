@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: do not automatically create config builders for all properties detected by `MagicResourceConfigBuilder`, as otherwise unused relationships will have no relationship type set when needed
+
 ## 0.24.18 - 2023-11-30
 
 * fix: check array size correctly

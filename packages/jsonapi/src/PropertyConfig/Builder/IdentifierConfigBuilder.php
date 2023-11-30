@@ -19,6 +19,7 @@ use EDT\Wrapping\PropertyBehavior\Identifier\Factory\PathIdentifierPostConstruct
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
+use InvalidArgumentException;
 
 /**
  * @template TEntity of object
@@ -122,8 +123,13 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
             $this->constructorBehaviorFactories
         );
 
+        if (null === $this->readabilityFactory) {
+            throw new InvalidArgumentException('No readability set for the identifier. But the identifier must always be readable.');
+        }
+        $readability = ($this->readabilityFactory)($this->getPropertyPath(), $this->entityClass);
+
         return new DtoIdentifierConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->getPropertyPath(), $this->entityClass),
+            $readability,
             $postConstructorBehaviors,
             $constructorBehaviors,
             $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null,

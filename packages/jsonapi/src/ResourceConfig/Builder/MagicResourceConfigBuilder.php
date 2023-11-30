@@ -9,7 +9,6 @@ use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilderInterface;
 use EDT\JsonApi\Utilities\PropertyBuilderFactory;
-use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
 use EDT\Parsing\Utilities\Types\TypeInterface;
 use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
 use EDT\PathBuilding\PropertyEvaluatorPool;
@@ -18,7 +17,6 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
-use function array_key_exists;
 
 
 // FIXME: unsure that if a property-read is extended with a different type that this type is used, not the one in the parent class,
@@ -45,6 +43,11 @@ use function array_key_exists;
 abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 {
     private ?DocblockPropertyByTraitEvaluator $docblockTraitEvaluator = null;
+
+    /**
+     * @var array<non-empty-string, array{TypeInterface, class-string}>
+     */
+    private readonly array $parsedProperties;
 
     /**
      * @param class-string<TEntity> $entityClass
@@ -76,27 +79,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
         parent::__construct($entityClass, $this->propertyBuilderFactory->createIdentifier($entityClass));
         unset($parsedProperties[ContentField::ID]);
 
-        foreach ($parsedProperties as $propertyName => [$propertyType, $propertyBaseClass]) {
-            switch ($propertyBaseClass) {
-                case AttributeConfigBuilderInterface::class:
-                    $this->attributes[$propertyName] = $this->propertyBuilderFactory
-                        ->createAttribute($this->entityClass, $propertyName);
-                    break;
-                case ToOneRelationshipConfigBuilderInterface::class:
-                    $relationshipClass = $this->getRelationshipClass($propertyType);
-                    $this->toOneRelationships[$propertyName] = $this->propertyBuilderFactory
-                        ->createToOneWithType($this->entityClass, $relationshipClass, $propertyName);
-                    break;
-                case ToManyRelationshipConfigBuilderInterface::class:
-                    $relationshipClass = $this->getRelationshipClass($propertyType);
-                    $this->toManyRelationships[$propertyName] = $this->propertyBuilderFactory
-                        ->createToManyWithType($this->entityClass, $relationshipClass, $propertyName);
-                    break;
-                default:
-                    // ignore unusable types, maybe subclasses know how to handle them
-                    break;
-            }
-        }
+        $this->parsedProperties = $parsedProperties;
     }
 
     /**
@@ -129,18 +112,20 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
      */
     public function __get(string $name): IdentifierConfigBuilderInterface|AttributeConfigBuilderInterface|ToOneRelationshipConfigBuilderInterface|ToManyRelationshipConfigBuilderInterface
     {
+        Assert::stringNotEmpty($name);
+
         // was the property accessed before and is thus already initialized?
         if (ContentField::ID === $name) {
             return $this->identifier;
         }
-        if (array_key_exists($name, $this->attributes)) {
-            return $this->attributes[$name];
+        if ($this->hasAttributeConfigBuilder($name)) {
+            return $this->getAttributeConfigBuilder($name) ?? throw new InvalidArgumentException("No attribute available for property `$name`.");
         }
-        if (array_key_exists($name, $this->toOneRelationships)) {
-            return $this->toOneRelationships[$name];
+        if ($this->hasToOneRelationshipConfigBuilder($name)) {
+            return $this->getToOneRelationshipConfigBuilder($name) ?? throw new InvalidArgumentException("No to-one relationship available for property `$name`.");
         }
-        if (array_key_exists($name, $this->toManyRelationships)) {
-            return $this->toManyRelationships[$name];
+        if ($this->hasToManyRelationshipConfigBuilder($name)) {
+            return $this->getToManyRelationshipConfigBuilder($name) ?? throw new InvalidArgumentException("No to-many relationship available for property `$name`.");
         }
 
         throw new InvalidArgumentException("No usable property `$name` found.");
@@ -153,9 +138,63 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 
     public function __isset(string $name): bool
     {
+        if ('' === $name) {
+            return false;
+        }
+
         return ContentField::ID === $name
-            || array_key_exists($name, $this->attributes)
-            || array_key_exists($name, $this->toOneRelationships)
-            || array_key_exists($name, $this->toManyRelationships);
+            || $this->hasAttributeConfigBuilder($name)
+            || $this->hasToOneRelationshipConfigBuilder($name)
+            || $this->hasToManyRelationshipConfigBuilder($name);
+    }
+
+    public function getAttributeConfigBuilder(string $propertyName): ?AttributeConfigBuilderInterface
+    {
+        if (!$this->hasAttributeConfigBuilder($propertyName)) {
+            $this->getParsedProperty($propertyName, AttributeConfigBuilderInterface::class);
+            $builder = $this->propertyBuilderFactory->createAttribute($this->entityClass, $propertyName);
+            $this->setAttributeConfigBuilder($propertyName, $builder);
+        }
+
+        return parent::getAttributeConfigBuilder($propertyName);
+    }
+
+    public function getToOneRelationshipConfigBuilder(string $propertyName): ?ToOneRelationshipConfigBuilderInterface
+    {
+        if (!$this->hasToOneRelationshipConfigBuilder($propertyName)) {
+            $propertyType = $this->getParsedProperty($propertyName, ToOneRelationshipConfigBuilderInterface::class);
+            $relationshipClass = $this->getRelationshipClass($propertyType);
+            $builder = $this->propertyBuilderFactory->createToOneWithType($this->entityClass, $relationshipClass, $propertyName);
+            $this->setToOneRelationshipConfigBuilder($propertyName, $builder);
+        }
+
+        return parent::getToOneRelationshipConfigBuilder($propertyName);
+    }
+
+    public function getToManyRelationshipConfigBuilder(string $propertyName): ?ToManyRelationshipConfigBuilderInterface
+    {
+        if (!$this->hasToManyRelationshipConfigBuilder($propertyName)) {
+            $propertyType = $this->getParsedProperty($propertyName, ToManyRelationshipConfigBuilderInterface::class);
+            $relationshipClass = $this->getRelationshipClass($propertyType);
+            $builder = $this->propertyBuilderFactory->createToManyWithType($this->entityClass, $relationshipClass, $propertyName);
+            $this->setToManyRelationshipConfigBuilder($propertyName, $builder);
+        }
+
+        return parent::getToManyRelationshipConfigBuilder($propertyName);
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     * @param class-string $expectedPropertyBaseClass
+     *
+     * @return TypeInterface
+     */
+    protected function getParsedProperty(string $propertyName, string $expectedPropertyBaseClass): TypeInterface
+    {
+        Assert::keyExists($this->parsedProperties, $propertyName);
+        [$parsedProperty, $propertyFqcn] = $this->parsedProperties[$propertyName];
+        Assert::same($propertyFqcn, $expectedPropertyBaseClass);
+
+        return $parsedProperty;
     }
 }
