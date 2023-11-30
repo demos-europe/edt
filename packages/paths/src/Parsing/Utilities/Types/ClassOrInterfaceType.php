@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-namespace EDT\Parsing\Utilities;
+namespace EDT\Parsing\Utilities\Types;
 
-use InvalidArgumentException;
+use EDT\Parsing\Utilities\TypeResolver;
 use OutOfBoundsException;
-use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\Collection;
 use phpDocumentor\Reflection\Types\Object_;
-use ReflectionClass;
-use ReflectionProperty;
 use Webmozart\Assert\Assert;
 
 class ClassOrInterfaceType implements TypeInterface
@@ -39,25 +36,35 @@ class ClassOrInterfaceType implements TypeInterface
      * template parameters will result in a {@link Collection} instance. That class however silently
      * omits all template parameters except the last two, and thus is not reliable to use.
      *
-     * @param TypeResolver $typeResolver
-     *
      * @see https://github.com/phpDocumentor/phpDocumentor/issues/2122
      */
-    public static function fromType(Type $type, TypeResolver $typeResolver): self
+    public static function fromType(Object_|Collection $type, TypeResolver $typeResolver): self
     {
-        if ($type instanceof Object_) {
-            return self::fromObjectType($type, [], $typeResolver);
-        }
+        $typeString = (string) $type;
+        Assert::stringNotEmpty($typeString);
+        [$actualClassName, $actualTemplateParameters] = $typeResolver::getSplitOffTemplateParameters($typeString);
+        $actualTemplateParameters = array_map(
+            static fn(string $templateParameter): TypeInterface => new LazyType($templateParameter, $typeResolver),
+            $actualTemplateParameters
+        );
 
         if ($type instanceof Collection) {
             $mainTypeName = (string)$type->getFqsen();
             Assert::stringNotEmpty($mainTypeName);
-            $resolvedType = $typeResolver->getResolvedType($mainTypeName);
-
-            return self::fromType($resolvedType, $typeResolver);
+            $type = $typeResolver->getResolvedType($mainTypeName);
         }
 
-        throw new InvalidArgumentException("Failed to resolve class or interface from given type: {$type->__toString()}. Currently only `" . Object_::class . '` and (with limitations) `'. Collection::class . '` are supported.');
+        Assert::isInstanceOf(
+            $type,
+            Object_::class,
+            "Failed to resolve class or interface from given type: {$type->__toString()}. Currently only `"
+            . Object_::class
+            . '` and (with limitations) `'
+            . Collection::class
+            . '` are supported.'
+        );
+
+        return self::fromObjectType($type, $actualTemplateParameters, $typeResolver);
     }
 
     /**
@@ -72,7 +79,7 @@ class ClassOrInterfaceType implements TypeInterface
     /**
      * @param list<TypeInterface> $templateParameters
      */
-    protected static function fromObjectType(Object_ $type, array $templateParameters, TypeResolver $typeResolver): self
+    public static function fromObjectType(Object_ $type, array $templateParameters, TypeResolver $typeResolver): self
     {
         $rawString = (string)$type;
         $fullyQualifiedName = $typeResolver->getQualifiedName($type);
@@ -110,11 +117,12 @@ class ClassOrInterfaceType implements TypeInterface
      */
     public function getTemplateParameter(int $index): TypeInterface
     {
+        $message = "Expected type `$this->fullyQualifiedName` to contain %d template parameters. Got: %d.";
         if ($index < 0) {
-            Assert::count($this->templateParameters, -$index);
+            Assert::count($this->templateParameters, -$index, $message);
             $index = count($this->templateParameters) + $index;
         } else {
-            Assert::count($this->templateParameters, $index + 1);
+            Assert::count($this->templateParameters, $index + 1, $message);
         }
 
         return $this->templateParameters[$index];

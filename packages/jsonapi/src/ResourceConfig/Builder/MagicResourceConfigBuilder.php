@@ -9,8 +9,8 @@ use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilderInterface;
 use EDT\JsonApi\Utilities\PropertyBuilderFactory;
-use EDT\Parsing\Utilities\ClassOrInterfaceType;
-use EDT\Parsing\Utilities\TypeInterface;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\TypeInterface;
 use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
 use EDT\PathBuilding\PropertyEvaluatorPool;
 use EDT\PathBuilding\PropertyTag;
@@ -38,7 +38,7 @@ use function array_key_exists;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @property-read IdentifierConfigBuilderInterface<TEntity> $id
+ * @property-read IdentifierConfigBuilderInterface<TEntity> $id the property uniquely identifying instances of this type
  *
  * @template-extends AbstractResourceConfigBuilder<TCondition, TSorting, TEntity>
  */

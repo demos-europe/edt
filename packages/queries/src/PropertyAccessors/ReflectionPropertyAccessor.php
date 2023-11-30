@@ -81,6 +81,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         // of which we need to access each item individually or if not and we can access
         // the target directly
         $target = $this->restructureNesting($target, 1);
+        Assert::allNullOrObject($target);
 
         // for each item (or the target) we follow the remaining paths to the values to return
         $currentPart = array_shift($properties);

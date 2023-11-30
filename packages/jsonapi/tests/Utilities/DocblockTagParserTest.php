@@ -6,7 +6,7 @@ namespace Tests\Utilities;
 
 use EDT\Parsing\Utilities\DocblockTagResolver;
 use EDT\Parsing\Utilities\TypeResolver;
-use EDT\Parsing\Utilities\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
 use EDT\PathBuilding\End;
 use EDT\PathBuilding\PropertyTag;
 use PHPUnit\Framework\TestCase;
@@ -54,6 +54,19 @@ class DocblockTagParserTest extends TestCase
                 NonNestedOnlyResource::class,
                 NestedOnlyResource::class,
             ]],
+            [ClassWithProperties::class, [
+                // first level:
+                SingleTemplateClassForProperty::class.'<string>',
+                DoubleTemplateClassForProperty::class.'<string,string>',
+                \Tests\Utilities\subnamespace\DoubleTemplateClassForProperty::class.'<string,string>',
+                // second level:
+                SingleTemplateClassForProperty::class.'<'.\Tests\Utilities\subnamespace\SingleTemplateClassForProperty::class.'<string>>',
+                DoubleTemplateClassForProperty::class.'<string,'.\Tests\Utilities\subnamespace\DoubleTemplateClassForProperty::class.'<string,string>>',
+                // second level with template parameter:
+                // FIXME: generics are not well supported, unknown types will be prefixed with a backslash and handled as string without further trying to resolve it
+                SingleTemplateClassForProperty::class.'<'.\Tests\Utilities\subnamespace\SingleTemplateClassForProperty::class.'<\T>>',
+                DoubleTemplateClassForProperty::class.'<\T,'.\Tests\Utilities\subnamespace\DoubleTemplateClassForProperty::class.'<\T,\T>>',
+            ]],
         ];
     }
 
@@ -65,12 +78,12 @@ class DocblockTagParserTest extends TestCase
         [$actualClassName, $actualTemplateParameters] = TypeResolver::getSplitOffTemplateParameters($rawInputString);
         self::assertSame($expectedClassName, $actualClassName);
         $templateParameterCount = count($expectedTemplateParameters);
-        self::assertCount($templateParameterCount, $actualTemplateParameters);
         for ($i = 0; $i < $templateParameterCount; $i++) {
-            $actualTemplateParameter = $actualTemplateParameters[$i];
+            $actualTemplateParameter = $actualTemplateParameters[$i] ?? 'n/a';
             $expectedTemplateParameter = $expectedTemplateParameters[$i];
             self::assertSame($expectedTemplateParameter, $actualTemplateParameter);
         }
+        self::assertCount($templateParameterCount, $actualTemplateParameters);
     }
 
     /**
@@ -92,11 +105,20 @@ class DocblockTagParserTest extends TestCase
             ['MyClass_', 'MyClass_', []],
             ['MyClass<  Foo  ,    Bar   >', 'MyClass', ['Foo', 'Bar']],
             ['MyClass<Foo<Bar>>', 'MyClass', ['Foo<Bar>']],
-            // not valid as final result, but at least valid in the limited task of the tested method
-            ['MyClass<>>', 'MyClass', ['>']],
-            ['MyClass<Foo>Bar>', 'MyClass', ['Foo>Bar']],
-            ['MyClass<<>', 'MyClass', ['<']],
-            ['MyClass<Foo<Bar>', 'MyClass', ['Foo<Bar']],
+            ['\EDT\TEntity<f>', '\EDT\TEntity', ['f']],
+            ['EDT\TEntity<f>', 'EDT\TEntity', ['f']],
+            ['EDT\TEntity<f>', 'EDT\TEntity', ['f']],
+            ['\TEntity<f>', '\TEntity', ['f']],
+            [
+                'Foo<string,Bar<string,string>>',
+                'Foo',
+                ['string', 'Bar<string,string>'],
+            ],
+            [
+                DoubleTemplateClassForProperty::class.'<string,'.\Tests\Utilities\subnamespace\DoubleTemplateClassForProperty::class.'<string,string>>',
+                DoubleTemplateClassForProperty::class,
+                ['string', \Tests\Utilities\subnamespace\DoubleTemplateClassForProperty::class.'<string,string>'],
+            ]
         ];
     }
 
@@ -105,6 +127,7 @@ class DocblockTagParserTest extends TestCase
         return [
             ['MyClass<>'],
             ['MyClass<,, Bar>'],
+            ['MyClass<Bar,>'],
             ['MyClass<,>'],
             ['MyClass<<'],
             ['MyClass>>'],
@@ -118,6 +141,10 @@ class DocblockTagParserTest extends TestCase
             ['!>'],
             ['>!'],
             ['<!'],
+            ['MyClass<>>'],
+            ['MyClass<Foo>Bar>'],
+            ['MyClass<<>'],
+            ['MyClass<Foo<Bar>'],
         ];
     }
 }

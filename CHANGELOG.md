@@ -1,6 +1,12 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: improve docblock parsing support, Types in tags like `propert-read` now support more cases of template parameter usages
+* refactor: move `TypeInterface` and its implementations in different namespace
+* refactor: reduce phpstan concerns
+
 ## 0.24.15 - 2023-11-29
 
 * fix: consider type correctly in assertion

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EDT\Parsing\Utilities;
+namespace EDT\Parsing\Utilities\Types;
 
 interface TypeInterface
 {

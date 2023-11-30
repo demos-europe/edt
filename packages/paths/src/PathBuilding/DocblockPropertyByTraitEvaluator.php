@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use EDT\Parsing\Utilities\DocblockTagResolver;
-use EDT\Parsing\Utilities\TypeInterface;
-use EDT\Parsing\Utilities\TypeResolver;
 use EDT\Parsing\Utilities\NoSourceException;
 use EDT\Parsing\Utilities\ParseException;
-use EDT\Parsing\Utilities\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\TypeResolver;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\TypeInterface;
 use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
+use phpDocumentor\Reflection\Types\Collection;
+use phpDocumentor\Reflection\Types\Object_;
 use ReflectionClass;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
@@ -25,7 +27,7 @@ class DocblockPropertyByTraitEvaluator
     private array $parsedClasses = [];
 
     /**
-     * @param list<non-empty-string> $targetTraits set to empty list to not filter by traits
+     * @param list<trait-string> $targetTraits set to empty list to not filter by traits
      * @param non-empty-list<PropertyTag> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      */
     public function __construct(
@@ -91,7 +93,8 @@ class DocblockPropertyByTraitEvaluator
                     $propertyTypes = array_map(
                         static function(TagWithType $tag) use ($typeResolver): ClassOrInterfaceType {
                             $tagType = $tag->getType();
-                            Assert::notNull($tagType);
+                            Assert::isInstanceOfAny($tagType, [Object_::class, Collection::class]);
+
                             return ClassOrInterfaceType::fromType($tagType, $typeResolver);
                         },
                         $propertyTags

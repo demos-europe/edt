@@ -49,6 +49,7 @@ parameters:
         - packages/queries/src
 
     # Note: use `\w+(\\\w+)+\\(\w+)` to `$2` replacement to remove namespaces in phpstan error messages, making it a bit more readable
+    # Note: use `grep path: phpstan.neon | sort | uniq | awk '{print $2}'` to get the list of classes with errors
     ignoreErrors:
         -
             message: "#^Parameter \\#1 \\$baseFunction of class EDT\\\\DqlQuerying\\\\Functions\\\\LowerCase constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<string\\|null\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
@@ -236,11 +237,6 @@ parameters:
             path: packages/dql/src/Functions/Sum.php
 
         -
-            message: "#^Method EDT\\\\DqlQuerying\\\\ObjectProviders\\\\DoctrineOrmEntityProvider\\:\\:getEntities\\(\\) should return array\\<int, TEntity of object\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
-
-        -
             message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:__construct\\(\\) has parameter \\$conditionGroupFactory with generic interface EDT\\\\ConditionFactory\\\\PathsBasedConditionGroupFactoryInterface but does not specify its types\\: TCondition$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
@@ -376,11 +372,6 @@ parameters:
             path: packages/jsonapi/src/Validation/FieldsValidator.php
 
         -
-            message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
-            count: 1
-            path: packages/paths/src/Parsing/Utilities/TypeResolver.php
-
-        -
             message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> and 'EDT\\\\\\\\PathBuilding\\\\\\\\PropertyAutoPathInterface' will always evaluate to true\\.$#"
             count: 2
             path: packages/paths/src/PathBuilding/End.php
@@ -399,26 +390,6 @@ parameters:
             message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:getIterator\\(\\) should return ArrayIterator\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllClassTraits\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllParentClasses\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllParents\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
-
-        -
-            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getWithAllNestedTra…'\\} given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
 
         -
             message: "#^Parameter \\#1 \\$contains of class EDT\\\\Querying\\\\Functions\\\\StringEndsWith constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<string\\|null\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<string\\> given\\.$#"
@@ -514,11 +485,6 @@ parameters:
             message: "#^Method EDT\\\\Querying\\\\FluentQueries\\\\ConditionDefinition\\:\\:false\\(\\) return type with generic class EDT\\\\Querying\\\\FluentQueries\\\\ConditionDefinition does not specify its types\\: TCondition$#"
             count: 1
             path: packages/queries/src/FluentQueries/ConditionDefinition.php
-
-        -
-            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, mixed\\>, Closure\\(object\\|null\\)\\: array\\<int, mixed\\> given\\.$#"
-            count: 1
-            path: packages/queries/src/PropertyAccessors/ReflectionPropertyAccessor.php
 
         -
             message: "#^Method EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:getIterator\\(\\) should return Traversable\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, non\\-empty\\-string\\>\\|ArrayIterator\\<int, string\\>\\.$#"
