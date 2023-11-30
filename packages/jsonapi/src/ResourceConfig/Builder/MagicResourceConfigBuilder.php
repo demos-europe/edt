@@ -17,6 +17,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
+use function array_key_exists;
 
 
 // FIXME: unsure that if a property-read is extended with a different type that this type is used, not the one in the parent class,
@@ -150,7 +151,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 
     public function getAttributeConfigBuilder(string $propertyName): ?AttributeConfigBuilderInterface
     {
-        if (!$this->hasAttributeConfigBuilder($propertyName)) {
+        if (!parent::hasAttributeConfigBuilder($propertyName)) {
             $this->getParsedProperty($propertyName, AttributeConfigBuilderInterface::class);
             $builder = $this->propertyBuilderFactory->createAttribute($this->entityClass, $propertyName);
             $this->setAttributeConfigBuilder($propertyName, $builder);
@@ -161,7 +162,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 
     public function getToOneRelationshipConfigBuilder(string $propertyName): ?ToOneRelationshipConfigBuilderInterface
     {
-        if (!$this->hasToOneRelationshipConfigBuilder($propertyName)) {
+        if (!parent::hasToOneRelationshipConfigBuilder($propertyName)) {
             $propertyType = $this->getParsedProperty($propertyName, ToOneRelationshipConfigBuilderInterface::class);
             $relationshipClass = $this->getRelationshipClass($propertyType);
             $builder = $this->propertyBuilderFactory->createToOneWithType($this->entityClass, $relationshipClass, $propertyName);
@@ -173,7 +174,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 
     public function getToManyRelationshipConfigBuilder(string $propertyName): ?ToManyRelationshipConfigBuilderInterface
     {
-        if (!$this->hasToManyRelationshipConfigBuilder($propertyName)) {
+        if (!parent::hasToManyRelationshipConfigBuilder($propertyName)) {
             $propertyType = $this->getParsedProperty($propertyName, ToManyRelationshipConfigBuilderInterface::class);
             $relationshipClass = $this->getRelationshipClass($propertyType);
             $builder = $this->propertyBuilderFactory->createToManyWithType($this->entityClass, $relationshipClass, $propertyName);
@@ -181,6 +182,38 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
         }
 
         return parent::getToManyRelationshipConfigBuilder($propertyName);
+    }
+
+    protected function hasAttributeConfigBuilder(string $propertyName): bool
+    {
+        return parent::hasAttributeConfigBuilder($propertyName)
+            || $this->hasParsedProperty($propertyName, AttributeConfigBuilderInterface::class);
+    }
+
+    protected function hasToOneRelationshipConfigBuilder(string $propertyName): bool
+    {
+        return parent::hasToOneRelationshipConfigBuilder($propertyName)
+            || $this->hasParsedProperty($propertyName, ToOneRelationshipConfigBuilderInterface::class);
+    }
+
+    protected function hasToManyRelationshipConfigBuilder(string $propertyName): bool
+    {
+        return parent::hasToManyRelationshipConfigBuilder($propertyName)
+            || $this->hasParsedProperty($propertyName, ToManyRelationshipConfigBuilderInterface::class);
+    }
+
+    /**
+     * @param non-empty-string $propertyName
+     */
+    protected function hasParsedProperty(string $propertyName, string $expectedPropertyBaseClass): bool
+    {
+        if (!array_key_exists($propertyName, $this->parsedProperties)) {
+            return false;
+        }
+
+        [$parsedProperty, $propertyFqcn] = $this->parsedProperties[$propertyName];
+
+        return $propertyFqcn === $expectedPropertyBaseClass;
     }
 
     /**

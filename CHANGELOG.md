@@ -4,6 +4,7 @@
 ## Unreleased
 
 * fix: enable filtering for resource identifier set as filterable
+* fix: create property builder correctly
 
 ## 0.24.19 - 2023-11-30
 
