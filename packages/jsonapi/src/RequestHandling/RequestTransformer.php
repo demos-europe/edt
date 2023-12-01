@@ -158,9 +158,9 @@ class RequestTransformer
                 foreach ($data as $index => $relationshipReference) {
                     \Webmozart\Assert\Assert::integer($index);
                     \Webmozart\Assert\Assert::isArray($relationshipReference);
-                    $id = $data[ContentField::ID];
+                    $id = $relationshipReference[ContentField::ID];
                     \Webmozart\Assert\Assert::stringNotEmpty($id);
-                    $type = $data[ContentField::TYPE];
+                    $type = $relationshipReference[ContentField::TYPE];
                     \Webmozart\Assert\Assert::stringNotEmpty($type);
                     $toManyRelationships[$propertyName][] = [
                         ContentField::ID   => $id,
@@ -204,15 +204,20 @@ class RequestTransformer
     {
         $propertyNameConstraints = [
             new Assert\NotNull(),
-            new Assert\Type('string'),
-            // attribute and relationship names must adhere to a specific string format
-            new Assert\Regex('/^'.Patterns::PROPERTY_NAME.'$/'),
-            // attributes and relationships must not be named `id`
-            new Assert\NotIdenticalTo(ContentField::ID),
-            // attributes and relationships must not be named `type`
-            new Assert\NotIdenticalTo(ContentField::TYPE),
+            new Assert\Type('array'),
             // attributes and relationships must use distinct names
             new Assert\Unique(),
+            // the following constraints must apply to each property name
+            new Assert\All([
+                new Assert\NotNull(),
+                new Assert\Type('string'),
+                // attribute and relationship names must adhere to a specific string format
+                new Assert\Regex('/^'.Patterns::PROPERTY_NAME.'$/'),
+                // attributes and relationships must not be named `id`
+                new Assert\NotIdenticalTo(ContentField::ID),
+                // attributes and relationships must not be named `type`
+                new Assert\NotIdenticalTo(ContentField::TYPE),
+            ])
         ];
 
         $propertyNames = array_merge(

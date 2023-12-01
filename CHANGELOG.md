@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: solve various simple bugs
+
 ## 0.24.20 - 2023-11-30
 
 * fix: enable filtering for resource identifier set as filterable
