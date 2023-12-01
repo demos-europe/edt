@@ -1,6 +1,11 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: allow to used different entity references in property types when generating classes
+* feature: allow to disable comment generation for properties when generating classes
+
 ## 0.24.21 - 2023-12-01
 
 * fix: solve various simple bugs
