@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.21 - 2023-12-01
 
 * fix: solve various simple bugs
 
