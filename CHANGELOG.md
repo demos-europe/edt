@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: do not add unnecessary `use` statements when generating classes
+
 ## 0.24.22 - 2023-12-01
 
 * feature: allow to used different entity references in property types when generating classes
