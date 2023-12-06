@@ -48,7 +48,9 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
             return $this->adjustReturnValue($newTarget, $reflectionProperty);
         }
 
-        Assert::object($newTarget);
+        if (null !== $newTarget) {
+            Assert::object($newTarget);
+        }
 
         return $this->getValueByPropertyPath($newTarget, ...$properties);
     }
