@@ -48,9 +48,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
             return $this->adjustReturnValue($newTarget, $reflectionProperty);
         }
 
-        if (null !== $newTarget) {
-            Assert::object($newTarget);
-        }
+        Assert::nullOrObject($newTarget);
 
         return $this->getValueByPropertyPath($newTarget, ...$properties);
     }
@@ -61,11 +59,9 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
     }
 
     /**
-     * @param mixed $target
-     *
      * @throws InvalidArgumentException
      */
-    public function getValuesByPropertyPath($target, int $depth, array $properties): array
+    public function getValuesByPropertyPath(mixed $target, int $depth, array $properties): array
     {
         // if depth is negative then cut of the tail of the given path
         if (0 > $depth) {
