@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.27 - 2023-12-11
 
 * fix: solve logical problem in `IsInstanceOfTargetEntity` and rename it to `IsTargetEntityInstanceOf`
 
