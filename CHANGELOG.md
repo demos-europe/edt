@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.26 - 2023-12-11
 
 * feature: provide target entity alias to clauses
 * feature: add `IsInstanceOfTargetEntity` condition
