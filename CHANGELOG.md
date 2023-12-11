@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: provide target entity alias to clauses
+
 ## 0.24.23 - 2023-12-01
 
 * fix: do not add unnecessary `use` statements when generating classes
