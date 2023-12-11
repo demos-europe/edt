@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: add `IsTargetEntityNotInstanceOf` clause
+
 ## 0.24.27 - 2023-12-11
 
 * fix: solve logical problem in `IsInstanceOfTargetEntity` and rename it to `IsTargetEntityInstanceOf`
