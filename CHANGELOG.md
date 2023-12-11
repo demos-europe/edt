@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: solve logical problem in `IsInstanceOfTargetEntity` and rename it to `IsTargetEntityInstanceOf`
+
 ## 0.24.26 - 2023-12-11
 
 * feature: provide target entity alias to clauses
