@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.28 - 2023-12-11
 
 * feature: add `IsTargetEntityNotInstanceOf` clause
 
