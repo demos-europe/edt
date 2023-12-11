@@ -4,6 +4,7 @@
 ## Unreleased
 
 * feature: provide target entity alias to clauses
+* feature: add `IsInstanceOfTargetEntity` condition
 
 ## 0.24.23 - 2023-12-01
 
