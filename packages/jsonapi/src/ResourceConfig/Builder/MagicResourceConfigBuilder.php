@@ -20,10 +20,6 @@ use Webmozart\Assert\Assert;
 use function array_key_exists;
 
 
-// FIXME: unsure that if a property-read is extended with a different type that this type is used, not the one in the parent class,
-// this is needed to support the use case that an entity has a to-one relationship to an email address, but the frontend should receive
-// the email address as string attribute with the same attribute name as the relationship in the entity
-
 /**
  * Expects subclasses to define attributes and relationships as `property-read` docblock tags.
  *

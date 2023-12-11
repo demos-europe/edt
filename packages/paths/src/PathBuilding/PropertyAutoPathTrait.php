@@ -27,6 +27,9 @@ use function array_key_exists;
  *
  * You can optionally implement {@link IteratorAggregate} in the class using this trait without the
  * need to add any methods.
+ *
+ * If you define a property tag with a specific name in a parent class or interface and re-define it with the same
+ * name in the child class, the definition in the child class will be used.
  */
 trait PropertyAutoPathTrait
 {
