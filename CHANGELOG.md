@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.29 - 2023-12-12
 
 * feature: rework "instance of" implementation to be properly usable (though support for execution in `ConditionEvaluator` is still missing)
 
