@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\DqlQuerying\Functions;
 
-use Doctrine\ORM\Query\Expr\Comparison;
-use Doctrine\ORM\Query\Expr\Composite;
-use Doctrine\ORM\Query\Expr\Func;
-use Doctrine\ORM\Query\Expr\Math;
 use EDT\DqlQuerying\Contracts\ClauseInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Functions\Unsupported;
@@ -21,6 +17,8 @@ use Webmozart\Assert\Assert;
  * This is because it needs to be (type) compatible with other implementations of {@link ClauseInterface}, which require
  * their input to implement {@link FunctionInterface} too, while this class is currently unable to access the target entity
  * when used as {@link FunctionInterface}.
+ *
+ * @template-extends AbstractClauseFunction<class-string>
  */
 class TargetEntity extends AbstractClauseFunction
 {
@@ -39,7 +37,7 @@ class TargetEntity extends AbstractClauseFunction
         return [];
     }
 
-    public function asDql(array $valueReferences, array $propertyAliases, string $mainEntityAlias): Composite|Math|Func|Comparison|string
+    public function asDql(array $valueReferences, array $propertyAliases, string $mainEntityAlias): string
     {
         Assert::count($valueReferences, 0);
         Assert::count($propertyAliases, 0);

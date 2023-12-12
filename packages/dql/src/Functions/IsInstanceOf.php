@@ -9,10 +9,16 @@ use EDT\DqlQuerying\Contracts\ClauseFunctionInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 
 /**
+ * @template-extends AbstractClauseFunction<bool>
+ *
  * Does not usage as {@link FunctionInterface}.
  */
 class IsInstanceOf extends AbstractClauseFunction
 {
+    /**
+     * @param ClauseFunctionInterface<non-empty-string> $valueClause
+     * @param ClauseFunctionInterface<class-string> $typeClause
+     */
     public function __construct(
         protected readonly ClauseFunctionInterface $valueClause,
         protected readonly ClauseFunctionInterface $typeClause,

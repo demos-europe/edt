@@ -72,7 +72,17 @@ parameters:
             path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
 
         -
+            message: "#^Parameter \\#1 \\$valueClause of class EDT\\\\DqlQuerying\\\\Functions\\\\IsInstanceOf constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<non\\-empty\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\TargetEntity given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
             message: "#^Parameter \\#2 \\$max of class EDT\\\\DqlQuerying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<float\\|int\\|numeric\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\$typeClause of class EDT\\\\DqlQuerying\\\\Functions\\\\IsInstanceOf constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<class\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
             count: 1
             path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
 
@@ -150,6 +160,11 @@ parameters:
             message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\GreaterEquals\\:\\:__construct\\(\\) has parameter \\$right with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
             count: 1
             path: packages/dql/src/Functions/GreaterEquals.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\IsInstanceOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<non\\-empty\\-string\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<class\\-string\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/IsInstanceOf.php
 
         -
             message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<array\\<int, V\\>\\|V\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<array\\<V\\>\\> given\\.$#"
