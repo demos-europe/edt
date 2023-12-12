@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* feature: rework "instance of" implementation to be properly usable (though support for execution in `ConditionEvaluator` is still missing)
+
 ## 0.24.28 - 2023-12-11
 
 * feature: add `IsTargetEntityNotInstanceOf` clause
