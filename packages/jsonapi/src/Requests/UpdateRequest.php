@@ -41,13 +41,13 @@ class UpdateRequest
         $requestBody = $this->requestTransformer->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
-        $beforeUpdateEvent = new BeforeUpdateEvent($type, $resourceId);
+        $beforeUpdateEvent = new BeforeUpdateEvent($type, $requestBody);
         $this->eventDispatcher->dispatch($beforeUpdateEvent);
 
         $modifiedEntity = $type->updateEntity($requestBody->getId(), $requestBody);
         $entity = $modifiedEntity->getEntity();
 
-        $afterUpdateEvent = new AfterUpdateEvent($type, $entity);
+        $afterUpdateEvent = new AfterUpdateEvent($type, $entity, $requestBody);
         $this->eventDispatcher->dispatch($afterUpdateEvent);
 
         $requestDeviations = array_merge(
