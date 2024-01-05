@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.32 - 2024-01-05
 
 * fix: handle required properties correctly in more validation places
 * refactor: allow `array` as attribute type, but for string lists only for now
