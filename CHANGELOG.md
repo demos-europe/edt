@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.31 - 2024-01-05
 
 * fix: handle required properties correctly in validation
 
