@@ -54,7 +54,7 @@ trait RequestConstraintTrait
      *
      * @return list<Constraint>
      */
-    protected function getRelationshipConstraints(string $typeIdentifier): array
+    protected function getConstraintsForRelationship(string $typeIdentifier): array
     {
         return [
             new Assert\NotNull(),

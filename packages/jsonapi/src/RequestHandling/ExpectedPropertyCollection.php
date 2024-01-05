@@ -34,7 +34,7 @@ class ExpectedPropertyCollection
      */
     public function getRequiredAttributes(): array
     {
-        return array_fill_keys($this->requiredAttributes, $this->getAttributeConstraints());
+        return array_fill_keys($this->requiredAttributes, $this->getConstraintsForAttribute());
     }
 
     /**
@@ -44,7 +44,7 @@ class ExpectedPropertyCollection
     {
         return array_fill_keys(
             array_merge($this->requiredAttributes, $this->optionalAttributes),
-            $this->getAttributeConstraints()
+            $this->getConstraintsForAttribute()
         );
     }
 
@@ -68,12 +68,12 @@ class ExpectedPropertyCollection
     public function getAllowedRelationships(): array
     {
         $toOneRelationships = array_map(
-            fn (string $typeIdentifier): array => $this->getToOneRelationshipConstraints($typeIdentifier),
+            fn (string $typeIdentifier): array => $this->getConstraintsForToOneRelationship($typeIdentifier),
             array_merge($this->requiredToOneRelationships, $this->optionalToOneRelationships)
         );
 
         $toManyRelationships = array_map(
-            fn (string $typeIdentifier): array => $this->getToManyRelationshipConstraints($typeIdentifier),
+            fn (string $typeIdentifier): array => $this->getConstraintsForToManyRelationship($typeIdentifier),
             array_merge($this->requiredToManyRelationships, $this->optionalToManyRelationships)
         );
 
@@ -83,7 +83,7 @@ class ExpectedPropertyCollection
     /**
      * @return list<Constraint>
      */
-    protected function getAttributeConstraints(): array
+    protected function getConstraintsForAttribute(): array
     {
         // TODO: the JSON:API specification allows more attribute types, but those require more complex validation
         return [
@@ -96,7 +96,7 @@ class ExpectedPropertyCollection
      *
      * @return list<Constraint>
      */
-    protected function getToOneRelationshipConstraints(string $typeIdentifier): array
+    protected function getConstraintsForToOneRelationship(string $typeIdentifier): array
     {
         return [
             new Assert\NotNull(),
@@ -104,7 +104,7 @@ class ExpectedPropertyCollection
             new Assert\Collection([
                 ContentField::DATA => new Assert\AtLeastOneOf([
                     // applies to non-`null` to-one relationships
-                    new Assert\Sequentially($this->getRelationshipConstraints($typeIdentifier)),
+                    new Assert\Sequentially($this->getConstraintsForRelationship($typeIdentifier)),
                     // applies to `null` to-one relationships
                     new Assert\IsNull(),
                 ]),
@@ -117,7 +117,7 @@ class ExpectedPropertyCollection
      *
      * @return list<Constraint>
      */
-    protected function getToManyRelationshipConstraints(string $typeIdentifier): array
+    protected function getConstraintsForToManyRelationship(string $typeIdentifier): array
     {
         return [
             new Assert\NotNull(),
@@ -127,7 +127,7 @@ class ExpectedPropertyCollection
                     // applies to to-many relationships
                     new Assert\NotNull(),
                     new Assert\Type('array'),
-                    new Assert\All($this->getRelationshipConstraints($typeIdentifier)),
+                    new Assert\All($this->getConstraintsForRelationship($typeIdentifier)),
                 ],
             ], null, null, false, false),
         ];

@@ -49,7 +49,7 @@ parameters:
         - packages/queries/src
 
     # Note: use `\w+(\\\w+)+\\(\w+)` to `$2` replacement to remove namespaces in phpstan error messages, making it a bit more readable
-    # Note: use `grep path: phpstan.neon | sort | uniq | awk '{print $2}'` to get the list of classes with errors
+    # Note: use `grep path: phpstan.neon | sort | uniq -c | awk '{print $1} {print $3}'` to get the list of classes with their count of errors
     ignoreErrors:
         -
             message: "#^Parameter \\#1 \\$baseFunction of class EDT\\\\DqlQuerying\\\\Functions\\\\LowerCase constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<string\\|null\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"

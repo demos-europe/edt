@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: handle required properties correctly in validation
+
 ## 0.24.30 - 2023-12-21
 
 * feature: provide request body in creation and update events
