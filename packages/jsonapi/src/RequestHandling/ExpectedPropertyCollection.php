@@ -85,9 +85,28 @@ class ExpectedPropertyCollection
      */
     protected function getConstraintsForAttribute(): array
     {
-        // TODO: the JSON:API specification allows more attribute types, but those require more complex validation
         return [
-            new Assert\Type(['string', 'int', 'float', 'bool']),
+            new Assert\AtLeastOneOf([
+                // primitive values are always valid
+                new Assert\Type(['string', 'int', 'float', 'bool'], 'If not null, attributes must be of type {{ type }}.'),
+                // if the type is an array, then it must contain only non-null strings
+                new class extends Assert\Compound {
+                    /**
+                     * @inheritDoc
+                     */
+                    protected function getConstraints(mixed $options): array
+                    {
+                        return [
+                            new Assert\Type('array'),
+                            new Assert\All([
+                                new Assert\Type('string'),
+                                new Assert\NotNull(),
+                            ]),
+                        ];
+                    }
+                }
+                // TODO: the JSON:API specification may allow more attribute types, especially regarding `array`, but those require more complex validation
+            ]),
         ];
     }
 
@@ -101,14 +120,16 @@ class ExpectedPropertyCollection
         return [
             new Assert\NotNull(),
             new Assert\Type('array'),
-            new Assert\Collection([
-                ContentField::DATA => new Assert\AtLeastOneOf([
-                    // applies to non-`null` to-one relationships
-                    new Assert\Sequentially($this->getConstraintsForRelationship($typeIdentifier)),
-                    // applies to `null` to-one relationships
-                    new Assert\IsNull(),
-                ]),
-            ], null, null, false, false),
+            $this->getCollectionConstraintFactory()->exactMatch('to-one relationship references', [
+                ContentField::DATA => [
+                    new Assert\AtLeastOneOf([
+                        // applies to non-`null` to-one relationships
+                        new Assert\Sequentially($this->getConstraintsForRelationship($typeIdentifier)),
+                        // applies to `null` to-one relationships
+                        new Assert\IsNull(),
+                    ])
+                ],
+            ]),
         ];
     }
 
@@ -122,14 +143,14 @@ class ExpectedPropertyCollection
         return [
             new Assert\NotNull(),
             new Assert\Type('array'),
-            new Assert\Collection([
+            $this->getCollectionConstraintFactory()->exactMatch('to-many relationship references', [
                 ContentField::DATA => [
                     // applies to to-many relationships
                     new Assert\NotNull(),
                     new Assert\Type('array'),
                     new Assert\All($this->getConstraintsForRelationship($typeIdentifier)),
                 ],
-            ], null, null, false, false),
+            ]),
         ];
     }
 }

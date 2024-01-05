@@ -13,6 +13,7 @@ use EDT\JsonApi\RequestHandling\PaginatorFactory;
 use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\RequestHandling\UrlParameter;
 use EDT\JsonApi\ResourceTypes\ListableTypeInterface;
+use EDT\JsonApi\Validation\SortValidator;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
@@ -42,7 +43,8 @@ class ListRequest
         protected readonly PagePaginationParser $paginationParser,
         protected readonly RequestTransformer $requestParser,
         protected readonly SchemaPathProcessor $schemaPathProcessor,
-        protected readonly EventDispatcherInterface $eventDispatcher
+        protected readonly EventDispatcherInterface $eventDispatcher,
+        protected readonly SortValidator $sortValidator
     ) {}
 
     /**
@@ -116,7 +118,7 @@ class ListRequest
         $sort = $query->get(UrlParameter::SORT);
         $query->remove(UrlParameter::SORT);
 
-        Assert::stringNotEmpty($sort);
+        $sort = $this->sortValidator->validateFormat($sort);
 
         return $this->sortingParser->createFromQueryParamValue($sort);
     }

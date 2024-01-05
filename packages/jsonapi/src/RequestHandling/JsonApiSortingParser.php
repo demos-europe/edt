@@ -10,7 +10,6 @@ use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
-use function in_array;
 
 /**
  * @template TSorting of PathsBasedInterface
@@ -92,16 +91,14 @@ class JsonApiSortingParser
     }
 
     /**
-     * TODO: implement proper sort validator
-     *
      * @return non-empty-list<non-empty-string>
+     *
+     * @throws InvalidArgumentException
      */
     protected function toPathArray(string $pathString): array
     {
         $path = explode('.', $pathString);
-        if (in_array('', $path, true)) {
-            throw new InvalidArgumentException("Invalid path: '$pathString'.");
-        }
+        Assert::allStringNotEmpty($path, "Invalid path `$pathString`, contains empty segments.");
 
         return $path;
     }

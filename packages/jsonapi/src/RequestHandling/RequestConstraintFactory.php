@@ -6,11 +6,14 @@ namespace EDT\JsonApi\RequestHandling;
 
 use EDT\Wrapping\Contracts\ContentField;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class RequestConstraintFactory
 {
     use RequestConstraintTrait;
+
+    private const ROOT_DATA_CONTEXT = 'the root `data` field';
+    private const ATTRIBUTES_CONTEXT = 'the list of attributes';
+    private const RELATIONSHIPS_CONTEXT = 'the list of relationships';
 
     /**
      * @param non-empty-string $urlTypeIdentifier
@@ -29,83 +32,47 @@ class RequestConstraintFactory
         $attributeConstraints = $this->getAttributeConstraints($expectedProperties->getAllowedAttributes(), $requiredAttributes);
         $relationshipConstraints = $this->getRelationshipConstraints($expectedProperties->getAllowedRelationships(), $requiredRelationships);
 
-        $isCreationRequestInsteadOfUpdate = null === $urlId;
-
         $outerDataConstraints = [
             // validate attributes and relationships
-            new Assert\Collection(
-                ['fields' => [
-                    ContentField::TYPE => $this->getTypeIdentifierConstraints($urlTypeIdentifier),
-                    ContentField::ID => $this->getIdConstraints($urlId),
-                    ContentField::ATTRIBUTES => $attributeConstraints,
-                    ContentField::RELATIONSHIPS => $relationshipConstraints,
-                ]],
-                null,
-                null,
-                false,
-                true,
-                'No other fields beside `type`, `id`, `attributes` or `relationships` must be present.'
-            ),
+            $this->getCollectionConstraintFactory()->noExtra(self::ROOT_DATA_CONTEXT, [
+                ContentField::TYPE => $this->getTypeIdentifierConstraints($urlTypeIdentifier),
+                ContentField::ID => $this->getIdConstraints($urlId),
+                ContentField::ATTRIBUTES => $attributeConstraints,
+                ContentField::RELATIONSHIPS => $relationshipConstraints,
+            ]),
             // validate `type` field
-            new Assert\Collection(
-                ['fields' => [ContentField::TYPE => $this->getTypeIdentifierConstraints($urlTypeIdentifier)]],
-                null,
-                null,
-                true,
-                false,
-                null,
-                'The field `type` must always be present.'
-            ),
-            // validate `id` field (only required if an ID was given in the request)
-            new Assert\Collection(
-                ['fields' => [ContentField::ID => $this->getIdConstraints($urlId)]],
-                null,
-                null,
-                true,
-                $isCreationRequestInsteadOfUpdate,
-                null,
-                $isCreationRequestInsteadOfUpdate
-                    ? null
-                    : 'Update requests must specify the `id` field.'
-            ),
+            $this->getCollectionConstraintFactory()->noMissing(self::ROOT_DATA_CONTEXT, [
+                ContentField::TYPE => $this->getTypeIdentifierConstraints($urlTypeIdentifier)
+            ]),
         ];
 
+        if (null !== $urlId) {
+            // validate `id` field (only required if an ID was given in the request, i.e. an update instead of a creation request)
+            $outerDataConstraints[] = $this->getCollectionConstraintFactory()->noMissing('update requests', [
+                ContentField::ID => $this->getIdConstraints($urlId)
+            ]);
+        }
+
         if ([] !== $requiredAttributes) {
-            $outerDataConstraints[] = new Assert\Collection(
+            // If there are required attributes, then the field `attributes` must be present
+            $outerDataConstraints[] = $this->getCollectionConstraintFactory()->noMissing(self::ROOT_DATA_CONTEXT, [
                 // no need to set the attribute constraints here, as they were already set above
-                ['fields' => [ContentField::ATTRIBUTES => []]],
-                null,
-                null,
-                true,
-                false,
-                null,
-                'The field `attributes` must be present, as some attributes are required.'
-            );
+                ContentField::ATTRIBUTES => [],
+            ]);
         }
 
         if ([] !== $requiredRelationships) {
-            $outerDataConstraints[] = new Assert\Collection(
+            // If there are required relationships, then the field `relationships` must be present
+            $outerDataConstraints[] = $this->getCollectionConstraintFactory()->noMissing(self::ROOT_DATA_CONTEXT, [
                 // no need to set the relationship constraints here, as they were already set above
-                ['fields' => [ContentField::RELATIONSHIPS => []]],
-                null,
-                null,
-                true,
-                false,
-                null,
-                'The field `relationships` must be present, as some relationships are required.'
-            );
+                ContentField::RELATIONSHIPS => [],
+            ]);
         }
 
         return [
-            new Assert\Collection(
-                ['fields' => [ContentField::DATA => $outerDataConstraints]],
-                null,
-                null,
-                false,
-                false,
-                'No other fields must be present beside `data`.',
-                'The field `data` must be present.'
-            ),
+            $this->getCollectionConstraintFactory()->exactMatch('the root level', [
+                ContentField::DATA => $outerDataConstraints
+            ]),
         ];
     }
 
@@ -117,34 +84,16 @@ class RequestConstraintFactory
      */
     protected function getAttributeConstraints(array $allowedAttributes, array $requiredAttributes): array
     {
-        // validate request attributes are allowed and valid
-        $allowedAttributesConstraint = new Assert\Collection(
-            ['fields' => $allowedAttributes],
-            null,
-            null,
-            false,
-            true,
-            'The access to at least one attribute was denied.'
-        );
-
         $attributeConstraints = [
-            $allowedAttributesConstraint,
+            // validate request attributes are allowed and valid
+            $this->getCollectionConstraintFactory()->noExtra(self::ATTRIBUTES_CONTEXT, $allowedAttributes),
         ];
 
         // only create a validation for required attributes if there are any required
         // quick-fix for https://github.com/symfony/symfony/pull/53383
         if ([] !== $requiredAttributes) {
             // validate required attributes are present
-            $requiredAttributesConstraint = new Assert\Collection(
-                ['fields' => $requiredAttributes],
-                null,
-                null,
-                true,
-                false,
-                null,
-                'At least one required attribute is missing.'
-            );
-            $attributeConstraints[] = $requiredAttributesConstraint;
+            $attributeConstraints[] = $this->getCollectionConstraintFactory()->noMissing(self::ATTRIBUTES_CONTEXT, $requiredAttributes);
         }
 
         return $attributeConstraints;
@@ -158,34 +107,16 @@ class RequestConstraintFactory
      */
     protected function getRelationshipConstraints(array $allowedRelationships, array $requiredRelationships): array
     {
-        // validate request relationships are allowed and valid
-        $allowedRelationshipConstraint = new Assert\Collection(
-            ['fields' => $allowedRelationships],
-            null,
-            null,
-            false,
-            true,
-            'The access to at least one relationship was denied.'
-        );
-
         $relationshipConstraints = [
-            $allowedRelationshipConstraint,
+            // validate request relationships are allowed and valid
+            $this->getCollectionConstraintFactory()->noExtra(self::RELATIONSHIPS_CONTEXT, $allowedRelationships),
         ];
 
         // only create a validation for required relationships if there are any required
         // quick-fix for https://github.com/symfony/symfony/pull/53383
         if ([] !== $requiredRelationships) {
             // validate required relationships are present
-            $requiredRelationshipConstraint = new Assert\Collection(
-                ['fields' => $requiredRelationships],
-                null,
-                null,
-                true,
-                false,
-                null,
-                'At least one required relationship is missing.'
-            );
-            $relationshipConstraints[] = $requiredRelationshipConstraint;
+            $relationshipConstraints[] = $this->getCollectionConstraintFactory()->noMissing(self::RELATIONSHIPS_CONTEXT, $requiredRelationships);
         }
 
         return $relationshipConstraints;

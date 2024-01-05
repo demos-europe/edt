@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\JsonApi\Validation\Patterns;
+use EDT\Querying\Utilities\CollectionConstraintFactory;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -22,10 +23,13 @@ class DrupalFilterValidator
      */
     protected array $filterNamesConstraints;
 
+    private CollectionConstraintFactory $collectionConstraintFactory;
+
     public function __construct(
         protected ValidatorInterface $validator,
         DrupalConditionFactoryInterface $drupalConditionFactory
     ) {
+        $this->collectionConstraintFactory = new CollectionConstraintFactory();
         $this->filterNamesConstraints = $this->getFilterNamesConstraints();
         $this->filterSchemaConstraints = $this->getFilterSchemaConstraints($drupalConditionFactory->getSupportedOperators());
     }
@@ -62,13 +66,7 @@ class DrupalFilterValidator
         $assertionsOnRootItems = [
             new Assert\Type('array'),
             new Assert\Count(1),
-            new Assert\Collection(
-                $this->getFilterTypeConstraints($validOperatorNames),
-                null,
-                null,
-                false,
-                true
-            ),
+            $this->collectionConstraintFactory->noExtra('filter items', $this->getFilterTypeConstraints($validOperatorNames)),
         ];
 
         return [
@@ -80,7 +78,7 @@ class DrupalFilterValidator
     /**
      * @param list<non-empty-string> $validOperatorNames
      *
-     * @return array<non-empty-string, list<Constraint>>
+     * @return array{condition: list<Constraint>, group: list<Constraint>}
      */
     protected function getFilterTypeConstraints(array $validOperatorNames): array
     {
@@ -106,34 +104,24 @@ class DrupalFilterValidator
 
         return [
             new Assert\Type('array'),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::VALUE     => new Assert\AtLeastOneOf([
+            $this->collectionConstraintFactory->noExtra('a filter condition', [
+                DrupalFilterParser::VALUE => [
+                    new Assert\AtLeastOneOf([
                         new Assert\IsNull(),
                         new Assert\Type('string'),
                         new Assert\Type('array'),
                         new Assert\Type('float'),
                         new Assert\Type('bool'),
                         new Assert\Type('int'),
-                    ]),
-                    DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
-                    DrupalFilterParser::PATH      => $pathConstraints,
-                    DrupalFilterParser::OPERATOR  => new Assert\Choice($validOperatorNames),
+                    ])
                 ],
-                null,
-                null,
-                false,
-                true
-            ),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::PATH => $pathConstraints,
-                ],
-                null,
-                null,
-                true,
-                false
-            ),
+                DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
+                DrupalFilterParser::PATH => $pathConstraints,
+                DrupalFilterParser::OPERATOR => [new Assert\Choice($validOperatorNames)],
+            ]),
+            $this->collectionConstraintFactory->noMissing('a filter condition', [
+                DrupalFilterParser::PATH => $pathConstraints,
+            ]),
         ];
     }
 
@@ -145,27 +133,17 @@ class DrupalFilterValidator
         $conjunctionConstraint = $this->getGroupConjunctionConstraints();
         $filterNameConstraints = $this->getFilterNameConstraints();
 
+        $fields = [
+            DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
+            DrupalFilterParser::CONJUNCTION => $conjunctionConstraint,
+        ];
+
         return [
             new Assert\Type('array'),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::MEMBER_OF => $filterNameConstraints,
-                    DrupalFilterParser::CONJUNCTION => $conjunctionConstraint,
-                ],
-                null,
-                null,
-                false,
-                true
-            ),
-            new Assert\Collection(
-                [
-                    DrupalFilterParser::CONJUNCTION => $conjunctionConstraint,
-                ],
-                null,
-                null,
-                true,
-                false
-            ),
+            $this->collectionConstraintFactory->noExtra('a filter group', $fields),
+            $this->collectionConstraintFactory->noMissing('a filter group', [
+                DrupalFilterParser::CONJUNCTION => $conjunctionConstraint,
+            ]),
         ];
     }
 

@@ -1,6 +1,14 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: handle required properties correctly in more validation places
+* refactor: allow `array` as attribute type, but for string lists only for now
+* refactor: improve some validation messages
+* feature: use Symfony validators to validate `sort` query parameter
+  * `ListRequest` now requires `SortValidator` as constructor parameter
+
 ## 0.24.31 - 2024-01-05
 
 * fix: handle required properties correctly in validation

@@ -6,6 +6,7 @@ namespace EDT\JsonApi\Pagination;
 
 use EDT\JsonApi\RequestHandling\UrlParameter;
 use EDT\Querying\Pagination\OffsetPagination;
+use EDT\Querying\Utilities\CollectionConstraintFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -16,9 +17,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class OffsetPaginationParser implements PaginationParserInterface
 {
+    private readonly CollectionConstraintFactory $collectionConstraintFactory;
+
     public function __construct(
         protected readonly ValidatorInterface $validator
-    ) {}
+    ) {
+        $this->collectionConstraintFactory = new CollectionConstraintFactory();
+    }
 
     /**
      * @throws ValidationFailedException
@@ -51,7 +56,7 @@ class OffsetPaginationParser implements PaginationParserInterface
         $violations = $this->validator->validate($page, [
             new Assert\NotNull(),
             new Assert\Type('array'),
-            new Assert\Collection([
+            $this->collectionConstraintFactory->exactMatch('the page parameter', [
                 UrlParameter::OFFSET => [
                     new Assert\NotNull(),
                     new Assert\Type('string'),
@@ -62,7 +67,7 @@ class OffsetPaginationParser implements PaginationParserInterface
                     new Assert\Type('string'),
                     new Assert\Positive(),
                 ],
-            ], null, null, false, false),
+            ]),
         ]);
         if (0 !== $violations->count()) {
             throw new ValidationFailedException($page, $violations);
