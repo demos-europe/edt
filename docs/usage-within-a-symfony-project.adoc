@@ -1,0 +1,21 @@
+= Usage within a Symfony project
+
+While using EDT is in no way limited to https://symfony.com/[Symfony] projects, it was developed with such background and thus its documentation (for now) focuses on this use case.
+
+== Services
+
+Most of the logic is implemented in classes that can be defined as singleton Symfony services. You can define such
+services as needed.
+
+== Handling requests
+
+To cover the five request types defined in the https://jsonapi.org/format/1.0/[JSON:API specification], EDT provides five corresponding classes in the `EDT\JsonApi\Requests` namespace, that can be defined as Symfony services.
+
+[source,php]
+----
+use EDT\JsonApi\Requests\ListRequest;
+use EDT\JsonApi\Requests\CreationRequest;
+use EDT\JsonApi\Requests\DeletionRequest;
+use EDT\JsonApi\Requests\GetRequest;
+use EDT\JsonApi\Requests\UpdateRequest;
+----

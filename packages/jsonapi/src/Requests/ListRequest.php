@@ -6,7 +6,7 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\Event\AfterListEvent;
 use EDT\JsonApi\Event\BeforeListEvent;
-use EDT\JsonApi\Pagination\PagePaginationParser;
+use EDT\JsonApi\Pagination\PaginationParserInterface;
 use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\JsonApi\RequestHandling\JsonApiSortingParser;
 use EDT\JsonApi\RequestHandling\PaginatorFactory;
@@ -40,7 +40,7 @@ class ListRequest
         protected readonly FilterParserInterface $filterParser,
         protected readonly JsonApiSortingParser $sortingParser,
         protected readonly PaginatorFactory $paginatorFactory,
-        protected readonly PagePaginationParser $paginationParser,
+        protected readonly PaginationParserInterface $paginationParser,
         protected readonly RequestTransformer $requestParser,
         protected readonly SchemaPathProcessor $schemaPathProcessor,
         protected readonly EventDispatcherInterface $eventDispatcher,

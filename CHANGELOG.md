@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.33 - 2024-01-09
 
 * fix: handle a to-one relationship with no items correctly on update and creation requests
 
