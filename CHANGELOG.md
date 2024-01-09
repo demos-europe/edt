@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: handle a to-one relationship with no items correctly on update and creation requests
+
 ## 0.24.32 - 2024-01-05
 
 * fix: handle required properties correctly in more validation places

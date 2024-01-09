@@ -155,6 +155,7 @@ class RequestTransformer
                     ContentField::TYPE => $type,
                 ];
             } else {
+                $toManyRelationships[$propertyName] = [];
                 foreach ($data as $index => $relationshipReference) {
                     \Webmozart\Assert\Assert::integer($index);
                     \Webmozart\Assert\Assert::isArray($relationshipReference);
