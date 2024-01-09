@@ -233,11 +233,11 @@ class RequestTransformer
     }
 
     /**
-     * @param int<1, 512> $maxDepth TODO: if non-primitive types are allowed as attributes, the default $maxDepth may need to be increased
+     * @param int<1, 512> $maxDepth
      *
      * @throws RequestException
      */
-    protected function getRequestBody(Request $request, int $maxDepth = 8): mixed
+    protected function getRequestBody(Request $request, int $maxDepth = 512): mixed
     {
         $content = $request->getContent();
         \Webmozart\Assert\Assert::string($content);

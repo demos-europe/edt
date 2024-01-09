@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: increase JSON request body max depth to allow for non-primitive attributes (i.e. array structures)
+
 ## 0.24.33 - 2024-01-09
 
 * fix: handle a to-one relationship with no items correctly on update and creation requests
