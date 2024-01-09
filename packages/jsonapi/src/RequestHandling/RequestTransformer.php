@@ -27,12 +27,14 @@ class RequestTransformer
 
     /**
      * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
+     * @param int<1, 8192> $maxBodyNestingDepth the maximum allowed depth when parsing the JSON body, see {@link self::getRequestBody}
      */
     public function __construct(
         protected readonly RequestStack $requestStack,
         protected readonly TypeProviderInterface $typeProvider,
         protected readonly ValidatorInterface $validator,
-        protected readonly RequestConstraintFactory $requestConstraintFactory
+        protected readonly RequestConstraintFactory $requestConstraintFactory,
+        protected readonly int $maxBodyNestingDepth = 512
     ) {}
 
     public function getUrlParameters(): ParameterBag
@@ -120,7 +122,7 @@ class RequestTransformer
         ?string $urlId,
         ExpectedPropertyCollection $expectedProperties
     ): array {
-        $requestBody = $this->getRequestBody($this->getRequest());
+        $requestBody = $this->getRequestBody($this->getRequest(), $this->maxBodyNestingDepth);
         $this->validateRequestBodyFormat(
             $requestBody,
             $urlTypeIdentifier,
@@ -233,11 +235,13 @@ class RequestTransformer
     }
 
     /**
-     * @param int<1, 512> $maxDepth
+     * @param int<1, 8192> $maxDepth Structures with a nesting exceeding the maximum seem quite unlikely, but we will
+     *                               refrain from throwing an exception just in case there is a use case requiring
+     *                               deeper nesting. The user has to deal with the phpstan concern though.
      *
      * @throws RequestException
      */
-    protected function getRequestBody(Request $request, int $maxDepth = 512): mixed
+    protected function getRequestBody(Request $request, int $maxDepth): mixed
     {
         $content = $request->getContent();
         \Webmozart\Assert\Assert::string($content);
