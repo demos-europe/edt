@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.35 - 2024-01-09
 
 * fix: increase JSON request body max depth to allow for non-primitive attributes (i.e. array structures)
 
