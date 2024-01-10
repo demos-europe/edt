@@ -6,7 +6,7 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\Event\AfterListEvent;
 use EDT\JsonApi\Event\BeforeListEvent;
-use EDT\JsonApi\Pagination\PaginationParserInterface;
+use EDT\JsonApi\Pagination\PagePaginationParser;
 use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\JsonApi\RequestHandling\JsonApiSortingParser;
 use EDT\JsonApi\RequestHandling\PaginatorFactory;
@@ -24,7 +24,6 @@ use InvalidArgumentException;
 use League\Fractal\Resource\Collection;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use Webmozart\Assert\Assert;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -40,7 +39,7 @@ class ListRequest
         protected readonly FilterParserInterface $filterParser,
         protected readonly JsonApiSortingParser $sortingParser,
         protected readonly PaginatorFactory $paginatorFactory,
-        protected readonly PaginationParserInterface $paginationParser,
+        protected readonly PagePaginationParser $paginationParser,
         protected readonly RequestTransformer $requestParser,
         protected readonly SchemaPathProcessor $schemaPathProcessor,
         protected readonly EventDispatcherInterface $eventDispatcher,
