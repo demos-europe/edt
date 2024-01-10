@@ -5,6 +5,8 @@
 
 * refactor: allow to change max request body JSON nesting depth via injection
 * rollback: lock pagination in list requests to page-based again, as others are not yet supported
+* feature: make attribute validation more flexible
+  * to allow arrays as attributes, the `RequestConstraintFactory` must now be configured to define how they should be handled
 
 ## 0.24.35 - 2024-01-09
 

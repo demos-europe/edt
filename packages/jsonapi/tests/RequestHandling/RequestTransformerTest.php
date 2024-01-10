@@ -27,7 +27,7 @@ class RequestTransformerTest extends TestCase
             new RequestStack(),
             new LazyTypeProvider(),
             Validation::createValidator(),
-            new RequestConstraintFactory()
+            new RequestConstraintFactory(1, false)
         );
         $this->splitRelationships = new ReflectionMethod($this->requestTransformer, 'splitRelationships');
         $this->splitRelationships->setAccessible(true);

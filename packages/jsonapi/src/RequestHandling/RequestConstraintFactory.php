@@ -16,6 +16,14 @@ class RequestConstraintFactory
     private const RELATIONSHIPS_CONTEXT = 'the list of relationships';
 
     /**
+     * @param int<0, 8192> $attributeValidationDepth
+     */
+    public function __construct(
+        protected readonly int $attributeValidationDepth,
+        protected readonly bool $attributeAllowAnythingBelowValidationDepth
+    ) {}
+
+    /**
      * @param non-empty-string $urlTypeIdentifier
      * @param non-empty-string|null $urlId
      *
@@ -26,10 +34,10 @@ class RequestConstraintFactory
         ?string $urlId,
         ExpectedPropertyCollection $expectedProperties
     ): array {
-        $requiredAttributes = $expectedProperties->getRequiredAttributes();
+        $allowedAttributes = $expectedProperties->getAllowedAttributes($this->attributeValidationDepth, $this->attributeAllowAnythingBelowValidationDepth);
+        $requiredAttributes = $expectedProperties->getRequiredAttributes($this->attributeValidationDepth, $this->attributeAllowAnythingBelowValidationDepth);
         $requiredRelationships = $expectedProperties->getRequiredRelationships();
-
-        $attributeConstraints = $this->getAttributeConstraints($expectedProperties->getAllowedAttributes(), $requiredAttributes);
+        $attributeConstraints = $this->getAttributeConstraints($allowedAttributes, $requiredAttributes);
         $relationshipConstraints = $this->getRelationshipConstraints($expectedProperties->getAllowedRelationships(), $requiredRelationships);
 
         $outerDataConstraints = [

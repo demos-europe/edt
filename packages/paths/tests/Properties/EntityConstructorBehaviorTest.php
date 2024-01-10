@@ -65,8 +65,8 @@ class EntityConstructorBehaviorTest extends TestCase
         );
 
         $expected = $instantiability->getExpectedProperties();
-        self::assertCount(1, $expected->getRequiredAttributes());
-        self::assertCount(1, $expected->getAllowedAttributes());
+        self::assertCount(1, $expected->getRequiredAttributes(1, false));
+        self::assertCount(1, $expected->getAllowedAttributes(1, false));
         self::assertCount(0, $expected->getRequiredRelationships());
         self::assertCount(0, $expected->getAllowedRelationships());
     }

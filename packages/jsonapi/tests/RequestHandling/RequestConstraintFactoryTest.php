@@ -30,7 +30,7 @@ class RequestConstraintFactoryTest extends TestCase
         array $optionalToOneRelationships,
         array $optionalToManyRelationships
     ): void {
-        $factory = new RequestConstraintFactory();
+        $factory = new RequestConstraintFactory(1, false);
         $validator = Validation::createValidatorBuilder()->getValidator();
         $expectedProperties = new ExpectedPropertyCollection(
             $requiredAttributes,
