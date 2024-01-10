@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.36 - 2024-01-10
 
 * refactor: allow to change max request body JSON nesting depth via injection
 * rollback: lock pagination in list requests to page-based again, as others are not yet supported
