@@ -1,6 +1,10 @@
 
 # Changelog
 
+## Unreleased
+
+* fix: provide client with backend-created IDs
+
 ## 0.24.36 - 2024-01-10
 
 * refactor: allow to change max request body JSON nesting depth via injection

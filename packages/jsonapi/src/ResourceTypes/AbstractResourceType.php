@@ -12,6 +12,7 @@ use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Pagination\PagePagination;
+use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\FetchableTypeInterface;
 use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\EntityDataInterface;
@@ -96,9 +97,15 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $instantiability = $this->getResourceConfig()->getInstantiability();
 
         [$entity, $requestDeviations] = $instantiability->initializeEntity($entityData);
+        $idBasedDeviations = $instantiability->setIdentifier($entity, $entityData);
         // FIXME: check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
         $fillRequestDeviations = $instantiability->fillProperties($entity, $entityData);
-        $requestDeviations = array_merge($requestDeviations, $fillRequestDeviations);
+        if (null === $idBasedDeviations) {
+            // if no ID was provided in the request, we can expect that one will be created by the backend at some point,
+            // which needs to be provided to the client
+            $idBasedDeviations = [ContentField::ID];
+        }
+        $requestDeviations = array_merge($requestDeviations, $fillRequestDeviations, $idBasedDeviations);
 
         return new ModifiedEntity($entity, $requestDeviations);
     }
