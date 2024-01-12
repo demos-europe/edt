@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.39 - 2024-01-12
 
 * feature: relax `composer.json` dependencies to allow Symfony 6 (experimental)
 * fix: use correct comparison for 0.24.37 fix
