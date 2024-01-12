@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased
+## 0.24.37 - 2024-01-12
 
 * fix: provide client with backend-created IDs
 
