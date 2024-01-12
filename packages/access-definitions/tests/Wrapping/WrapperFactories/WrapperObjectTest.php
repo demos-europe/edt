@@ -11,12 +11,12 @@ use EDT\Wrapping\Contracts\AccessException;
 use EDT\Wrapping\TypeProviders\LazyTypeProvider;
 use EDT\Wrapping\TypeProviders\PrefilledTypeProvider;
 use EDT\Wrapping\WrapperFactories\WrapperObject;
+use Tests\data\AdModelBasedTest;
 use Tests\data\Types\AuthorType;
 use Tests\data\Types\BirthType;
 use Tests\data\Types\BookType;
-use Tests\ModelBasedTest;
 
-class WrapperObjectTest extends ModelBasedTest
+class WrapperObjectTest extends AdModelBasedTest
 {
     private AuthorType $authorType;
     private BookType $bookType;
@@ -57,10 +57,10 @@ class WrapperObjectTest extends ModelBasedTest
         self::assertSame($this->books['pickwickPapers']->getTitle(), $author->books[0]->title);
         self::assertSame($this->books['pickwickPapers']->getTitle(), $author->books[0]->getTitle());
         $this->bookType->setAvailableInstances($this->getTestData()['books']);
-        $author->books = [
+        $author->__set('books', [
             $this->books['beowulf'],
             $this->books['doctorSleep'],
-        ];
+        ]);
         self::assertCount(2, $author->books);
         self::assertCount(2, $author->getBooks());
         self::assertSame($this->books['beowulf']->getTitle(), $author->books[0]->title);

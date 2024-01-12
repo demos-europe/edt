@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
-use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\PropertyConfig\AttributeConfigInterface;
 use EDT\JsonApi\PropertyConfig\DtoAttributeConfig;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
+use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Wrapping\Contracts\ContentField;
-use EDT\Wrapping\PropertyBehavior\Attribute\AttributeConstructorParameter;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\CallbackAttributeReadability;
-use EDT\Wrapping\PropertyBehavior\Attribute\CallbackAttributeSetability;
+use EDT\Wrapping\PropertyBehavior\Attribute\Factory\AttributeConstructorBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Attribute\Factory\CallbackAttributeSetBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Attribute\Factory\PathAttributeSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeReadability;
-use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeSetability;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
+use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -39,19 +42,19 @@ class AttributeConfigBuilder
     protected $readabilityFactory;
 
     /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): PropertySetabilityInterface<TEntity>
+     * @var list<PropertyUpdatabilityFactoryInterface<TCondition>>
      */
-    protected $postInstantiabilityFactory;
+    protected array $postConstructorBehaviorFactories = [];
 
     /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): PropertyUpdatabilityInterface<TCondition, TEntity>
+     * @var list<PropertyUpdatabilityFactoryInterface<TCondition>>
      */
-    protected $updatabilityFactory;
+    protected array $updateBehaviorFactories = [];
 
     /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): ConstructorParameterInterface
+     * @var list<ConstructorBehaviorFactoryInterface>
      */
-    protected $instantiabilityFactory;
+    protected array $constructorBehaviorFactories = [];
 
     /**
      * @param non-empty-string $name
@@ -61,11 +64,37 @@ class AttributeConfigBuilder
         string $name,
         protected readonly string $entityClass,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver $typeResolver
+        protected readonly AttributeTypeResolverInterface $typeResolver
     ) {
         parent::__construct($name);
         Assert::notSame($this->name, ContentField::ID);
         Assert::notSame($this->name, ContentField::TYPE);
+    }
+
+    /**
+     * @return $this
+     */
+    public function initializable(
+        bool $optionalAfterConstructor = false,
+        callable $postConstructorCallback = null,
+        bool $constructorArgument = false,
+        ?string $customConstructorArgumentName = null
+    ): self {
+        if ($constructorArgument) {
+            $this->addConstructorBehavior(
+                new AttributeConstructorBehaviorFactory(
+                    $customConstructorArgumentName,
+                    null
+                )
+            );
+        }
+
+        $this->addPostConstructorBehavior(null === $postConstructorCallback
+            ? new PathAttributeSetBehaviorFactory($this->propertyAccessor, [], $optionalAfterConstructor)
+            : new CallbackAttributeSetBehaviorFactory([], $postConstructorCallback, $optionalAfterConstructor)
+        );
+
+        return $this;
     }
 
     /**
@@ -87,7 +116,7 @@ class AttributeConfigBuilder
              */
             public function __construct(
                 protected readonly PropertyAccessorInterface $propertyAccessor,
-                protected readonly AttributeTypeResolver $typeResolver,
+                protected readonly AttributeTypeResolverInterface $typeResolver,
                 protected readonly bool $defaultField,
                 callable $customReadCallback = null
             ) {
@@ -122,160 +151,113 @@ class AttributeConfigBuilder
     }
 
     /**
-     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $postInstantiationCallback
-     * @param non-empty-string|null $argumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
-     *
      * @return $this
      */
-    public function instantiable(
-        bool $optional = false,
-        callable $postInstantiationCallback = null,
-        bool $argument = false,
-        ?string $argumentName = null
-    ): self {
-        if ($argument) {
-            $this->instantiabilityFactory = new class ($argumentName) {
-                /**
-                 * @param non-empty-string|null $argumentName
-                 */
-                public function __construct(
-                    protected readonly ?string $argumentName
-                ) {}
+    public function updatable(array $entityConditions = [], callable $updateCallback = null): AttributeConfigBuilderInterface
+    {
+        return $this->addUpdateBehavior(null === $updateCallback
+            ? new PathAttributeSetBehaviorFactory($this->propertyAccessor, $entityConditions, true)
+            : new CallbackAttributeSetBehaviorFactory($entityConditions, $updateCallback, true)
+        );
+    }
 
-                /**
-                 * @param non-empty-string $name
-                 * @param non-empty-list<non-empty-string> $propertyPath
-                 * @param class-string<TEntity> $entityClass
-                 */
-                public function __invoke(string $name, array $propertyPath, string $entityClass): ConstructorParameterInterface
-                {
-                    return new AttributeConstructorParameter(
-                        $name,
-                        $this->argumentName ?? $name
-                    );
-                }
-            };
-        }
+    public function build(): AttributeConfigInterface
+    {
+        $readability = $this->getReadability();
+        $updateBehaviors = $this->getUpdateBehaviors();
+        $postConstructorBehaviors = $this->getPostConstructorBehaviors();
+        $constructorBehaviors = $this->getConstructorBehaviors();
+        $filterLink = $this->getFilterLink();
+        $sortLink = $this->getSortLink();
 
-        $this->postInstantiabilityFactory = new class (
-            $this->propertyAccessor,
-            $optional,
-            $postInstantiationCallback
-        ) {
-            /**
-             * @var null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool
-             */
-            private $postInstantiationCallback;
+        return new DtoAttributeConfig(
+            $readability,
+            $updateBehaviors,
+            $postConstructorBehaviors,
+            $constructorBehaviors,
+            $filterLink,
+            $sortLink
+        );
+    }
 
-            /**
-             * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $postInstantiationCallback
-             */
-            public function __construct(
-                protected readonly PropertyAccessorInterface $propertyAccessor,
-                protected readonly bool $optional,
-                callable $postInstantiationCallback = null
-            ) {
-                $this->postInstantiationCallback = $postInstantiationCallback;
-            }
+    public function addConstructorBehavior(ConstructorBehaviorFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
+    {
+        $this->constructorBehaviorFactories[] = $behaviorFactory;
 
-            /**
-             * @param non-empty-string $name
-             * @param non-empty-list<non-empty-string> $propertyPath
-             * @param class-string<TEntity> $entityClass
-             * @return PropertySetabilityInterface<TEntity>
-             */
-            public function __invoke(string $name, array $propertyPath, string $entityClass): PropertySetabilityInterface
-            {
-                return null === $this->postInstantiationCallback
-                    ? new PathAttributeSetability(
-                        $name,
-                        $entityClass,
-                        [],
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        $this->optional
-                    )
-                    : new CallbackAttributeSetability(
-                        $name,
-                        [],
-                        $this->postInstantiationCallback,
-                        $this->optional
-                    );
-            }
-        };
+        return $this;
+    }
+
+    public function addPostConstructorBehavior(PropertyUpdatabilityFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
+    {
+        $this->postConstructorBehaviorFactories[] = $behaviorFactory;
+
+        return $this;
+    }
+
+    public function addUpdateBehavior(PropertyUpdatabilityFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
+    {
+        $this->updateBehaviorFactories[] = $behaviorFactory;
 
         return $this;
     }
 
     /**
-     * @param list<TCondition> $entityConditions
-     * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $updateCallback
-     *
-     * @return $this
+     * @return list<PropertySetBehaviorInterface<TEntity>>
      */
-    public function updatable(array $entityConditions = [], callable $updateCallback = null): self
+    protected function getPostConstructorBehaviors(): array
     {
-        $this->updatabilityFactory = new class (
-            $this->propertyAccessor,
-            $entityConditions,
-            $updateCallback
-        ) {
-            /**
-             * @var null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool
-             */
-            private $updateCallback;
-
-            /**
-             * @param list<TCondition> $entityConditions
-             * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): bool $updateCallback
-             */
-            public function __construct(
-                protected readonly PropertyAccessorInterface $propertyAccessor,
-                protected readonly array $entityConditions,
-                callable $updateCallback = null
-            ) {
-                $this->updateCallback = $updateCallback;
-            }
-
-            /**
-             * @param non-empty-string $name
-             * @param non-empty-list<non-empty-string> $propertyPath
-             * @param class-string<TEntity> $entityClass
-             *
-             * @return PropertyUpdatabilityInterface<TCondition, TEntity>
-             */
-            public function __invoke(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
-            {
-                return null === $this->updateCallback
-                    ? new PathAttributeSetability(
-                        $name,
-                        $entityClass,
-                        $this->entityConditions,
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        true
-                    )
-                    : new CallbackAttributeSetability(
-                        $name,
-                        $this->entityConditions,
-                        $this->updateCallback,
-                        true
-                    );
-            }
-        };
-
-        return $this;
+        return array_map(fn (
+            PropertyUpdatabilityFactoryInterface $factory
+        ): PropertySetBehaviorInterface => $factory->createUpdatability(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass
+        ), $this->postConstructorBehaviorFactories);
     }
 
-    public function build(): AttributeConfigInterface
+    /**
+     * @return list<ConstructorBehaviorInterface>
+     */
+    protected function getConstructorBehaviors(): array
     {
-        return new DtoAttributeConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass),
-            ($this->updatabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass),
-            ($this->postInstantiabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass),
-            ($this->instantiabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass),
-            $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null,
-            $this->sortable ? new NonRelationshipLink($this->getPropertyPath()) : null
-        );
+        return array_map(fn (
+            ConstructorBehaviorFactoryInterface $factory
+        ): ConstructorBehaviorInterface => $factory->createConstructorBehavior(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass
+        ), $this->constructorBehaviorFactories);
+    }
+
+    /**
+     * @return list<PropertyUpdatabilityInterface<TCondition, TEntity>>
+     */
+    protected function getUpdateBehaviors(): array
+    {
+        return array_map(fn (
+            PropertyUpdatabilityFactoryInterface $factory
+        ): PropertyUpdatabilityInterface => $factory->createUpdatability(
+            $this->name,
+            $this->getPropertyPath(),
+            $this->entityClass
+        ), $this->updateBehaviorFactories);
+    }
+
+    /**
+     * @return AttributeReadabilityInterface<TEntity>|null
+     */
+    protected function getReadability(): ?AttributeReadabilityInterface
+    {
+        return ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass);
+    }
+
+    protected function getFilterLink(): ?PropertyLinkInterface
+    {
+        return $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null;
+    }
+
+    protected function getSortLink(): ?PropertyLinkInterface
+    {
+        return $this->sortable ? new NonRelationshipLink($this->getPropertyPath()) : null;
     }
 }

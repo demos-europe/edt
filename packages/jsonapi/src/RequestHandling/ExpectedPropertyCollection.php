@@ -30,21 +30,25 @@ class ExpectedPropertyCollection
     ) {}
 
     /**
+     * @param int<0, 8192> $validationLevelDepth
+     *
      * @return array<non-empty-string, list<Constraint>>
      */
-    public function getRequiredAttributes(): array
+    public function getRequiredAttributes(int $validationLevelDepth, bool $allowAnythingBelowDepth): array
     {
-        return array_fill_keys($this->requiredAttributes, $this->getAttributeConstraints());
+        return array_fill_keys($this->requiredAttributes, $this->getConstraintsForAttribute($validationLevelDepth, $allowAnythingBelowDepth));
     }
 
     /**
+     * @param int<0, 8192> $validationLevelDepth
+     *
      * @return array<non-empty-string, list<Constraint>>
      */
-    public function getAllowedAttributes(): array
+    public function getAllowedAttributes(int $validationLevelDepth, bool $allowAnythingBelowDepth): array
     {
         return array_fill_keys(
             array_merge($this->requiredAttributes, $this->optionalAttributes),
-            $this->getAttributeConstraints()
+            $this->getConstraintsForAttribute($validationLevelDepth, $allowAnythingBelowDepth)
         );
     }
 
@@ -68,12 +72,12 @@ class ExpectedPropertyCollection
     public function getAllowedRelationships(): array
     {
         $toOneRelationships = array_map(
-            fn (string $typeIdentifier): array => $this->getToOneRelationshipConstraints($typeIdentifier),
+            fn (string $typeIdentifier): array => $this->getConstraintsForToOneRelationship($typeIdentifier),
             array_merge($this->requiredToOneRelationships, $this->optionalToOneRelationships)
         );
 
         $toManyRelationships = array_map(
-            fn (string $typeIdentifier): array => $this->getToManyRelationshipConstraints($typeIdentifier),
+            fn (string $typeIdentifier): array => $this->getConstraintsForToManyRelationship($typeIdentifier),
             array_merge($this->requiredToManyRelationships, $this->optionalToManyRelationships)
         );
 
@@ -81,13 +85,68 @@ class ExpectedPropertyCollection
     }
 
     /**
+     * Ensures attributes are either a primitive type, null or (optionally) an array.
+     *
+     * @param int<0, 8192> $validationLevelDepth The number of levels for which the returned constraint will ensure valid attribute values.
+     *                                           If `1`, the returned constraint will ensure that the attribute value itself is
+     *                                           a primitive type, `null` or an array. The higher the depth value, the more validation is
+     *                                           done for nested arrays.
+     * @param bool $allowAnythingBelowDepth Determines if arrays are allowed at all below the validation depth. E.g. if
+     *                                      this parameter is set to `false` and the depth parameter is set to `1`,
+     *                                      then an attribute value is allowed to be an array, but such array can not
+     *                                      contain other arrays, but primitive types or `null` instead only. If set to
+     *                                      `true` and `1`, then an attribute value that is an array may contain anything.
+     *
      * @return list<Constraint>
      */
-    protected function getAttributeConstraints(): array
+    protected function getConstraintsForAttribute(int $validationLevelDepth, bool $allowAnythingBelowDepth): array
     {
-        // TODO: the JSON:API specification allows more attribute types, but those require more complex validation
+        $lowestLevelAllowedTypes = ['string', 'int', 'float', 'bool'];
+        if ($allowAnythingBelowDepth) {
+            $lowestLevelAllowedTypes[] = 'array';
+        }
+
+        $resultConstraints = [new Assert\Type($lowestLevelAllowedTypes)];
+        for ($i = 0; $i < $validationLevelDepth; $i++) {
+            $resultConstraints = $this->createAttributeConstraintLevel($resultConstraints);
+        }
+
+        return $resultConstraints;
+    }
+
+    /**
+     * @param list<Constraint> $lowerLevel
+     *
+     * @return list<Constraint>
+     */
+    protected function createAttributeConstraintLevel(array $lowerLevel): array
+    {
         return [
-            new Assert\Type(['string', 'int', 'float', 'bool']),
+            new Assert\AtLeastOneOf([
+                // primitive values are always valid (null is implicitly allowed)
+                new Assert\Type(['string', 'int', 'float', 'bool'], 'If not null or array, attributes must be of type {{ type }}.'),
+                // if the type is an array, then it must contain only non-null strings
+                new class($lowerLevel) extends Assert\Compound {
+                    /**
+                     * @param list<Constraint> $lowerLevel
+                     */
+                    public function __construct(protected readonly array $lowerLevel)
+                    {
+                        parent::__construct();
+                    }
+
+                    /**
+                     * @inheritDoc
+                     */
+                    protected function getConstraints(mixed $options): array
+                    {
+                        return [
+                            new Assert\Type('array'),
+                            new Assert\All($this->lowerLevel),
+                        ];
+                    }
+                }
+            ])
         ];
     }
 
@@ -96,19 +155,21 @@ class ExpectedPropertyCollection
      *
      * @return list<Constraint>
      */
-    protected function getToOneRelationshipConstraints(string $typeIdentifier): array
+    protected function getConstraintsForToOneRelationship(string $typeIdentifier): array
     {
         return [
             new Assert\NotNull(),
             new Assert\Type('array'),
-            new Assert\Collection([
-                ContentField::DATA => new Assert\AtLeastOneOf([
-                    // applies to non-`null` to-one relationships
-                    new Assert\Sequentially($this->getRelationshipConstraints($typeIdentifier)),
-                    // applies to `null` to-one relationships
-                    new Assert\IsNull(),
-                ]),
-            ], null, null, false, false),
+            $this->getCollectionConstraintFactory()->exactMatch('to-one relationship references', [
+                ContentField::DATA => [
+                    new Assert\AtLeastOneOf([
+                        // applies to non-`null` to-one relationships
+                        new Assert\Sequentially($this->getConstraintsForRelationship($typeIdentifier)),
+                        // applies to `null` to-one relationships
+                        new Assert\IsNull(),
+                    ])
+                ],
+            ]),
         ];
     }
 
@@ -117,19 +178,19 @@ class ExpectedPropertyCollection
      *
      * @return list<Constraint>
      */
-    protected function getToManyRelationshipConstraints(string $typeIdentifier): array
+    protected function getConstraintsForToManyRelationship(string $typeIdentifier): array
     {
         return [
             new Assert\NotNull(),
             new Assert\Type('array'),
-            new Assert\Collection([
+            $this->getCollectionConstraintFactory()->exactMatch('to-many relationship references', [
                 ContentField::DATA => [
                     // applies to to-many relationships
                     new Assert\NotNull(),
                     new Assert\Type('array'),
-                    new Assert\All($this->getRelationshipConstraints($typeIdentifier)),
+                    new Assert\All($this->getConstraintsForRelationship($typeIdentifier)),
                 ],
-            ], null, null, false, false),
+            ]),
         ];
     }
 }

@@ -39,24 +39,29 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
             return null;
         }
 
-        $newTarget = $this->getReflectionProperty($this->getClass($target), $property)->getValue($target);
+        $class = $this->getClass($target);
+        $reflectionProperty = $this->getReflectionProperty($class, $property);
+        $newTarget = $reflectionProperty->getValue($target);
 
         // if there are no more paths to follow we return the new target
         if ([] === $properties) {
-            return $newTarget;
+            return $this->adjustReturnValue($newTarget, $reflectionProperty);
         }
 
-        Assert::object($newTarget);
+        Assert::nullOrObject($newTarget);
 
         return $this->getValueByPropertyPath($newTarget, ...$properties);
     }
 
+    protected function adjustReturnValue(mixed $value, ReflectionProperty $reflectionProperty): mixed
+    {
+        return $value;
+    }
+
     /**
-     * @param mixed $target
-     *
      * @throws InvalidArgumentException
      */
-    public function getValuesByPropertyPath($target, int $depth, array $properties): array
+    public function getValuesByPropertyPath(mixed $target, int $depth, array $properties): array
     {
         // if depth is negative then cut of the tail of the given path
         if (0 > $depth) {
@@ -74,6 +79,7 @@ class ReflectionPropertyAccessor implements PropertyAccessorInterface
         // of which we need to access each item individually or if not and we can access
         // the target directly
         $target = $this->restructureNesting($target, 1);
+        Assert::allNullOrObject($target);
 
         // for each item (or the target) we follow the remaining paths to the values to return
         $currentPart = array_shift($properties);

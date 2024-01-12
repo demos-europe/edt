@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Event;
 
+use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\ResourceTypes\CreatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
@@ -22,7 +23,8 @@ class AfterCreationEvent
      */
     public function __construct(
         protected readonly CreatableTypeInterface $type,
-        protected readonly object $entity
+        protected readonly object $entity,
+        protected readonly CreationRequestBody $requestBody
     ) {}
 
     /**
@@ -39,5 +41,10 @@ class AfterCreationEvent
     public function getEntity(): object
     {
         return $this->entity;
+    }
+
+    public function getRequestBody(): CreationRequestBody
+    {
+        return $this->requestBody;
     }
 }

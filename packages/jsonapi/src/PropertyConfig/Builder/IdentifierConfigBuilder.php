@@ -10,13 +10,16 @@ use EDT\JsonApi\PropertyConfig\IdentifierConfigInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
 use EDT\Wrapping\Contracts\ContentField;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\CallbackIdentifierReadability;
-use EDT\Wrapping\PropertyBehavior\Identifier\DataProvidedIdentifierConstructorParameter;
+use EDT\Wrapping\PropertyBehavior\Identifier\Factory\DataProvidedIdentifierConstructorBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierConstructorBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierPostConstructorBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\Factory\PathIdentifierPostConstructorBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
-use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierPostInstantiability;
+use InvalidArgumentException;
 
 /**
  * @template TEntity of object
@@ -31,14 +34,14 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
     protected $readabilityFactory;
 
     /**
-     * @var null|callable(non-empty-list<non-empty-string>, class-string<TEntity>): IdentifierPostInstantiabilityInterface<TEntity>
+     * @var list<IdentifierPostConstructorBehaviorFactoryInterface<TEntity>>
      */
-    protected $postInstantiabilityFactory;
+    protected array $postConstructorBehaviorFactories = [];
 
     /**
-     * @var null|callable(non-empty-list<non-empty-string>, class-string<TEntity>): ConstructorParameterInterface
+     * @var list<IdentifierConstructorBehaviorFactoryInterface<TEntity>>
      */
-    protected $instantiabilityFactory;
+    protected array $constructorBehaviorFactories = [];
 
     /**
      * @param class-string<TEntity> $entityClass
@@ -96,73 +99,76 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
     }
 
     /**
+     * @return IdentifierConfigInterface<TEntity>
+     */
+    public function build(): IdentifierConfigInterface
+    {
+        $postConstructorBehaviors = array_map(
+            fn(
+                IdentifierPostConstructorBehaviorFactoryInterface $factory
+            ): IdentifierPostConstructorBehaviorInterface => $factory->createIdentifierPostConstructorBehavior(
+                $this->getPropertyPath(),
+                $this->entityClass
+            ),
+            $this->postConstructorBehaviorFactories
+        );
+
+        $constructorBehaviors = array_map(
+            fn(
+                IdentifierConstructorBehaviorFactoryInterface $factory
+            ): ConstructorBehaviorInterface => $factory->createIdentifierConstructorBehavior(
+                $this->getPropertyPath(),
+                $this->entityClass
+            ),
+            $this->constructorBehaviorFactories
+        );
+
+        if (null === $this->readabilityFactory) {
+            throw new InvalidArgumentException('No readability set for the identifier. But the identifier must always be readable.');
+        }
+        $readability = ($this->readabilityFactory)($this->getPropertyPath(), $this->entityClass);
+
+        return new DtoIdentifierConfig(
+            $readability,
+            $postConstructorBehaviors,
+            $constructorBehaviors,
+            $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null,
+            $this->sortable ? new NonRelationshipLink($this->getPropertyPath()) : null
+        );
+    }
+
+    /**
      * @return $this
      */
-    public function instantiable(
-        bool $postInstantiationSetting,
-        bool $argument = false,
-        ?string $argumentName = null
-    ): self {
-        if ($argument) {
-            $this->instantiabilityFactory = new class ($argumentName) {
-                /**
-                 * @param non-empty-string|null $argumentName
-                 */
-                public function __construct(
-                    protected readonly ?string $argumentName
-                ) {}
-
-                /**
-                 * @param non-empty-list<non-empty-string> $propertyPath
-                 * @param class-string<TEntity> $entityClass
-                 */
-                public function __invoke(array $propertyPath, string $entityClass): ConstructorParameterInterface
-                {
-                    return new DataProvidedIdentifierConstructorParameter(
-                        $this->argumentName ?? ContentField::ID
-                    );
-                }
-            };
-        }
-
-        if ($postInstantiationSetting) {
-            $this->postInstantiabilityFactory = new class ($this->propertyAccessor) {
-                public function __construct(
-                    protected readonly PropertyAccessorInterface $propertyAccessor,
-                ) {}
-
-                /**
-                 * @param non-empty-list<non-empty-string> $propertyPath
-                 * @param class-string<TEntity> $entityClass
-                 *
-                 * @return IdentifierPostInstantiabilityInterface<TEntity>
-                 */
-                public function __invoke(array $propertyPath, string $entityClass): IdentifierPostInstantiabilityInterface
-                {
-                    return new PathIdentifierPostInstantiability(
-                        $entityClass,
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        true
-                    );
-                }
-            };
-        }
+    public function addConstructorBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): IdentifierConfigBuilderInterface
+    {
+        $this->constructorBehaviorFactories[] = $behaviorFactory;
 
         return $this;
     }
 
     /**
-     * @return IdentifierConfigInterface<TEntity>
+     * @return $this
      */
-    public function build(): IdentifierConfigInterface
+    public function addPostConstructorBehavior(IdentifierPostConstructorBehaviorFactoryInterface $behaviorFactory): IdentifierConfigBuilderInterface
     {
-        return new DtoIdentifierConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->getPropertyPath(), $this->entityClass),
-            ($this->postInstantiabilityFactory ?? static fn () => null)($this->getPropertyPath(), $this->entityClass),
-            ($this->instantiabilityFactory ?? static fn () => null)($this->getPropertyPath(), $this->entityClass),
-            $this->filterable ? new NonRelationshipLink($this->getPropertyPath()) : null,
-            $this->sortable ? new NonRelationshipLink($this->getPropertyPath()) : null
+        $this->postConstructorBehaviorFactories[] = $behaviorFactory;
+
+        return $this;
+    }
+
+    public function initializable(bool $optionalAfterConstructor = false, bool $constructorArgument = false, ?string $customConstructorArgumentName = null): IdentifierConfigBuilderInterface
+    {
+        if ($constructorArgument) {
+            $this->addConstructorBehavior(
+                new DataProvidedIdentifierConstructorBehaviorFactory($customConstructorArgumentName)
+            );
+        }
+
+        $this->addPostConstructorBehavior(
+            new PathIdentifierPostConstructorBehaviorFactory($optionalAfterConstructor, $this->propertyAccessor)
         );
+
+        return $this;
     }
 }

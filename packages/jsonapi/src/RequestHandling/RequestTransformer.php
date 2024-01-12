@@ -27,12 +27,14 @@ class RequestTransformer
 
     /**
      * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
+     * @param int<1, 8192> $maxBodyNestingDepth the maximum allowed depth when parsing the JSON body, see {@link self::getRequestBody}
      */
     public function __construct(
         protected readonly RequestStack $requestStack,
         protected readonly TypeProviderInterface $typeProvider,
         protected readonly ValidatorInterface $validator,
-        protected readonly RequestConstraintFactory $requestConstraintFactory
+        protected readonly RequestConstraintFactory $requestConstraintFactory,
+        protected readonly int $maxBodyNestingDepth = 512
     ) {}
 
     public function getUrlParameters(): ParameterBag
@@ -120,7 +122,7 @@ class RequestTransformer
         ?string $urlId,
         ExpectedPropertyCollection $expectedProperties
     ): array {
-        $requestBody = $this->getRequestBody($this->getRequest());
+        $requestBody = $this->getRequestBody($this->getRequest(), $this->maxBodyNestingDepth);
         $this->validateRequestBodyFormat(
             $requestBody,
             $urlTypeIdentifier,
@@ -135,7 +137,7 @@ class RequestTransformer
     /**
      * @param JsonApiRelationships $relationships
      *
-     * @return array{0: array<non-empty-string, JsonApiRelationship|null>, 1: array<non-empty-string, list<JsonApiRelationship>>}
+     * @return array{array<non-empty-string, JsonApiRelationship|null>, array<non-empty-string, list<JsonApiRelationship>>}
      */
     protected function splitRelationships(array $relationships): array
     {
@@ -155,14 +157,15 @@ class RequestTransformer
                     ContentField::TYPE => $type,
                 ];
             } else {
+                $toManyRelationships[$propertyName] = [];
                 foreach ($data as $index => $relationshipReference) {
                     \Webmozart\Assert\Assert::integer($index);
                     \Webmozart\Assert\Assert::isArray($relationshipReference);
-                    $id = $data[ContentField::ID];
+                    $id = $relationshipReference[ContentField::ID];
                     \Webmozart\Assert\Assert::stringNotEmpty($id);
-                    $type = $data[ContentField::TYPE];
+                    $type = $relationshipReference[ContentField::TYPE];
                     \Webmozart\Assert\Assert::stringNotEmpty($type);
-                    $toManyRelationships[$propertyName][$index] = [
+                    $toManyRelationships[$propertyName][] = [
                         ContentField::ID   => $id,
                         ContentField::TYPE => $type,
                     ];
@@ -204,15 +207,20 @@ class RequestTransformer
     {
         $propertyNameConstraints = [
             new Assert\NotNull(),
-            new Assert\Type('string'),
-            // attribute and relationship names must adhere to a specific string format
-            new Assert\Regex('/^'.Patterns::PROPERTY_NAME.'$/'),
-            // attributes and relationships must not be named `id`
-            new Assert\NotIdenticalTo(ContentField::ID),
-            // attributes and relationships must not be named `type`
-            new Assert\NotIdenticalTo(ContentField::TYPE),
+            new Assert\Type('array'),
             // attributes and relationships must use distinct names
             new Assert\Unique(),
+            // the following constraints must apply to each property name
+            new Assert\All([
+                new Assert\NotNull(),
+                new Assert\Type('string'),
+                // attribute and relationship names must adhere to a specific string format
+                new Assert\Regex('/^'.Patterns::PROPERTY_NAME.'$/'),
+                // attributes and relationships must not be named `id`
+                new Assert\NotIdenticalTo(ContentField::ID),
+                // attributes and relationships must not be named `type`
+                new Assert\NotIdenticalTo(ContentField::TYPE),
+            ])
         ];
 
         $propertyNames = array_merge(
@@ -227,11 +235,13 @@ class RequestTransformer
     }
 
     /**
-     * @param int<1, 512> $maxDepth TODO: if non-primitive types are allowed as attributes, the default $maxDepth may need to be increased
+     * @param int<1, 8192> $maxDepth Structures with a nesting exceeding the maximum seem quite unlikely, but we will
+     *                               refrain from throwing an exception just in case there is a use case requiring
+     *                               deeper nesting. The user has to deal with the phpstan concern though.
      *
      * @throws RequestException
      */
-    protected function getRequestBody(Request $request, int $maxDepth = 8): mixed
+    protected function getRequestBody(Request $request, int $maxDepth): mixed
     {
         $content = $request->getContent();
         \Webmozart\Assert\Assert::string($content);

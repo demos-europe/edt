@@ -6,6 +6,7 @@ namespace EDT\JsonApi\Pagination;
 
 use EDT\JsonApi\RequestHandling\UrlParameter;
 use EDT\Querying\Pagination\PagePagination;
+use EDT\Querying\Utilities\CollectionConstraintFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -17,13 +18,17 @@ use function array_key_exists;
  */
 class PagePaginationParser implements PaginationParserInterface
 {
+    private readonly CollectionConstraintFactory $collectionConstraintFactory;
+
     /**
      * @param positive-int $defaultSize
      */
     public function __construct(
         protected readonly int $defaultSize,
         protected readonly ValidatorInterface $validator
-    ) {}
+    ) {
+        $this->collectionConstraintFactory = new CollectionConstraintFactory();
+    }
 
     /**
      * @throws ValidationFailedException
@@ -60,7 +65,7 @@ class PagePaginationParser implements PaginationParserInterface
         $violations = $this->validator->validate($page, [
             new Assert\NotNull(),
             new Assert\Type('array'),
-            new Assert\Collection([
+            $this->collectionConstraintFactory->noExtra('the `page` parameter', [
                 UrlParameter::SIZE => [
                     new Assert\NotNull(),
                     new Assert\Type('string'),
@@ -71,7 +76,7 @@ class PagePaginationParser implements PaginationParserInterface
                     new Assert\Type('string'),
                     new Assert\Positive(),
                 ],
-            ], null, null, false, true),
+            ]),
         ]);
         if (0 !== $violations->count()) {
             throw new ValidationFailedException($page, $violations);

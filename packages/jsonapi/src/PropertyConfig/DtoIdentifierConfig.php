@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig;
 
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostInstantiabilityInterface;
 
 /**
  * @template TEntity of object
@@ -18,16 +18,17 @@ class DtoIdentifierConfig implements IdentifierConfigInterface
 {
     /**
      * @param IdentifierReadabilityInterface<TEntity> $readability
-     * @param IdentifierPostInstantiabilityInterface<TEntity>|null $postInstantiability
+     * @param list<IdentifierPostConstructorBehaviorInterface<TEntity>> $postConstructorBehaviors
+     * @param list<ConstructorBehaviorInterface> $constructorBehaviors
      * @param PropertyLinkInterface|null $filterLink
      * @param PropertyLinkInterface|null $sortLink
      */
     public function __construct(
-        protected readonly IdentifierReadabilityInterface          $readability,
-        protected readonly ?IdentifierPostInstantiabilityInterface $postInstantiability,
-        protected readonly ?ConstructorParameterInterface          $instantiability,
-        protected readonly ?PropertyLinkInterface                  $filterLink,
-        protected readonly ?PropertyLinkInterface                  $sortLink
+        protected readonly IdentifierReadabilityInterface $readability,
+        protected readonly array $postConstructorBehaviors,
+        protected readonly array $constructorBehaviors,
+        protected readonly ?PropertyLinkInterface $filterLink,
+        protected readonly ?PropertyLinkInterface $sortLink
     ) {}
 
     public function getReadability(): IdentifierReadabilityInterface
@@ -35,14 +36,14 @@ class DtoIdentifierConfig implements IdentifierConfigInterface
         return $this->readability;
     }
 
-    public function getPostInstantiability(): ?IdentifierPostInstantiabilityInterface
+    public function getPostConstructorBehaviors(): array
     {
-        return $this->postInstantiability;
+        return $this->postConstructorBehaviors;
     }
 
-    public function getInstantiability(): ?ConstructorParameterInterface
+    public function getConstructorBehaviors(): array
     {
-        return $this->instantiability;
+        return $this->constructorBehaviors;
     }
 
     public function getFilterLink(): ?PropertyLinkInterface

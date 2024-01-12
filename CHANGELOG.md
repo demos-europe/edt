@@ -1,6 +1,172 @@
 
 # Changelog
 
+## Unrleased
+
+* fix: use correct comparison for 0.24.37 fix
+
+## 0.24.37 - 2024-01-12
+
+* fix: provide client with backend-created IDs
+
+## 0.24.36 - 2024-01-10
+
+* refactor: allow to change max request body JSON nesting depth via injection
+* rollback: lock pagination in list requests to page-based again, as others are not yet supported
+* feature: make attribute validation more flexible
+  * to allow arrays as attributes, the `RequestConstraintFactory` must now be configured to define how they should be handled
+
+## 0.24.35 - 2024-01-09
+
+* fix: increase JSON request body max depth to allow for non-primitive attributes (i.e. array structures)
+
+## 0.24.33 - 2024-01-09
+
+* fix: handle a to-one relationship with no items correctly on update and creation requests
+
+## 0.24.32 - 2024-01-05
+
+* fix: handle required properties correctly in more validation places
+* refactor: allow `array` as attribute type, but for string lists only for now
+* refactor: improve some validation messages
+* feature: use Symfony validators to validate `sort` query parameter
+  * `ListRequest` now requires `SortValidator` as constructor parameter
+
+## 0.24.31 - 2024-01-05
+
+* fix: handle required properties correctly in validation
+
+## 0.24.30 - 2023-12-21
+
+* feature: provide request body in creation and update events
+
+## 0.24.29 - 2023-12-12
+
+* feature: rework "instance of" implementation to be properly usable (though support for execution in `ConditionEvaluator` is still missing)
+
+## 0.24.28 - 2023-12-11
+
+* feature: add `IsTargetEntityNotInstanceOf` clause
+
+## 0.24.27 - 2023-12-11
+
+* fix: solve logical problem in `IsInstanceOfTargetEntity` and rename it to `IsTargetEntityInstanceOf`
+
+## 0.24.26 - 2023-12-11
+
+* feature: provide target entity alias to clauses
+* feature: add `IsInstanceOfTargetEntity` condition
+
+## 0.24.23 - 2023-12-01
+
+* fix: do not add unnecessary `use` statements when generating classes
+
+## 0.24.22 - 2023-12-01
+
+* feature: allow to used different entity references in property types when generating classes
+* feature: allow to disable comment generation for properties when generating classes
+
+## 0.24.21 - 2023-12-01
+
+* fix: solve various simple bugs
+
+## 0.24.20 - 2023-11-30
+
+* fix: enable filtering for resource identifier set as filterable
+* fix: create property builder correctly
+
+## 0.24.19 - 2023-11-30
+
+* fix: do not automatically create config builders for all properties detected by `MagicResourceConfigBuilder`, as otherwise unused relationships will have no relationship type set when needed
+
+## 0.24.18 - 2023-11-30
+
+* fix: check array size correctly
+* refactor: provide `getFullyQualifiedName` and `getTemplateParameter` methods in all `TypeInterface` implementations, adjust usages accordingly
+* fix: add support for non-classes/non-interfaces to `DocblockPropertyByTraitEvaluator`
+
+## 0.24.16 - 2023-11-30
+
+* feature: improve docblock parsing support, Types in tags like `propert-read` now support more cases of template parameter usages
+* refactor: move `TypeInterface` and its implementations in different namespace
+* refactor: reduce phpstan concerns
+
+## 0.24.15 - 2023-11-29
+
+* fix: consider type correctly in assertion
+
+## 0.24.14 - 2023-11-29
+
+* fix: add missing method call
+
+## 0.24.13 - 2023-11-29
+
+* fix: implement necessary interface
+* fix: add missing type check
+
+## 0.24.12 - 2023-11-29
+
+* fix: use correct return type
+
+## 0.24.11 - 2023-11-29
+
+* feature: add `Iso8601PropertyAccessor` to automatically convert Doctrine `datetime` to ISO8601 strings 
+
+## 0.24.10 - 2023-11-29
+
+* feature: move logic into separate functions to improve support for adjustments in child classes
+
+## 0.24.8 - 2023-11-28
+
+* feature: when setting to-many relationship properties with `ProxyPropertyAccessor`, automatically convert `array`s to Doctrine `Collection`s
+* refactor: `PropertySetBehaviorInterface::executeBehavior` must now return the list of properties that were not adjusted according to the request instead of the previously returned `bool` that implied if any properties were not adjusted according to the request
+  * due to these changes the following classes will now expect callables in their constructors returning such list:
+    * `FixedSetBehavior`
+    * `CallbackAttributeSetBehaviorFactory`
+    * `CallbackAttributeSetBehavior`
+    * `CallbackToOneRelationshipSetBehaviorFactory`
+    * `CallbackToOneRelationshipSetBehavior`
+    * `CallbackToManyRelationshipSetBehaviorFactory`
+    * `CallbackToManyRelationshipSetBehavior`
+  * due to these changes the `initializable` and `updatable` methods of the following classes will now expect (still optional) callables which returns such lists
+    * `AttributeConfigBuilderInterface`
+    * `ToOneRelationshipConfigBuilderInterface`
+    * `ToManyRelationshipConfigBuilderInterface`
+* refactor: for similar reasons as stated above, the `callable` parameters in following classes must now include a list of properties that were not set according to the request in their return
+  * `AttributeConstructorBehaviorFactory`
+  * `AttributeConstructorBehavior`
+  * `FixedConstructorBehaviorFactory`
+  * `RequiredRelationshipConstructorBehavior`
+  * `RequiredToOneRelationshipConstructorBehaviorFactory`
+  * `ToManyRelationshipConstructorBehavior`
+  * `ToManyRelationshipConstructorBehaviorFactory`
+  * `ToOneRelationshipConstructorBehavior`
+  * `ToOneRelationshipConstructorBehaviorFactory`
+
+## 0.24.4 - 2023-10-20
+
+* feature: add support for general update behaviors
+* feature: add support for general creation behaviors
+* feature: allow creation-configuration of ID config builders
+* feature: add support for redundant attributes/annotations
+* refactor: use interfaces instead of callables
+
+## 0.24.3 - 2023-10-16
+
+* feature: improve exception message
+
+## 0.24.2 - 2023-10-16
+
+* fix: generate correct docblock `param` tag
+
+## 0.24.1 - 2023-10-16
+
+* feature: restore previously removed exception methods for backward compatibility
+
+## 0.24.0 - 2023-10-16
+
+* refactor: refactor: restructure classes and API for resource property configuration
+
 ## 0.23.0 - 2023-09-19
 
 * refactor: apply object-oriented approach for entity modification

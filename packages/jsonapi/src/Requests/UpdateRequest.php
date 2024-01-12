@@ -41,21 +41,23 @@ class UpdateRequest
         $requestBody = $this->requestTransformer->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
-        $beforeUpdateEvent = new BeforeUpdateEvent($type, $resourceId);
+        $beforeUpdateEvent = new BeforeUpdateEvent($type, $requestBody);
         $this->eventDispatcher->dispatch($beforeUpdateEvent);
 
         $modifiedEntity = $type->updateEntity($requestBody->getId(), $requestBody);
         $entity = $modifiedEntity->getEntity();
 
-        $afterUpdateEvent = new AfterUpdateEvent($type, $entity);
+        $afterUpdateEvent = new AfterUpdateEvent($type, $entity, $requestBody);
         $this->eventDispatcher->dispatch($afterUpdateEvent);
 
-        $sideEffects = $modifiedEntity->hasSideEffects()
-            || $beforeUpdateEvent->hasSideEffects()
-            || $afterUpdateEvent->hasSideEffects();
+        $requestDeviations = array_merge(
+            $modifiedEntity->getRequestDeviations(),
+            $beforeUpdateEvent->getRequestDeviations(),
+            $afterUpdateEvent->getRequestDeviations()
+        );
 
-        if (!$sideEffects) {
-            // if there were no side effects, no response body is needed
+        if ([] === $requestDeviations) {
+            // if there were no request deviations, no response body is needed
             return null;
         }
 

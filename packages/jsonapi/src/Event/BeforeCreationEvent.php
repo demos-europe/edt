@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Event;
 
+use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\ResourceTypes\CreatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
@@ -20,7 +21,8 @@ class BeforeCreationEvent
      * @param CreatableTypeInterface<TCondition, TSorting, TEntity> $type
      */
     public function __construct(
-        protected readonly CreatableTypeInterface $type
+        protected readonly CreatableTypeInterface $type,
+        protected readonly CreationRequestBody $requestBody
     ) {}
 
     /**
@@ -29,5 +31,10 @@ class BeforeCreationEvent
     public function getType(): CreatableTypeInterface
     {
         return $this->type;
+    }
+
+    public function getRequestBody(): CreationRequestBody
+    {
+        return $this->requestBody;
     }
 }

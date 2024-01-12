@@ -15,9 +15,9 @@ use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
@@ -45,64 +45,75 @@ class ResourceConfig implements ResourceConfigInterface
      * @param array<non-empty-string, AttributeConfigInterface<TCondition, TEntity>> $attributeConfigs
      * @param array<non-empty-string, ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, object>> $toOneRelationshipConfigs
      * @param array<non-empty-string, ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, object>> $toManyRelationshipConfigs
+     * @param list<ConstructorBehaviorInterface> $generalConstructorBehaviors
+     * @param list<PropertySetBehaviorInterface<TEntity>> $generalPostConstructorBehaviors
+     * @param list<PropertyUpdatabilityInterface<TCondition, TEntity>> $generalUpdateBehaviors
      */
     public function __construct(
         protected readonly string $entityClass,
         protected readonly IdentifierConfigInterface $identifierConfig,
         protected readonly array $attributeConfigs,
         protected readonly array $toOneRelationshipConfigs,
-        protected readonly array $toManyRelationshipConfigs
+        protected readonly array $toManyRelationshipConfigs,
+        protected readonly array $generalConstructorBehaviors,
+        protected readonly array $generalPostConstructorBehaviors,
+        protected readonly array $generalUpdateBehaviors
     ) {
-        $this->propertyConfigs =  array_merge(
+        $this->propertyConfigs = array_merge(
             $this->attributeConfigs,
             $this->toOneRelationshipConfigs,
             $this->toManyRelationshipConfigs
         );
         Assert::keyNotExists($this->propertyConfigs, ContentField::ID);
         Assert::keyNotExists($this->propertyConfigs, ContentField::TYPE);
+        Assert::count(
+            $this->propertyConfigs,
+            count($this->attributeConfigs) + count($this->toOneRelationshipConfigs) + count($this->toManyRelationshipConfigs)
+        );
     }
 
     public function getInstantiability(): ResourceInstantiability
     {
-        $constructorParameterConfigs = Iterables::removeNull(array_map(
-            static fn (PropertyConfigInterface $property): ?ConstructorParameterInterface => $property->getInstantiability(),
+        $constructorParameterConfigs = array_map(
+            static fn (PropertyConfigInterface $property): array => $property->getConstructorBehaviors(),
             $this->propertyConfigs
-        ));
+        );
 
-        $setabilities = Iterables::removeNull(array_map(
-            static fn (PropertyConfigInterface $property): ?PropertySetabilityInterface => $property->getPostInstantiability(),
+        $setabilities = array_map(
+            static fn (PropertyConfigInterface $property): array => $property->getPostConstructorBehaviors(),
             $this->propertyConfigs
-        ));
+        );
 
-        $identifierInstantiability = $this->identifierConfig->getInstantiability();
-        if (null !== $identifierInstantiability) {
-            $constructorParameterConfigs[ContentField::ID] = $identifierInstantiability;
-        }
+        Assert::keyNotExists($constructorParameterConfigs, ContentField::ID);
+        $identifierConstructorBehavior = $this->identifierConfig->getConstructorBehaviors();
+        $constructorParameterConfigs[ContentField::ID] = $identifierConstructorBehavior;
 
         return new ResourceInstantiability(
             $this->entityClass,
             $constructorParameterConfigs,
+            $this->generalConstructorBehaviors,
             $setabilities,
-            $this->identifierConfig->getPostInstantiability()
+            $this->generalPostConstructorBehaviors,
+            $this->identifierConfig->getPostConstructorBehaviors()
         );
     }
 
     public function getUpdatability(): ResourceUpdatability
     {
-        return new ResourceUpdatability(
-            Iterables::removeNull(array_map(
-                static fn (AttributeConfigInterface $property): ?PropertySetabilityInterface => $property->getUpdatability(),
-                $this->attributeConfigs
-            )),
-            Iterables::removeNull(array_map(
-                static fn (ToOneRelationshipConfigInterface $property): ?RelationshipSetabilityInterface => $property->getUpdatability(),
-                $this->toOneRelationshipConfigs
-            )),
-            Iterables::removeNull(array_map(
-                static fn (ToManyRelationshipConfigInterface $property): ?RelationshipSetabilityInterface => $property->getUpdatability(),
-                $this->toManyRelationshipConfigs
-            ))
+        $attributes = array_map(
+            static fn(AttributeConfigInterface $property): array => $property->getUpdateBehaviors(),
+            $this->attributeConfigs
         );
+        $toOneRelationships = array_map(
+            static fn(ToOneRelationshipConfigInterface $property): array => $property->getUpdateBehaviors(),
+            $this->toOneRelationshipConfigs
+        );
+        $toManyRelationships = array_map(
+            static fn(ToManyRelationshipConfigInterface $property): array => $property->getUpdateBehaviors(),
+            $this->toManyRelationshipConfigs
+        );
+
+        return new ResourceUpdatability($attributes, $toOneRelationships, $toManyRelationships, $this->generalUpdateBehaviors);
     }
 
     public function getReadability(): ResourceReadability
@@ -126,17 +137,31 @@ class ResourceConfig implements ResourceConfigInterface
 
     public function getSortingProperties(): array
     {
-        return Iterables::removeNull(array_map(
+        $properties = Iterables::removeNull(array_map(
             static fn (AttributeConfigInterface|RelationshipConfigInterface $property): ?PropertyLinkInterface => $property->getSortLink(),
             $this->propertyConfigs
         ));
+
+        $identifierSortLink = $this->identifierConfig->getSortLink();
+        if (null !== $identifierSortLink) {
+            $properties[ContentField::ID] = $identifierSortLink;
+        }
+
+        return $properties;
     }
 
     public function getFilteringProperties(): array
     {
-        return Iterables::removeNull(array_map(
+        $properties = Iterables::removeNull(array_map(
             static fn (AttributeConfigInterface|RelationshipConfigInterface $property): ?PropertyLinkInterface => $property->getFilterLink(),
             $this->propertyConfigs
         ));
+
+        $identifierFilterLink = $this->identifierConfig->getFilterLink();
+        if (null !== $identifierFilterLink) {
+            $properties[ContentField::ID] = $identifierFilterLink;
+        }
+
+        return $properties;
     }
 }

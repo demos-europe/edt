@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\ClassGeneration;
 
 use EDT\DqlQuerying\ClassGeneration\TypeHolderGenerator;
-use EDT\Parsing\Utilities\ClassOrInterfaceType;
-use EDT\Parsing\Utilities\NonClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\NonClassOrInterfaceType;
 use PHPUnit\Framework\TestCase;
 use Tests\data\ApiTypes\AuthorType;
 use Tests\data\ApiTypes\BookType;
@@ -36,13 +36,13 @@ class Foo
 
 
 	/**
-	 * @param AuthorType
-	 * @param BookType<bool,\'foobar\'>
+	 * @param AuthorType $authorType
+	 * @param BookType<bool,\'foobar\'> $bookType
 	 */
 	public function __construct(AuthorType $authorType, BookType $bookType)
 	{
-		$this->authorType = authorType;
-		$this->bookType = bookType;
+		$this->authorType = $authorType;
+		$this->bookType = $bookType;
 	}
 
 

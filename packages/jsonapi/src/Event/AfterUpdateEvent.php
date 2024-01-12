@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Event;
 
+use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
@@ -22,7 +23,8 @@ class AfterUpdateEvent
      */
     public function __construct(
         protected readonly UpdatableTypeInterface $type,
-        protected readonly object $entity
+        protected readonly object $entity,
+        protected readonly UpdateRequestBody $requestBody
     ) {}
 
     /**
@@ -36,5 +38,10 @@ class AfterUpdateEvent
     public function getEntity(): object
     {
         return $this->entity;
+    }
+
+    public function getRequestBody(): UpdateRequestBody
+    {
+        return $this->requestBody;
     }
 }

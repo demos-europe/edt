@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use ArrayIterator;
-use EDT\Parsing\Utilities\TypeInterface;
 use EDT\Parsing\Utilities\ParseException;
-use EDT\Parsing\Utilities\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\TypeInterface;
 use EDT\PathBuilding\SegmentFactories\ReflectionSegmentFactory;
 use EDT\PathBuilding\SegmentFactories\SegmentFactoryInterface;
 use EDT\Querying\Contracts\PathException;
@@ -27,6 +27,9 @@ use function array_key_exists;
  *
  * You can optionally implement {@link IteratorAggregate} in the class using this trait without the
  * need to add any methods.
+ *
+ * If you define a property tag with a specific name in a parent class or interface and re-define it with the same
+ * name in the child class, the definition in the child class will be used.
  */
 trait PropertyAutoPathTrait
 {

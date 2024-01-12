@@ -12,26 +12,26 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
 use EDT\Querying\PropertyPaths\RelationshipLink;
 use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\Reindexer;
+use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\EntityDataInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipSetability;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipSetBehavior;
 use EDT\Wrapping\ResourceBehavior\ResourceReadability;
 use EDT\Wrapping\ResourceBehavior\ResourceUpdatability;
-use Tests\data\Model\Person;
+use Tests\data\AdModel\Person;
 use Webmozart\Assert\Assert;
 
 class AuthorType implements
     TransferableTypeInterface,
     FilteringTypeInterface,
-    SortingTypeInterface,
-    ExposableRelationshipTypeInterface
+    SortingTypeInterface
 {
     public function __construct(
         protected readonly PathsBasedConditionFactoryInterface $conditionFactory,
@@ -103,33 +103,28 @@ class AuthorType implements
         return Person::class;
     }
 
-    public function isExposedAsRelationship(): bool
-    {
-        return true;
-    }
-
     public function getUpdatability(): ResourceUpdatability
     {
         $bookType = $this->typeProvider->getTypeByIdentifier(BookType::class);
 
         return new ResourceUpdatability(
             [
-                'name' => new TestAttributeSetability(
+                'name' => [new TestAttributeSetBehavior(
                     'name',
                     ['name'],
                     $this->propertyAccessor,
                     true
-                ),
-                'birthCountry' => new TestAttributeSetability(
+                )],
+                'birthCountry' => [new TestAttributeSetBehavior(
                     'birthCountry',
                     ['birth', 'country'],
                     $this->propertyAccessor,
                     true
-                ),
+                )],
             ],
             [],
             [
-                'books' => new PathToManyRelationshipSetability(
+                'books' => [new PathToManyRelationshipSetBehavior(
                     'books',
                     self::class,
                     [],
@@ -138,8 +133,9 @@ class AuthorType implements
                     ['books'],
                     $this->propertyAccessor,
                     true
-                ),
+                )],
             ],
+            []
         );
     }
 
@@ -181,7 +177,9 @@ class AuthorType implements
 
     public function reindexEntities(array $entities, array $conditions, array $sortMethods): array
     {
-        throw new \RuntimeException();
+        $tableJoiner = new TableJoiner($this->propertyAccessor);
+        $reindexer = new Reindexer(new ConditionEvaluator($tableJoiner), new Sorter($tableJoiner));
+        return $reindexer->reindexEntities($entities, $conditions, $sortMethods);
     }
 
     public function getEntityForRelationship(string $identifier, array $conditions): object

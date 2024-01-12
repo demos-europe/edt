@@ -1,10 +1,16 @@
 = EDT
 
+== Overview
+
 This is the EDT monorepo, containing the development of multiple composer packages.
 In conjunction these packages can be used in PHP applications (if they already use Doctrine as ORM framework) to define a functional web-API contract, adhering to the https://jsonapi.org/format/1.0/[JSON:API] specification.
 
 Even though the packages are already used in production, they're not recommended for general usage yet. While development has settled down in some parts, in others large refactorings are common, resulting in frequent deprecations and backward compatibility breaking changes.
 The objective is to get the project to a more stable state over the course of the year 2023, ideally releasing a 1.0.0 version with a more reliable API and proper documentation before 2024.
+
+== Usage
+
+* link:./docs/usage-within-a-symfony-project.adoc[Usage within a Symfony project]
 
 == Releasing
 

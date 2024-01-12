@@ -111,6 +111,6 @@ class Reindexer
             return $entities;
         }
 
-        return $this->sorter->sortArray($entities, $sortMethods);
+        return array_values($this->sorter->sortArray($entities, $sortMethods));
     }
 }

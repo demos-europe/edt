@@ -22,7 +22,7 @@ interface AttributeConfigInterface extends PropertyConfigInterface
     public function getReadability(): ?AttributeReadabilityInterface;
 
     /**
-     * @return PropertyUpdatabilityInterface<TCondition, TEntity>|null
+     * @return list<PropertyUpdatabilityInterface<TCondition, TEntity>>
      */
-    public function getUpdatability(): ?PropertyUpdatabilityInterface;
+    public function getUpdateBehaviors(): array;
 }

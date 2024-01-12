@@ -32,7 +32,7 @@ class PropertyEvaluatorPool
     }
 
     /**
-     * @param list<non-empty-string> $requiredTraits
+     * @param list<trait-string> $requiredTraits
      * @param non-empty-list<PropertyTag> $targetTags
      */
     public function getEvaluator(array $requiredTraits, array $targetTags): DocblockPropertyByTraitEvaluator

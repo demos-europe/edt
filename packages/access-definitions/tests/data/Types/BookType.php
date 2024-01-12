@@ -17,7 +17,6 @@ use EDT\Querying\Utilities\Reindexer;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Utilities\TableJoiner;
 use EDT\Wrapping\Contracts\TypeProviderInterface;
-use EDT\Wrapping\Contracts\Types\ExposableRelationshipTypeInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
@@ -26,17 +25,14 @@ use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipReadability;
 use EDT\Wrapping\ResourceBehavior\ResourceReadability;
 use EDT\Wrapping\ResourceBehavior\ResourceUpdatability;
-use Tests\data\Model\Book;
+use Tests\data\AdModel\Book;
 use Webmozart\Assert\Assert;
 
 class BookType implements
     TransferableTypeInterface,
     FilteringTypeInterface,
-    SortingTypeInterface,
-    ExposableRelationshipTypeInterface
+    SortingTypeInterface
 {
-    private bool $exposedAsRelationship = true;
-
     /**
      * @var array<non-empty-string, Book>
      */
@@ -117,14 +113,9 @@ class BookType implements
         return Book::class;
     }
 
-    public function isExposedAsRelationship(): bool
-    {
-        return $this->exposedAsRelationship;
-    }
-
     public function getUpdatability(): ResourceUpdatability
     {
-        return new ResourceUpdatability([], [], []);
+        return new ResourceUpdatability([], [], [], []);
     }
 
     public function getTypeName(): string

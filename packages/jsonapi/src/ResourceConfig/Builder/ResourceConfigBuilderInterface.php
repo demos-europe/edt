@@ -14,6 +14,9 @@ use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilderInterface;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -70,6 +73,25 @@ interface ResourceConfigBuilderInterface
      * @param ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object> $builder
      */
     public function setToManyRelationshipConfigBuilder(string $propertyName, ToManyRelationshipConfigBuilder $builder): void;
+
+    /**
+     * @return $this
+     */
+    public function addConstructorBehavior(ConstructorBehaviorInterface $behavior): self;
+
+    /**
+     * @param PropertySetBehaviorInterface<TEntity> $behavior
+     *
+     * @return $this
+     */
+    public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): self;
+
+    /**
+     * @param PropertyUpdatabilityInterface<TCondition, TEntity> $updateBehavior
+     *
+     * @return $this
+     */
+    public function addUpdateBehavior(PropertyUpdatabilityInterface $updateBehavior): self;
 
     /**
      * @return ResourceConfigInterface<TCondition, TSorting, TEntity>

@@ -4,12 +4,24 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
+use EDT\Querying\Utilities\CollectionConstraintFactory;
 use EDT\Wrapping\Contracts\ContentField;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
 trait RequestConstraintTrait
 {
+    private ?CollectionConstraintFactory $collectionConstraintFactory = null;
+
+    private function getCollectionConstraintFactory(): CollectionConstraintFactory
+    {
+        if (null === $this->collectionConstraintFactory) {
+            $this->collectionConstraintFactory = new CollectionConstraintFactory();
+        }
+
+        return $this->collectionConstraintFactory;
+    }
+
     /**
      * Creates a constraint to validate an `id` field value.
      *
@@ -54,15 +66,15 @@ trait RequestConstraintTrait
      *
      * @return list<Constraint>
      */
-    protected function getRelationshipConstraints(string $typeIdentifier): array
+    protected function getConstraintsForRelationship(string $typeIdentifier): array
     {
         return [
             new Assert\NotNull(),
             new Assert\Type('array'),
-            new Assert\Collection([
+            $this->getCollectionConstraintFactory()->exactMatch('relationship references', [
                 ContentField::TYPE => $this->getTypeIdentifierConstraints($typeIdentifier),
                 ContentField::ID => $this->getIdConstraints(null),
-            ], null, null, false, false),
+            ]),
         ];
     }
 }

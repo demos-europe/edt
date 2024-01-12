@@ -10,6 +10,7 @@ use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\ContextFactory;
 use phpDocumentor\Reflection\Types\Object_;
+use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
@@ -22,7 +23,7 @@ use function is_string;
 use function Safe\fopen;
 use function Safe\fclose;
 use function Safe\preg_match_all;
-use function Safe\preg_split;
+use function strlen;
 
 /**
  * @internal
@@ -233,7 +234,7 @@ class TypeResolver
     {
         $matches = [];
 
-        $pattern = '/^(\\\\?(?:\w\\\\)*\w+)(?:<(.+)>)?$/';
+        $pattern = '/^(\\\\?(?:\w+\\\\)*\w+)(?:<(.+)>)?$/';
         $matching = preg_match_all($pattern, $rawTypeString, $matches);
         Assert::same($matching, 1, "The string `$rawTypeString` did not match the following pattern: $pattern");
         Assert::isArray($matches);
@@ -256,10 +257,60 @@ class TypeResolver
             return [$className, []];
         }
 
-        $templateParameters = array_map('trim', explode(',', $templateParametersString));
+        $templateParameters = self::splitTemplateParameters($templateParametersString);
+        $templateParameters = array_map('trim', $templateParameters);
         Assert::allStringNotEmpty($templateParameters);
 
         return [$className, array_values($templateParameters)];
+    }
+
+    /**
+     * @param non-empty-string $templateParameterString a value like `string,Foo<string,string>`
+     *
+     * @return list<string>
+     *
+     * @throws InvalidArgumentException the format of the given string is invalid (i.e. missing `<` or `>`)
+     */
+    protected static function splitTemplateParameters(string $templateParameterString): array
+    {
+        $results = [];
+        $depth = 0;
+        $lastPosition = 0;
+
+        // Iterate over each character in the string
+        $strlen = strlen($templateParameterString);
+        $i = 0;
+        for (; $i < $strlen; $i++) {
+            switch ($templateParameterString[$i]) {
+                // Increase depth when encountering '<'
+                case '<':
+                    $depth++;
+                    break;
+                // Decrease depth when encountering '>'
+                case '>':
+                    $depth--;
+                    Assert::greaterThanEq($depth, 0);
+                    break;
+                // Split on comma if depth is zero
+                case ',':
+                    if (0 === $depth) {
+                        $results[] = substr($templateParameterString, $lastPosition, $i - $lastPosition);
+                        $lastPosition = $i + 1;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        Assert::eq($depth, 0);
+
+        // Add the last part, if any, after the final comma
+        if ($lastPosition <= $i) {
+            $results[] = substr($templateParameterString, $lastPosition);
+        }
+
+        return $results;
     }
 
     /**
@@ -279,6 +330,7 @@ class TypeResolver
             return [];
         }
         $ast = $this->phpParser->parse($this->sourceCode);
+        Assert::allIsInstanceOf($ast, Node::class);
         $traverser = new NodeTraverser();
         $useCollector = new UseCollector();
         $traverser->addVisitor($useCollector);

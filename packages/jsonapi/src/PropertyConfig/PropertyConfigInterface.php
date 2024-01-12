@@ -6,8 +6,8 @@ namespace EDT\JsonApi\PropertyConfig;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorParameterInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -16,11 +16,14 @@ use EDT\Wrapping\PropertyBehavior\PropertySetabilityInterface;
 interface PropertyConfigInterface
 {
     /**
-     * @return PropertySetabilityInterface<TEntity>|null
+     * @return list<PropertySetBehaviorInterface<TEntity>>
      */
-    public function getPostInstantiability(): ?PropertySetabilityInterface;
+    public function getPostConstructorBehaviors(): array;
 
-    public function getInstantiability(): ?ConstructorParameterInterface;
+    /**
+     * @return list<ConstructorBehaviorInterface>
+     */
+    public function getConstructorBehaviors(): array;
 
     /**
      * Returns `null` if this property can not be used to filter resources.

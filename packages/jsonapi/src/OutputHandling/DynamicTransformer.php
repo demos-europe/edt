@@ -139,7 +139,7 @@ class DynamicTransformer extends TransformerAbstract
 
     /**
      * @param non-empty-string $methodName
-     * @param array{0: TEntity, 1: ParamBag} $arguments
+     * @param array{TEntity, ParamBag} $arguments
      *
      * @throws InvalidArgumentException include name could not be determined
      * @throws PropertyTransformException transforming a specific relationship failed
@@ -337,7 +337,7 @@ class DynamicTransformer extends TransformerAbstract
         }
 
         // requested attribute fields
-        $fieldset = Iterables::asArray($fieldsetBag);
+        $fieldset = iterator_to_array($fieldsetBag);
         return array_filter(
             $this->attributeReadabilities,
             static fn (string $attributeName): bool => in_array($attributeName, $fieldset, true),

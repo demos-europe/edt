@@ -37,21 +37,23 @@ class CreationRequest
         $requestBody = $this->requestTransformer->getCreationRequestBody($typeName, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
-        $beforeCreationEvent = new BeforeCreationEvent($type);
+        $beforeCreationEvent = new BeforeCreationEvent($type, $requestBody);
         $this->eventDispatcher->dispatch($beforeCreationEvent);
 
         $modifiedEntity = $type->createEntity($requestBody);
         $entity = $modifiedEntity->getEntity();
 
-        $afterCreationEvent = new AfterCreationEvent($type, $entity);
+        $afterCreationEvent = new AfterCreationEvent($type, $entity, $requestBody);
         $this->eventDispatcher->dispatch($afterCreationEvent);
 
-        $sideEffects = $modifiedEntity->hasSideEffects()
-            || $beforeCreationEvent->hasSideEffects()
-            || $afterCreationEvent->hasSideEffects();
+        $requestDeviations = array_merge(
+            $modifiedEntity->getRequestDeviations(),
+            $beforeCreationEvent->getRequestDeviations(),
+            $afterCreationEvent->getRequestDeviations()
+        );
 
-        if (!$sideEffects) {
-            // if there were no side effects, no response body is needed
+        if ([] === $requestDeviations) {
+            // if there were no request deviations, no response body is needed
             return null;
         }
 

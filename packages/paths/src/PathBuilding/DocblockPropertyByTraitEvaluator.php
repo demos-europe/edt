@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use EDT\Parsing\Utilities\DocblockTagResolver;
-use EDT\Parsing\Utilities\TypeInterface;
-use EDT\Parsing\Utilities\TypeResolver;
 use EDT\Parsing\Utilities\NoSourceException;
 use EDT\Parsing\Utilities\ParseException;
-use EDT\Parsing\Utilities\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\TypeResolver;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\NonClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\TypeInterface;
 use phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
+use phpDocumentor\Reflection\Types\Collection;
+use phpDocumentor\Reflection\Types\Object_;
 use ReflectionClass;
+use ReflectionException;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 
@@ -20,12 +24,12 @@ class DocblockPropertyByTraitEvaluator
     /**
      * Cache of already parsed classes
      *
-     * @var array<class-string, array<non-empty-string, ClassOrInterfaceType>>
+     * @var array<class-string, array<non-empty-string, TypeInterface>>
      */
     private array $parsedClasses = [];
 
     /**
-     * @param list<non-empty-string> $targetTraits set to empty list to not filter by traits
+     * @param list<trait-string> $targetTraits set to empty list to not filter by traits
      * @param non-empty-list<PropertyTag> $targetTags The docblock tags to look for when parsing the docblock. Defaults to (effectively) &#64;property-read.
      */
     public function __construct(
@@ -76,37 +80,56 @@ class DocblockPropertyByTraitEvaluator
      *
      * @throws ParseException
      */
-    protected function parsePropertiesOfClass(string $class): array
+    protected function getClassOrInterfacePropertiesOfClass(string $class): array
     {
         if (!array_key_exists($class, $this->parsedClasses)) {
-            try {
-                $reflectionClass = new ReflectionClass($class);
-                $typeResolver = new TypeResolver($reflectionClass);
-                $docblockTagResolver = new DocblockTagResolver($reflectionClass);
-                $nestedProperties = array_map(function (PropertyTag $targetTag) use ($typeResolver, $docblockTagResolver): array {
-                    $propertyTags = $docblockTagResolver->getTags($targetTag->value);
-                    $propertyTags = array_map([$targetTag, 'convertToCorrespondingType'], $propertyTags);
-                    $propertyNames = array_map([$docblockTagResolver, 'getVariableNameOfTag'], $propertyTags);
-                    $propertyTags = array_combine($propertyNames, $propertyTags);
-                    $propertyTypes = array_map(
-                        static function(TagWithType $tag) use ($typeResolver): ClassOrInterfaceType {
-                            $tagType = $tag->getType();
-                            Assert::notNull($tagType);
-                            return ClassOrInterfaceType::fromType($tagType, $typeResolver);
-                        },
-                        $propertyTags
-                    );
-
-                    return array_filter($propertyTypes, [$this, 'isUsingRequiredTraits']);
-                }, $this->targetTags);
-
-                $this->parsedClasses[$class] = array_merge(...$nestedProperties);
-            } catch (NoSourceException $exception) {
-                return [];
-            }
+            $this->parsedClasses[$class] = $this->parseClassOrInterfacePropertiesOfClass($class);
         }
 
         return $this->parsedClasses[$class];
+    }
+
+    /**
+     * @param class-string $class
+     * @return array<non-empty-string, TypeInterface>
+     *
+     * @throws ParseException
+     * @throws ReflectionException
+     */
+    protected function parseClassOrInterfacePropertiesOfClass(string $class): array
+    {
+        try {
+            $reflectionClass = new ReflectionClass($class);
+            $typeResolver = new TypeResolver($reflectionClass);
+            $docblockTagResolver = new DocblockTagResolver($reflectionClass);
+            $nestedProperties = array_map(function (PropertyTag $targetTag) use ($typeResolver, $docblockTagResolver): array {
+                $propertyTags = $docblockTagResolver->getTags($targetTag->value);
+                $propertyTags = array_map([$targetTag, 'convertToCorrespondingType'], $propertyTags);
+                $propertyNames = array_map([$docblockTagResolver, 'getVariableNameOfTag'], $propertyTags);
+                $propertyTags = array_combine($propertyNames, $propertyTags);
+                $propertyTypes = array_map(
+                    static function(TagWithType $tag) use ($typeResolver): TypeInterface {
+                        $tagType = $tag->getType();
+
+                        if ($tagType instanceof Object_ || $tagType instanceof Collection) {
+                            return ClassOrInterfaceType::fromType($tagType, $typeResolver);
+                        }
+
+                        $tagTypeString = (string) $tagType;
+                        Assert::stringNotEmpty($tagTypeString);
+
+                        return NonClassOrInterfaceType::fromRawString($tagTypeString);
+                    },
+                    $propertyTags
+                );
+
+                return array_filter($propertyTypes, [$this, 'isUsingRequiredTraits']);
+            }, $this->targetTags);
+
+            return array_merge(...$nestedProperties);
+        } catch (NoSourceException $exception) {
+            return [];
+        }
     }
 
     /**
@@ -122,16 +145,27 @@ class DocblockPropertyByTraitEvaluator
      */
     protected function parsePropertiesOfClasses(array $classes): array
     {
-        $nestedPropertiesByClass = array_map([$this, 'parsePropertiesOfClass'], $classes);
+        $nestedPropertiesByClass = array_map([$this, 'getClassOrInterfacePropertiesOfClass'], $classes);
 
         return array_merge(...array_reverse($nestedPropertiesByClass));
     }
 
     /**
-     * Accessed property classes must use all traits in {@link DocblockPropertyByTraitEvaluator::$targetTraits}.
+     * Accessed property types must use all traits in {@link self::$targetTraits}.
+     *
+     * Any primitive type will be filtered out, if {@link self::$targetTraits} is not empty.
      */
-    protected function isUsingRequiredTraits(ClassOrInterfaceType $propertyType): bool
+    protected function isUsingRequiredTraits(TypeInterface $propertyType): bool
     {
-        return $this->traitEvaluator->isClassUsingAllTraits($propertyType->getFullyQualifiedName(), $this->targetTraits);
+        if (0 === count($this->targetTraits)) {
+            return true;
+        }
+
+        $fullyQualifiedName = $propertyType->getFullyQualifiedName();
+        if (null === $fullyQualifiedName) {
+            // filter out all non-classes/non-interfaces if any traits are required
+            return false;
+        }
+        return $this->traitEvaluator->isClassUsingAllTraits($fullyQualifiedName, $this->targetTraits);
     }
 }

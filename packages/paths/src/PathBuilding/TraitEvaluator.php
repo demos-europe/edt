@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\PathBuilding;
 
 use EDT\Querying\Utilities\Iterables;
+use InvalidArgumentException;
 use Safe\Exceptions\SplException;
 use Webmozart\Assert\Assert;
 use function count;
@@ -24,7 +25,7 @@ class TraitEvaluator
      *
      * @param class-string $class
      *
-     * @return list<class-string>
+     * @return list<trait-string>
      * @throws SplException
      */
     public function getAllClassTraits(string $class): array
@@ -37,7 +38,23 @@ class TraitEvaluator
             $classes
         );
 
-        return array_merge(...$traitsInClasses);
+        $traits = array_merge(...$traitsInClasses);
+        Assert::allStringNotEmpty($traits);
+
+        return array_map([$this, 'assertTraitExists'], $traits);
+    }
+
+    /**
+     * @param non-empty-string $trait
+     * @return trait-string
+     */
+    protected function assertTraitExists(string $trait): string
+    {
+        if (!trait_exists($trait)) {
+            throw new InvalidArgumentException("Trait `$trait` not found");
+        }
+
+        return $trait;
     }
 
     /**
@@ -65,6 +82,7 @@ class TraitEvaluator
         $nestedInterfaces = array_map('Safe\class_implements', array_reverse($parents));
 
         $interfaces = [] === $nestedInterfaces ? [] : array_merge(...$nestedInterfaces);
+        Assert::allInterfaceExists($interfaces);
 
         return array_merge($parents, array_values($interfaces));
     }
@@ -77,7 +95,10 @@ class TraitEvaluator
      */
     protected function getAllParentClasses(string $class): array
     {
-        return array_values(class_parents($class));
+        $parents = array_values(class_parents($class));
+        Assert::allClassExists($parents);
+
+        return $parents;
     }
 
     /**
@@ -86,9 +107,9 @@ class TraitEvaluator
      *
      * The given trait will be part of the result.
      *
-     * @param non-empty-string $trait
+     * @param trait-string $trait
      *
-     * @return non-empty-list<non-empty-string>
+     * @return non-empty-list<trait-string>
      *
      * @throws SplException
      */
@@ -98,6 +119,7 @@ class TraitEvaluator
         if (0 === count($traits)) {
             return [$trait];
         }
+        $traits = array_map([$this, 'assertTraitExists'], $traits);
         $traits = Iterables::mapFlat([$this, 'getWithAllNestedTraits'], $traits);
         $traits[] = $trait;
 
@@ -111,7 +133,7 @@ class TraitEvaluator
      * parent classes and nested traits into consideration.
      *
      * @param class-string $targetClass
-     * @param list<non-empty-string> $requiredTraits
+     * @param list<trait-string> $requiredTraits
      *
      * @throws SplException
      */

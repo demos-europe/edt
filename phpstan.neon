@@ -49,6 +49,7 @@ parameters:
         - packages/queries/src
 
     # Note: use `\w+(\\\w+)+\\(\w+)` to `$2` replacement to remove namespaces in phpstan error messages, making it a bit more readable
+    # Note: use `grep path: phpstan.neon | sort | uniq -c | awk '{print $1} {print $3}'` to get the list of classes with their count of errors
     ignoreErrors:
         -
             message: "#^Parameter \\#1 \\$baseFunction of class EDT\\\\DqlQuerying\\\\Functions\\\\LowerCase constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<string\\|null\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
@@ -71,7 +72,17 @@ parameters:
             path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
 
         -
+            message: "#^Parameter \\#1 \\$valueClause of class EDT\\\\DqlQuerying\\\\Functions\\\\IsInstanceOf constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<non\\-empty\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\TargetEntity given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
             message: "#^Parameter \\#2 \\$max of class EDT\\\\DqlQuerying\\\\Functions\\\\BetweenInclusive constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<float\\|int\\|numeric\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
+
+        -
+            message: "#^Parameter \\#2 \\$typeClause of class EDT\\\\DqlQuerying\\\\Functions\\\\IsInstanceOf constructor expects EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<class\\-string\\>, EDT\\\\DqlQuerying\\\\Functions\\\\Value\\<mixed\\> given\\.$#"
             count: 1
             path: packages/dql/src/ConditionFactories/DqlConditionFactory.php
 
@@ -149,6 +160,11 @@ parameters:
             message: "#^Method EDT\\\\DqlQuerying\\\\Functions\\\\GreaterEquals\\:\\:__construct\\(\\) has parameter \\$right with generic interface EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface but does not specify its types\\: TOutput$#"
             count: 1
             path: packages/dql/src/Functions/GreaterEquals.php
+
+        -
+            message: "#^Parameter \\#2 \\.\\.\\.\\$functions of class EDT\\\\Querying\\\\Functions\\\\IsInstanceOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<non\\-empty\\-string\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<class\\-string\\> given\\.$#"
+            count: 1
+            path: packages/dql/src/Functions/IsInstanceOf.php
 
         -
             message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<array\\<int, V\\>\\|V\\>, EDT\\\\DqlQuerying\\\\Contracts\\\\ClauseFunctionInterface\\<array\\<V\\>\\> given\\.$#"
@@ -236,11 +252,6 @@ parameters:
             path: packages/dql/src/Functions/Sum.php
 
         -
-            message: "#^Method EDT\\\\DqlQuerying\\\\ObjectProviders\\\\DoctrineOrmEntityProvider\\:\\:getEntities\\(\\) should return array\\<int, TEntity of object\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/dql/src/ObjectProviders/DoctrineOrmEntityProvider.php
-
-        -
             message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:__construct\\(\\) has parameter \\$conditionGroupFactory with generic interface EDT\\\\ConditionFactory\\\\PathsBasedConditionGroupFactoryInterface but does not specify its types\\: TCondition$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
@@ -316,12 +327,34 @@ parameters:
             path: packages/jsonapi/src/Pagination/PagePaginationParser.php
 
         -
-            message: """
-                #^Call to deprecated method isExposedAsRelationship\\(\\) of class EDT\\\\Wrapping\\\\Contracts\\\\Types\\\\ExposableRelationshipTypeInterface\\:
-                will be removed to reduce usage complexity, evaluate the conditions when returning relationships in methods like \\{@link TransferableTypeInterface\\:\\:getReadability\\(\\)\\} instead$#
-            """
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\IdentifierConfigBuilder\\<TEntity of object\\>\\:\\:addConstructorBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\IdentifierConstructorBehaviorFactoryInterface\\<TEntity of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\DataProvidedIdentifierConstructorBehaviorFactory\\<object\\> given\\.$#"
             count: 1
-            path: packages/jsonapi/src/PropertyConfig/Builder/RelationshipConfigBuilder.php
+            path: packages/jsonapi/src/PropertyConfig/Builder/IdentifierConfigBuilder.php
+
+        -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\IdentifierConfigBuilder\\<TEntity of object\\>\\:\\:addPostConstructorBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\IdentifierPostConstructorBehaviorFactoryInterface\\<TEntity of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\PathIdentifierPostConstructorBehaviorFactory\\<object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/IdentifierConfigBuilder.php
+
+        -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToManyRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,TRelationship of object\\>\\:\\:addPostConstructorBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\RelationshipSetBehaviorFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToMany\\\\Factory\\\\CallbackToManyRelationshipSetBehaviorFactory\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\|EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToMany\\\\Factory\\\\PathToManyRelationshipSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/ToManyRelationshipConfigBuilder.php
+
+        -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToManyRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,TRelationship of object\\>\\:\\:addUpdateBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\RelationshipSetBehaviorFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToMany\\\\Factory\\\\CallbackToManyRelationshipSetBehaviorFactory\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\|EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToMany\\\\Factory\\\\PathToManyRelationshipSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/ToManyRelationshipConfigBuilder.php
+
+        -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToOneRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,TRelationship of object\\>\\:\\:addPostConstructorBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\RelationshipSetBehaviorFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToOne\\\\Factory\\\\CallbackToOneRelationshipSetBehaviorFactory\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\|EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToOne\\\\Factory\\\\PathToOneRelationshipSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/ToOneRelationshipConfigBuilder.php
+
+        -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToOneRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,TRelationship of object\\>\\:\\:addUpdateBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\RelationshipSetBehaviorFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToOne\\\\Factory\\\\CallbackToOneRelationshipSetBehaviorFactory\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\|EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToOne\\\\Factory\\\\PathToOneRelationshipSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/ToOneRelationshipConfigBuilder.php
 
         -
             message: "#^Method EDT\\\\JsonApi\\\\Utilities\\\\PropertyBuilderFactory\\:\\:createAttribute\\(\\) should return EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\AttributeConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\> but returns EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\AttributeConfigBuilder\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>\\.$#"
@@ -354,11 +387,6 @@ parameters:
             path: packages/jsonapi/src/Validation/FieldsValidator.php
 
         -
-            message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
-            count: 1
-            path: packages/paths/src/Parsing/Utilities/TypeResolver.php
-
-        -
             message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<static\\(EDT\\\\PathBuilding\\\\End\\<T\\>\\)\\> and 'EDT\\\\\\\\PathBuilding\\\\\\\\PropertyAutoPathInterface' will always evaluate to true\\.$#"
             count: 2
             path: packages/paths/src/PathBuilding/End.php
@@ -377,26 +405,6 @@ parameters:
             message: "#^Method EDT\\\\PathBuilding\\\\End\\:\\:getIterator\\(\\) should return ArrayIterator\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, string\\>\\.$#"
             count: 1
             path: packages/paths/src/PathBuilding/End.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllClassTraits\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllParentClasses\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
-
-        -
-            message: "#^Method EDT\\\\PathBuilding\\\\TraitEvaluator\\:\\:getAllParents\\(\\) should return array\\<int, class\\-string\\> but returns array\\<int, mixed\\>\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
-
-        -
-            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, string\\>, array\\{\\$this\\(EDT\\\\PathBuilding\\\\TraitEvaluator\\), 'getWithAllNestedTra…'\\} given\\.$#"
-            count: 1
-            path: packages/paths/src/PathBuilding/TraitEvaluator.php
 
         -
             message: "#^Parameter \\#1 \\$contains of class EDT\\\\Querying\\\\Functions\\\\StringEndsWith constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<string\\|null\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<string\\> given\\.$#"
@@ -492,11 +500,6 @@ parameters:
             message: "#^Method EDT\\\\Querying\\\\FluentQueries\\\\ConditionDefinition\\:\\:false\\(\\) return type with generic class EDT\\\\Querying\\\\FluentQueries\\\\ConditionDefinition does not specify its types\\: TCondition$#"
             count: 1
             path: packages/queries/src/FluentQueries/ConditionDefinition.php
-
-        -
-            message: "#^Parameter \\#1 \\$callable of static method EDT\\\\Querying\\\\Utilities\\\\Iterables\\:\\:mapFlat\\(\\) expects callable\\(mixed\\)\\: array\\<int, mixed\\>, Closure\\(object\\|null\\)\\: array\\<int, mixed\\> given\\.$#"
-            count: 1
-            path: packages/queries/src/PropertyAccessors/ReflectionPropertyAccessor.php
 
         -
             message: "#^Method EDT\\\\Querying\\\\PropertyPaths\\\\PropertyPath\\:\\:getIterator\\(\\) should return Traversable\\<int, non\\-empty\\-string\\> but returns ArrayIterator\\<int, non\\-empty\\-string\\>\\|ArrayIterator\\<int, string\\>\\.$#"

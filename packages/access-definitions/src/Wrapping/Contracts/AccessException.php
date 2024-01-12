@@ -16,12 +16,24 @@ class AccessException extends InvalidArgumentException
      * @param TType $type
      * @param non-empty-string $message
      */
-    protected function __construct(
+    public function __construct(
         protected readonly object $type,
         string $message,
         Throwable $previous = null
     ) {
         parent::__construct($message, 0, $previous);
+    }
+
+    /**
+     * @param TType $type
+     *
+     * @return self<TType>
+     */
+    public static function typeNotDirectlyAccessible(object $type): self
+    {
+        $typeClass = $type::class;
+
+        return new self($type, "Type '$typeClass' not directly accessible.");
     }
 
     /**
@@ -34,6 +46,18 @@ class AccessException extends InvalidArgumentException
         $typeClass = $type::class;
 
         return new self($type, "Unexpected arguments received for type class '$typeClass'. Expected $expected arguments, got $actual arguments.");
+    }
+
+    /**
+     * @param TType $type
+     *
+     * @return self<TType>
+     */
+    public static function typeNotAvailable(object $type): self
+    {
+        $typeClass = $type::class;
+
+        return new self($type, "Type class '$typeClass' not available.");
     }
 
     /**

@@ -52,15 +52,9 @@ interface PropertyConfigBuilderInterface
      * resources by their name but also to filter `Book` resources by the name of their author, if
      * the relationship to `Author` is set as filterable too.
      *
-     * However, filtering `Author` resources by the title of their books will not work, because
-     * of the to-many relationship it would not be clear which `Book` resource to use from an
-     * author when testing it.
-     *
-     * E.g. if you enable a `price` property in a `Book` resource for filtering then you
-     * can not only filter books by their price but also authors by the price of the
-     * books they have written (assuming the necessary relationship from authors to
-     * books is defined and the resources'
-     * {@link ExposableRelationshipTypeInterface::isExposedAsRelationship()} returns `true`).
+     * Filtering `Author` resources by the title of their books will work too, even though there may be multiple book
+     * titles for a single author. For example in case of the equals operator it is sufficient if the author is
+     * connected to the book title value at least once to be considered a match.
      *
      * @return $this
      */

@@ -22,9 +22,9 @@ class EmptyType extends AbstractResourceType
 {
     public function __construct(
         protected readonly ConditionFactoryInterface $conditionFactory,
-        protected readonly PropertyBuilderFactory    $propertyBuilderFactory,
+        protected readonly PropertyBuilderFactory $propertyBuilderFactory,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver     $typeResolver
+        protected readonly AttributeTypeResolver $typeResolver
     ) {}
 
     public function getEntityClass(): string

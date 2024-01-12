@@ -9,14 +9,14 @@ use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetabilityInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipSetability;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\CallbackToOneRelationshipSetBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\PathToOneRelationshipSetBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\ToOneRelationshipConstructorBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipSetability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipConstructorParameter;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
-use InvalidArgumentException;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -24,7 +24,7 @@ use InvalidArgumentException;
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TRelationship>
+ * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship>
  * @template-implements ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
  * @template-implements BuildableInterface<ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, TRelationship>>
  */
@@ -32,20 +32,6 @@ class ToOneRelationshipConfigBuilder
     extends RelationshipConfigBuilder
     implements ToOneRelationshipConfigBuilderInterface, BuildableInterface
 {
-    /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
-     */
-    protected $updatabilityFactory;
-    /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): ToOneRelationshipConstructorParameter<TCondition, TSorting>
-     */
-    protected $instantiabilityFactory;
-
-    /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
-     */
-    protected $postInstantiabilityFactory;
-
     /**
      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
      */
@@ -57,125 +43,43 @@ class ToOneRelationshipConfigBuilder
      * @param non-empty-string $name
      */
     public function __construct(
-        protected readonly string $entityClass,
+        string $entityClass,
         protected readonly string $relationshipClass,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         string $name
     ) {
-        parent::__construct($name);
+        parent::__construct($entityClass, $name);
     }
 
     /**
-     * @param null|callable(TEntity, TRelationship|null): bool $postInstantiationCallback
-     * @param non-empty-string|null $argumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
-     * @param list<TCondition> $relationshipConditions
-     *
      * @return $this
      */
-    public function instantiable(
-        bool $optional = false,
-        callable $postInstantiationCallback = null,
-        bool $argument = false,
-        ?string $argumentName = null,
+    public function initializable(
+        bool $optionalAfterConstructor = false,
+        callable $postConstructorCallback = null,
+        bool $constructorArgument = false,
+        ?string $customConstructorArgumentName = null,
         array $relationshipConditions = []
     ): self {
-        if ($argument) {
-            $this->instantiabilityFactory = new class (
-                $argumentName,
-                $relationshipConditions
-            ) {
-                /**
-                 * @param non-empty-string|null $argumentName
-                 * @param list<TCondition> $relationshipConditions
-                 */
-                public function __construct(
-                    protected readonly ?string $argumentName,
-                    protected readonly array $relationshipConditions
-                ) {}
-
-                /**
-                 * @param non-empty-string $name
-                 * @param non-empty-list<non-empty-string> $propertyPath
-                 * @param class-string<TEntity> $entityClass
-                 * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-                 *
-                 * @return ToOneRelationshipConstructorParameter<TCondition, TSorting>
-                 */
-                public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ToOneRelationshipConstructorParameter
-                {
-                    return new ToOneRelationshipConstructorParameter(
-                        $this->argumentName ?? $name,
-                        $name,
-                        $relationshipType,
-                        $this->relationshipConditions
-                    );
-                }
-            };
+        if ($constructorArgument) {
+            $this->addConstructorBehavior(
+                new ToOneRelationshipConstructorBehaviorFactory(
+                    $customConstructorArgumentName,
+                    $relationshipConditions,
+                    null
+                )
+            );
         }
 
-        $this->postInstantiabilityFactory = new class (
-            $postInstantiationCallback,
-            $relationshipConditions,
-            $optional,
-            $this->propertyAccessor,
-        ) {
-            /**
-             * @var null|callable(TEntity, TRelationship|null): bool
-             */
-            private $postInstantiationCallback;
-
-            /**
-             * @param null|callable(TEntity, TRelationship|null): bool $postInstantiationCallback
-             * @param list<TCondition> $relationshipConditions
-             */
-            public function __construct(
-                ?callable $postInstantiationCallback,
-                protected readonly array $relationshipConditions,
-                protected readonly bool $optional,
-                protected readonly PropertyAccessorInterface $propertyAccessor,
-            ) {
-                $this->postInstantiationCallback = $postInstantiationCallback;
-            }
-
-            /**
-             * @param non-empty-string $name
-             * @param non-empty-list<non-empty-string> $propertyPath
-             * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-             *
-             * @return RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
-             */
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetabilityInterface
-            {
-                return null === $this->postInstantiationCallback
-                    ? new PathToOneRelationshipSetability(
-                        $name,
-                        $entityClass,
-                        [],
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        $this->optional
-                    )
-                    : new CallbackToOneRelationshipSetability(
-                        $name,
-                        [],
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $this->postInstantiationCallback,
-                        $this->optional
-                    );
-            }
-        };
+        $this->addPostConstructorBehavior(null === $postConstructorCallback
+            ? new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, $optionalAfterConstructor, $this->propertyAccessor, [])
+            : new CallbackToOneRelationshipSetBehaviorFactory($postConstructorCallback, $relationshipConditions, $optionalAfterConstructor, [])
+        );
 
         return $this;
     }
 
     /**
-     * @param bool $defaultField the field is to be returned in responses by default
-     * @param null|callable(TEntity): (TRelationship|null) $customReadCallback to be set if this property needs special handling when read
-     *
      * @return $this
      */
     public function readable(
@@ -236,89 +140,71 @@ class ToOneRelationshipConfigBuilder
         return $this;
     }
 
+    public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): ToOneRelationshipConfigBuilderInterface
+    {
+        return $this->addUpdateBehavior(null === $updateCallback
+            ? new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, true, $this->propertyAccessor, $entityConditions)
+            : new CallbackToOneRelationshipSetBehaviorFactory($updateCallback, $relationshipConditions, true, $entityConditions)
+        );
+    }
+
+    public function build(): ToOneRelationshipConfigInterface
+    {
+        $relationshipType = $this->getFinalRelationshipType();
+        $readability = $this->getReadability($relationshipType);
+        $postConstructorBehaviors = $this->getPostConstructorBehaviors();
+        $constructorBehaviors = $this->getConstructorBehaviors();
+        $updateBehaviors = $this->getUpdateBehaviors();
+        $filterLink = $this->getFilterLink($relationshipType);
+        $sortLink = $this->getSortLink($relationshipType);
+
+        return new DtoToOneRelationshipConfig(
+            $readability,
+            $updateBehaviors,
+            $postConstructorBehaviors,
+            $constructorBehaviors,
+            $filterLink,
+            $sortLink
+        );
+    }
+
     /**
-     * @param list<TCondition> $entityConditions
-     * @param list<TCondition> $relationshipConditions
-     * @param null|callable(TEntity, TRelationship|null): bool $updateCallback
-     *
      * @return $this
      */
-    public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): self
+    public function addConstructorBehavior(RelationshipConstructorBehaviorFactoryInterface $behaviorFactory): ToOneRelationshipConfigBuilderInterface
     {
-        $this->updatabilityFactory = new class(
-            $this->propertyAccessor,
-            $entityConditions,
-            $relationshipConditions,
-            $updateCallback
-        ) {
-            /**
-             * @var null|callable(TEntity, TRelationship|null): bool
-             */
-            private $updateCallback;
-
-            /**
-             * @param list<TCondition> $entityConditions
-             * @param list<TCondition> $relationshipConditions
-             * @param null|callable(TEntity, TRelationship|null): bool $updateCallback
-             */
-            public function __construct(
-                protected readonly PropertyAccessorInterface $propertyAccessor,
-                protected readonly array $entityConditions,
-                protected readonly array $relationshipConditions,
-                ?callable $updateCallback
-            ) {
-                $this->updateCallback = $updateCallback;
-            }
-
-            /**
-             * @param non-empty-string $name
-             * @param non-empty-list<non-empty-string> $propertyPath
-             * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-             *
-             * @return RelationshipSetabilityInterface<TCondition, TSorting, TEntity, TRelationship>
-             */
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetabilityInterface
-            {
-                return  null === $this->updateCallback
-                    ? new PathToOneRelationshipSetability(
-                        $name,
-                        $entityClass,
-                        $this->entityConditions,
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $propertyPath,
-                        $this->propertyAccessor,
-                        true
-                    )
-                    : new CallbackToOneRelationshipSetability(
-                        $name,
-                        $this->entityConditions,
-                        $this->relationshipConditions,
-                        $relationshipType,
-                        $this->updateCallback,
-                        true
-                    );
-            }
-        };
+        $this->constructorBehaviorFactories[] = $behaviorFactory;
 
         return $this;
     }
 
-
-    public function build(): ToOneRelationshipConfigInterface
+    /**
+     * @return $this
+     */
+    public function addPostConstructorBehavior(RelationshipSetBehaviorFactoryInterface $behaviorFactory): ToOneRelationshipConfigBuilderInterface
     {
-        if (null === $this->relationshipType) {
-            throw new InvalidArgumentException('The relationship type must be set before a config can be build.');
-        }
+        $this->postConstructorBehaviorFactories[] = $behaviorFactory;
 
-        return new DtoToOneRelationshipConfig(
-            ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
-            ($this->updatabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
-            ($this->postInstantiabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
-            ($this->instantiabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $this->relationshipType),
-            $this->getFilterLink($this->relationshipType),
-            $this->getSortLink($this->relationshipType)
-        );
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function addUpdateBehavior(RelationshipSetBehaviorFactoryInterface $behaviorFactory): ToOneRelationshipConfigBuilderInterface
+    {
+        $this->updateBehaviorFactories[] = $behaviorFactory;
+
+        return $this;
+    }
+
+    /**
+     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     *
+     * @return ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null
+     */
+    protected function getReadability($relationshipType): ?ToOneRelationshipReadabilityInterface
+    {
+        return ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $relationshipType);
     }
 }

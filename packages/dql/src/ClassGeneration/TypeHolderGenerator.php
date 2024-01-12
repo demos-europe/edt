@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\DqlQuerying\ClassGeneration;
 
-use EDT\Parsing\Utilities\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
 use Nette\PhpGenerator\PhpFile;
 
 class TypeHolderGenerator
@@ -47,8 +47,8 @@ class TypeHolderGenerator
             // property promotion is not yet supported (not even with workarounds)
             $parameter = $constructor->addParameter($propertyName);
             $parameter->setType($fullyQualifiedName);
-            $constructor->addComment("@param $propertyType");
-            $constructor->addBody("\$this->$propertyName = $propertyName;");
+            $constructor->addComment("@param $propertyType \$$propertyName");
+            $constructor->addBody("\$this->$propertyName = \$$propertyName;");
 
             // add property
             $property = $class->addProperty($propertyName);

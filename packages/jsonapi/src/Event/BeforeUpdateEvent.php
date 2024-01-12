@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Event;
 
+use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
@@ -18,11 +19,10 @@ class BeforeUpdateEvent
 
     /**
      * @param UpdatableTypeInterface<TCondition, TSorting, TEntity> $type
-     * @param non-empty-string $entityIdentifier
      */
     public function __construct(
         protected readonly UpdatableTypeInterface $type,
-        protected readonly string $entityIdentifier
+        protected readonly UpdateRequestBody $requestBody
     ) {}
 
     /**
@@ -38,6 +38,11 @@ class BeforeUpdateEvent
      */
     public function getEntityIdentifier(): string
     {
-        return $this->entityIdentifier;
+        return $this->requestBody->getId();
+    }
+
+    public function getRequestBody(): UpdateRequestBody
+    {
+        return $this->requestBody;
     }
 }
