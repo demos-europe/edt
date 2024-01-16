@@ -1,5 +1,8 @@
-
 # Changelog
+
+## Unreleased
+
+* feature: allow setting identifiers, attributes or relationships as readable, filterable or sortable by default
 
 ## 0.24.39 - 2024-01-12
 

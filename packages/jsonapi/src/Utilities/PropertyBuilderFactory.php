@@ -24,9 +24,26 @@ use function is_string;
  */
 class PropertyBuilderFactory
 {
+    /**
+     * By default, a whitelist approach is encouraged. I.e. a property builder created by this class will not expose
+     * any behavior. However, if needed, you can enable default behaviors for attributes, to-one relationships or
+     * to-many relationships. If behavior is enabled, the resource property name must match a property in the
+     * corresponding entity and no value transformations will be done.
+     */
     public function __construct(
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver $typeResolver
+        protected readonly AttributeTypeResolver $typeResolver,
+        protected readonly bool $identifierByDefaultSortable = false,
+        protected readonly bool $identifierByDefaultFilterable = false,
+        protected readonly bool $attributesByDefaultSortable = false,
+        protected readonly bool $attributesByDefaultFilterable = false,
+        protected readonly bool $attributesByDefaultReadable = false,
+        protected readonly bool $toOneRelationshipsByDefaultSortable = false,
+        protected readonly bool $toOneRelationshipsByDefaultFilterable = false,
+        protected readonly bool $toOneRelationshipsByDefaultReadable = false,
+        protected readonly bool $toManyRelationshipsByDefaultSortable = false,
+        protected readonly bool $toManyRelationshipsByDefaultFilterable = false,
+        protected readonly bool $toManyRelationshipsByDefaultReadable = false
     ) {}
 
     /**
@@ -41,12 +58,24 @@ class PropertyBuilderFactory
      */
     public function createAttribute(string $entityClass, PropertyPathInterface|string $name): AttributeConfigBuilder
     {
-        return new AttributeConfigBuilder(
+        $builder = new AttributeConfigBuilder(
             $this->getSingleName($name),
             $entityClass,
             $this->propertyAccessor,
             $this->typeResolver
         );
+
+        if ($this->attributesByDefaultSortable) {
+            $builder->sortable();
+        }
+        if ($this->attributesByDefaultFilterable) {
+            $builder->filterable();
+        }
+        if ($this->attributesByDefaultReadable) {
+            $builder->readable();
+        }
+        
+        return $builder;
     }
 
     /**
@@ -64,11 +93,10 @@ class PropertyBuilderFactory
         string $entityClass,
         PropertyPathInterface&ResourceTypeInterface $nameAndType
     ): ToOneRelationshipConfigBuilder {
-        $builder = new ToOneRelationshipConfigBuilder(
+        $builder = $this->createToOneWithType(
             $entityClass,
             $nameAndType->getEntityClass(),
-            $this->propertyAccessor,
-            $this->getSingleName($nameAndType)
+            $nameAndType
         );
 
         $builder->setRelationshipType($nameAndType);
@@ -93,12 +121,24 @@ class PropertyBuilderFactory
         string $relationshipClass,
         PropertyPathInterface|string $name
     ): ToOneRelationshipConfigBuilder {
-        return new ToOneRelationshipConfigBuilder(
+        $builder = new ToOneRelationshipConfigBuilder(
             $entityClass,
             $relationshipClass,
             $this->propertyAccessor,
             $this->getSingleName($name)
         );
+
+        if ($this->toOneRelationshipsByDefaultSortable) {
+            $builder->sortable();
+        }
+        if ($this->toOneRelationshipsByDefaultFilterable) {
+            $builder->filterable();
+        }
+        if ($this->toOneRelationshipsByDefaultReadable) {
+            $builder->readable();
+        }
+
+        return $builder;
     }
 
     /**
@@ -116,12 +156,12 @@ class PropertyBuilderFactory
         string $entityClass,
         PropertyPathInterface&ResourceTypeInterface $nameAndType
     ): ToManyRelationshipConfigBuilder {
-        $builder = new ToManyRelationshipConfigBuilder(
+        $builder = $this->createToManyWithType(
             $entityClass,
             $nameAndType->getEntityClass(),
-            $this->propertyAccessor,
-            $this->getSingleName($nameAndType)
+            $nameAndType
         );
+
         $builder->setRelationshipType($nameAndType);
 
         return $builder;
@@ -144,12 +184,24 @@ class PropertyBuilderFactory
         string $relationshipClass,
         PropertyPathInterface|string $nameOrPath
     ): ToManyRelationshipConfigBuilder {
-        return new ToManyRelationshipConfigBuilder(
+        $builder = new ToManyRelationshipConfigBuilder(
             $entityClass,
             $relationshipClass,
             $this->propertyAccessor,
             $this->getSingleName($nameOrPath)
         );
+
+        if ($this->toManyRelationshipsByDefaultSortable) {
+            $builder->sortable();
+        }
+        if ($this->toManyRelationshipsByDefaultFilterable) {
+            $builder->filterable();
+        }
+        if ($this->toManyRelationshipsByDefaultReadable) {
+            $builder->readable();
+        }
+
+        return $builder;
     }
 
     /**
@@ -179,6 +231,15 @@ class PropertyBuilderFactory
      */
     public function createIdentifier(string $entityClass): IdentifierConfigBuilder
     {
-        return new IdentifierConfigBuilder($entityClass, $this->propertyAccessor, $this->typeResolver);
+        $builder = new IdentifierConfigBuilder($entityClass, $this->propertyAccessor, $this->typeResolver);
+
+        if ($this->identifierByDefaultSortable) {
+            $builder->sortable();
+        }
+        if ($this->identifierByDefaultFilterable) {
+            $builder->filterable();
+        }
+
+        return $builder;
     }
 }
