@@ -70,7 +70,7 @@ interface RepositoryInterface
     public function deleteEntityByIdentifier(string $entityIdentifier, array $conditions, array $identifierPropertyPath): void;
 
     /**
-     * @param list<TEntity> $entities
+     * @param non-empty-list<TEntity> $entities
      * @param list<TCondition> $conditions
      * @param list<TSorting> $sortMethods
      *
