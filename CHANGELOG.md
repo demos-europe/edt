@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.24.41 - 2024-01-17
 
 * feature: add early break, to potentially improve performance depending on `RepositoryInterface` implementation
 
