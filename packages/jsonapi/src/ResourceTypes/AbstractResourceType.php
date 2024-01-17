@@ -232,6 +232,10 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         $conditions = array_merge($conditions, $this->getAccessConditions());
         $sortMethods = array_merge($sortMethods, $this->getDefaultSortMethods());
 
+        if ([] === $conditions && [] === $sortMethods) {
+            return $entities;
+        }
+
         return $this->getRepository()->reindexEntities($entities, $conditions, $sortMethods);
     }
 

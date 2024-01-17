@@ -352,17 +352,7 @@ parameters:
             path: packages/jsonapi/src/Utilities/PropertyBuilderFactory.php
 
         -
-            message: "#^Method EDT\\\\JsonApi\\\\Utilities\\\\PropertyBuilderFactory\\:\\:createToMany\\(\\) should return EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToManyRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToManyRelationshipConfigBuilder\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>\\.$#"
-            count: 1
-            path: packages/jsonapi/src/Utilities/PropertyBuilderFactory.php
-
-        -
             message: "#^Method EDT\\\\JsonApi\\\\Utilities\\\\PropertyBuilderFactory\\:\\:createToManyWithType\\(\\) should return EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToManyRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToManyRelationshipConfigBuilder\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>\\.$#"
-            count: 1
-            path: packages/jsonapi/src/Utilities/PropertyBuilderFactory.php
-
-        -
-            message: "#^Method EDT\\\\JsonApi\\\\Utilities\\\\PropertyBuilderFactory\\:\\:createToOne\\(\\) should return EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToOneRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\> but returns EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToOneRelationshipConfigBuilder\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>\\.$#"
             count: 1
             path: packages/jsonapi/src/Utilities/PropertyBuilderFactory.php
 
