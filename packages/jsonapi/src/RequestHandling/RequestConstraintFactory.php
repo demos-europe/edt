@@ -32,7 +32,7 @@ class RequestConstraintFactory
     public function getBodyConstraints(
         string $urlTypeIdentifier,
         ?string $urlId,
-        ExpectedPropertyCollection $expectedProperties
+        ExpectedPropertyCollectionInterface $expectedProperties
     ): array {
         $allowedAttributes = $expectedProperties->getAllowedAttributes($this->attributeValidationDepth, $this->attributeAllowAnythingBelowValidationDepth);
         $requiredAttributes = $expectedProperties->getRequiredAttributes($this->attributeValidationDepth, $this->attributeAllowAnythingBelowValidationDepth);

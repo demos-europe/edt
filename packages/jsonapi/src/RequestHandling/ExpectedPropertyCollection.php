@@ -8,7 +8,7 @@ use EDT\Wrapping\Contracts\ContentField;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ExpectedPropertyCollection
+class ExpectedPropertyCollection implements ExpectedPropertyCollectionInterface
 {
     use RequestConstraintTrait;
 
@@ -29,21 +29,11 @@ class ExpectedPropertyCollection
         protected array $optionalToManyRelationships,
     ) {}
 
-    /**
-     * @param int<0, 8192> $validationLevelDepth
-     *
-     * @return array<non-empty-string, list<Constraint>>
-     */
     public function getRequiredAttributes(int $validationLevelDepth, bool $allowAnythingBelowDepth): array
     {
         return array_fill_keys($this->requiredAttributes, $this->getConstraintsForAttribute($validationLevelDepth, $allowAnythingBelowDepth));
     }
 
-    /**
-     * @param int<0, 8192> $validationLevelDepth
-     *
-     * @return array<non-empty-string, list<Constraint>>
-     */
     public function getAllowedAttributes(int $validationLevelDepth, bool $allowAnythingBelowDepth): array
     {
         return array_fill_keys(
@@ -52,12 +42,6 @@ class ExpectedPropertyCollection
         );
     }
 
-    /**
-     * The list of constraints is likely empty, as they are already present in
-     * {@link getAllowedRelationships} for all relationships and not just the required ones.
-     *
-     * @return array<non-empty-string, list<Constraint>>
-     */
     public function getRequiredRelationships(): array
     {
         return array_merge(
@@ -66,9 +50,6 @@ class ExpectedPropertyCollection
         );
     }
 
-    /**
-     * @return array<non-empty-string, list<Constraint>>
-     */
     public function getAllowedRelationships(): array
     {
         $toOneRelationships = array_map(

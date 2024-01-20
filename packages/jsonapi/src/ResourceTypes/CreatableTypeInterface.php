@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
+use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\ModifiedEntity;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
@@ -22,7 +22,7 @@ interface CreatableTypeInterface extends NamedTypeInterface, ReadableTypeInterfa
      * The return defines what properties are needed and allowed to be set when a new instance of
      * the {@link EntityBasedInterface::getEntityClass() backing class} is to be created.
      */
-    public function getExpectedInitializationProperties(): ExpectedPropertyCollection;
+    public function getExpectedInitializationProperties(): ExpectedPropertyCollectionInterface;
 
     public function createEntity(CreationDataInterface $entityData): ModifiedEntity;
 }

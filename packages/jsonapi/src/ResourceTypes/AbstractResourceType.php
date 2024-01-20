@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\ResourceTypes;
 
 use EDT\JsonApi\InputHandling\RepositoryInterface;
-use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
+use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\ModifiedEntity;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\Querying\Contracts\EntityBasedInterface;
@@ -58,7 +58,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      */
     abstract protected function getRepository(): RepositoryInterface;
 
-    public function getExpectedUpdateProperties(): ExpectedPropertyCollection
+    public function getExpectedUpdateProperties(): ExpectedPropertyCollectionInterface
     {
         return $this->getUpdatability()->getExpectedProperties();
     }
@@ -80,7 +80,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
         return new ModifiedEntity($entity, $requestDeviations);
     }
 
-    public function getExpectedInitializationProperties(): ExpectedPropertyCollection
+    public function getExpectedInitializationProperties(): ExpectedPropertyCollectionInterface
     {
         return $this->getResourceConfig()->getInstantiability()->getExpectedProperties();
     }

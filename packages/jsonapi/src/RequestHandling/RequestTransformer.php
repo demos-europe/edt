@@ -50,7 +50,7 @@ class RequestTransformer
      */
     public function getCreationRequestBody(
         string $urlTypeIdentifier,
-        ExpectedPropertyCollection $expectedProperties
+        ExpectedPropertyCollectionInterface $expectedProperties
     ): CreationRequestBody {
         $body = $this->getRequestData(
             $urlTypeIdentifier,
@@ -76,7 +76,7 @@ class RequestTransformer
     public function getUpdateRequestBody(
         string $urlTypeIdentifier,
         string $urlId,
-        ExpectedPropertyCollection $expectedProperties
+        ExpectedPropertyCollectionInterface $expectedProperties
     ): UpdateRequestBody {
         $body = $this->getRequestData(
             $urlTypeIdentifier,
@@ -120,7 +120,7 @@ class RequestTransformer
     protected function getRequestData(
         string $urlTypeIdentifier,
         ?string $urlId,
-        ExpectedPropertyCollection $expectedProperties
+        ExpectedPropertyCollectionInterface $expectedProperties
     ): array {
         $requestBody = $this->getRequestBody($this->getRequest(), $this->maxBodyNestingDepth);
         $this->validateRequestBodyFormat(
@@ -188,7 +188,7 @@ class RequestTransformer
         mixed $body,
         string $urlTypeIdentifier,
         ?string $urlId,
-        ExpectedPropertyCollection $expectedProperties
+        ExpectedPropertyCollectionInterface $expectedProperties
     ): void {
         $constraints = $this->requestConstraintFactory->getBodyConstraints($urlTypeIdentifier, $urlId, $expectedProperties);
         $violations = $this->validator->validate($body, $constraints);
