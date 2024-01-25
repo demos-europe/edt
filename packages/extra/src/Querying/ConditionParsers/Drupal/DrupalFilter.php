@@ -8,8 +8,12 @@ use function array_key_exists;
 
 /**
  * Separates the conditions from the group definitions and builds two
- * indices from the group definitions. One for the conjunctions and one for the
- * memberOf value.
+ * indices from the group definitions. One for the {@link DrupalFilterParser::AND}/{@link DrupalFilterParser::OR}
+ * conjunctions and one for the {@link DrupalFilterParser::MEMBER_OF} field value.
+ *
+ * This implementation will not apply any defaults or other changes to the conditions themselves, but simply
+ * restructures the grouping from a fully reference-based approach into a slightly more structured one, that
+ * makes further processing and transformation easier.
  *
  * @phpstan-import-type DrupalFilterGroup from DrupalFilterParser
  * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser

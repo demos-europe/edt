@@ -6,6 +6,7 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\Drupal\StandardOperator;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 
@@ -52,12 +53,12 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     {
         // TODO: validate condition-specific value types
         return [
-            '=' => [$this->conditionFactory, 'propertyHasValue'],
-            '<>' => [$this->conditionFactory, 'propertyHasNotValue'],
-            'STRING_CONTAINS_CASE_INSENSITIVE' => [$this->conditionFactory, 'propertyHasStringContainingCaseInsensitiveValue'],
-            'IN' => [$this->conditionFactory, 'propertyHasAnyOfValues'],
-            'NOT_IN' => [$this->conditionFactory, 'propertyHasNotAnyOfValues'],
-            'BETWEEN' => function ($conditionValue, array $path): PathsBasedInterface {
+            StandardOperator::EQUALS => [$this->conditionFactory, 'propertyHasValue'],
+            StandardOperator::NOT_EQUALS => [$this->conditionFactory, 'propertyHasNotValue'],
+            StandardOperator::STRING_CONTAINS_CASE_INSENSITIVE => [$this->conditionFactory, 'propertyHasStringContainingCaseInsensitiveValue'],
+            StandardOperator::IN => [$this->conditionFactory, 'propertyHasAnyOfValues'],
+            StandardOperator::NOT_IN => [$this->conditionFactory, 'propertyHasNotAnyOfValues'],
+            StandardOperator::BETWEEN => function ($conditionValue, array $path): PathsBasedInterface {
                 Assert::isArray($conditionValue);
                 Assert::keyExists($conditionValue, 0);
                 Assert::keyExists($conditionValue, 1);
@@ -66,7 +67,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
 
                 return $this->conditionFactory->propertyBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path);
             },
-            'NOT BETWEEN' => function ($conditionValue, array $path): PathsBasedInterface {
+            StandardOperator::NOT_BETWEEN => function ($conditionValue, array $path): PathsBasedInterface {
                 Assert::isArray($conditionValue);
                 Assert::keyExists($conditionValue, 0);
                 Assert::keyExists($conditionValue, 1);
@@ -75,15 +76,15 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
 
                 return $this->conditionFactory->propertyNotBetweenValuesInclusive($conditionValue[0], $conditionValue[1], $path);
             },
-            'ARRAY_CONTAINS_VALUE' => [$this->conditionFactory, 'propertyHasStringAsMember'],
-            'IS NULL' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNull($path),
-            'IS NOT NULL' => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull($path),
-            '>' => [$this->conditionFactory, 'valueGreaterThan'],
-            '>=' => [$this->conditionFactory, 'valueGreaterEqualsThan'],
-            '<' => [$this->conditionFactory, 'valueSmallerThan'],
-            '<=' => [$this->conditionFactory, 'valueSmallerEqualsThan'],
-            'STARTS_WITH_CASE_INSENSITIVE' => [$this->conditionFactory, 'propertyStartsWithCaseInsensitive'],
-            'ENDS_WITH_CASE_INSENSITIVE' => [$this->conditionFactory, 'propertyEndsWithCaseInsensitive'],
+            StandardOperator::ARRAY_CONTAINS_VALUE => [$this->conditionFactory, 'propertyHasStringAsMember'],
+            StandardOperator::IS_NULL => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNull($path),
+            StandardOperator::IS_NOT_NULL => fn ($conditionValue, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull($path),
+            StandardOperator::GT => [$this->conditionFactory, 'valueGreaterThan'],
+            StandardOperator::GTEQ => [$this->conditionFactory, 'valueGreaterEqualsThan'],
+            StandardOperator::LT => [$this->conditionFactory, 'valueSmallerThan'],
+            StandardOperator::LTEQ => [$this->conditionFactory, 'valueSmallerEqualsThan'],
+            StandardOperator::STARTS_WITH_CASE_INSENSITIVE => [$this->conditionFactory, 'propertyStartsWithCaseInsensitive'],
+            StandardOperator::ENDS_WITH_CASE_INSENSITIVE => [$this->conditionFactory, 'propertyEndsWithCaseInsensitive'],
         ];
     }
 }

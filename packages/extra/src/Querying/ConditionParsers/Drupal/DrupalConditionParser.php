@@ -6,6 +6,7 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\Querying\Contracts\ConditionParserInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\Drupal\StandardOperator;
 use function array_key_exists;
 
 /**
@@ -24,7 +25,7 @@ class DrupalConditionParser implements ConditionParserInterface
      */
     public function __construct(
         protected readonly DrupalConditionFactoryInterface $drupalConditionFactory,
-        protected readonly string $defaultOperator = '='
+        protected readonly string $defaultOperator = StandardOperator::EQUALS
     ) {}
 
     /**
