@@ -119,7 +119,6 @@ class DrupalFilterParser implements FilterParserInterface
      */
     public function parseFilter($filter): array
     {
-        $this->filterValidator->validateFilter($filter);
         $drupalFilter = new DrupalFilter($filter);
         $groupedConditions = $drupalFilter->getGroupedConditions();
         $conditions = $this->parseConditions($groupedConditions);
@@ -177,6 +176,16 @@ class DrupalFilterParser implements FilterParserInterface
         }
 
         return $conditions[self::ROOT] ?? [];
+    }
+
+    /**
+     * @return array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>
+     */
+    public function validateFilter(mixed $filter): array
+    {
+        $this->filterValidator->validateFilter($filter);
+
+        return $filter;
     }
 
     /**

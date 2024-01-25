@@ -20,4 +20,9 @@ interface FilterParserInterface
      * @throws FilterException
      */
     public function parseFilter($filter): array;
+
+    /**
+     * @return TFilter
+     */
+    public function validateFilter(mixed $filter);
 }

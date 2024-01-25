@@ -98,6 +98,7 @@ class ListRequest
 
         $filterParam = $query->get(UrlParameter::FILTER);
         $query->remove(UrlParameter::FILTER);
+        $filterParam = $this->filterParser->validateFilter($filterParam);
 
         return $this->filterParser->parseFilter($filterParam);
     }
