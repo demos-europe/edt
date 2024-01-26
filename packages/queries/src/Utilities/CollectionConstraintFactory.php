@@ -10,6 +10,9 @@ use Symfony\Component\Validator\Constraints\Collection;
 class CollectionConstraintFactory
 {
     /**
+     * Creates a {@link Collection} constraint that only matches an array that contains exactly the given field names,
+     * no more and no less.
+     *
      * @param non-empty-string $context
      * @param non-empty-array<non-empty-string, list<Constraint>> $fields the exact set of fields that must be present
      */
@@ -27,7 +30,10 @@ class CollectionConstraintFactory
     }
 
     /**
-     * @param non-empty-string $context
+     * Creates a {@link Collection} constraint that only matches an array that no other field names than the given ones.
+     * Not all allowed fields need to be present in the array though, it may even be empty.
+     *
+     * @param non-empty-string $context a string to adjust the violation message
      * @param array<non-empty-string, list<Constraint>> $allowedFields
      */
     public function noExtra(string $context, array $allowedFields): Collection
@@ -43,7 +49,10 @@ class CollectionConstraintFactory
     }
 
     /**
-     * @param non-empty-string $context
+     * Creates a {@link Collection} constraint that only matches an array that contains all the given field names.
+     * Additional fields are allowed to be present in the array though.
+     *
+     * @param non-empty-string $context a string to adjust the violation message
      * @param non-empty-array<non-empty-string, list<Constraint>> $requiredFields
      */
     public function noMissing(string $context, array $requiredFields): Collection
@@ -60,7 +69,7 @@ class CollectionConstraintFactory
     }
 
     /**
-     * @param non-empty-string $context
+     * @param non-empty-string $context a string to adjust the violation message
      * @param array<non-empty-string, mixed> $allowedFields
      */
     protected function createExtraMessage(string $context, array $allowedFields): string
@@ -71,7 +80,7 @@ class CollectionConstraintFactory
     }
 
     /**
-     * @param non-empty-string $context
+     * @param non-empty-string $context a string to adjust the violation message
      * @param non-empty-array<non-empty-string, mixed> $requiredFields
      */
     protected function createMissingMessage(string $context, array $requiredFields): string
