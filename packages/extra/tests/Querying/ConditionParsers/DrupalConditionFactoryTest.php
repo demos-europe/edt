@@ -43,7 +43,7 @@ class DrupalConditionFactoryTest extends TestCase
     public function testNull(): void
     {
         /** @var IsNull $condition */
-        $condition = $this->drupalConditionFactory->createCondition('IS NULL', null, ['foo']);
+        $condition = $this->drupalConditionFactory->createConditionWithoutValue('IS NULL', ['foo']);
         self::assertTrue($condition->apply([null]));
         self::assertFalse($condition->apply([false]));
     }
@@ -51,7 +51,7 @@ class DrupalConditionFactoryTest extends TestCase
     public function testNotNull(): void
     {
         /** @var InvertedBoolean $condition */
-        $condition = $this->drupalConditionFactory->createCondition('IS NOT NULL', null, ['foo']);
+        $condition = $this->drupalConditionFactory->createConditionWithoutValue('IS NOT NULL', ['foo']);
         self::assertTrue($condition->apply([false]));
         self::assertFalse($condition->apply([null]));
     }

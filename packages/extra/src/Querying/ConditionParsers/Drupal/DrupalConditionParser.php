@@ -42,8 +42,6 @@ class DrupalConditionParser implements ConditionParserInterface
             throw DrupalFilterException::nullValue();
         }
 
-        $value = $condition[DrupalFilterParser::VALUE] ?? null;
-
         $pathString = $condition[DrupalFilterParser::PATH];
         $path = array_map(static function (string $pathSegment) use ($operatorName, $pathString): string {
             if ('' === $pathSegment) {
@@ -53,6 +51,8 @@ class DrupalConditionParser implements ConditionParserInterface
             return $pathSegment;
         }, explode('.', $pathString));
 
-        return $this->drupalConditionFactory->createCondition($operatorName, $value, $path);
+        return array_key_exists(DrupalFilterParser::VALUE, $condition)
+            ? $this->drupalConditionFactory->createConditionWithValue($operatorName, $condition[DrupalFilterParser::VALUE], $path)
+            : $this->drupalConditionFactory->createConditionWithoutValue($operatorName, $path);
     }
 }

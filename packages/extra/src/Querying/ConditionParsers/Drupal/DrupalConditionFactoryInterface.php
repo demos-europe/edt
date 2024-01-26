@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
+use JsonSchema\Constraints\Constraint;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -13,9 +14,11 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 interface DrupalConditionFactoryInterface
 {
     /**
-     * Returns all Drupal operator names supported by this instance.
+     * All operators supported by this instance.
      *
-     * @return list<non-empty-string>
+     * Returns a mapping from the operator name to the constraints to be applied on the *condition* the operator resides in.
+     *
+     * @return array<non-empty-string, list<Constraint>>
      */
     public function getSupportedOperators(): array;
 
@@ -28,5 +31,13 @@ interface DrupalConditionFactoryInterface
      *
      * @throws DrupalFilterException if the given operator name is not supported
      */
-    public function createCondition(string $operatorName, array|string|int|float|bool|null $value, array $path): PathsBasedInterface;
+    public function createConditionWithValue(string $operatorName, array|string|int|float|bool|null $value, array $path): PathsBasedInterface;
+
+    /**
+     * @param non-empty-string $operatorName
+     * @param non-empty-list<non-empty-string> $path
+     *
+     * @throws DrupalFilterException if the given operator name is not supported
+     */
+    public function createConditionWithoutValue(string $operatorName, array $path): PathsBasedInterface;
 }
