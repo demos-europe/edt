@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+* feature: provide assertion methods to subclasses of `PredefinedDrupalConditionFactory`
+* refactor: (bc break) improve return of `PredefinedDrupalConditionFactory::getSupportedOperators`, instead of just the names of the supported operators, it is able to provide additional `Constraint`s too; however, this remains currently unused and unsupported; apply `array_keys` to the return value as quick migration
+* refactor: (bc break) split `PredefinedDrupalConditionFactory::getOperatorFunctions` into `getOperatorFunctionsWithValue` and `getOperatorFunctionsWithoutValue`; overriding implementations must be adjusted accordingly
+* refactor: (bc break) start to separate validation from filter transformation; `DrupalFilterParser::parseFilter` will no longer automatically validate the given filter, add a call to `DrupalFilterParser::validateFilter` as quick migration
+* refactor: introduce operator constants in `StandardOperator` and prefer them over string usage
+* refactor: introduce and use `ExpectedPropertyCollectionInterface`
+
 ## 0.24.41 - 2024-01-17
 
 * feature: add early break, to potentially improve performance depending on `RepositoryInterface` implementation
