@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* feature: add classes to programmatically create Drupal filters
 * feature: provide assertion methods to subclasses of `PredefinedDrupalConditionFactory`
 * refactor: (bc break) improve return of `PredefinedDrupalConditionFactory::getSupportedOperators`, instead of just the names of the supported operators, it is able to provide additional `Constraint`s too; however, this remains currently unused and unsupported; apply `array_keys` to the return value as quick migration
 * refactor: (bc break) split `PredefinedDrupalConditionFactory::getOperatorFunctions` into `getOperatorFunctionsWithValue` and `getOperatorFunctionsWithoutValue`; overriding implementations must be adjusted accordingly
