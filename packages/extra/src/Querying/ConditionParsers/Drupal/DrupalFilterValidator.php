@@ -11,6 +11,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * @phpstan-import-type DrupalFilterGroup from DrupalFilterParser
+ * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser
+ */
 class DrupalFilterValidator
 {
     /**
@@ -41,6 +45,8 @@ class DrupalFilterValidator
      *                      validation any kind of value is allowed here
      *
      * @throws DrupalFilterException
+     *
+     * @phpstan-assert array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}> $filter
      */
     public function validateFilter(mixed $filter): void
     {
@@ -58,14 +64,15 @@ class DrupalFilterValidator
     }
 
     /**
-     * @param arrray<non-empty-string, list<Constraint>> $validOperators
+     * @param array<non-empty-string, list<Constraint>> $validOperators
      *
      * @return list<Constraint>
      */
     protected function getFilterSchemaConstraints(array $validOperators): array
     {
-        /** @var mixed $assertionsOnRootItems (avoid incorrect type concern) */
         $filterTypeConstraints = $this->getFilterTypeConstraints($validOperators);
+
+        /** @var mixed $assertionsOnRootItems (avoid incorrect type concern) */
         $assertionsOnRootItems = [
             new Assert\Type('array'),
             new Assert\Count(1),

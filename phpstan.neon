@@ -262,6 +262,11 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
 
         -
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:validateFilter\\(\\) should return array\\<non\\-empty\\-string, array\\{condition\\: array\\{path\\: non\\-empty\\-string, value\\?\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, operator\\?\\: non\\-empty\\-string, memberOf\\?\\: non\\-empty\\-string\\}\\}\\|array\\{group\\: array\\{conjunction\\: 'AND'\\|'OR', memberOf\\?\\: non\\-empty\\-string\\}\\}\\> but returns mixed\\.$#"
+            count: 1
+            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
+
+        -
             message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterValidator\\:\\:__construct\\(\\) has parameter \\$drupalConditionFactory with generic interface EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalConditionFactoryInterface but does not specify its types\\: TCondition$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
@@ -272,27 +277,12 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\PredefinedDrupalConditionFactory\\:\\:getOperatorFunctions\\(\\) should return array\\<non\\-empty\\-string, callable\\(array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\)\\: TCondition\\> but returns array\\{\\=\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasValue'\\}, \\<\\>\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotValue'\\}, STRING_CONTAINS_CASE_INSENSITIVE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringCo…'\\}, IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasAnyOfVal…'\\}, NOT_IN\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasNotAnyOf…'\\}, BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition, NOT BETWEEN\\: Closure\\(mixed, array\\)\\: TCondition, ARRAY_CONTAINS_VALUE\\: array\\{EDT\\\\ConditionFactory\\\\PathsBasedConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, 'propertyHasStringAs…'\\}, \\.\\.\\.\\}\\.$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
-
-        -
             message: "#^Parameter \\#1 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyIsNotNull\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
             message: "#^Parameter \\#1 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyIsNull\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
-
-        -
-            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
-
-        -
-            message: "#^Parameter \\#3 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyNotBetweenValuesInclusive\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 

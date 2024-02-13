@@ -179,7 +179,7 @@ class DrupalFilterParser implements FilterParserInterface
     }
 
     /**
-     * @return array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>
+     * @deprecated call {@link DrupalFilterValidator} manually
      */
     public function validateFilter(mixed $filter): array
     {

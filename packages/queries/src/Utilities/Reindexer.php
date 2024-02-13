@@ -10,10 +10,6 @@ use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
 use Webmozart\Assert\Assert;
 
-/**
- * @template TCondition of FunctionInterface<bool>
- * @template TSorting of SortMethodInterface
- */
 class Reindexer
 {
     public function __construct(
@@ -25,8 +21,8 @@ class Reindexer
      * @template TEntity of object
      *
      * @param list<TEntity> $entities
-     * @param list<TCondition> $conditions
-     * @param list<TSorting> $sortMethods
+     * @param list<FunctionInterface<bool>> $conditions
+     * @param list<SortMethodInterface> $sortMethods
      *
      * @return list<TEntity>
      *
@@ -41,7 +37,7 @@ class Reindexer
     }
 
     /**
-     * @param list<TCondition> $conditions
+     * @param list<FunctionInterface<bool>> $conditions
      */
     public function assertMatchingEntity(object $entity, array $conditions): void
     {
@@ -49,7 +45,7 @@ class Reindexer
     }
 
     /**
-     * @param list<TCondition> $conditions
+     * @param list<FunctionInterface<bool>> $conditions
      */
     public function isMatchingEntity(object $entity, array $conditions): bool
     {
@@ -60,7 +56,7 @@ class Reindexer
      * @template TEntity of object
      *
      * @param TEntity $entity
-     * @param list<TCondition> $conditions
+     * @param list<FunctionInterface<bool>> $conditions
      *
      * @return TEntity|null
      *
@@ -80,7 +76,7 @@ class Reindexer
      * @template TEntity of object
      *
      * @param list<TEntity> $entities
-     * @param list<TCondition> $conditions
+     * @param list<FunctionInterface<bool>> $conditions
      *
      * @return list<TEntity>
      */
@@ -97,7 +93,7 @@ class Reindexer
      * @template TEntity of object
      *
      * @param list<TEntity> $entities
-     * @param list<TSorting> $sortMethods
+     * @param list<SortMethodInterface> $sortMethods
      *
      * @return list<TEntity>
      *

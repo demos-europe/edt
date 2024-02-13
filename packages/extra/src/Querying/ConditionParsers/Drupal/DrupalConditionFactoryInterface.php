@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use JsonSchema\Constraints\Constraint;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -36,6 +36,8 @@ interface DrupalConditionFactoryInterface
     /**
      * @param non-empty-string $operatorName
      * @param non-empty-list<non-empty-string> $path
+     *
+     * @return TCondition
      *
      * @throws DrupalFilterException if the given operator name is not supported
      */

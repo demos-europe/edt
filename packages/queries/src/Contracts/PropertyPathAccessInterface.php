@@ -11,6 +11,11 @@ interface PropertyPathAccessInterface extends PropertyPathInterface
     /**
      * To use if the terminating relationship should be accessed as property on the entity (and
      * thus without join to the target entity of the relationship).
+     *
+     * This is especially relevant for cases like counting the targets in a to-many relationship. By using this constant
+     * it would result in something like `COUNT(Book.authors)` returning the correct result. If {@link self::UNPACK}
+     * was used instead a join to the `Person` entity/table was used instead and the result may be something like
+     * `COUNT(person)`, and thus wrong.
      */
     public const DIRECT = 0;
 
