@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.24.42 - 2024-02-13
 
 * feature: add classes to programmatically create Drupal filters
 * feature: provide assertion methods to subclasses of `PredefinedDrupalConditionFactory`
