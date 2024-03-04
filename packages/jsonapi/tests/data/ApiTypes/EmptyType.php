@@ -13,7 +13,6 @@ use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\JsonApi\ResourceTypes\AbstractResourceType;
 use EDT\JsonApi\Utilities\PropertyBuilderFactory;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Querying\PropertyPaths\PropertyPath;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use League\Fractal\TransformerAbstract;
 use Tests\data\EmptyEntity;
