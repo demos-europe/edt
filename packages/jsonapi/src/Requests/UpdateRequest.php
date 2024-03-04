@@ -21,6 +21,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class UpdateRequest
 {
     use EntityVerificationTrait;
+
     public function __construct(
         protected readonly RequestTransformer $requestTransformer,
         protected readonly EventDispatcherInterface $eventDispatcher

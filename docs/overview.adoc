@@ -1,0 +1,312 @@
+= Architecture
+
+== Resource types
+
+One concept this library is build around are so-called resource types.
+In the following sections we will introduce the importance of them to the overall architecture and how they are to be used to implement the SoC (separation of concerns) and dry (don't repeat yourself) principles.
+
+=== Catch up -- resource types as defined by the JSON:API specification
+
+Within the JSON:API specification every resource is assigned a type, which is simply a single string.
+The naming of the type depends on decisions made when designing the domain model of the API.
+
+If your website publishes online articles and allows to post comments under it, an article with a single comment may exist.
+Such case is shown in the following example.
+The JSON displays a single `article` resource with the `id` 42.
+Other typical article relationships, e.g. the authors, are omitted for brevity.
+However, it contains a list of comment references, containing a single reference.
+
+[source,json]
+----
+{
+  "data": {
+    "id": "42",
+    "type": "article",
+    "attributes": {
+      "text": "…"
+    },
+    "relationships": {
+      "comments": {
+        "data": [
+          {"id": 42, "type": "comment"}
+        ]
+      }
+    }
+  }
+}
+----
+
+In this example both the article and the comment have, by chance, the same `id` field value.
+Those do however not conflict, because resources are uniquely identified by their `id` **and** `type` fields.
+
+=== Approaching the problem
+
+Above we could see that resources consist of an identifier, a type, attributes and relationships.
+All those need to be mapped to a data source, so that a request like `GET /article/42` actually returns the JSON seen above.
+
+However, it is important to note that there are different ways to get access to the data of resources:
+
+* a `GET` request to a specific identifier (e.g. `GET /article/42`) will return that specific resource
+* requests to create a resource (e.g. `POST /article/`) will return the created resource if it was not created exactly as requested
+* likewise, requests to update a resource (e.g. `PATCH /article/42`) will return the updated resource if it was not updated exactly as requested
+* the JSON:API specification allows to directly fetch resources referenced via relationships (e.g. `GET /article/42/relationships/comments`)
+* alternatively, by using `include` in a request, resources referenced via relationships can be included in the response (e.g. `GET /article/42?include=comments` will return not only the article with the identifier 42, but also all of its comments, as shown below).
++
+[source,json]
+----
+{
+  "data": {
+    "id": "42",
+    "type": "article",
+    "attributes": {
+      "text": "…"
+    },
+    "relationships": {
+      "comments": {
+        "data": [
+          {"id": 42, "type": "comment"}
+        ]
+      }
+    }
+  },
+  "included": [
+    {
+      "id": 42,
+      "type": "comment",
+      "attributes": {
+        "text": "…",
+        "approved": true
+      }
+    }
+  ]
+}
+----
+
+So different requests need to access the same data.
+However, taking a relational database as example, accessing the data may not be as simple as generating a SQL `SELECT` query from a request like `GET /article/42` and applying an ORM mapping to the resoult. Instead, there are multiple additional factors to consider:
+
+* Where does the data for the resources come from, what if articles and comments are stored in different databases?
+* Do we need to limit the access to individual resources based on authorization? E.g. moderators being able to see all comments but normal users only seeing approved ones.
+* How can we avoid code duplication and even more importantly ensure that the same access limitations are applied, when accessing the same resources via different requests (e.g. a comment via `GET /article/42?include=comments` or `GET /comment/42`)?
+* How can we limit generic boilerplate code when allowing access to (many) different resource types?
+
+=== Coupling resource types to logic and behavior
+
+This library addresses the problem by applying an object-oriented approach.
+A "resource type" is not considered just a string to uniquely identify corresponding resources, but an expert in retrieving and manipulating corresponding resources.
+The idea is that regardless of the way a resource (e.g. a comment) is retrieved, ultimately it is always retrieved via a resource type instance that is tailored in retrieving resources of that type.
+This allows to abstract away all details (like access limitations and access to the data source) within the resource type instance.
+
+To make this concept more tangible, we use the process of fetching a single article via `GET /article/42` as example.
+Accessing a single resource via its identifier like that requires a corresponding `GetableTypeInterface` instance to be present.
+Classes inheriting from `GetableTypeInterface` must implement three methods:
+
+* `getTypeName(): non-empty-string`
+* `getEntity(non-empty-string $identifier): object`
+* `getTransformer(): TransformerAbstract`
+
+For this example use-case (`GET /article/42`), the high-level process is relatively simple:
+
+1. The correct `GetableTypeInterface` instances is retrieved, corresponding to `comment` resources. How this is done is left to the application. For example within Symfony, each resource type string may be given its own route and within that route the retrieval of the correct `GetableTypeInterface` instance is hardcoded. Or a single route for all resource types may exist, dynamically retrieving the correct instance via the resource type string in the URL (i.e. `article`) from a dictionary.
+2. An object representation of the resource is retrieved from the `GetableTypeInterface` instance via `getEntity`, by providing the method with the `id` that was given in the request (i.e. `42`).
+3. A `TransformerAbstract` retrieved via `getTransformer` and the resource type string are used to convert the resource's object representation into the actual response.
+
+Different types of requests require the implementation of different interfaces.
+We can distinguish between the following request types:
+
+* “`get`”, e.g. `GET /article/42`: requires a `GetableTypeInterface` instance
+* “`list`”, e.g. `GET /article`: requires a `ListableTypeInterface` instance
+* “`create`”, e.g. `CREATE /article`: requires a `CreatableTypeInterface` instance
+* “`update`”, e.g. `PATCH /article/42`: requires a `UpdatableTypeInterface` instance
+* “`delete`”, e.g. `DELETE /article/42`: requires a `DeletableTypeInterface` instance
+* accessing resources via requests like `GET /article/42/relationships/comments` has not yet been implemented
+
+It must be noted however, that these interfaces are designed to best fit the needs of the engine, not the developer.
+What this means is that the engine may require some resource-specific task to be done (e.g. fetching data for a resource by its `id`) and is provided with method that fulfills exactly this purpose (e.g. `GetableTypeInterface::getEntity`).
+Meanwhile, the developer is left with the burden of somehow implementing the required `getEntity` method.
+
+While this allows for great flexibility regarding the inner workings of resource type implementations and is reasonably doable for some methods, it gets exceedingly difficult for others.
+Therefore, for most cases it is recommended to extend the `AbstractResourceType`, which is build around the needs of the developer, and using it in conjunction with the `DynamicTransformer` class.
+
+To reiterate: manually implementing the interfaces listed above is only recommended for cases in which the `AbstractResourceType`/`DynamicTransformer` duo is unsuitable for some reason.
+
+=== The `AbstractResourceType` class
+
+It is important to not misunderstand the purpose of the `AbstractResourceType`.
+Even when extending `AbstractResourceType`, all the decisions that are necessary when implementing the interfaces mentioned in the previous section must still be made and the corresponding logic applied.
+However, what this abstract class attempts to do is providing some guidance and encouraging best practices in that process.
+
+To get a better understanding of what all of this means, the following code shows an example in which a specific resource type class was written for `comment` resources, extending from `AbstractResourceType`.
+
+[source,php]
+----
+class CommentType extends AbstractResourceType
+{
+    public function __construct(
+        protected readonly ConditionFactoryInterface $conditionFactory,
+        protected readonly PropertyBuilderFactory $propertyBuilderFactory,
+        protected readonly SchemaPathProcessor $schemaPathProcessor,
+        protected readonly RepositoryInterface $commentRepository,
+        protected readonly MessageFormatter $messageFormatter,
+        protected readonly User $currentUser
+    ) {}
+
+    protected function getSchemaPathProcessor(): SchemaPathProcessor
+    {
+        return $this->schemaPathProcessor;
+    }
+
+    protected function getRepository(): RepositoryInterface
+    {
+        return $this->commentRepository;
+    }
+
+    public function getTransformer(): TransformerAbstract
+    {
+        return new DynamicTransformer($this, $this->messageFormatter, null);
+    }
+
+    public function getEntityClass(): string
+    {
+        return Comment::class;
+    }
+
+    public function getTypeName(): string
+    {
+        return 'comment';
+    }
+
+    public function getAccessConditions(): array
+    {
+        if ($this->currentUser->isModerator()) {
+            return [];
+        }
+
+        $approvedCommentCondition = $this->conditionFactory->propertyHasValue(true, ['approved']);
+
+        return [$approvedCommentCondition];
+    }
+
+    protected function getDefaultSortMethods(): array
+    {
+        return [];
+    }
+
+    protected function getIdentifierPropertyPath(): array
+    {
+        return ['id'];
+    }
+
+    protected function getResourceConfig(): ResourceConfigInterface
+    {
+        $configBuilder = new CommentResourceConfigBuilder(
+            $this->getEntityClass(),
+            $this->propertyBuilderFactory
+        );
+
+        $configBuilder->id->readable();
+        $configBuilder->text->readable();
+
+        if ($this->currentUser->isModerator()) {
+            $configBuilder->approved
+                ->readable()
+                ->updatable();
+        }
+
+        return $configBuilder->build();
+    }
+}
+----
+
+[source,php]
+----
+
+/**
+ * @property-read AttributeConfigBuilderInterface<Comment> $text
+ * @property-read AttributeConfigBuilderInterface<Comment> $approved
+ */
+class CommentResourceConfigBuilder extends MagicResourceConfigBuilder
+{
+}
+----
+
+This class relies on various other classes and interfaces and explaining it fully is not in the scope of this section.
+The following subsections will expand on some methods to give a better idea of the purpose of resource type classes, but the important thing is that `CommentType` (in conjunction with its small `CommentResourceConfigBuilder` companion class) attempts to cover all considerations for that specific resource type and leaves considerations unrelated to `comment` resources (or resources at all) to the other classes.
+
+==== Resources and entities
+
+In the two classes above, there are multiple mentions of a `Comment` class.
+An instance of this class is the entity that provides the data for a single `comment` resource.
+What this means is that to generate the JSON for a single `comment` resource, a corresponding instance of the `Comment` class is needed to provide the data for that resource.
+
+The `CommentType` needs to be "aware" how `Comment` entity instances are to be used to return `comment` resources and how to write data into a `Comment` entity in case of an update or creation request.
+But it does not care where the `Comment` entities come from or how exactly data written into the entity finds its way into the database.
+Such is the responsibility of the `RepositoryInterface`, which in turn has no concept of resource types.
+
+Ideally the schema of the entity would be identical to that of the resource.
+This avoids additional steps in the `getResourceConfig` method to mitigate deviations.
+However, major deviations are possible too.
+
+E.g. your entity model may contain a `Product` class, covering a variety of different purchasable products, with its properties allowing to identify the kind of product.
+Based on this entity you could define a `book` resource.
+Products that are not books are skipped.
+For the `Product` instances that are considered valid `book` resources, the `name` property would be used as `title` attribute, the `manufactorer` property could be used as `publisher` and additional attributes like `author` or `pageCount` may be extracted from some kind of `metadata` property.
+
+==== Limiting the access to resources
+
+On a technical level the `getAccessConditions` method returns a list of conditions, which must all match an entity for it to be considered a valid resource.
+On a logical level this can be used to cover two cases.
+
+1. Excluding entities that are not to be considered resources at all (e.g. only specific `Product` entities are actual `book` resources). Such condition are usually static, i.e. not dependent on state like the current user or current date.
+2. Limiting entities by authorization, as done in the `CommentType`, by allowing  moderators to access any comment (an empty list of conditions is returned) and restricting other users to comments that have been approved for public visibility.
+
+By limiting the set of allowed entities, we automatically limit the set of allowed resources, as each resource needs an entity to retrieve its data from.
+
+==== Defining resource properties
+
+The `getResourceConfig` defines what properties are available and how they can be used. In the `CommentType` example the following configuration was done:
+
+* The `id` of the resource is always readable.
+* The `text` attribute is set to be always readable as well. The text of non-approved comments is still not available to non-moderators, because they don't have access to that resource at all and thus to none of its properties, as defined in the `getAccessConditions` method.
+* The `approved` attribute is only readable and updatable by moderators, so they are able to approve comments that adhere to the website's comment policy and hide such that do not.
+
+The capabilities of the property configuration within the `getResourceConfig` method were kept quite brief in this example.
+Beside simple readability and updatability, it can be used to handle values provided in creation requests, allow filtering and sorting of resources via specific properties, transform values when reading or writing them and define mappings between the schema of the resource and the schema of the underlying `Comment` class. Additionally, behavior can be defined that is to be executed independent of specific properties on update and creation requests.
+
+== Request handling
+
+Logically, the handling of a JSON:API request can be separated into two layers. The first one is to be implemented by the application. The second one is provided by the library:
+
+1. Processing the request until a `Symfony\Component\HttpFoundation\RequestStack` instance containing the request and the targeted resource type instance is available. Afterward, control is passing to specific request class instances, that correspond to the received request type.
+2. Within the request class instance, the request processing is continued beyond what `Symfony\Component\HttpFoundation` provides. E.g. converting `filter`, `sort` and `page` parameters into objects for further usage. When the request data is prepared and decoupled from the request context, the methods of the determined resource type instance are used to execute the requested actions, e.g. fetching or updating resources.
+
+The following flowchart attempt to give a better overview of the first layer.
+
+[mermaid]
+ifdef::env-github[[source,mermaid]]
+....
+flowchart TD
+    A(start) -->|receive JSON:API request| B[retrieve $type instance of target resource type]
+    B --> X{determine\nrequest type}
+    X --> |$resourceType:GetableResourceType,\n$resourceId| G[[GetRequest::getResource]]
+    X --> |$resourceType:ListableResourceType| L[[ListRequest::listResources]]
+    X --> |$resourceType:CreatableResourceType| C[[CreationRequest::createResource]]
+    X --> |$resourceType:UpdatableResourceType,\n$resourceId:string| U[[UpdateRequest::updateResource]]
+    X --> |$resourceType:DeletableResourceType,\n$resourceId:string| D[[DeletionRequest::deleteResource]]
+    G -- Item --> 200
+    L -- Collection --> 200
+    C -- ?Item --> Y1{"creation result\nexactly as requested\n(i.e. null)"}
+    U -- ?Item --> Y2{"update result\nexactly as requested\n(i.e. null)"}
+    Y1 --> |yes| 204
+    Y1 --> |no| 201
+    Y2 --> |yes| 204
+    Y2 --> |no| 200
+    D --> 204
+    200["Create 200 (ok) response"] --> Z
+    201["Create 201 (created) response"] --> Z
+    204["Create 204 (no content) response"] --> Z
+    Z(End)
+....
+
+Please note that methods in the resource type instances are not aware if they are called due to a received JSON:API request or in a different context.
+It is completely acceptable to utilize resource type implementations or the general context in different environments, e.g. RPC requests.
