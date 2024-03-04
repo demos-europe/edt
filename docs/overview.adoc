@@ -2,7 +2,7 @@
 
 == Resource types
 
-One concept this library is build around are so-called resource types.
+One concept this library is built around are so-called resource types.
 In the following sections we will introduce the importance of them to the overall architecture and how they are to be used to implement the SoC (separation of concerns) and dry (don't repeat yourself) principles.
 
 === Catch up -- resource types as defined by the JSON:API specification
@@ -10,7 +10,7 @@ In the following sections we will introduce the importance of them to the overal
 Within the JSON:API specification every resource is assigned a type, which is simply a single string.
 The naming of the type depends on decisions made when designing the domain model of the API.
 
-If your website publishes online articles and allows to post comments under it, an article with a single comment may exist.
+If your website publishes online articles and allows users to post comments under them, an article with a single comment may exist.
 Such case is shown in the following example.
 The JSON displays a single `article` resource with the `id` 42.
 Other typical article relationships, e.g. the authors, are omitted for brevity.
@@ -42,7 +42,7 @@ Those do however not conflict, because resources are uniquely identified by thei
 === Approaching the problem
 
 Above we could see that resources consist of an identifier, a type, attributes and relationships.
-All those need to be mapped to a data source, so that a request like `GET /article/42` actually returns the JSON seen above.
+All those need to be mapped to a data source, so that, for example, a `GET /article/42` request actually returns the JSON as shown above.
 
 However, it is important to note that there are different ways to get access to the data of resources:
 
@@ -277,7 +277,7 @@ Beside simple readability and updatability, it can be used to handle values prov
 
 Logically, the handling of a JSON:API request can be separated into two layers. The first one is to be implemented by the application. The second one is provided by the library:
 
-1. Processing the request until a `Symfony\Component\HttpFoundation\RequestStack` instance containing the request and the targeted resource type instance is available. Afterward, control is passing to specific request class instances, that correspond to the received request type.
+1. Processing the request until a `Symfony\Component\HttpFoundation\RequestStack` instance containing the request and the targeted resource type instance is available. Authorization checks to determine if the current user is allowed to access the targeted resource type with the given request at all must be done here. E.g. just because a resource type instance supports the deletion of its resources, doesn't mean that any user is allowed to delete any such resource they have access to. Afterward, control is passed to specific request class instances, that correspond to the received request type.
 2. Within the request class instance, the request processing is continued beyond what `Symfony\Component\HttpFoundation` provides. E.g. converting `filter`, `sort` and `page` parameters into objects for further usage. When the request data is prepared and decoupled from the request context, the methods of the determined resource type instance are used to execute the requested actions, e.g. fetching or updating resources.
 
 The following flowchart attempt to give a better overview of the first layer.
@@ -288,11 +288,11 @@ ifdef::env-github[[source,mermaid]]
 flowchart TD
     A(start) -->|receive JSON:API request| B[retrieve $type instance of target resource type]
     B --> X{determine\nrequest type}
-    X --> |$resourceType:GetableResourceType,\n$resourceId| G[[GetRequest::getResource]]
+    X --> |$resourceType:GetableResourceType,\n$resourceId:non-empty-string| G[[GetRequest::getResource]]
     X --> |$resourceType:ListableResourceType| L[[ListRequest::listResources]]
     X --> |$resourceType:CreatableResourceType| C[[CreationRequest::createResource]]
-    X --> |$resourceType:UpdatableResourceType,\n$resourceId:string| U[[UpdateRequest::updateResource]]
-    X --> |$resourceType:DeletableResourceType,\n$resourceId:string| D[[DeletionRequest::deleteResource]]
+    X --> |$resourceType:UpdatableResourceType,\n$resourceId:non-empty-string| U[[UpdateRequest::updateResource]]
+    X --> |$resourceType:DeletableResourceType,\n$resourceId:non-empty-string| D[[DeletionRequest::deleteResource]]
     G -- Item --> 200
     L -- Collection --> 200
     C -- ?Item --> Y1{"creation result\nexactly as requested\n(i.e. null)"}
@@ -309,4 +309,23 @@ flowchart TD
 ....
 
 Please note that methods in the resource type instances are not aware if they are called due to a received JSON:API request or in a different context.
-It is completely acceptable to utilize resource type implementations or the general context in different environments, e.g. RPC requests.
+It is completely acceptable to utilize resource type implementations or the general concept in different environments, e.g. RPC requests.
+
+== Singletons, dependency injection and the agony of choice
+
+Most utility classes are intended to be used as singletons.
+Classes in the library will not `new` them by themselves but expected them to be provided as constructor parameter or in rare cases via abstract methods.
+Though it is not required or enforced to limed them to a single instance each, it is recommended and works well with dependency injection frameworks like Symfony.
+Usage without a dependency injection framework is possible, but will probably add additional complexity.
+
+In either case, defining/creating a utility class instance is often not just a matter of using the only available implementation, but to carefully consider its implications and chose one of multiple implementations or writing a custom one.
+
+For example some classes require a `PropertyAccessorInterface` instance.
+This class is needed to retrieve or set a value from/into an entity based on a property name or a property path.
+There are multiple child implementing `PropertyAccessorInterface`, but currently all of them are based on the `ReflectionPropertyAccessor`, which uses reflection as only means of accessing properties.
+If you want to use something like the https://symfony.com/doc/current/components/property_access.html[Symfony's PropertyAccess Component] to access properties via their getters, you would need to implement a class extending `PropertyAccessorInterface` yourself.
+
+Even more problematic, the stock `ReflectionPropertyAccessor` is suitable for simple classes, but does not work with Doctrine entities.
+When accessing Doctrine entities, `ProxyPropertyAccessor` or extending classes s(e.g. `Iso8601PropertyAccessor` for proper datetime column support) must be used.
+
+The `PropertyAccessorInterface` is an extreme example and a high ranking candidate for usability improvements in the future, but until then it is a good example to highlight the importance of informed decisions to select the best implementation to inject.
