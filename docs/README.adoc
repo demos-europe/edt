@@ -23,7 +23,7 @@ These objects are structured into multiple composer packages contained in this r
 Due to the variety of features provided by the JSON:API specification, implementing it in a maintainable way may provide a challenge.
 After an initial setup, this library reduces your duty to expressing your intents regarding your web-API contract once, avoiding the risks of inconsistencies due to redundancy.
 
-This is especially helpful in large, volatile, fast-growing web-applications with , where almost every feature may require new entities or properties to be exposed to its clients.
+This is especially helpful in large, volatile, fast-growing web-applications with demanding clients, where most new features may require new entities or properties to be exposed to them.
 
 On the other hand, for small and relatively settled applications, this library may not be the right choice. This is due to the currently notable time cost for the initial setup, especially in case of applications that don't already use Symfony and the Doctrine ORM framework. At some point the setup difficulty may be reduced, but for now, batteries are *not* included.
 
