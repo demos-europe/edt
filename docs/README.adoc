@@ -16,7 +16,7 @@ How and to whom you expose your entities is highly customizable while minimizing
 
 Immediate usage is currently limited to applications building their entities uppon the https://www.doctrine-project.org/projects/orm.html[Doctrine ORM]. However, as the different underlying functionalities are split and encapsulated in many individual PHP objects, put together via constructor-based dependency injection, a high degree of customizability and extensibility is ensured.
 
-These objects are structured into multiple composer packages contained in this repository, to ease re-usage for different use cases without the need to include large, unnecessary dependencies. E.g. you may want to use parts of this library to build your own API implementation more easily, and if you do, you can easily skip the Doctrine ORM dependency and implement your own way to access the data source of your entities.
+These objects are structured into multiple composer packages contained in this repository, to ease re-usage for different use cases without the need to include large, unnecessary dependencies. E.g. you may want to use parts of this library to build your own API implementation more easily, and if you do, you can simply skip the Doctrine ORM dependency and implement your own way to access the data source of your entities.
 
 == When to use
 
