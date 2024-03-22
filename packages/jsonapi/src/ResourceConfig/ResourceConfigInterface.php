@@ -19,7 +19,6 @@ use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
  * @template-extends PropertyUpdatableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends PropertyReadableTypeInterface<TCondition, TSorting, TEntity>
  * @template-extends SortingTypeInterface<TCondition, TSorting>
- * @template-extends FilteringTypeInterface<TCondition, TSorting>
  */
 interface ResourceConfigInterface extends PropertyUpdatableTypeInterface, FilteringTypeInterface, SortingTypeInterface, PropertyReadableTypeInterface
 {
