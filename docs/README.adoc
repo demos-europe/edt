@@ -80,7 +80,7 @@ For example clients can not only fetch `Book` resources in one request and `Auth
 
 Setting the `fullName` attribute as filterable allows the client to fetch `Author` resources sorted by that attribute. But by setting the `author` relationship as filterable as well, the client can now sort `Book` resources by the name of the corresponding authors.
 
-Also, setting the `author` relationship as updatable will allow anyone to change the author, but the value set must be a resource corresponding to the exact type set via `setResourceType($authorConfig)`.
+Also, setting the `author` relationship as updatable will allow anyone to change the author, but the value set must be a resource corresponding to the exact resource type set via `setResourceType($authorConfig)`.
 
 === Example for a more complex scenario
 
