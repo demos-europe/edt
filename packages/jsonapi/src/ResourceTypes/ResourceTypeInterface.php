@@ -15,7 +15,6 @@ use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
  * @template TEntity of object
  *
  * @template-extends TransferableTypeInterface<TCondition, TSorting, TEntity>
- * @template-extends FilteringTypeInterface<TCondition, TSorting>
  * @template-extends SortingTypeInterface<TCondition, TSorting>
  */
 interface ResourceTypeInterface extends

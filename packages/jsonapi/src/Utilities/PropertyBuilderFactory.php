@@ -19,6 +19,9 @@ use Webmozart\Assert\Assert;
 use function is_string;
 
 /**
+ * Allows to create instances to configure properties (id/attribute/relationship). Each instance created can be used to
+ * configure the single property it was created for.
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  */

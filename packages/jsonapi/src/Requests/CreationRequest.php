@@ -25,6 +25,14 @@ class CreationRequest
     ) {}
 
     /**
+     * Note that if this method returns an {@link Item} (instead of `null`), it will contain only the attributes
+     * and relationships that were explicitly requested or decided as default by the given resource type implementation.
+     *
+     * This may conflict with the assumption, that the {@link Item} always contains the attributes and relationships,
+     * that were created differently than requested by the client.
+     *
+     * TODO: test if the statement above is compatible with the specification and actually true regarding the libraries behavior
+     *
      * @param CreatableTypeInterface<TCondition, TSorting, object> $type
      *
      * @throws Exception

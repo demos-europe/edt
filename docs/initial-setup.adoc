@@ -1,0 +1,19 @@
+= Initial Setup
+:toc:
+
+== Adding the composer packages
+
+This library is split across multiple composer packages. Using them all is currently only recommended for Symfony projects using Doctrine entities. As some packages depend on each other, only three are needed to be required in your `composer.json`. You can add them using the following command:
+
+[source,prompt]
+----
+composer install demos-europe/edt-jsonapi demos-europe/edt-extra demos-europe/edt-dql
+----
+
+== Selecting and configuring Symfony services
+
+TODO
+
+== Writing the necessary glue code
+
+TODO

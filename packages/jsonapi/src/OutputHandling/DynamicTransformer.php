@@ -87,6 +87,7 @@ class DynamicTransformer extends TransformerAbstract
         $this->toManyRelationshipReadabilities = $readabilityCollection->getToManyRelationships();
         $this->idReadability = $readabilityCollection->getIdentifierReadability();
 
+        // TODO: why are only the attributes checked here? and why is not checked for the `type` string, which is also not allowed as attribute
         if (array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
             throw IdAttributeConflictException::create($type->getTypeName());
         }

@@ -26,6 +26,8 @@ class RequestTransformer
     use RequestConstraintTrait;
 
     /**
+     * TODO: check if $typeProvider is needed and if not remove it from the constructor
+     *
      * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
      * @param int<1, 8192> $maxBodyNestingDepth the maximum allowed depth when parsing the JSON body, see {@link self::getRequestBody}
      */

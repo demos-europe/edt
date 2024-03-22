@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* refactor: remove unnecessary template parameters from `FilteringTypeInterface`
+
 ## 0.24.42 - 2024-02-13
 
 * feature: add classes to programmatically create Drupal filters

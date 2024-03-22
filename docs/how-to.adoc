@@ -1,0 +1,13 @@
+= How-to
+
+== How to add custom Drupal filter operators
+
+The library provides the `PredefinedDrupalConditionFactory` class, which already supports multiple common operators.
+To add additional operators, you can extend this class and add your operators to the arrays returned by
+`getOperatorFunctionsWithValue` and `getOperatorFunctionsWithoutValue` respectively.
+
+Alternatively, you can directly extend the parent interface `DrupalConditionFactoryInterface` with your own
+implementation, circumventing the `PredefinedDrupalConditionFactory` implementation.
+
+Make sure to provide your own implementation via constructor injection instead of `PredefinedDrupalConditionFactory`
+to have it take effect.

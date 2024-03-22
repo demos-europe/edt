@@ -1,0 +1,11 @@
+= Releasing
+
+This repository uses https://github.com/symplify/monorepo-builder[symplify/monorepo-builder] to
+release several packages.
+
+To create a new release, `bin/monorepo-builder release &lt;major|minor|patch&gt;` can be used after all changes have been done.
+
+== Changelog management
+
+The monorepo builder release flow kinda expects a `## Unreleased` headline to be at the top of the Changelog
+but does not currently create a new one after a release. So please remember to manually add it after releases.

@@ -133,6 +133,8 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
     }
 
     /**
+     * TODO: handle (Doctrine) type `json`, but how?
+     *
      * @return array{type: non-empty-string, format?: non-empty-string}
      */
     protected function mapDqlType(Column $column): array
