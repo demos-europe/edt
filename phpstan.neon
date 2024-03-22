@@ -262,11 +262,6 @@ parameters:
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:validateFilter\\(\\) should return array\\<non\\-empty\\-string, array\\{condition\\: array\\{path\\: non\\-empty\\-string, value\\?\\: array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null, operator\\?\\: non\\-empty\\-string, memberOf\\?\\: non\\-empty\\-string\\}\\}\\|array\\{group\\: array\\{conjunction\\: 'AND'\\|'OR', memberOf\\?\\: non\\-empty\\-string\\}\\}\\> but returns mixed\\.$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
-
-        -
             message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterValidator\\:\\:__construct\\(\\) has parameter \\$drupalConditionFactory with generic interface EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalConditionFactoryInterface but does not specify its types\\: TCondition$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
@@ -335,6 +330,14 @@ parameters:
             message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\ToOneRelationshipConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,TEntity of object,TRelationship of object\\>\\:\\:addUpdateBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\RelationshipSetBehaviorFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TSorting of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object, TRelationship of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToOne\\\\Factory\\\\CallbackToOneRelationshipSetBehaviorFactory\\<TEntity of object, TRelationship of object, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\|EDT\\\\Wrapping\\\\PropertyBehavior\\\\Relationship\\\\ToOne\\\\Factory\\\\PathToOneRelationshipSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object, object\\> given\\.$#"
             count: 1
             path: packages/jsonapi/src/PropertyConfig/Builder/ToOneRelationshipConfigBuilder.php
+
+        -
+            message: """
+                #^Call to deprecated method validateFilter\\(\\) of class EDT\\\\JsonApi\\\\RequestHandling\\\\FilterParserInterface\\:
+                call a validator manually, that asserts that the type of \\$filter matches the type required by \\{@link self\\:\\:parseFilter\\(\\)\\}$#
+            """
+            count: 1
+            path: packages/jsonapi/src/Requests/ListRequest.php
 
         -
             message: "#^Method EDT\\\\JsonApi\\\\Utilities\\\\PropertyBuilderFactory\\:\\:createAttribute\\(\\) should return EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\AttributeConfigBuilder\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\> but returns EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\AttributeConfigBuilder\\<EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>\\.$#"
