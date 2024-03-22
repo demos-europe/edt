@@ -1,0 +1,140 @@
+= EDT
+:toc:
+
+image:https://img.shields.io/packagist/v/demos-europe/edt-jsonapi.svg[Packagist Version]
+image:https://img.shields.io/packagist/php-v/demos-europe/edt-jsonapi.svg[PHP from Packagist]
+image:https://img.shields.io/librariesio/github/demos-europe/edt.svg[Dependencies]
+image:https://img.shields.io/badge/phpstan_level-9-green[Phastan-9]
+
+This is the EDT monorepo, containing the development of multiple composer packages.
+In conjunction these packages can be used in PHP applications (if they already use Doctrine as ORM framework) to define a functional web-API contract, adhering to the https://jsonapi.org/format/1.0/[JSON:API specification].
+
+== About EDT
+
+This library enables you to expose the entity class instances in your PHP application as REST resources using the feature rich https://jsonapi.org/[JSON:API specification] as API contract.
+How and to whom you expose your entities is highly customizable while minimizing the need of manually written boilerplate code.
+
+Immediate usage is currently limited to applications building their entities uppon the https://www.doctrine-project.org/projects/orm.html[Doctrine ORM]. However, as the different underlying functionalities are split and encapsulated in many individual PHP objects, put together via constructor-based dependency injection, a high degree of customizability and extensibility is ensured.
+
+These objects are structured into multiple composer packages contained in this repository, to ease re-usage for different use cases without the need to include large, unnecessary dependencies. E.g. you may want to use parts of this library to build your own API implementation more easily, and if you do, you can easily skip the Doctrine ORM dependency and implement your own way to access the data source of your entities.
+
+== When to use
+
+Due to the variety of features provided by the JSON:API specification, implementing it in a maintainable way may provide a challenge.
+After an initial setup, this library reduces your duty to expressing your intents regarding your web-API contract once, avoiding the risks of inconsistencies due to redundancy.
+
+This is especially helpful in large, volatile, fast-growing web-applications with , where almost every feature may require new entities or properties to be exposed to its clients.
+
+On the other hand, for small and relatively settled applications, this library may not be the right choice. This is due to the currently notable time cost for the initial setup, especially in case of applications that don't already use Symfony and the Doctrine ORM framework. At some point the setup difficulty may be reduced, but for now, batteries are *not* included.
+
+== How to use
+
+NOTE: The link:initial-setup.adoc[initial setup] is quite complex and a relevant entry barrier, but as it only needs to be done once, this section will attempt to give an idea of the more relevant typical day-to-day usage instead.
+
+When you express your intent regarding your API's capabilities and schema with this library, it is logically centered around the resources and their properties.
+
+For example, if you wanted to expose your `Book` entity in your bookstore, you'd write a corresponding PHP configuration, defining which properties of the `Book` entity are to be available in `Book` resources. The following example shows a simple example in which the `Book` and `Author` entities are exposed to the client as resources. For the configuration fluent methods are used, each returning their initial property configuration instance.
+
+[source,php]
+----
+$bookConfig = new BookResourceConfig($propertyFactory); <1>
+$authorConfig = new AuthorResourceConfig($propertyFactory); <2>
+
+$bookConfig->id->readable();
+$bookConfig->title
+    ->readable()
+    ->sortable()
+    ->filterable();
+$bookConfig->price
+    ->readable()
+    ->sortable()
+    ->filterable()
+    ->updatable(); <3>
+$bookConfig->author
+    ->setResourceType($authorConfig) <4>
+    ->filterable()
+    ->readable()
+    ->updatable();
+
+$authorConfig->id->readable();
+$authorConfig->fullName
+    ->readable()
+    ->filterable()
+    ->sortable();
+$authorConfig->books
+    ->setResourceType($bookConfig) <5>
+    ->readable();
+
+----
+<1> You can automatically generate and update a basic configuration template class like `BookResourceConfig` from your entity class (i.e. `Book`). This avoids manually writing and maintaining some boilerplate code and helps for the actual configuration below, e.g. by providing proper type hinting.
+<2> Because resources reference each other, we first create all configuration instances and configure them afterward.
+<3> To keep this example small, the `price` attribute and `author` relationship are the only properties that can be updated via the JSON:API. For the same reason we omitted other features, like default sorting, limiting access to instances and the creation of resources, which are all possible too.
+<4> When configuration template classes are generated, the `author` relationship from the `Book` entity to the `Author` entity can be automatically deduced, but you may expose your `Author` entity via different resource types, using different configurations each. Thus, you need to define which of them the `Book` resources references, by setting the specific author configuration.
+<5> By not only referencing the author by the `Book` resource but also the book by the `Author` resource, we created a bidirectional relationship, which is not necessary, but provides greater flexibility to the client.
+
+If a request is received the library will automatically validate it against the configuration above and deny it, if access violations are detected. If your model contains a `Publisher` entity, it will not be accessible, as no corresponding configuration was done. If a request tries to sort books by their id, it will be denied. And if an update tries to change the title of a book, it will be denied as well.
+
+Even though the two resource configurations were done independently, except their relationship to each other, their definition as shown above directly results in the availability of multiple features of the JSON:API specification to the client.
+
+For example clients can not only fetch `Book` resources in one request and `Author` resources in another, but also state in the fetch request of `Book` resources that referenced `Author` resources shall be included automatically in the response. Because of the bidirectional relationship between books and authors this also works the other way around.
+
+Setting the `fullName` attribute as filterable allows the client to fetch `Author` resources sorted by that attribute. But by setting the `author` relationship as filterable as well, the client can now sort `Book` resources by the name of the corresponding authors.
+
+Also, setting the `author` relationship as updatable will allow anyone to change the author, but the value set must be a resource corresponding to the exact type set via `setResourceType($authorConfig)`.
+
+=== Example for a more complex scenario
+
+The greater the divergence between the schema of your entities and the schema of your resources is, the more code is necessary to configure your resources accordingly. Sophisticated authorizations will have additionally influence on your configuration's complexity. In the following example only the configuration of `Book` resources is shown, but in a more non-ideal scenario.
+
+[source,php]
+----
+$bookConfig = new ExtendedBookResourceConfig($propertyFactory); <1>
+
+$bookConfig->id->readable();
+$bookConfig->title
+    ->readable()
+    ->sortable()
+    ->filterable()
+    ->aliasedPath(['metadata', 'bookTitle']); <2>
+$bookConfig->price
+    ->readable(customReadCallback: fn ($book) => $book->getPrice() * $hiddenFactor)) <3>
+    ->sortable()
+    ->filterable();
+$bookConfig->author
+    ->setResourceType($authorConfig)
+    ->readable();
+
+if ($this->isCurrentUserAdmin()) { <4>
+    $bookConfig->basePrice <5>
+        ->readable()
+        ->updatable()
+        ->aliasedPath(['price']);
+    $bookConfig->author
+        ->updatable(relationshipConditions: [
+            $conditionFactory->propertyHasValue(false, 'blacklisted') <6>
+        ]);
+}
+----
+<1> In the configuration below this line, we expose properties in `Book` resources that do not exist in the corresponding `Book` entity. Because of this they do not exist in the autogenerated `BookResourcConfig`. To still take advantage of the syntax used in this example, it is recommended to still autogenerate `BookResourcConfig`, but extend it manually with `ExtendedBookResourceConfig`.
+<2> In the previous example we assumed that the `Book` entity contains a `title` property, from which the `title` attribute of `Book` resources was automatically read. In this example we still want to expose a `title` attribute directly attached to the `Book` resource, but it is stored under a different name and in a `BookMetadata` entity, referenced by the actual `Book` entity.
+<3> This time the price of a book is not simply read from the entity, but adjusted before it is sent to the client. This is done via a callable that provides the entity instance and expects the value to be used for the price as return. As the library is developed with phpstan set to level 9, it supports extensive static type checking where it is used. In this example, executing phpstan would warn if `getPrice` dose not exist in the `Book` entity, even if you don't manually set the type for `$book`. Likewise, a return type not corresponding to attributes, e.g. `object`, will raise a phpstan warning.
+<4> Previously the price was updatable by anyone, which may not be reasonable in most applications. Here we check the authorizations before allowing updates to the resources. The library in unconcerned with authorizations (or other causes for configuration adjustments). I.e. the implementation of the `isCurrentUserAdmin` in this example completely falls under your responsibility.
+<5> Updating the price is now done in a different attribute, because the `price` attribute was designated for the adjusted price in the lines above.
+<6> To show the basic principle of conditions in this example, we added a custom restriction to the updatability of the `author` relationship. Assuming the `Author` entity contains a `blacklisted` boolean property, the update will only be allowed if the author to be set is not blacklisted.
+
+The condition factory is an integral tool to express access restrictions and thus becomes especially relevant in applications with many different user roles, each having their own set of authorizations.
+
+As mentioned above, these examples can only give a first impression without overloading this article with use-cases for possible options and adjustments. However, one notable feature is the usage of so-called path instances, that avoid the drawbacks of hardcoded strings and arrays like `['metadata', 'bookTitle]` in favor of a more robust and refactoring-friendly approach.
+
+== Stability and development path
+
+Even though the packages are already used in production, they're not recommended for general usage yet. While development has settled down in some parts, in others refactorings are still necessary, resulting in deprecations and backward compatibility breaking changes.
+The objective is to get the project to a more stable state over the course of the year 2024, ideally releasing a 1.0.0 version with a more reliable API and proper documentation before 2025.
+
+Even after a stable release, adding optional features and support for future JSON:API specification versions is left as an ongoing process. Similarly, easing the usage with applications not based on Symfony and Doctrine is not the scope of a first stable version.
+
+== Credits and acknowledgements
+
+Conception and implementation by Christian Dressler with many thanks to https://github.com/eFrane[eFrane].
+
+Additional thank goes to https://demos-deutschland.de/[DEMOS plan GmbH], which provided the initial use-case and the opportunity to implement relevant parts to solve it.
