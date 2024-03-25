@@ -39,8 +39,10 @@ class DrupalFilterParser implements FilterParserInterface
      *
      * If this count does not suffice for a (realistic) use case it can be increased further. Just
      * keep DoS attacks in mind when doing so.
+     *
+     * @var positive-int
      */
-    private const MAX_ITERATIONS = 5000;
+    protected int $maxIterations;
 
     /**
      * The key identifying a field as data for a filter group.
@@ -99,12 +101,16 @@ class DrupalFilterParser implements FilterParserInterface
 
     /**
      * @param ConditionParserInterface<DrupalFilterCondition, TCondition> $conditionParser
+     * @param positive-int $maxIterations How deep groups are allowed to be nested.
      */
     public function __construct(
         protected readonly PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
         protected readonly ConditionParserInterface $conditionParser,
-        protected readonly DrupalFilterValidator $filterValidator
-    ) {}
+        protected readonly DrupalFilterValidator $filterValidator,
+        int $maxIterations = 5000
+    ) {
+        $this->maxIterations = $maxIterations;
+    }
 
     /**
      * The returned conditions are to be applied in an `AND` manner, i.e. all conditions must
@@ -140,10 +146,10 @@ class DrupalFilterParser implements FilterParserInterface
         // are not needed as parent group by any other bucket. These buckets are merged
         // into a single condition, which is then added to its parent bucket. This is
         // repeated until only the root bucket remains.
-        $emergencyCounter = self::MAX_ITERATIONS;
+        $emergencyCounter = $this->maxIterations;
         while (0 !== count($conditions) && !$this->hasReachedRootGroup($conditions)) {
             if (0 > --$emergencyCounter) {
-                throw DrupalFilterException::emergencyAbort(self::MAX_ITERATIONS);
+                throw DrupalFilterException::emergencyAbort($this->maxIterations);
             }
             foreach ($conditions as $bucketName => $bucket) {
                 if (self::ROOT === $bucketName) {
