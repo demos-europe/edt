@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Relationship\ToOne;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
@@ -35,7 +36,7 @@ class PathToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetBehav
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly array $propertyPath,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        bool $optional
+        OptionalField $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
     }
@@ -63,7 +64,7 @@ class PathToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetBehav
         $relationshipType = $this->relationshipType->getTypeName();
 
         return
-            ($this->optional
+            ($this->optional->equals(OptionalField::YES)
                 ? "Allows a to-one relationship `$this->propertyName` of type `$relationshipType` to be present in the request body, but does not require it. "
                 : "Requires a to-one relationship `$this->propertyName` of type `$relationshipType` to be present in the request body.")
             . "The relationship will be stored in $this->entityClass::$propertyPathString. "

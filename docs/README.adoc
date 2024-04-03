@@ -5,6 +5,7 @@ image:https://img.shields.io/packagist/v/demos-europe/edt-jsonapi.svg[Packagist 
 image:https://img.shields.io/packagist/php-v/demos-europe/edt-jsonapi.svg[PHP from Packagist]
 image:https://img.shields.io/librariesio/github/demos-europe/edt.svg[Dependencies]
 image:https://img.shields.io/badge/phpstan_level-9-green[Phastan-9]
+image:https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white["Conventional Commits",link=https://conventionalcommits.org]
 
 This is the EDT monorepo, containing the development of multiple composer packages.
 In conjunction these packages can be used in PHP applications (if they already use Doctrine as ORM framework) to define a functional web-API contract, adhering to the https://jsonapi.org/format/1.0/[JSON:API specification].

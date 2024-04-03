@@ -16,6 +16,8 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 interface RelationshipSetBehaviorFactoryInterface
 {
     /**
+     * TODO: refactor to __invoke and merge implementations into the corresponding behavior classes
+     *
      * @param non-empty-string $name
      * @param non-empty-list<non-empty-string> $propertyPath
      * @param class-string<TEntity> $entityClass

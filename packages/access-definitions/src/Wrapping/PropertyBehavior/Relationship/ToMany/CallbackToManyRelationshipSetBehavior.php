@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 
@@ -30,7 +31,7 @@ class CallbackToManyRelationshipSetBehavior extends AbstractToManyRelationshipSe
         array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly mixed $setterCallback,
-        bool $optional = false
+        OptionalField $optional = OptionalField::NO
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
     }
@@ -49,7 +50,7 @@ class CallbackToManyRelationshipSetBehavior extends AbstractToManyRelationshipSe
     {
         $relationshipType = $this->getRelationshipType()->getTypeName();
 
-        return ($this->optional
+        return ($this->optional->equals(OptionalField::YES)
                 ? "Allows a to-many relationship `$this->propertyName` with the type `$relationshipType` to be present in the request body, but does not require it. "
                 : "Requires a to-many relationship `$this->propertyName` with the type `$relationshipType` to be present in the request body.")
             . 'If the property is present in the request body it will be passed to a callback, which is able to adjust the target entity or execute side effects.'

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+* refactor: (bc break) replace `RequiredRelationshipConstructorBehavior` constructor boolean parameter with `Cardinality` enum
+* refactor: (bc break) remove `*ConstructorBehaviorFactory*` classes and interfaces, you can use added static `createFactory` methods in the corresponding `*Behavior` classes instead.
+* refactor: (bc break) remove `addPostConstructorBehavior` in `IdentifierConfigBuilderInterface`/`IdentifierConfigBuilder`, use `addCreationBehavior` instead
+* refactor: (bc break) remove `addConstructorBehavior`, use `addConstructorCreationBehavior` instead
+* refactor: (bc break) adjust `*SetBehavior` and `*SetBehaviorFactory` class constructors to take the `OptionalField` enum instead of `bool`
+* refactor: (bc break) adjust `*Readability` class constructors to take `DefaultField` instead of `bool`
+* refactor: (bc break) remove `ReadablePropertyConfigBuilderInterface`
 * refactor: remove unnecessary template parameters from `FilteringTypeInterface`
 
 ## 0.24.42 - 2024-02-13

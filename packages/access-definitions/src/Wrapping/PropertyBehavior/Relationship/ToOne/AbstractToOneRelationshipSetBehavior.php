@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Relationship\ToOne;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\EntityDataInterface;
+use EDT\Wrapping\PropertyBehavior\IdUnrelatedTrait;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdaterTrait;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\AbstractPropertySetBehavior;
 use Exception;
+use function array_key_exists;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -16,27 +20,41 @@ use Exception;
  * @template TEntity of object
  * @template TRelationship of object
  *
+ * @template-extends AbstractPropertySetBehavior<TCondition, TEntity>
  * @template-implements RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>
  */
-abstract class AbstractToOneRelationshipSetBehavior implements RelationshipSetBehaviorInterface
+abstract class AbstractToOneRelationshipSetBehavior extends AbstractPropertySetBehavior implements RelationshipSetBehaviorInterface
 {
-    use PropertyUpdaterTrait;
-
     /**
      * @param non-empty-string $propertyName
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
      */
     public function __construct(
-        protected readonly string $propertyName,
-        protected readonly array $entityConditions,
+        string $propertyName,
+        array $entityConditions,
         protected readonly array $relationshipConditions,
-        protected readonly bool $optional
-    ) {}
+        OptionalField $optional
+    ) {
+        parent::__construct($propertyName, $entityConditions, $optional);
+    }
 
-    public function getEntityConditions(EntityDataInterface $entityData): array
+    protected function hasPropertyValue(EntityDataInterface $entityData): bool
     {
-        return $this->entityConditions;
+        return array_key_exists($this->propertyName, $entityData->getToOneRelationships());
+    }
+
+    protected function setPropertyValue(object $entity, EntityDataInterface $entityData): array
+    {
+        $requestRelationships = $entityData->getToOneRelationships();
+        $relationshipReference = $requestRelationships[$this->propertyName];
+        $relationshipValue = $this->determineToOneRelationshipValue(
+            $this->getRelationshipType(),
+            $this->relationshipConditions,
+            $relationshipReference
+        );
+
+        return $this->updateToOneRelationship($entity, $relationshipValue);
     }
 
     /**
@@ -56,50 +74,19 @@ abstract class AbstractToOneRelationshipSetBehavior implements RelationshipSetBe
      */
     abstract protected function updateToOneRelationship(object $entity, ?object $relationship): array;
 
-    public function executeBehavior(object $entity, EntityDataInterface $entityData): array
-    {
-        $requestRelationships = $entityData->getToOneRelationships();
-        $relationshipReference = $requestRelationships[$this->propertyName];
-        $relationshipValue = $this->determineToOneRelationshipValue(
-            $this->getRelationshipType(),
-            $this->relationshipConditions,
-            $relationshipReference
-        );
 
-        return $this->updateToOneRelationship($entity, $relationshipValue);
-    }
-
-    public function getRequiredAttributes(): array
-    {
-        return [];
-    }
-
-    public function getOptionalAttributes(): array
-    {
-        return [];
-    }
 
     public function getRequiredToOneRelationships(): array
     {
-        return $this->optional
+        return $this->optional->equals(OptionalField::YES)
             ? []
             : [$this->propertyName => $this->getRelationshipType()->getTypeName()];
     }
 
     public function getOptionalToOneRelationships(): array
     {
-        return $this->optional
+        return $this->optional->equals(OptionalField::YES)
             ? [$this->propertyName => $this->getRelationshipType()->getTypeName()]
             : [];
-    }
-
-    public function getRequiredToManyRelationships(): array
-    {
-        return [];
-    }
-
-    public function getOptionalToManyRelationships(): array
-    {
-        return [];
     }
 }

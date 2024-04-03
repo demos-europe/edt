@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Attribute;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
@@ -17,7 +18,7 @@ class CallbackAttributeSetBehavior extends AbstractAttributeSetBehavior
     use AttributeTrait;
 
     /**
-     * @param non-empty-string $propertyName
+     * @param non-empty-string $propertyName the exposed resource property name
      * @param list<TCondition> $entityConditions
      * @param callable(TEntity, simple_primitive|array<int|string, mixed>|null): list<non-empty-string> $setterCallback
      */
@@ -25,7 +26,7 @@ class CallbackAttributeSetBehavior extends AbstractAttributeSetBehavior
         string $propertyName,
         array $entityConditions,
         protected readonly mixed $setterCallback,
-        bool $optional
+        OptionalField $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $optional);
     }
@@ -38,7 +39,7 @@ class CallbackAttributeSetBehavior extends AbstractAttributeSetBehavior
 
     public function getDescription(): string
     {
-        return ($this->optional
+        return ($this->optional->equals(OptionalField::YES)
                 ? "Allows an attribute `$this->propertyName` to be present in the request body, but does not require it. "
                 : "Requires an attribute `$this->propertyName` to be present in the request body.")
             . 'If the property is present in the request body it will be passed to a callback, which is able to adjust the target entity or execute side effects.'

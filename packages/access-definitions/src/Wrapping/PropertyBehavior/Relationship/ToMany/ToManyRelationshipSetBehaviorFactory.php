@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
@@ -26,7 +27,7 @@ class ToManyRelationshipSetBehaviorFactory implements RelationshipSetBehaviorFac
      */
     public function __construct(
         protected readonly array $relationshipConditions,
-        protected readonly bool $optional,
+        protected readonly OptionalField $optional,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         protected readonly array $entityConditions
     ) {}

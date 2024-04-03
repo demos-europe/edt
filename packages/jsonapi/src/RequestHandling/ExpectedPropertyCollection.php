@@ -21,9 +21,11 @@ class ExpectedPropertyCollection implements ExpectedPropertyCollectionInterface
      * @param array<non-empty-string, non-empty-string> $optionalToManyRelationships
      */
     public function __construct(
+        protected bool $idRequired,
         protected array $requiredAttributes,
         protected array $requiredToOneRelationships,
         protected array $requiredToManyRelationships,
+        protected bool $idOptional,
         protected array $optionalAttributes,
         protected array $optionalToOneRelationships,
         protected array $optionalToManyRelationships,
@@ -45,6 +47,7 @@ class ExpectedPropertyCollection implements ExpectedPropertyCollectionInterface
     public function getRequiredRelationships(): array
     {
         return array_merge(
+            // TODO: probably empty array because already set in `getAllowedRelationships`, but can this return be adjusted then?
             array_map(static fn (string $typeIdentifier): array => [], $this->requiredToOneRelationships),
             array_map(static fn (string $typeIdentifier): array => [], $this->requiredToManyRelationships)
         );
@@ -173,5 +176,21 @@ class ExpectedPropertyCollection implements ExpectedPropertyCollectionInterface
                 ],
             ]),
         ];
+    }
+
+    public function isIdAllowed(): bool
+    {
+        return $this->idOptional || $this->idRequired;
+    }
+
+    public function isIdRequired(): bool
+    {
+        return $this->idRequired;
+    }
+
+    public function getIdConstraints(): array
+    {
+        // TODO: allow to add constraints in this class?
+        return [];
     }
 }

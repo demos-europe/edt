@@ -33,9 +33,11 @@ class RequestConstraintFactoryTest extends TestCase
         $factory = new RequestConstraintFactory(1, false);
         $validator = Validation::createValidatorBuilder()->getValidator();
         $expectedProperties = new ExpectedPropertyCollection(
+            false,
             $requiredAttributes,
             $requiredToOneRelationships,
             $requiredToManyRelationships,
+            false,
             $optionalAttributes,
             $optionalToOneRelationships,
             $optionalToManyRelationships

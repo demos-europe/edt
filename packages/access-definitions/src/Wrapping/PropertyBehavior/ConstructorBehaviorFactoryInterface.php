@@ -7,11 +7,9 @@ namespace EDT\Wrapping\PropertyBehavior;
 interface ConstructorBehaviorFactoryInterface
 {
     /**
-     * @template TEntity of object
-     *
      * @param non-empty-string $name
      * @param non-empty-list<non-empty-string> $propertyPath
-     * @param class-string<TEntity> $entityClass
+     * @param class-string $entityClass
      */
-    public function createConstructorBehavior(string $name, array $propertyPath, string $entityClass): ConstructorBehaviorInterface;
+    public function __invoke(string $name, array $propertyPath, string $entityClass): ConstructorBehaviorInterface;
 }

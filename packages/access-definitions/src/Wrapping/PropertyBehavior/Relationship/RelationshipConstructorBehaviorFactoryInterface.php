@@ -19,5 +19,5 @@ interface RelationshipConstructorBehaviorFactoryInterface
      * @param class-string $entityClass
      * @param ResourceTypeInterface<TCondition, PathsBasedInterface, object> $relationshipType
      */
-    public function createRelationshipConstructorBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface;
+    public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface;
 }

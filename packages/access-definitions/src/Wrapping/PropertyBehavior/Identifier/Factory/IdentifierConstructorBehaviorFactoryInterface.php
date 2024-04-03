@@ -6,14 +6,11 @@ namespace EDT\Wrapping\PropertyBehavior\Identifier\Factory;
 
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 
-/**
- * @template TEntity of object
- */
 interface IdentifierConstructorBehaviorFactoryInterface
 {
     /**
      * @param non-empty-list<non-empty-string> $propertyPath
-     * @param class-string<TEntity> $entityClass
+     * @param class-string $entityClass
      */
-    public function createIdentifierConstructorBehavior(array $propertyPath, string $entityClass): ConstructorBehaviorInterface;
+    public function __invoke(array $propertyPath, string $entityClass): ConstructorBehaviorInterface;
 }

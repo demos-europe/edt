@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Relationship\ToOne;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipSetBehavior;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -31,7 +31,7 @@ class CallbackToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetB
         array $relationshipConditions,
         protected readonly TransferableTypeInterface $relationshipType,
         protected readonly mixed $setterCallback,
-        bool $optional
+        OptionalField $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
     }
@@ -50,7 +50,7 @@ class CallbackToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetB
     {
         $relationshipType = $this->getRelationshipType()->getTypeName();
 
-        return ($this->optional
+        return ($this->optional->equals(OptionalField::YES)
                 ? "Allows a to-one relationship `$this->propertyName` with the type `$relationshipType` to be present in the request body, but does not require it. "
                 : "Requires a to-one relationship `$this->propertyName` with the type `$relationshipType` to be present in the request body.")
             . 'If the property is present in the request body it will be passed to a callback, which is able to adjust the target entity or execute side effects.'

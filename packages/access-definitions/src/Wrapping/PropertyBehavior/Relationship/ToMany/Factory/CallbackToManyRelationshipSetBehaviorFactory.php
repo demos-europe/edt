@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
@@ -32,7 +33,7 @@ class CallbackToManyRelationshipSetBehaviorFactory implements RelationshipSetBeh
     public function __construct(
         callable $setBehaviorCallback,
         protected readonly array $relationshipConditions,
-        protected readonly bool $optional,
+        protected readonly OptionalField $optional,
         protected readonly array $entityConditions
     ) {
         $this->setBehaviorCallback = $setBehaviorCallback;

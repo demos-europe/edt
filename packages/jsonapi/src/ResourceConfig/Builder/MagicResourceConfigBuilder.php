@@ -33,7 +33,7 @@ use function array_key_exists;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @property-read IdentifierConfigBuilderInterface<TEntity> $id the property uniquely identifying instances of this type
+ * @property-read IdentifierConfigBuilderInterface<TEntity, TCondition> $id the property uniquely identifying instances of this type
  *
  * @template-extends AbstractResourceConfigBuilder<TCondition, TSorting, TEntity>
  */
@@ -105,7 +105,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
     /**
      * Multiple accesses will return the originally initialized instance.
      *
-     * @return IdentifierConfigBuilderInterface<TEntity>|AttributeConfigBuilderInterface<TCondition, TEntity>|ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>
+     * @return IdentifierConfigBuilderInterface<TEntity, TCondition>|AttributeConfigBuilderInterface<TCondition, TEntity>|ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>
      */
     public function __get(string $name): IdentifierConfigBuilderInterface|AttributeConfigBuilderInterface|ToOneRelationshipConfigBuilderInterface|ToManyRelationshipConfigBuilderInterface
     {

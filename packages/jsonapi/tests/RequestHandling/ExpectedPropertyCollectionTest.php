@@ -29,7 +29,7 @@ class ExpectedPropertyCollectionTest extends TestCase
         parent::setUp();
         $this->validator = Validation::createValidator();
 
-        $this->propertyCollection = new ExpectedPropertyCollection([], [], [], [], [], []);
+        $this->propertyCollection = new ExpectedPropertyCollection(false, [], [], [], false, [], [], []);
 
         $this->getConstraintsForAttribute = new ReflectionMethod($this->propertyCollection, 'getConstraintsForAttribute');
         $this->getConstraintsForAttribute->setAccessible(true);

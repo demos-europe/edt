@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Attribute\Factory;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\CallbackAttributeSetBehavior;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
@@ -29,7 +30,7 @@ class CallbackAttributeSetBehaviorFactory implements PropertyUpdatabilityFactory
     public function __construct(
         protected readonly array $entityConditions,
         callable $updateCallback,
-        protected bool $optional
+        protected OptionalField $optional
     ) {
         $this->updateCallback = $updateCallback;
     }

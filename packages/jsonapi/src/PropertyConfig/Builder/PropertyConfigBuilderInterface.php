@@ -4,15 +4,25 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 
+/**
+ * This interface define common configuration options that are not only available for attributes and relationships,
+ * but the resource ID too.
+ *
+ * @template TEntity of object
+ * @template TCondition of PathsBasedInterface
+ * @template TValue
+ */
 interface PropertyConfigBuilderInterface
 {
     /**
      * Set an alias to follow when this property is accessed.
      *
      * Beside {@link AbstractPropertyConfigBuilder::readable() custom read functions},
-     * aliases are another and the preferred way to slightly deviate from the schema of the backing
+     * aliases are another and the preferred way to deviate from the schema of the backing
      * entity class when exposing properties. Their advantage over custom read functions is that
      * conditions and sort methods that are using aliases can still be executed in the database,
      * which is not the case for custom read functions as they require data from the database being
@@ -40,7 +50,23 @@ interface PropertyConfigBuilderInterface
      *
      * @return $this
      */
+    public function setAliasedPath(array|PropertyPathInterface $aliasedPath): self;
+
+    /**
+     * @param non-empty-list<non-empty-string>|PropertyPathInterface $aliasedPath $aliasedPath
+     *
+     * @return $this
+     *
+     * @deprecated use {@link setAliasedPath()} instead
+     */
     public function aliasedPath(array|PropertyPathInterface $aliasedPath): self;
+
+    /**
+     * @return $this
+     *
+     * @deprecated use {@link setFilterable()} instead
+     */
+    public function filterable(): self;
 
     /**
      * Mark this property as usable when filtering resources. It can then be used to filter
@@ -58,7 +84,19 @@ interface PropertyConfigBuilderInterface
      *
      * @return $this
      */
-    public function filterable(): self;
+    public function setFilterable(): self;
+
+    /**
+     * @return $this
+     */
+    public function setNonFilterable(): self;
+
+    /**
+     * @return $this
+     *
+     * @deprecated use {@link setSortable()} instead
+     */
+    public function sortable(): self;
 
     /**
      * Mark this property as usable when sorting resources. It can then be used to sort
@@ -78,5 +116,55 @@ interface PropertyConfigBuilderInterface
      *
      * @return $this
      */
-    public function sortable(): self;
+    public function setSortable(): self;
+
+    /**
+     * @return $this
+     */
+    public function setNonSortable(): self;
+
+    /**
+     * @param list<TCondition> $entityConditions
+     *
+     * @return $this
+     */
+    public function addPathCreationBehavior(OptionalField $optional = OptionalField::NO, array $entityConditions = []): self;
+
+    /**
+     * @return $this
+     */
+    public function removeAllCreationBehaviors(): self;
+
+    /**
+     * Mark this property as readable, i.e. allow its value to be read.
+     *
+     * Overwrites any previously set readability.
+     *
+     * When used on an attribute the actual attribute value can be accessed. When used on a
+     * relationship the relationship reference can be accessed, but to access the properties
+     * of the relationship these properties must be set as readable too.
+     *
+     * The configured {@link PropertyAccessorInterface} will use the property name or, if configured, the
+     * value set via {@link setAliasedPath} to read the property for the resource from the corresponding entity.
+     *
+     * @return $this
+     */
+    public function setReadableByPath(): self;
+
+    /**
+     * Mark this property as readable, i.e. allow its value to be read.
+     *
+     * When used on an attribute the actual attribute value can be accessed. When used on a
+     * relationship the relationship reference can be accessed, but to access the properties
+     * of the relationship these properties must be set as readable too.
+     *
+     * The value used in the resource will be the value returned by the given callable. Note that the callable will
+     * only be used when reading values to be returned in a response, not when filtering or sorting resources by that
+     * value.
+     *
+     * @param callable(TEntity): TValue $behavior to be set if this property needs special handling when read
+     *
+     * @return $this
+     */
+    public function setReadableByCallable(callable $behavior): self;
 }

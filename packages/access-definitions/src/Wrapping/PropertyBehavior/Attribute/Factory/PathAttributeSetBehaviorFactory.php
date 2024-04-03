@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Wrapping\PropertyBehavior\Attribute\Factory;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeSetBehavior;
@@ -23,7 +24,7 @@ class PathAttributeSetBehaviorFactory implements PropertyUpdatabilityFactoryInte
     public function __construct(
         protected readonly PropertyAccessorInterface $propertyAccessor,
         protected readonly array $entityConditions,
-        protected readonly bool $optional
+        protected readonly OptionalField $optional
     ) {}
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling\Body;
 
+use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\CreationDataInterface;
 
 class CreationRequestBody extends RequestBody implements CreationDataInterface
