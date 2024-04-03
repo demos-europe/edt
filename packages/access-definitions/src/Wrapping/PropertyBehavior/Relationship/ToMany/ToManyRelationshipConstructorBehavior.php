@@ -15,6 +15,7 @@ use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\PropertyBehavior\AbstractConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdaterTrait;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
 use function array_key_exists;
 
 /**
@@ -48,19 +49,21 @@ class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior 
     }
 
     /**
+     * @template TCond of PathsBasedInterface
+     *
      * @param non-empty-string|null $argumentName will fall back to the property name if `null`
-     * @param list<TCondition> $relationshipConditions
+     * @param list<TCond> $relationshipConditions
      * @param null|callable(CreationDataInterface): array{mixed, list<non-empty-string>} $customBehavior
      *
-     * @return callable(non-empty-string, non-empty-list<non-empty-string>, class-string, ResourceTypeInterface<TCondition, PathsBasedInterface, object>): ConstructorBehaviorInterface
+     * @return RelationshipConstructorBehaviorFactoryInterface<TCond>
      */
     public static function createFactory(
         ?string $argumentName,
         array $relationshipConditions,
         mixed $customBehavior,
         OptionalField $optional
-    ) {
-        return new class($argumentName, $relationshipConditions, $customBehavior, $optional) {
+    ): RelationshipConstructorBehaviorFactoryInterface {
+        return new class($argumentName, $relationshipConditions, $customBehavior, $optional) implements RelationshipConstructorBehaviorFactoryInterface {
             /**
              * @param non-empty-string|null $argumentName will fall back to the property name if `null`
              * @param list<TCondition> $relationshipConditions
@@ -73,12 +76,6 @@ class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior 
                 protected readonly OptionalField $optional
             ) {}
 
-            /**
-             * @param non-empty-string $name
-             * @param non-empty-list<non-empty-string> $propertyPath
-             * @param class-string $entityClass
-             * @param ResourceTypeInterface<TCondition, PathsBasedInterface, object> $relationshipType
-             */
             public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface
             {
                 return new ToManyRelationshipConstructorBehavior(

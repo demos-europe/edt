@@ -11,9 +11,9 @@ use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\CallbackToOneRelationshipSetBehaviorFactory;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\PathToOneRelationshipSetBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipSetBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipReadability;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipSetBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 
@@ -68,14 +68,14 @@ class ToOneRelationshipConfigBuilder
         return null === $postConstructorCallback
             ? $this->addPathCreationBehavior($optional)
             : $this->addCreationBehavior(
-                new CallbackToOneRelationshipSetBehaviorFactory($postConstructorCallback, $relationshipConditions, $optional, [])
+                CallbackToOneRelationshipSetBehavior::createFactory($postConstructorCallback, $relationshipConditions, $optional, [])
             );
     }
 
     public function addPathCreationBehavior(OptionalField $optional = OptionalField::NO, array $entityConditions = [], array $relationshipConditions = []): self
     {
         return $this->addCreationBehavior(
-            new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, $optional, $this->propertyAccessor, $entityConditions)
+            PathToOneRelationshipSetBehavior::createFactory($relationshipConditions, $optional, $this->propertyAccessor, $entityConditions)
         );
     }
 
@@ -140,8 +140,8 @@ class ToOneRelationshipConfigBuilder
     public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): ToOneRelationshipConfigBuilderInterface
     {
         return $this->addUpdateBehavior(null === $updateCallback
-            ? new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, OptionalField::YES, $this->propertyAccessor, $entityConditions)
-            : new CallbackToOneRelationshipSetBehaviorFactory($updateCallback, $relationshipConditions, OptionalField::YES, $entityConditions)
+            ? PathToOneRelationshipSetBehavior::createFactory($relationshipConditions, OptionalField::YES, $this->propertyAccessor, $entityConditions)
+            : CallbackToOneRelationshipSetBehavior::createFactory($updateCallback, $relationshipConditions, OptionalField::YES, $entityConditions)
         );
     }
 

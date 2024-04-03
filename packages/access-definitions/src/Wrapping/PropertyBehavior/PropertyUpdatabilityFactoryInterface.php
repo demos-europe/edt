@@ -7,6 +7,8 @@ namespace EDT\Wrapping\PropertyBehavior;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
+ * TODO: when TCondition is removed, move the child implementations into the `createFactory` method of the corresponding behavior implementation if possible, to reduce the amount of boilerplate classes
+ *
  * @template TCondition of PathsBasedInterface
  */
 interface PropertyUpdatabilityFactoryInterface
@@ -20,5 +22,5 @@ interface PropertyUpdatabilityFactoryInterface
      *
      * @return PropertyUpdatabilityInterface<TCondition, TEntity>
      */
-    public function createUpdatability(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface;
+    public function __invoke(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface;
 }

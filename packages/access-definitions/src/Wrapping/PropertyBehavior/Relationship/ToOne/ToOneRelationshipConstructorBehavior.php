@@ -15,6 +15,7 @@ use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\PropertyBehavior\AbstractConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdaterTrait;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
 use function array_key_exists;
 
 /**
@@ -48,11 +49,13 @@ class ToOneRelationshipConstructorBehavior extends AbstractConstructorBehavior i
     }
 
     /**
+     * @template TCond of PathsBasedInterface
+     *
      * @param non-empty-string|null $argumentName
-     * @param list<TCondition> $relationshipConditions
+     * @param list<TCond> $relationshipConditions
      * @param null|callable(CreationDataInterface): array{mixed, list<non-empty-string>} $customBehavior
      *
-     * @return callable(non-empty-string, non-empty-list<non-empty-string>, class-string, ResourceTypeInterface<TCondition, PathsBasedInterface, object>): ConstructorBehaviorInterface
+     * @return RelationshipConstructorBehaviorFactoryInterface<TCond>
      */
     public static function createFactory(
         ?string $argumentName,
@@ -60,7 +63,7 @@ class ToOneRelationshipConstructorBehavior extends AbstractConstructorBehavior i
         mixed $customBehavior,
         OptionalField $optional
     ): callable {
-        return new class($argumentName, $relationshipConditions, $customBehavior, $optional)
+        return new class($argumentName, $relationshipConditions, $customBehavior, $optional) implements RelationshipConstructorBehaviorFactoryInterface
         {
             /**
              * @param non-empty-string|null $argumentName

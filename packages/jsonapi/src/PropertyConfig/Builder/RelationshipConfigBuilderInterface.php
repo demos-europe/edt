@@ -9,7 +9,7 @@ use EDT\JsonApi\ApiDocumentation\DefaultInclude;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 
 /**
@@ -21,7 +21,7 @@ use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInt
  * @template TRelationship of object
  * @template TValue of list<TRelationship>|TRelationship|null the value of the property
  *
- * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, TCondition, TValue, callable(non-empty-string, non-empty-list<non-empty-string>, class-string, ResourceTypeInterface<TCondition, TSorting, object>): ConstructorBehaviorInterface, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
+ * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, TCondition, TValue, RelationshipConstructorBehaviorFactoryInterface<TCondition>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
  */
 interface RelationshipConfigBuilderInterface extends AttributeOrRelationshipBuilderInterface
 {

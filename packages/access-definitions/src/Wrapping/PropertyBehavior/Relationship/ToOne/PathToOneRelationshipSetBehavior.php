@@ -8,6 +8,8 @@ use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\PathToOneRelationshipSetBehaviorFactory;
 use Webmozart\Assert\Assert;
 
 /**
@@ -39,6 +41,23 @@ class PathToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetBehav
         OptionalField $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
+    }
+
+    /**
+     * @template TCond of PathsBasedInterface
+     *
+     * @param list<TCond> $relationshipConditions
+     * @param list<TCond> $entityConditions
+     *
+     * @return RelationshipSetBehaviorFactoryInterface<TCond, PathsBasedInterface, object, object>
+     */
+    public static function createFactory(
+        array $relationshipConditions,
+        OptionalField $optional,
+        PropertyAccessorInterface $propertyAccessor,
+        array $entityConditions
+    ): RelationshipSetBehaviorFactoryInterface {
+        return new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, $optional, $propertyAccessor, $entityConditions);
     }
 
     public function getRelationshipType(): TransferableTypeInterface

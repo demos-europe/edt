@@ -19,21 +19,14 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 class CallbackAttributeSetBehaviorFactory implements PropertyUpdatabilityFactoryInterface
 {
     /**
-     * @var callable(TEntity, simple_primitive|array<int|string, mixed>|null): list<non-empty-string>
-     */
-    private $updateCallback;
-
-    /**
      * @param list<TCondition> $entityConditions
      * @param callable(TEntity, simple_primitive|array<int|string, mixed>|null): list<non-empty-string> $updateCallback
      */
     public function __construct(
         protected readonly array $entityConditions,
-        callable $updateCallback,
+        protected readonly mixed $updateCallback,
         protected OptionalField $optional
-    ) {
-        $this->updateCallback = $updateCallback;
-    }
+    ) {}
 
     /**
      * @param non-empty-string $name
@@ -42,7 +35,7 @@ class CallbackAttributeSetBehaviorFactory implements PropertyUpdatabilityFactory
      *
      * @return PropertyUpdatabilityInterface<TCondition, TEntity>
      */
-    public function createUpdatability(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
+    public function __invoke(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
     {
         return new CallbackAttributeSetBehavior(
             $name,

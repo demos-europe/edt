@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* refactor: (bc break) replace all creation methods like `createRelationshipSetBehavior` in `*BehaviorFactory*` classes and interfaces with `__invoke`
+* refactor: (bc break) remove `ToManyRelationshipSetBehaviorFactory`, use `PathToManyRelationshipSetBehavior::createFactory` instead
 * refactor: (bc break) replace `RequiredRelationshipConstructorBehavior` constructor boolean parameter with `Cardinality` enum
 * refactor: (bc break) remove `*ConstructorBehaviorFactory*` classes and interfaces, you can use added static `createFactory` methods in the corresponding `*Behavior` classes instead.
 * refactor: (bc break) remove `addPostConstructorBehavior` in `IdentifierConfigBuilderInterface`/`IdentifierConfigBuilder`, use `addCreationBehavior` instead

@@ -7,6 +7,8 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToOne;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\CallbackToOneRelationshipSetBehaviorFactory;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -34,6 +36,26 @@ class CallbackToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetB
         OptionalField $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
+    }
+
+    /**
+     * @template TCond of PathsBasedInterface
+     * @template TEnt of object
+     * @template TRel of object
+     *
+     * @param callable(TEnt, TRel|null): list<non-empty-string> $setBehaviorCallback
+     * @param list<TCond> $relationshipConditions
+     * @param list<TCond> $entityConditions
+     *
+     * @return RelationshipSetBehaviorFactoryInterface<TCond, PathsBasedInterface, TEnt, TRel>
+     */
+    public static function createFactory(
+        mixed $setBehaviorCallback,
+        array $relationshipConditions,
+        OptionalField $optional,
+        array $entityConditions
+    ): RelationshipSetBehaviorFactoryInterface {
+        return new CallbackToOneRelationshipSetBehaviorFactory($setBehaviorCallback, $relationshipConditions, $optional, $entityConditions);
     }
 
     public function getRelationshipType(): TransferableTypeInterface

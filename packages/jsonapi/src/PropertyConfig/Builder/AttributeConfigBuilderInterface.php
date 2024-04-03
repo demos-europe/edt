@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
 
 /**
@@ -16,7 +16,7 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
  * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, callable(non-empty-string, non-empty-list<non-empty-string>, class-string): ConstructorBehaviorInterface, PropertyUpdatabilityFactoryInterface<TCondition>, PropertyUpdatabilityFactoryInterface<TCondition>>
+ * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition>, PropertyUpdatabilityFactoryInterface<TCondition>>
  */
 interface AttributeConfigBuilderInterface extends AttributeOrRelationshipBuilderInterface
 {

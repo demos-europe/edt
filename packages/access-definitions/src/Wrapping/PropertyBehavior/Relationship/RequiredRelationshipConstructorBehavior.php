@@ -35,7 +35,7 @@ class RequiredRelationshipConstructorBehavior implements ConstructorBehaviorInte
     /**
      * @param callable(CreationDataInterface): array{mixed, list<non-empty-string>} $behavior
      *
-     * @return RelationshipConstructorBehaviorFactoryInterface<TCondition>
+     * @return RelationshipConstructorBehaviorFactoryInterface<PathsBasedInterface>
      */
     public static function createFactory(callable $behavior): RelationshipConstructorBehaviorFactoryInterface
     {

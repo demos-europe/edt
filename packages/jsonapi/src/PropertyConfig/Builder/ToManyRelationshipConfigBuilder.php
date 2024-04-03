@@ -11,9 +11,9 @@ use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\CallbackToManyRelationshipSetBehaviorFactory;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\PathToManyRelationshipSetBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipSetBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipReadability;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipSetBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 
@@ -68,14 +68,14 @@ class ToManyRelationshipConfigBuilder
         return null === $postConstructorCallback
             ? $this->addPathCreationBehavior($optional, [], $relationshipConditions)
             : $this->addCreationBehavior(
-                new CallbackToManyRelationshipSetBehaviorFactory($postConstructorCallback, $relationshipConditions, $optional, [])
+                CallbackToManyRelationshipSetBehavior::createFactory($postConstructorCallback, $relationshipConditions, $optional, [])
             );
     }
 
     public function addPathCreationBehavior(OptionalField $optional = OptionalField::NO, array $entityConditions = [], array $relationshipConditions = []): self
     {
         return $this->addCreationBehavior(
-            new PathToManyRelationshipSetBehaviorFactory($relationshipConditions, $optional, $this->propertyAccessor, $entityConditions)
+            PathToManyRelationshipSetBehavior::createFactory($relationshipConditions, $optional, $this->propertyAccessor, $entityConditions)
         );
     }
 
@@ -140,8 +140,8 @@ class ToManyRelationshipConfigBuilder
     public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): self
     {
         return $this->addUpdateBehavior(null === $updateCallback
-            ? new PathToManyRelationshipSetBehaviorFactory($relationshipConditions, OptionalField::YES, $this->propertyAccessor, $entityConditions)
-            : new CallbackToManyRelationshipSetBehaviorFactory($updateCallback, $relationshipConditions, OptionalField::YES, $entityConditions)
+            ? PathToManyRelationshipSetBehavior::createFactory($relationshipConditions, OptionalField::YES, $this->propertyAccessor, $entityConditions)
+            : CallbackToManyRelationshipSetBehavior::createFactory($updateCallback, $relationshipConditions, OptionalField::YES, $entityConditions)
         );
     }
 

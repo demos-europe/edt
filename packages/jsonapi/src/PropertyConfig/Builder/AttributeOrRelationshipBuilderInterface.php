@@ -13,7 +13,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  * @template TEntity of object
  * @template TCondition of PathsBasedInterface
  * @template TValue the type of value corresponding to the resource property
- * @template TConstructorBehaviorFactory
+ * @template TConstructorBehaviorFactory of object
  * @template TPostConstructorBehaviorFactory of object
  * @template TUpdateBehaviorFactory of object
  *

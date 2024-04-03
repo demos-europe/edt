@@ -39,7 +39,7 @@ class CallbackToManyRelationshipSetBehaviorFactory implements RelationshipSetBeh
         $this->setBehaviorCallback = $setBehaviorCallback;
     }
 
-    public function createRelationshipSetBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetBehaviorInterface
+    public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetBehaviorInterface
     {
         return new CallbackToManyRelationshipSetBehavior(
             $name,

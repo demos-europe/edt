@@ -36,7 +36,7 @@ class PathAttributeSetBehaviorFactory implements PropertyUpdatabilityFactoryInte
      *
      * @return PropertyUpdatabilityInterface<TCondition, TEntity>
      */
-    public function createUpdatability(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
+    public function __invoke(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
     {
         return new PathAttributeSetBehavior(
             $name,

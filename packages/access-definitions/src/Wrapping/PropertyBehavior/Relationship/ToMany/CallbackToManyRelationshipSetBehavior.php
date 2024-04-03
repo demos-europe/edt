@@ -7,6 +7,8 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\CallbackToManyRelationshipSetBehaviorFactory;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -34,6 +36,26 @@ class CallbackToManyRelationshipSetBehavior extends AbstractToManyRelationshipSe
         OptionalField $optional = OptionalField::NO
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
+    }
+
+    /**
+     * @template TCond of PathsBasedInterface
+     * @template TEnt of object
+     * @template TRel of object
+     *
+     * @param callable(TEnt, list<TRel>): list<non-empty-string> $setBehaviorCallback
+     * @param list<TCond> $relationshipConditions
+     * @param list<TCond> $entityConditions
+     *
+     * @return RelationshipSetBehaviorFactoryInterface<TCond, PathsBasedInterface, TEnt, TRel>
+     */
+    public static function createFactory(
+        callable $setBehaviorCallback,
+        array $relationshipConditions,
+        OptionalField $optional,
+        array $entityConditions
+    ): RelationshipSetBehaviorFactoryInterface {
+        return new CallbackToManyRelationshipSetBehaviorFactory($setBehaviorCallback, $relationshipConditions, $optional, $entityConditions);
     }
 
     public function getRelationshipType(): TransferableTypeInterface

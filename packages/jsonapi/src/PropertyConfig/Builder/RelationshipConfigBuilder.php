@@ -12,6 +12,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\PropertyPaths\RelationshipLink;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
@@ -25,7 +26,7 @@ use Webmozart\Assert\Assert;
  * @template TValue of list<TRelationship>|TRelationship|null
  * @template TReadability of RelationshipReadabilityInterface
  *
- * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, TValue, callable(non-empty-string, non-empty-list<non-empty-string>, class-string, ResourceTypeInterface<TCondition, PathsBasedInterface, object>): ConstructorBehaviorInterface, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
+ * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, TValue, RelationshipConstructorBehaviorFactoryInterface<TCondition>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
  * @template-implements RelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship, TValue>
  */
 abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder implements RelationshipConfigBuilderInterface
@@ -125,7 +126,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     {
         return array_map(fn (
             RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
+        ): RelationshipSetBehaviorInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,
@@ -153,7 +154,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     {
         return array_map(fn(
             RelationshipSetBehaviorFactoryInterface $factory
-        ): RelationshipSetBehaviorInterface => $factory->createRelationshipSetBehavior(
+        ): RelationshipSetBehaviorInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,

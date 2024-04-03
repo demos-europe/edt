@@ -18,6 +18,7 @@ use EDT\Wrapping\PropertyBehavior\Attribute\CallbackAttributeReadability;
 use EDT\Wrapping\PropertyBehavior\Attribute\Factory\CallbackAttributeSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\Factory\PathAttributeSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeReadability;
+use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
@@ -30,7 +31,7 @@ use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
  *
  * @template-implements AttributeConfigBuilderInterface<TCondition, TEntity>
  * @template-implements BuildableInterface<AttributeConfigInterface<TCondition, TEntity>>
- * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, callable(non-empty-string, non-empty-list<non-empty-string>, class-string): ConstructorBehaviorInterface, PropertyUpdatabilityFactoryInterface<TCondition>, PropertyUpdatabilityFactoryInterface<TCondition>>
+ * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition>, PropertyUpdatabilityFactoryInterface<TCondition>>
  */
 class AttributeConfigBuilder
     extends AbstractPropertyConfigBuilder
@@ -192,7 +193,7 @@ class AttributeConfigBuilder
     {
         return array_map(fn (
             PropertyUpdatabilityFactoryInterface $factory
-        ): PropertySetBehaviorInterface => $factory->createUpdatability(
+        ): PropertySetBehaviorInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass
@@ -218,7 +219,7 @@ class AttributeConfigBuilder
     {
         return array_map(fn (
             PropertyUpdatabilityFactoryInterface $factory
-        ): PropertyUpdatabilityInterface => $factory->createUpdatability(
+        ): PropertyUpdatabilityInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass

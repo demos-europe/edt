@@ -33,7 +33,7 @@ class PathToManyRelationshipSetBehaviorFactory implements RelationshipSetBehavio
         protected readonly array $entityConditions
     ) {}
 
-    public function createRelationshipSetBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetBehaviorInterface
+    public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetBehaviorInterface
     {
         return new PathToManyRelationshipSetBehavior(
             $name,

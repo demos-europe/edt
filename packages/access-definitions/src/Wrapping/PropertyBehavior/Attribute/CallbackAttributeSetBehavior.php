@@ -6,6 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Attribute;
 
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\PropertyBehavior\Attribute\Factory\CallbackAttributeSetBehaviorFactory;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -29,6 +30,20 @@ class CallbackAttributeSetBehavior extends AbstractAttributeSetBehavior
         OptionalField $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $optional);
+    }
+
+    /**
+     * @template TCond of PathsBasedInterface
+     * @template TEnt of object
+     *
+     * @param list<TCond> $entityConditions
+     * @param callable(TEnt, simple_primitive|array<int|string, mixed>|null): list<non-empty-string> $updateCallback
+     *
+     * @return CallbackAttributeSetBehaviorFactory<TCond, TEnt>
+     */
+    public static function createFactory(array $entityConditions, mixed $updateCallback, OptionalField $optional): CallbackAttributeSetBehaviorFactory
+    {
+        return new CallbackAttributeSetBehaviorFactory($entityConditions, $updateCallback, $optional);
     }
 
     protected function updateAttributeValue(object $entity, mixed $value): array
