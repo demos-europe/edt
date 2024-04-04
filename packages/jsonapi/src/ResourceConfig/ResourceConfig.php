@@ -26,6 +26,8 @@ use EDT\Wrapping\ResourceBehavior\ResourceUpdatability;
 use Webmozart\Assert\Assert;
 
 /**
+ * TODO: rename to `Schema`
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object

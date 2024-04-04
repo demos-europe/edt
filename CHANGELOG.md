@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-* refactor: (bc break) replace all creation methods like `createRelationshipSetBehavior` in `*BehaviorFactory*` classes and interfaces with `__invoke`
+* refactor: (bc break) adjust constructor of `DynamicTransformer` to take some specific values instead of a whole `TransferableTypeInterface` instance
+* refactor: (bc break) require the implementation of five other methods instead of `getResourceConfig` in children of `AbstractResourceType`
 * refactor: (bc break) remove `ToManyRelationshipSetBehaviorFactory`, use `PathToManyRelationshipSetBehavior::createFactory` instead
 * refactor: (bc break) replace `RequiredRelationshipConstructorBehavior` constructor boolean parameter with `Cardinality` enum
 * refactor: (bc break) remove `*ConstructorBehaviorFactory*` classes and interfaces, you can use added static `createFactory` methods in the corresponding `*Behavior` classes instead.

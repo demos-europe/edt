@@ -26,6 +26,8 @@ use Webmozart\Assert\Assert;
 use function array_key_exists;
 
 /**
+ * TODO: rename to `ArraySchemaBuilder`
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object

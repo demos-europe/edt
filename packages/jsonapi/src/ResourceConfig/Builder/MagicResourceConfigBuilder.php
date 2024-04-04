@@ -21,6 +21,8 @@ use function array_key_exists;
 
 
 /**
+ * TODO: rename to `MagicSchemaBuilder`
+ *
  * Expects subclasses to define attributes and relationships as `property-read` docblock tags.
  *
  * ```

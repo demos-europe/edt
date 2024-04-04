@@ -12,6 +12,8 @@ use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
 
 /**
+ * TODO: rename to `SchemaInterface`
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object

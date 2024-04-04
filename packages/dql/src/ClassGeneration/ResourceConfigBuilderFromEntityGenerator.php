@@ -20,6 +20,9 @@ use ReflectionClass;
 use ReflectionProperty;
 use function array_key_exists;
 
+/**
+ * TODO: rename to `EntityBasedSchemaBuilderGenerator`
+ */
 class ResourceConfigBuilderFromEntityGenerator
 {
     use EntityBasedGeneratorTrait;
