@@ -40,7 +40,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
     protected $readabilityFactory;
 
     /**
-     * @var list<IdentifierPostConstructorBehaviorFactoryInterface>
+     * @var list<IdentifierPostConstructorBehaviorFactoryInterface<TEntity>>
      */
     protected array $postConstructorBehaviorFactories = [];
 
@@ -196,5 +196,10 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
         $this->postConstructorBehaviorFactories = [];
 
         return $this;
+    }
+
+    public function addPostConstructorBehavior(IdentifierPostConstructorBehaviorFactoryInterface $behaviorFactory): IdentifierConfigBuilderInterface
+    {
+        return $this->addCreationBehavior($behaviorFactory);
     }
 }

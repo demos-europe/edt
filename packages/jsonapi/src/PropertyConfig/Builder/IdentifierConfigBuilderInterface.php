@@ -37,6 +37,17 @@ interface IdentifierConfigBuilderInterface extends PropertyConfigBuilderInterfac
     public function addConstructorCreationBehavior(callable $behaviorFactory): self;
 
     /**
+     * @param IdentifierPostConstructorBehaviorFactoryInterface<TEntity> $behaviorFactory
+     *
+     * @return $this
+     *
+     * @deprecated use {@link addCreationBehavior} instead
+     */
+    public function addPostConstructorBehavior(IdentifierPostConstructorBehaviorFactoryInterface $behaviorFactory): self;
+
+    /**
+     * @param IdentifierPostConstructorBehaviorFactoryInterface<TEntity> $behaviorFactory
+     *
      * @return $this
      */
     public function addCreationBehavior(IdentifierPostConstructorBehaviorFactoryInterface $behaviorFactory): self;

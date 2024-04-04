@@ -338,6 +338,11 @@ parameters:
             path: packages/jsonapi/src/PropertyConfig/Builder/IdentifierConfigBuilder.php
 
         -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\IdentifierConfigBuilder\\<TEntity of object,TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:addCreationBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\IdentifierPostConstructorBehaviorFactoryInterface\\<TEntity of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Identifier\\\\Factory\\\\IdentifierPostConstructorBehaviorFactoryInterface\\<object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/IdentifierConfigBuilder.php
+
+        -
             message: """
                 #^Call to deprecated method readable\\(\\) of class EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\RelationshipConfigBuilder\\:
                 use \\{@link setReadableByPath\\(\\)\\} or \\{@link setReadableByCallable\\(\\)\\} instead$#

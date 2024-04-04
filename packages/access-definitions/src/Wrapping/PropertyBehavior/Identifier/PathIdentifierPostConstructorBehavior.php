@@ -45,6 +45,8 @@ class PathIdentifierPostConstructorBehavior extends AbstractPropertySetBehavior 
 
     /**
      * @param list<TCondition> $entityConditions
+     *
+     * @return IdentifierPostConstructorBehaviorFactoryInterface<object>
      */
     public static function createFactory(OptionalField $optional, PropertyAccessorInterface $propertyAccessor, array $entityConditions): IdentifierPostConstructorBehaviorFactoryInterface
     {
