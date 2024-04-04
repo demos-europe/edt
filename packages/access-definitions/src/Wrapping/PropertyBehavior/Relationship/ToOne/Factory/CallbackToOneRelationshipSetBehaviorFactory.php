@@ -21,23 +21,16 @@ use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipSe
 class CallbackToOneRelationshipSetBehaviorFactory implements RelationshipSetBehaviorFactoryInterface
 {
     /**
-     * @var callable(TEntity, TRelationship|null): list<non-empty-string>
-     */
-    private $setBehaviorCallback;
-
-    /**
      * @param callable(TEntity, TRelationship|null): list<non-empty-string> $setBehaviorCallback
      * @param list<TCondition> $relationshipConditions
      * @param list<TCondition> $entityConditions
      */
     public function __construct(
-        callable $setBehaviorCallback,
+        protected readonly mixed $setBehaviorCallback,
         protected readonly array $relationshipConditions,
         protected readonly OptionalField $optional,
         protected readonly array $entityConditions
-    ) {
-        $this->setBehaviorCallback = $setBehaviorCallback;
-    }
+    ) {}
 
     public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetBehaviorInterface
     {
@@ -49,5 +42,10 @@ class CallbackToOneRelationshipSetBehaviorFactory implements RelationshipSetBeha
             $this->setBehaviorCallback,
             $this->optional
         );
+    }
+
+    public function createRelationshipSetBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetBehaviorInterface
+    {
+        return $this($name, $propertyPath, $entityClass, $relationshipType);
     }
 }

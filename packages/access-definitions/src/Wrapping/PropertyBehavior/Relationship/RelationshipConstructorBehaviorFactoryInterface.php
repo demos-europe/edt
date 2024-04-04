@@ -20,4 +20,14 @@ interface RelationshipConstructorBehaviorFactoryInterface
      * @param ResourceTypeInterface<TCondition, PathsBasedInterface, object> $relationshipType
      */
     public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface;
+
+    /**
+     * @param non-empty-string $name
+     * @param non-empty-list<non-empty-string> $propertyPath
+     * @param class-string $entityClass
+     * @param ResourceTypeInterface<TCondition, PathsBasedInterface, object> $relationshipType
+     *
+     * @deprecated call instance directly as callable instead (i.e. indirectly using {@link __invoke})
+     */
+    public function createRelationshipConstructorBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface;
 }

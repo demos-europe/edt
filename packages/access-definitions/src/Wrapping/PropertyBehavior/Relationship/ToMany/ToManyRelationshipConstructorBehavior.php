@@ -87,6 +87,11 @@ class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior 
                     $this->optional
                 );
             }
+
+            public function createRelationshipConstructorBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface
+            {
+                return $this($name, $propertyPath, $entityClass, $relationshipType);
+            }
         };
     }
 

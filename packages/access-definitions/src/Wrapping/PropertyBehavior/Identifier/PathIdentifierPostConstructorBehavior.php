@@ -62,6 +62,11 @@ class PathIdentifierPostConstructorBehavior extends AbstractPropertySetBehavior 
             {
                 return new PathIdentifierPostConstructorBehavior($entityClass, $propertyPath, $this->propertyAccessor, $this->optional, $this->entityConditions);
             }
+
+            public function createIdentifierPostConstructorBehavior(array $propertyPath, string $entityClass): IdentifierPostConstructorBehaviorInterface
+            {
+                return $this($propertyPath, $entityClass);
+            }
         };
     }
 

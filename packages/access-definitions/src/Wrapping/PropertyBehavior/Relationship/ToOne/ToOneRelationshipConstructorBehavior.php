@@ -94,6 +94,11 @@ class ToOneRelationshipConstructorBehavior extends AbstractConstructorBehavior i
                     $this->customBehavior
                 );
             }
+
+            public function createRelationshipConstructorBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface
+            {
+                return $this($name, $propertyPath, $entityClass, $relationshipType);
+            }
         };
     }
 

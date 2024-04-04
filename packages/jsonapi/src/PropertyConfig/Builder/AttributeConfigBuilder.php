@@ -31,7 +31,7 @@ use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
  *
  * @template-implements AttributeConfigBuilderInterface<TCondition, TEntity>
  * @template-implements BuildableInterface<AttributeConfigInterface<TCondition, TEntity>>
- * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition>, PropertyUpdatabilityFactoryInterface<TCondition>>
+ * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>>
  */
 class AttributeConfigBuilder
     extends AbstractPropertyConfigBuilder

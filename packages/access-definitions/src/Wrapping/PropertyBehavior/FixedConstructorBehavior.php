@@ -37,6 +37,11 @@ class FixedConstructorBehavior implements ConstructorBehaviorInterface
             {
                 return new FixedConstructorBehavior($name, $this->callback);
             }
+
+            public function createConstructorBehavior(string $name, array $propertyPath, string $entityClass): ConstructorBehaviorInterface
+            {
+                return $this($name, $propertyPath, $entityClass);
+            }
         };
     }
 

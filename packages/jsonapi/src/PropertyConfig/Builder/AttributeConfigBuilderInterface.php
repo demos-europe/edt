@@ -16,7 +16,7 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
  * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition>, PropertyUpdatabilityFactoryInterface<TCondition>>
+ * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>>
  */
 interface AttributeConfigBuilderInterface extends AttributeOrRelationshipBuilderInterface
 {

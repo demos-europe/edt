@@ -43,6 +43,11 @@ class DataProvidedIdentifierConstructorBehavior extends AbstractConstructorBehav
             {
                 return new DataProvidedIdentifierConstructorBehavior($this->argumentName ?? ContentField::ID, $this->optional, $this->customBehavior);
             }
+
+            public function createIdentifierConstructorBehavior(array $propertyPath, string $entityClass): ConstructorBehaviorInterface
+            {
+                return $this($propertyPath, $entityClass);
+            }
         };
     }
 

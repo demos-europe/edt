@@ -14,7 +14,7 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
  * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements PropertyUpdatabilityFactoryInterface<TCondition>
+ * @template-implements PropertyUpdatabilityFactoryInterface<TCondition, TEntity>
  */
 class CallbackAttributeSetBehaviorFactory implements PropertyUpdatabilityFactoryInterface
 {
@@ -28,13 +28,6 @@ class CallbackAttributeSetBehaviorFactory implements PropertyUpdatabilityFactory
         protected OptionalField $optional
     ) {}
 
-    /**
-     * @param non-empty-string $name
-     * @param non-empty-list<non-empty-string> $propertyPath
-     * @param class-string<TEntity> $entityClass
-     *
-     * @return PropertyUpdatabilityInterface<TCondition, TEntity>
-     */
     public function __invoke(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
     {
         return new CallbackAttributeSetBehavior(
@@ -43,5 +36,10 @@ class CallbackAttributeSetBehaviorFactory implements PropertyUpdatabilityFactory
             $this->updateCallback,
             $this->optional
         );
+    }
+
+    public function createUpdatability(string $name, array $propertyPath, string $entityClass): PropertyUpdatabilityInterface
+    {
+        return $this($name, $propertyPath, $entityClass);
     }
 }

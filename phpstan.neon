@@ -320,6 +320,16 @@ parameters:
             path: packages/jsonapi/src/PropertyConfig/Builder/AttributeConfigBuilder.php
 
         -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\AbstractPropertyConfigBuilder\\<TEntity of object,TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null,EDT\\\\Wrapping\\\\PropertyBehavior\\\\ConstructorBehaviorFactoryInterface,EDT\\\\Wrapping\\\\PropertyBehavior\\\\PropertyUpdatabilityFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>,EDT\\\\Wrapping\\\\PropertyBehavior\\\\PropertyUpdatabilityFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>\\>\\:\\:addCreationBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\PropertyUpdatabilityFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Attribute\\\\Factory\\\\PathAttributeSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/AttributeConfigBuilder.php
+
+        -
+            message: "#^Parameter \\#1 \\$behaviorFactory of method EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\AbstractPropertyConfigBuilder\\<TEntity of object,TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface,array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null,EDT\\\\Wrapping\\\\PropertyBehavior\\\\ConstructorBehaviorFactoryInterface,EDT\\\\Wrapping\\\\PropertyBehavior\\\\PropertyUpdatabilityFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>,EDT\\\\Wrapping\\\\PropertyBehavior\\\\PropertyUpdatabilityFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>\\>\\:\\:addUpdateBehavior\\(\\) expects EDT\\\\Wrapping\\\\PropertyBehavior\\\\PropertyUpdatabilityFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, TEntity of object\\>, EDT\\\\Wrapping\\\\PropertyBehavior\\\\Attribute\\\\Factory\\\\PathAttributeSetBehaviorFactory\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface, object\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/PropertyConfig/Builder/AttributeConfigBuilder.php
+
+        -
             message: """
                 #^Call to deprecated method readable\\(\\) of class EDT\\\\JsonApi\\\\PropertyConfig\\\\Builder\\\\IdentifierConfigBuilder\\:
                 use \\{@link setReadableByPath\\} or \\{@link setReadableByCallable\\} instead$#

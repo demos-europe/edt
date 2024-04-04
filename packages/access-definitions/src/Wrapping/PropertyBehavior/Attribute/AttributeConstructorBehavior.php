@@ -39,6 +39,11 @@ class AttributeConstructorBehavior extends AbstractConstructorBehavior
                     $this->customBehavior
                 );
             }
+
+            public function createConstructorBehavior(string $name, array $propertyPath, string $entityClass): ConstructorBehaviorInterface
+            {
+                return $this($name, $propertyPath, $entityClass);
+            }
         };
     }
 

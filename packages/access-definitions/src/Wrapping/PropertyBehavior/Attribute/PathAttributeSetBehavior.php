@@ -42,7 +42,7 @@ class PathAttributeSetBehavior extends AbstractAttributeSetBehavior
      *
      * @param list<TCond> $entityConditions
      *
-     * @return PathAttributeSetBehaviorFactory<TCond>
+     * @return PathAttributeSetBehaviorFactory<TCond, object>
      */
     public static function createFactory(
         PropertyAccessorInterface $propertyAccessor,

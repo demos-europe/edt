@@ -53,6 +53,11 @@ class RequiredRelationshipConstructorBehavior implements ConstructorBehaviorInte
             ): ConstructorBehaviorInterface {
                 return new RequiredRelationshipConstructorBehavior($name, $this->callback, $relationshipType, Cardinality::TO_ONE);
             }
+
+            public function createRelationshipConstructorBehavior(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface
+            {
+                return $this($name, $propertyPath, $entityClass, $relationshipType);
+            }
         };
     }
 
