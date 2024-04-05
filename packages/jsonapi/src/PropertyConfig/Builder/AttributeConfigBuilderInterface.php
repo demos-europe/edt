@@ -11,7 +11,7 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
 /**
  * This interface define configuration options that are only available for resource attributes.
  *
- * Besides that, it can be used to denote a resource attribute.
+ * Besides that, its type itself can be used to denote a resource attribute.
  *
  * @template TCondition of PathsBasedInterface
  * @template TEntity of object
@@ -36,7 +36,7 @@ interface AttributeConfigBuilderInterface extends AttributeOrRelationshipBuilder
      *
      * @return $this
      *
-     * @deprecated use {@link addConstructorCreationBehavior}, {@link addCreationBehavior} or similar instead
+     * @deprecated use {@link addConstructorCreationBehavior}, {@link addCreationBehavior} or {@link addPathCreationBehavior} instead
      */
     public function initializable(
         bool $optionalAfterConstructor = false,

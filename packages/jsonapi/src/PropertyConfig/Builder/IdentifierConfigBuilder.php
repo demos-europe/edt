@@ -15,6 +15,7 @@ use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\CallbackIdentifierReadability;
 use EDT\Wrapping\PropertyBehavior\Identifier\DataProvidedIdentifierConstructorBehavior;
+use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierPostConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
@@ -45,7 +46,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
     protected array $postConstructorBehaviorFactories = [];
 
     /**
-     * @var list<callable(non-empty-list<non-empty-string>, class-string<TEntity>): ConstructorBehaviorInterface>
+     * @var list<IdentifierConstructorBehaviorFactoryInterface>
      */
     protected array $constructorBehaviorFactories = [];
 
@@ -129,7 +130,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
     public function build(): IdentifierConfigInterface
     {
         $postConstructorBehaviors = array_map(
-            fn(callable $factory): IdentifierPostConstructorBehaviorInterface => $factory(
+            fn(IdentifierPostConstructorBehaviorFactoryInterface $factory): IdentifierPostConstructorBehaviorInterface => $factory(
                 $this->getPropertyPath(),
                 $this->entityClass
             ),
@@ -137,7 +138,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
         );
 
         $constructorBehaviors = array_map(
-            fn(callable $factory): ConstructorBehaviorInterface => $factory(
+            fn(IdentifierConstructorBehaviorFactoryInterface $factory): ConstructorBehaviorInterface => $factory(
                 $this->getPropertyPath(),
                 $this->entityClass
             ),
@@ -169,7 +170,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
         return $this->addPathCreationBehavior(OptionalField::fromBoolean($optionalAfterConstructor));
     }
 
-    public function addConstructorCreationBehavior(callable $behaviorFactory): self
+    public function addConstructorCreationBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): self
     {
         $this->constructorBehaviorFactories[] = $behaviorFactory;
 

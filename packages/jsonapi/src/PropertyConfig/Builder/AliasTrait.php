@@ -26,4 +26,11 @@ trait AliasTrait
 
         return $this;
     }
+
+    public function removeAliasedPath(): self
+    {
+        $this->aliasedPath = null;
+
+        return $this;
+    }
 }

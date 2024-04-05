@@ -139,7 +139,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
      */
     protected function getConstructorBehaviors(): array
     {
-        return array_map(fn(callable $factory): ConstructorBehaviorInterface => $factory(
+        return array_map(fn(RelationshipConstructorBehaviorFactoryInterface $factory): ConstructorBehaviorInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass,

@@ -9,7 +9,7 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 /**
  * This interface defines configuration options that only available for to-one relationships.
  *
- * Besides that, it can be used to denote a to-one relationship property.
+ * Besides that, its type itself can be used to denote a to-one relationship property.
  *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface

@@ -63,6 +63,11 @@ interface PropertyConfigBuilderInterface
 
     /**
      * @return $this
+     */
+    public function removeAliasedPath(): self;
+
+    /**
+     * @return $this
      *
      * @deprecated use {@link setFilterable()} instead
      */
@@ -72,7 +77,7 @@ interface PropertyConfigBuilderInterface
      * Mark this property as usable when filtering resources. It can then be used to filter
      * the resource they belong to as well as other resources when used in a path.
      *
-     * E.g. when a user has access to `Book` and `Author` resource types (and `Book` has a
+     * E.g. when a user has access to the `Book` and `Author` resource types (and `Book` has a
      * to-one relationship to `Author` while `Author` has a to-many relationship to `Book`), then
      * setting `fullName` in the `Author` type to filterable allows not only to filter `Author`
      * resources by their name but also to filter `Book` resources by the name of their author, if
@@ -80,7 +85,7 @@ interface PropertyConfigBuilderInterface
      *
      * Filtering `Author` resources by the title of their books will work too, even though there may be multiple book
      * titles for a single author. For example in case of the equals operator it is sufficient if the author is
-     * connected to the book title value at least once to be considered a match.
+     * connected to the desired book title value at least once to be considered a match.
      *
      * @return $this
      */

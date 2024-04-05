@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierPostConstructorBehaviorFactoryInterface;
 
 /**
  * This interface define configuration options that are only available for the resource ID.
  *
- * Besides that, it can be used to denote a to-one relationship property.
+ * Besides that, its type itself can be used to denote a to-one relationship property.
  *
  * @template TEntity of object
  * @template TCondition of PathsBasedInterface
@@ -30,11 +30,9 @@ interface IdentifierConfigBuilderInterface extends PropertyConfigBuilderInterfac
     public function readable(callable $customReadCallback = null): self;
 
     /**
-     * @param callable(non-empty-list<non-empty-string>, class-string): ConstructorBehaviorInterface $behaviorFactory
-     *
      * @return $this
      */
-    public function addConstructorCreationBehavior(callable $behaviorFactory): self;
+    public function addConstructorCreationBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): self;
 
     /**
      * @param IdentifierPostConstructorBehaviorFactoryInterface<TEntity> $behaviorFactory
