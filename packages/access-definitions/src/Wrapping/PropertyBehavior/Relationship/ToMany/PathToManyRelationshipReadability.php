@@ -6,6 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 
@@ -23,14 +24,14 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
     /**
      * @param class-string<TEntity> $entityClass
      * @param non-empty-list<non-empty-string> $propertyPath
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
         protected readonly string $entityClass,
         protected readonly array $propertyPath,
         protected readonly bool $defaultField,
         protected readonly bool $defaultInclude,
-        protected readonly TransferableTypeInterface $relationshipType,
+        protected readonly TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
         protected readonly PropertyAccessorInterface $propertyAccessor
     ) {}
 
@@ -41,7 +42,9 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
 
     public function getRelationshipType(): TransferableTypeInterface
     {
-        return $this->relationshipType;
+        return $this->relationshipType instanceof TransferableTypeInterface
+            ? $this->relationshipType
+            : $this->relationshipType->getConfig();
     }
 
     public function isDefaultField(): bool
@@ -52,9 +55,9 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
     public function getValue(object $entity, array $conditions, array $sortMethods): array
     {
         $relationshipEntities = $this->propertyAccessor->getValuesByPropertyPath($entity, 1, $this->propertyPath);
-        $relationshipClass = $this->relationshipType->getEntityClass();
+        $relationshipClass = $this->getRelationshipType()->getEntityClass();
         $relationshipEntities = $this->assertValidToManyValue($relationshipEntities, $relationshipClass);
 
-        return $this->relationshipType->reindexEntities($relationshipEntities, $conditions, $sortMethods);
+        return $this->getRelationshipType()->reindexEntities($relationshipEntities, $conditions, $sortMethods);
     }
 }

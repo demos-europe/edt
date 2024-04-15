@@ -8,6 +8,8 @@ use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipSetBehavior;
@@ -33,7 +35,7 @@ class PathToOneRelationshipSetBehaviorFactory implements RelationshipSetBehavior
         protected readonly array $entityConditions
     ) {}
 
-    public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): RelationshipSetBehaviorInterface
+    public function __invoke(string $name, array $propertyPath, string $entityClass, TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType): RelationshipSetBehaviorInterface
     {
         return new PathToOneRelationshipSetBehavior(
             $name,

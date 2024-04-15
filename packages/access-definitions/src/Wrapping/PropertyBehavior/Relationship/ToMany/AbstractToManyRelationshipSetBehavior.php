@@ -6,10 +6,10 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\EntityDataInterface;
-use EDT\Wrapping\PropertyBehavior\IdUnrelatedTrait;
-use EDT\Wrapping\PropertyBehavior\PropertyUpdaterTrait;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Relationship\AbstractRelationshipSetBehavior;
 use Exception;
 use function array_key_exists;
 
@@ -19,23 +19,24 @@ use function array_key_exists;
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends AbstractPropertySetBehavior<TCondition, TEntity>
- * @template-implements RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>
+ * @template-extends AbstractRelationshipSetBehavior<TCondition, TSorting, TEntity, TRelationship>
  */
-abstract class AbstractToManyRelationshipSetBehavior extends AbstractPropertySetBehavior implements RelationshipSetBehaviorInterface
+abstract class AbstractToManyRelationshipSetBehavior extends AbstractRelationshipSetBehavior
 {
     /**
      * @param non-empty-string $propertyName
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
         string $propertyName,
         array $entityConditions,
         protected readonly array $relationshipConditions,
-        OptionalField $optional
+        OptionalField $optional,
+        TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType
     ) {
-        parent::__construct($propertyName, $entityConditions, $optional);
+        parent::__construct($propertyName, $entityConditions, $optional, $relationshipType);
     }
 
     protected function hasPropertyValue(EntityDataInterface $entityData): bool

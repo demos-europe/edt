@@ -6,6 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 
 /**
@@ -17,9 +18,9 @@ interface RelationshipConstructorBehaviorFactoryInterface
      * @param non-empty-string $name
      * @param non-empty-list<non-empty-string> $propertyPath
      * @param class-string $entityClass
-     * @param ResourceTypeInterface<TCondition, PathsBasedInterface, object> $relationshipType
+     * @param ResourceTypeInterface<TCondition, PathsBasedInterface, object>|ResourceConfigProviderInterface<TCondition, PathsBasedInterface, object> $relationshipType
      */
-    public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface;
+    public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceConfigProviderInterface $relationshipType): ConstructorBehaviorInterface;
 
     /**
      * @param non-empty-string $name

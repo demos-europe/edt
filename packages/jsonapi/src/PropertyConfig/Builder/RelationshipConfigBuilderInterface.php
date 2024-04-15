@@ -9,6 +9,7 @@ use EDT\JsonApi\ApiDocumentation\DefaultInclude;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 
@@ -26,11 +27,11 @@ use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInt
 interface RelationshipConfigBuilderInterface extends AttributeOrRelationshipBuilderInterface
 {
     /**
-     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType $relationshipType
      *
      * @return $this
      */
-    public function setRelationshipType(ResourceTypeInterface $relationshipType): self;
+    public function setRelationshipType(ResourceTypeInterface|ResourceConfigProviderInterface $relationshipType): self;
 
     public function setReadableByPath(
         DefaultField $defaultField = DefaultField::NO,

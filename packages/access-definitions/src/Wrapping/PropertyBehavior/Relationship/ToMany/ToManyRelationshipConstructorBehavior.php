@@ -8,8 +8,8 @@ use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\RelationshipInterface;
-use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
-use EDT\Wrapping\Contracts\Types\RelationshipFetchableTypeInterface;
+use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\PropertyBehavior\AbstractConstructorBehavior;
@@ -22,7 +22,7 @@ use function array_key_exists;
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  *
- * @template-implements RelationshipInterface<NamedTypeInterface&RelationshipFetchableTypeInterface<TCondition, TSorting, object>>
+ * @template-implements RelationshipInterface<TransferableTypeInterface<TCondition, TSorting, object>>
  */
 class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior implements RelationshipInterface
 {
@@ -33,14 +33,14 @@ class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior 
      *
      * @param non-empty-string $argumentName
      * @param non-empty-string $propertyName
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param list<TCondition> $relationshipConditions
      * @param null|callable(CreationDataInterface): array{mixed, list<non-empty-string>} $customBehavior
      */
     public function __construct(
         string $propertyName,
         string $argumentName,
-        protected readonly TransferableTypeInterface $relationshipType,
+        protected readonly TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
         protected readonly array $relationshipConditions,
         ?callable $customBehavior,
         OptionalField $optional
@@ -76,7 +76,7 @@ class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior 
                 protected readonly OptionalField $optional
             ) {}
 
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ConstructorBehaviorInterface
+            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceConfigProviderInterface $relationshipType): ConstructorBehaviorInterface
             {
                 return new ToManyRelationshipConstructorBehavior(
                     $name,
@@ -95,9 +95,11 @@ class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior 
         };
     }
 
-    public function getRelationshipType(): object
+    public function getRelationshipType(): TransferableTypeInterface
     {
-        return $this->relationshipType;
+        return $this->relationshipType instanceof TransferableTypeInterface
+            ? $this->relationshipType
+            : $this->relationshipType->getConfig();
     }
 
     protected function isValueInRequest(CreationDataInterface $entityData): bool
@@ -116,11 +118,11 @@ class ToManyRelationshipConstructorBehavior extends AbstractConstructorBehavior 
 
     public function getRequiredToManyRelationships(): array
     {
-        return array_fill_keys($this->getRequiredPropertyList(), $this->relationshipType->getTypeName());
+        return array_fill_keys($this->getRequiredPropertyList(), $this->getRelationshipType()->getTypeName());
     }
 
     public function getOptionalToManyRelationships(): array
     {
-        return array_fill_keys($this->getOptionalPropertyList(), $this->relationshipType->getTypeName());
+        return array_fill_keys($this->getOptionalPropertyList(), $this->getRelationshipType()->getTypeName());
     }
 }

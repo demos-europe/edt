@@ -7,6 +7,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship;
 use EDT\JsonApi\ApiDocumentation\Cardinality;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
@@ -24,11 +25,12 @@ class RequiredRelationshipConstructorBehavior implements ConstructorBehaviorInte
     /**
      * @param non-empty-string $argumentName
      * @param callable(CreationDataInterface): array{mixed, list<non-empty-string>} $callback
+     * @param NamedTypeInterface|ResourceConfigProviderInterface<TCondition, PathsBasedInterface, object> $relationshipType
      */
     public function __construct(
         protected readonly string $argumentName,
         protected readonly mixed $callback,
-        protected readonly NamedTypeInterface $relationshipType,
+        protected readonly NamedTypeInterface|ResourceConfigProviderInterface $relationshipType,
         protected readonly Cardinality $cardinality
     ) {}
 
@@ -49,7 +51,7 @@ class RequiredRelationshipConstructorBehavior implements ConstructorBehaviorInte
                 string $name,
                 array $propertyPath,
                 string $entityClass,
-                ResourceTypeInterface $relationshipType,
+                NamedTypeInterface|ResourceConfigProviderInterface $relationshipType,
             ): ConstructorBehaviorInterface {
                 return new RequiredRelationshipConstructorBehavior($name, $this->callback, $relationshipType, Cardinality::TO_ONE);
             }
@@ -63,12 +65,12 @@ class RequiredRelationshipConstructorBehavior implements ConstructorBehaviorInte
 
     public function getRequiredToOneRelationships(): array
     {
-        return $this->cardinality->equals(Cardinality::TO_ONE) ? [$this->argumentName => $this->relationshipType->getTypeName()] : [];
+        return $this->cardinality->equals(Cardinality::TO_ONE) ? [$this->argumentName => $this->getRelationshipType()->getTypeName()] : [];
     }
 
     public function getRequiredToManyRelationships(): array
     {
-        return !$this->cardinality->equals(Cardinality::TO_ONE) ? [$this->argumentName => $this->relationshipType->getTypeName()] : [];
+        return !$this->cardinality->equals(Cardinality::TO_ONE) ? [$this->argumentName => $this->getRelationshipType()->getTypeName()] : [];
     }
 
     public function getArguments(CreationDataInterface $entityData): array
@@ -94,5 +96,12 @@ class RequiredRelationshipConstructorBehavior implements ConstructorBehaviorInte
     public function getOptionalToManyRelationships(): array
     {
         return [];
+    }
+
+    protected function getRelationshipType(): NamedTypeInterface
+    {
+        return $this->relationshipType instanceof NamedTypeInterface
+            ? $this->relationshipType
+            : $this->relationshipType->getConfig();
     }
 }

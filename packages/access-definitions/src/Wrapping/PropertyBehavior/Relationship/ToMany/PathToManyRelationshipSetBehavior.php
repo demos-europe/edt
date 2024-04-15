@@ -7,6 +7,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\PathToManyRelationshipSetBehaviorFactory;
@@ -27,7 +28,7 @@ class PathToManyRelationshipSetBehavior extends AbstractToManyRelationshipSetBeh
      * @param class-string<TEntity> $entityClass
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param non-empty-list<non-empty-string> $propertyPath
      */
     public function __construct(
@@ -35,12 +36,12 @@ class PathToManyRelationshipSetBehavior extends AbstractToManyRelationshipSetBeh
         protected readonly string $entityClass,
         array $entityConditions,
         array $relationshipConditions,
-        protected readonly TransferableTypeInterface $relationshipType,
+        TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
         protected readonly array $propertyPath,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         OptionalField $optional
     ) {
-        parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
+        parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional, $relationshipType);
     }
 
     /**
@@ -60,11 +61,6 @@ class PathToManyRelationshipSetBehavior extends AbstractToManyRelationshipSetBeh
         return new PathToManyRelationshipSetBehaviorFactory($relationshipConditions, $optional, $propertyAccessor, $entityConditions);
     }
 
-    public function getRelationshipType(): TransferableTypeInterface
-    {
-        return $this->relationshipType;
-    }
-
     public function updateToManyRelationship(object $entity, array $relationships): array
     {
         $propertyPath = $this->propertyPath;
@@ -81,7 +77,7 @@ class PathToManyRelationshipSetBehavior extends AbstractToManyRelationshipSetBeh
     public function getDescription(): string
     {
         $propertyPathString = implode('.', $this->propertyPath);
-        $relationshipType = $this->relationshipType->getTypeName();
+        $relationshipType = $this->getRelationshipType()->getTypeName();
 
         return
             ($this->optional->equals(OptionalField::YES)

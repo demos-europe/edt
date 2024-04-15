@@ -7,6 +7,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToOne;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
+use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\PathToOneRelationshipSetBehaviorFactory;
@@ -27,7 +28,7 @@ class PathToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetBehav
      * @param class-string<TEntity> $entityClass
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param non-empty-list<non-empty-string> $propertyPath
      */
     public function __construct(
@@ -35,12 +36,12 @@ class PathToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetBehav
         protected readonly string $entityClass,
         array $entityConditions,
         array $relationshipConditions,
-        protected readonly TransferableTypeInterface $relationshipType,
+        TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
         protected readonly array $propertyPath,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         OptionalField $optional
     ) {
-        parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional);
+        parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional, $relationshipType);
     }
 
     /**
@@ -60,11 +61,6 @@ class PathToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetBehav
         return new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, $optional, $propertyAccessor, $entityConditions);
     }
 
-    public function getRelationshipType(): TransferableTypeInterface
-    {
-        return $this->relationshipType;
-    }
-
     public function updateToOneRelationship(object $entity, ?object $relationship): array
     {
         $propertyPath = $this->propertyPath;
@@ -80,7 +76,7 @@ class PathToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetBehav
     public function getDescription(): string
     {
         $propertyPathString = implode('.', $this->propertyPath);
-        $relationshipType = $this->relationshipType->getTypeName();
+        $relationshipType = $this->getRelationshipType()->getTypeName();
 
         return
             ($this->optional->equals(OptionalField::YES)
