@@ -74,21 +74,21 @@ class DynamicTransformer extends TransformerAbstract
     /**
      * @param non-empty-string $typeName
      * @param class-string<TEntity> $entityClass
-     * @param ResourceReadability<TCondition, TSorting, TEntity> $readabilityCollection
+     * @param ResourceReadability<TCondition, TSorting, TEntity> $readability
      *
      * @throws InvalidArgumentException
      */
     public function __construct(
         protected readonly string $typeName,
         protected readonly string $entityClass,
-        protected readonly ResourceReadability $readabilityCollection,
+        protected readonly ResourceReadability $readability,
         protected readonly MessageFormatter $messageFormatter,
         protected readonly ?LoggerInterface $logger
     ) {
-        $this->attributeReadabilities = $this->readabilityCollection->getAttributes();
-        $this->toOneRelationshipReadabilities = $this->readabilityCollection->getToOneRelationships();
-        $this->toManyRelationshipReadabilities = $this->readabilityCollection->getToManyRelationships();
-        $this->idReadability = $this->readabilityCollection->getIdentifierReadability();
+        $this->attributeReadabilities = $this->readability->getAttributes();
+        $this->toOneRelationshipReadabilities = $this->readability->getToOneRelationships();
+        $this->toManyRelationshipReadabilities = $this->readability->getToManyRelationships();
+        $this->idReadability = $this->readability->getIdentifierReadability();
 
         // TODO: why are only the attributes checked here? and why is not checked for the `type` string, which is also not allowed as attribute
         if (array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
