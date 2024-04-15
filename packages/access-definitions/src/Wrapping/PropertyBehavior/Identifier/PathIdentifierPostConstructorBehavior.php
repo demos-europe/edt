@@ -84,7 +84,7 @@ class PathIdentifierPostConstructorBehavior extends AbstractPropertySetBehavior 
     public function setIdentifier(object $entity, CreationDataInterface $entityData): array
     {
         $entityIdentifier = $entityData->getEntityIdentifier();
-        if ($this->hasPropertyValue($entityData)) {
+        if (!$this->hasPropertyValue($entityData)) {
             if (!$this->optional->equals(OptionalField::YES)) {
                 throw new InvalidArgumentException('Entity identifier must be provided.');
             }
