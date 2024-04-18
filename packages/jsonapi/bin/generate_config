@@ -1,0 +1,71 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use EDT\DqlQuerying\ClassGeneration\ResourceConfigBuilderFromEntityGenerator;
+use EDT\DqlQuerying\Contracts\OrderBySortMethodInterface;
+use EDT\JsonApi\ResourceConfig\Builder\TypeConfig;
+use EDT\Parsing\Utilities\Types\ClassOrInterfaceType;
+use EDT\Parsing\Utilities\Types\NonClassOrInterfaceType;
+use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
+use EDT\PathBuilding\PropertyTag;
+use EDT\PathBuilding\TraitEvaluator;
+use EDT\Querying\Contracts\FunctionInterface;
+
+if (version_compare(PHP_VERSION, '8.1.0') < 0) {
+    echo 'This script requires PHP 8.1 or higher.';
+    exit(1);
+}
+
+if ($argc < 3) {
+    echo "Usage: $argv[0] <ENTITY_CLASS> <NAMESPACE>\n";
+    exit(1);
+}
+
+$entityClass = $argv[1];
+
+require __DIR__ . '/../vendor/autoload.php';
+require dirname(__DIR__, 2) . '/autoload.php';
+
+if (!class_exists($entityClass)) {
+    echo "Entity class '$entityClass' could not be autoloaded.";
+    exit(1);
+}
+
+$conditionClass = ClassOrInterfaceType::fromFqcn(
+    FunctionInterface::class,
+    [NonClassOrInterfaceType::fromRawString('bool')]
+);
+$sortingClass = ClassOrInterfaceType::fromFqcn(OrderBySortMethodInterface::class);
+
+$traitEvaluator = new DocblockPropertyByTraitEvaluator(
+    new TraitEvaluator(),
+    [],
+    [PropertyTag::PROPERTY_READ]
+);
+
+$entityClass = ClassOrInterfaceType::fromFqcn($entityClass);
+$parentClass = ClassOrInterfaceType::fromFqcn(
+    TypeConfig::class,
+    [$conditionClass, $sortingClass, $entityClass]
+);
+$configGenerator = new ResourceConfigBuilderFromEntityGenerator(
+    $conditionClass,
+    $sortingClass,
+    $parentClass,
+    $traitEvaluator
+);
+
+$entityShortName = $entityClass->getShortClassName();
+$configBuilderClassName = "{$entityShortName}BasedResourceConfigBuilderTemplate";
+$configBuilderFile = $configGenerator->generateConfigBuilderClass(
+    $entityClass,
+    $configBuilderClassName,
+    $argv[2],
+    true
+);
+
+echo $configBuilderFile;
+
+exit(0);
