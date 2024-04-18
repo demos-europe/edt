@@ -6,7 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToOne;
 
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\CallbackToOneRelationshipSetBehaviorFactory;
@@ -25,16 +25,16 @@ class CallbackToOneRelationshipSetBehavior extends AbstractToOneRelationshipSetB
      * @param non-empty-string $propertyName
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param callable(TEntity, TRelationship|null): list<non-empty-string> $setterCallback
      */
     public function __construct(
-        string $propertyName,
-        array $entityConditions,
-        array $relationshipConditions,
-        TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
-        protected readonly mixed $setterCallback,
-        OptionalField $optional
+        string                                                      $propertyName,
+        array                                                       $entityConditions,
+        array                                                       $relationshipConditions,
+        TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType,
+        protected readonly mixed                                    $setterCallback,
+        OptionalField                                               $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional, $relationshipType);
     }

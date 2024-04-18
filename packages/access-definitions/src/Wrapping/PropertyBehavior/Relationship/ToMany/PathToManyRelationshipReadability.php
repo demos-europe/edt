@@ -6,7 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 
@@ -24,15 +24,15 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
     /**
      * @param class-string<TEntity> $entityClass
      * @param non-empty-list<non-empty-string> $propertyPath
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
-        protected readonly string $entityClass,
-        protected readonly array $propertyPath,
-        protected readonly bool $defaultField,
-        protected readonly bool $defaultInclude,
-        protected readonly TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
-        protected readonly PropertyAccessorInterface $propertyAccessor
+        protected readonly string                                                      $entityClass,
+        protected readonly array                                                       $propertyPath,
+        protected readonly bool                                                        $defaultField,
+        protected readonly bool                                                        $defaultInclude,
+        protected readonly TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType,
+        protected readonly PropertyAccessorInterface                                   $propertyAccessor
     ) {}
 
     public function isDefaultInclude(): bool
@@ -44,7 +44,7 @@ class PathToManyRelationshipReadability implements ToManyRelationshipReadability
     {
         return $this->relationshipType instanceof TransferableTypeInterface
             ? $this->relationshipType
-            : $this->relationshipType->getConfig();
+            : $this->relationshipType->getType();
     }
 
     public function isDefaultField(): bool

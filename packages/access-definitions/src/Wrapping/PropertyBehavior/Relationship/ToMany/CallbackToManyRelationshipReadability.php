@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 
@@ -23,13 +23,13 @@ class CallbackToManyRelationshipReadability implements ToManyRelationshipReadabi
 
     /**
      * @param callable(TEntity): iterable<TRelationship> $readCallback
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
-        protected readonly bool $defaultField,
-        protected readonly bool $defaultInclude,
-        protected readonly mixed $readCallback,
-        protected readonly TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
+        protected readonly bool                                                        $defaultField,
+        protected readonly bool                                                        $defaultInclude,
+        protected readonly mixed                                                       $readCallback,
+        protected readonly TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType,
     ) {}
 
     public function isDefaultInclude(): bool
@@ -41,7 +41,7 @@ class CallbackToManyRelationshipReadability implements ToManyRelationshipReadabi
     {
         return $this->relationshipType instanceof TransferableTypeInterface
             ? $this->relationshipType
-            : $this->relationshipType->getConfig();
+            : $this->relationshipType->getType();
     }
 
     public function isDefaultField(): bool

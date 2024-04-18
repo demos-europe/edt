@@ -6,7 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\CallbackToManyRelationshipSetBehaviorFactory;
@@ -25,16 +25,16 @@ class CallbackToManyRelationshipSetBehavior extends AbstractToManyRelationshipSe
      * @param non-empty-string $propertyName the exposed property name accepted by this instance
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param callable(TEntity, list<TRelationship>): list<non-empty-string> $setterCallback
      */
     public function __construct(
-        string $propertyName,
-        array $entityConditions,
-        array $relationshipConditions,
-        TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
-        protected readonly mixed $setterCallback,
-        OptionalField $optional = OptionalField::NO
+        string                                                      $propertyName,
+        array                                                       $entityConditions,
+        array                                                       $relationshipConditions,
+        TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType,
+        protected readonly mixed                                    $setterCallback,
+        OptionalField                                               $optional = OptionalField::NO
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional, $relationshipType);
     }

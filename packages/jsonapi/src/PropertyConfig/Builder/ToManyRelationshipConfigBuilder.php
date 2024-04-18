@@ -10,7 +10,7 @@ use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
+use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipReadability;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipSetBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\PathToManyRelationshipReadability;
@@ -112,11 +112,11 @@ class ToManyRelationshipConfigBuilder
              * @param non-empty-string $name
              * @param non-empty-list<non-empty-string> $propertyPath
              * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
              *
              * @return ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
              */
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceConfigProviderInterface $relationshipType): ToManyRelationshipReadabilityInterface
+            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceTypeProviderInterface $relationshipType): ToManyRelationshipReadabilityInterface
             {
                 return null === $this->customReadCallback
                     ? new PathToManyRelationshipReadability(

@@ -6,7 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship;
 
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 
 /**
@@ -21,11 +21,11 @@ interface RelationshipSetBehaviorFactoryInterface
      * @param non-empty-string $name
      * @param non-empty-list<non-empty-string> $propertyPath
      * @param class-string<TEntity> $entityClass
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      *
      * @return RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>
      */
-    public function __invoke(string $name, array $propertyPath, string $entityClass, TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType): RelationshipSetBehaviorInterface;
+    public function __invoke(string $name, array $propertyPath, string $entityClass, TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType): RelationshipSetBehaviorInterface;
 
     /**
      * @param non-empty-string $name

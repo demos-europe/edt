@@ -10,7 +10,7 @@ use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
+use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipReadability;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipSetBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipReadability;
@@ -112,11 +112,11 @@ class ToOneRelationshipConfigBuilder
              * @param non-empty-string $name
              * @param non-empty-list<non-empty-string> $propertyPath
              * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
              *
              * @return ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
              */
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceConfigProviderInterface $relationshipType): ToOneRelationshipReadabilityInterface
+            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceTypeProviderInterface $relationshipType): ToOneRelationshipReadabilityInterface
             {
                 return null === $this->customReadCallback
                     ? new PathToOneRelationshipReadability(

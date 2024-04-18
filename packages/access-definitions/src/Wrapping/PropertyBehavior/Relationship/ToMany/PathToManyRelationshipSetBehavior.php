@@ -7,7 +7,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToMany;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\Factory\PathToManyRelationshipSetBehaviorFactory;
@@ -28,18 +28,18 @@ class PathToManyRelationshipSetBehavior extends AbstractToManyRelationshipSetBeh
      * @param class-string<TEntity> $entityClass
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      * @param non-empty-list<non-empty-string> $propertyPath
      */
     public function __construct(
-        string $propertyName,
-        protected readonly string $entityClass,
-        array $entityConditions,
-        array $relationshipConditions,
-        TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType,
-        protected readonly array $propertyPath,
-        protected readonly PropertyAccessorInterface $propertyAccessor,
-        OptionalField $optional
+        string                                                      $propertyName,
+        protected readonly string                                   $entityClass,
+        array                                                       $entityConditions,
+        array                                                       $relationshipConditions,
+        TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType,
+        protected readonly array                                    $propertyPath,
+        protected readonly PropertyAccessorInterface                $propertyAccessor,
+        OptionalField                                               $optional
     ) {
         parent::__construct($propertyName, $entityConditions, $relationshipConditions, $optional, $relationshipType);
     }

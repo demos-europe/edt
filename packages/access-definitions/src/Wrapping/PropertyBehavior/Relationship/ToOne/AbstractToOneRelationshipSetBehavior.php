@@ -6,7 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship\ToOne;
 
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\EntityDataInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\AbstractRelationshipSetBehavior;
@@ -27,14 +27,14 @@ abstract class AbstractToOneRelationshipSetBehavior extends AbstractRelationship
      * @param non-empty-string $propertyName
      * @param list<TCondition> $entityConditions
      * @param list<TCondition> $relationshipConditions
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
         string $propertyName,
         array $entityConditions,
         protected readonly array $relationshipConditions,
         OptionalField $optional,
-        TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType
+        TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType
     ) {
         parent::__construct($propertyName, $entityConditions, $optional, $relationshipType);
     }

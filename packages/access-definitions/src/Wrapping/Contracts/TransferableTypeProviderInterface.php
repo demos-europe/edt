@@ -12,10 +12,10 @@ use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
-interface TransferableConfigProviderInterface
+interface TransferableTypeProviderInterface
 {
     /**
      * @return TransferableTypeInterface<TCondition, TSorting, TEntity>
      */
-    public function getConfig(): TransferableTypeInterface;
+    public function getType(): TransferableTypeInterface;
 }

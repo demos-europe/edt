@@ -52,10 +52,10 @@ class TypeConfigTest extends TestCase
         // if we can access authors via a book and the books from the accessed author
         // the intention is to test if the resource config builder can be build if it is configured in a circle and
         // does not for example get stuck in a recursion loop
-        $bookWrapper = new WrapperObject($book, $bookConfig->getConfig());
+        $bookWrapper = new WrapperObject($book, $bookConfig->getType());
         self::assertSame('Book', $bookWrapper->getTypeName());
         self::assertEquals($book, $bookWrapper->getEntity());
-        self::assertSame($bookConfig->getConfig(), $bookWrapper->getResourceType());
+        self::assertSame($bookConfig->getType(), $bookWrapper->getResourceType());
         /** @var WrapperObject $authorWrapper */
         $authorWrapper = $bookWrapper->getPropertyValue('author');
         self::assertEquals($author, $authorWrapper->getEntity());

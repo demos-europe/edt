@@ -6,7 +6,7 @@ namespace EDT\Wrapping\PropertyBehavior\Relationship;
 
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\TransferableConfigProviderInterface;
+use EDT\Wrapping\Contracts\TransferableTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\AbstractPropertySetBehavior;
 
@@ -24,13 +24,13 @@ abstract class AbstractRelationshipSetBehavior extends AbstractPropertySetBehavi
     /**
      * @param non-empty-string $propertyName
      * @param list<TCondition> $entityConditions
-     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, TRelationship>|TransferableTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
     public function __construct(
         string $propertyName,
         array $entityConditions,
         OptionalField $optional,
-        protected readonly TransferableTypeInterface|TransferableConfigProviderInterface $relationshipType
+        protected readonly TransferableTypeInterface|TransferableTypeProviderInterface $relationshipType
     ) {
         parent::__construct($propertyName, $entityConditions, $optional);
     }
@@ -39,6 +39,6 @@ abstract class AbstractRelationshipSetBehavior extends AbstractPropertySetBehavi
     {
         return $this->relationshipType instanceof TransferableTypeInterface
             ? $this->relationshipType
-            : $this->relationshipType->getConfig();
+            : $this->relationshipType->getType();
     }
 }

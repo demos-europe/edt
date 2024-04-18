@@ -11,7 +11,7 @@ use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\PropertyPaths\RelationshipLink;
-use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
+use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\Contracts\Types\FilteringTypeInterface;
 use EDT\Wrapping\Contracts\Types\SortingTypeInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
@@ -35,14 +35,14 @@ use Webmozart\Assert\Assert;
 abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder implements RelationshipConfigBuilderInterface
 {
      /**
-      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship>): TReadability
+      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship>): TReadability
       */
      protected $readabilityFactory;
 
     /**
-     * @var ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship>|null
+     * @var ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship>|null
      */
-    protected ResourceTypeInterface|ResourceConfigProviderInterface|null $relationshipType = null;
+    protected ResourceTypeInterface|ResourceTypeProviderInterface|null $relationshipType = null;
 
     /**
      * @param class-string<TEntity> $entityClass
@@ -54,7 +54,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
         parent::__construct($name);
     }
 
-    public function setRelationshipType(ResourceTypeInterface|ResourceConfigProviderInterface $relationshipType): self
+    public function setRelationshipType(ResourceTypeInterface|ResourceTypeProviderInterface $relationshipType): self
     {
         $this->relationshipType = $relationshipType;
 
@@ -88,9 +88,9 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @param FilteringTypeInterface|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param FilteringTypeInterface|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
-    protected function getFilterLink(FilteringTypeInterface|ResourceConfigProviderInterface $relationshipType): ?PropertyLinkInterface
+    protected function getFilterLink(FilteringTypeInterface|ResourceTypeProviderInterface $relationshipType): ?PropertyLinkInterface
     {
         if (!$this->filterable) {
             return null;
@@ -98,14 +98,14 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
 
         return new RelationshipLink(
             $this->getPropertyPath(),
-            static fn (): array => ($relationshipType instanceof FilteringTypeInterface ? $relationshipType : $relationshipType->getConfig())->getFilteringProperties()
+            static fn (): array => ($relationshipType instanceof FilteringTypeInterface ? $relationshipType : $relationshipType->getType())->getFilteringProperties()
         );
     }
 
     /**
-     * @param SortingTypeInterface<TCondition, TSorting>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param SortingTypeInterface<TCondition, TSorting>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      */
-    protected function getSortLink(SortingTypeInterface|ResourceConfigProviderInterface $relationshipType): ?PropertyLinkInterface
+    protected function getSortLink(SortingTypeInterface|ResourceTypeProviderInterface $relationshipType): ?PropertyLinkInterface
     {
         if (!$this->sortable) {
             return null;
@@ -113,7 +113,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
 
         return new RelationshipLink(
             $this->getPropertyPath(),
-            static fn (): array => ($relationshipType instanceof SortingTypeInterface ? $relationshipType : $relationshipType->getConfig())->getSortingProperties()
+            static fn (): array => ($relationshipType instanceof SortingTypeInterface ? $relationshipType : $relationshipType->getType())->getSortingProperties()
         );
     }
 
@@ -161,9 +161,9 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @return ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship>
+     * @return ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship>
      */
-    protected function getFinalRelationshipType(): ResourceTypeInterface|ResourceConfigProviderInterface
+    protected function getFinalRelationshipType(): ResourceTypeInterface|ResourceTypeProviderInterface
     {
         Assert::notNull($this->relationshipType, 'The relationship type must be set before a config can be build.');
 
@@ -171,11 +171,11 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceConfigProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
      *
      * @return TReadability|null
      */
-    protected function getReadability(ResourceTypeInterface|ResourceConfigProviderInterface $relationshipType): ?RelationshipReadabilityInterface
+    protected function getReadability(ResourceTypeInterface|ResourceTypeProviderInterface $relationshipType): ?RelationshipReadabilityInterface
     {
         return ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $relationshipType);
     }

@@ -11,7 +11,7 @@ use EDT\JsonApi\Utilities\PropertyBuilderFactory;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use EDT\Wrapping\Contracts\ContentField;
-use EDT\Wrapping\Contracts\ResourceConfigProviderInterface;
+use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
@@ -24,9 +24,9 @@ use function is_array;
  * @template TEntity of object
  *
  * @template-extends MagicResourceConfigBuilder<TCondition, TSorting, TEntity>
- * @template-implements ResourceConfigProviderInterface<TCondition, TSorting, TEntity>
+ * @template-implements ResourceTypeProviderInterface<TCondition, TSorting, TEntity>
  */
-class TypeConfig extends MagicResourceConfigBuilder implements ResourceConfigProviderInterface
+class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProviderInterface
 {
     /**
      * @var null|ResourceTypeInterface<TCondition, TSorting, TEntity>
@@ -121,7 +121,7 @@ class TypeConfig extends MagicResourceConfigBuilder implements ResourceConfigPro
      * Later changes to this config builder or its properties may or may not be reflected in previously returned config
      * instances.
      */
-    public function getConfig(): ResourceTypeInterface
+    public function getType(): ResourceTypeInterface
     {
         if (null === $this->correspondingType) {
             $config = $this->build();

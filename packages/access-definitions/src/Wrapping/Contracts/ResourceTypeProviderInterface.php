@@ -12,12 +12,12 @@ use EDT\Querying\Contracts\PathsBasedInterface;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends TransferableConfigProviderInterface<TCondition, TSorting, TEntity>
+ * @template-extends TransferableTypeProviderInterface<TCondition, TSorting, TEntity>
  */
-interface ResourceConfigProviderInterface extends TransferableConfigProviderInterface
+interface ResourceTypeProviderInterface extends TransferableTypeProviderInterface
 {
     /**
      * @return ResourceTypeInterface<TCondition, TSorting, TEntity>
      */
-    public function getConfig(): ResourceTypeInterface;
+    public function getType(): ResourceTypeInterface;
 }
