@@ -25,8 +25,6 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use function array_key_exists;
 
 /**
- * TODO: rename to `AbstractSchemaBuilder`
- *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object

@@ -1,0 +1,48 @@
+= Request handling
+
+// TODO
+WARNING: Work in progress
+
+Logically, the handling of a JSON:API request can be separated into two layers. The first one is to be implemented by the application. The second one is provided by the library:
+
+1. Processing the request until a `Symfony\Component\HttpFoundation\RequestStack` instance containing the request and the targeted resource type instance is available. Authorization checks to determine if the current user is allowed to access the targeted resource type with the given request at all must be done here. E.g. just because a type instance supports the deletion of its resources, doesn't mean that any user is allowed to delete any such resource they have access to. Afterward, control is passed to specific request class instances, that correspond to the received kind of request, as shown in <<request-kinds>>.
+2. Within the request class instance, the request processing is continued beyond what `Symfony\Component\HttpFoundation` provides. E.g. converting `filter`, `sort` and `page` parameters into objects for further usage. When the request data is prepared and decoupled from the request context, the methods of the determined type instance are used to execute the requested actions, e.g. fetching or updating resources.
+
+The following flowchart attempt to give a better overview of the first layer.
+
+[mermaid]
+ifdef::env-github[[source,mermaid]]
+....
+flowchart TD
+    A(start) -->|receive JSON:API request| B[retrieve $type instance of target resource type]
+    B --> X{determine\nrequest type}
+    X --> |$resourceType:GetableResourceType,\n$resourceId:non-empty-string| G[[GetRequest::getResource]]
+    X --> |$resourceType:ListableResourceType| L[[ListRequest::listResources]]
+    X --> |$resourceType:CreatableResourceType| C[[CreationRequest::createResource]]
+    X --> |$resourceType:UpdatableResourceType,\n$resourceId:non-empty-string| U[[UpdateRequest::updateResource]]
+    X --> |$resourceType:DeletableResourceType,\n$resourceId:non-empty-string| D[[DeletionRequest::deleteResource]]
+    G -- Item --> 200
+    L -- Collection --> 200
+    C -- ?Item --> Y1{"creation result\nexactly as requested\n(i.e. null)"}
+    U -- ?Item --> Y2{"update result\nexactly as requested\n(i.e. null)"}
+    Y1 --> |yes| 204
+    Y1 --> |no| 201
+    Y2 --> |yes| 204
+    Y2 --> |no| 200
+    D --> 204
+    200["Create 200 (ok) response"] --> Z
+    201["Create 201 (created) response"] --> Z
+    204["Create 204 (no content) response"] --> Z
+    Z(End)
+....
+
+Please note that methods in the type instances are not aware if they are called due to a received JSON:API request or in a different context.
+It is completely acceptable to utilize type implementations or the general concept in different environments, e.g. RPC requests.
+
+
+
+--
+
+// FIXME
+
+ For example within Symfony, each resource type string may be given its own route and within that route the retrieval of the correct `GetableTypeInterface` instance is hardcoded. Or a single route for all resource types may exist, dynamically retrieving the correct instance via the resource type string in the URL (i.e. `article`) from a dictionary.

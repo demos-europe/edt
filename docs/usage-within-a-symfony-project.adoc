@@ -1,4 +1,9 @@
 = Usage within a Symfony project
+:toc:
+:sectanchors:
+
+// TODO
+WARNING: Work in progress
 
 While using EDT is in no way limited to https://symfony.com/[Symfony] projects, it was developed with such background and thus its documentation (for now) focuses on this use case.
 
@@ -9,7 +14,7 @@ services as needed.
 
 == Handling requests
 
-To cover the five request types defined in the https://jsonapi.org/format/1.0/[JSON:API specification], EDT provides five corresponding classes in the `EDT\JsonApi\Requests` namespace, that can be defined as Symfony services.
+To cover the five different kinds of requests defined in the https://jsonapi.org/format/1.0/[JSON:API specification], EDT provides five corresponding classes in the `EDT\JsonApi\Requests` namespace, that can be defined as Symfony services.
 
 [source,php]
 ----

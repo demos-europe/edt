@@ -1,0 +1,170 @@
+= Extending from `AbstractResourceType`
+:toc:
+:sectanchors:
+
+
+// TODO
+WARNING: Work in progress
+
+== The `AbstractResourceType` class
+
+// TODO: rewrite
+
+It is important to not misunderstand the purpose of the `AbstractResourceType`.
+Even when extending `AbstractResourceType`, all the logical decisions that are necessary when implementing the interfaces mentioned in the previous section must still be made and correctly applied.
+However, what this abstract class attempts to do is giving some guidance and encouraging best practices in that process.
+By providing a standardized structure, specific parts of the logic can be exposed to be reusable in related tasks.
+
+To get a better understanding of what all of this means, the following code shows an example in which a specific resource type class was written for `comment` resources, extending from `AbstractResourceType`.
+
+Please note that using `CommentType` as name is just one possible naming approach.
+In your application you may prefer something else, like any combination of the terms `Comment`, `Resource`, `Type` and `Definition`, or something completely different.
+
+Likewise, the use of a specific class for each specific type of resource is just one possible way to utilize the `AbstractResourceType`.
+Instead, you could implement something like a single `ConfigurationBasedResourceDefinition`, which takes a resource type specific configuration file on instantiation.
+Thus, the class could be used for any resource type in your application, but instances would still be tailored to the specific resource type of which the configuration file was given on instantiation, i.e. `(new ConfigurationBasedResourceDefinition($commentConfiguration))->getTypeName()` returning `'comment'`.
+
+However, to keep things more simple, in this example we go with the `CommentType` shown below:
+
+[source,php]
+----
+class CommentType extends AbstractResourceType
+{
+    public function __construct(
+        protected readonly ConditionFactoryInterface $conditionFactory,
+        protected readonly PropertyBuilderFactory $propertyBuilderFactory,
+        protected readonly SchemaPathProcessor $schemaPathProcessor,
+        protected readonly RepositoryInterface $commentRepository,
+        protected readonly MessageFormatter $messageFormatter,
+        protected readonly User $currentUser
+    ) {}
+
+    protected function getSchemaPathProcessor(): SchemaPathProcessor
+    {
+        return $this->schemaPathProcessor;
+    }
+
+    protected function getRepository(): RepositoryInterface
+    {
+        return $this->commentRepository;
+    }
+
+    public function getTransformer(): TransformerAbstract
+    {
+        return new DynamicTransformer($this, $this->messageFormatter, null);
+    }
+
+    public function getEntityClass(): string
+    {
+        return Comment::class;
+    }
+
+    public function getTypeName(): string
+    {
+        return 'comment';
+    }
+
+    public function getAccessConditions(): array
+    {
+        if ($this->currentUser->isModerator()) {
+            return [];
+        }
+
+        $approvedCommentCondition = $this->conditionFactory->propertyHasValue(true, ['approved']);
+
+        return [$approvedCommentCondition];
+    }
+
+    protected function getDefaultSortMethods(): array
+    {
+        return [];
+    }
+
+    protected function getIdentifierPropertyPath(): array
+    {
+        return ['id'];
+    }
+
+    protected function getResourceConfig(): ResourceConfigInterface
+    {
+        $configBuilder = new CommentResourceConfigBuilder(
+            $this->getEntityClass(),
+            $this->propertyBuilderFactory
+        );
+
+        $configBuilder->id->readable();
+        $configBuilder->text->readable();
+
+        if ($this->currentUser->isModerator()) {
+            $configBuilder->approved
+                ->readable()
+                ->updatable();
+        }
+
+        return $configBuilder->build();
+    }
+}
+----
+
+[source,php]
+----
+
+/**
+ * @property-read AttributeConfigBuilderInterface<Comment> $text
+ * @property-read AttributeConfigBuilderInterface<Comment> $approved
+ */
+class CommentResourceConfigBuilder extends MagicResourceConfigBuilder
+{
+}
+----
+
+This class relies on various other classes and interfaces and explaining it fully is not in the scope of this section.
+The following subsections will expand on some methods to give a better idea of the purpose of resource type classes, but the important thing is that `CommentType` (in conjunction with its small `CommentResourceConfigBuilder` companion class) attempts to cover all considerations for that specific resource type and leaves considerations unrelated to `comment` resources (or resources at all) to the other classes.
+
+=== Resources and entities
+
+In the two classes above, there are multiple mentions of a `Comment` class.
+An instance of this class is the entity that provides the data for a single `comment` resource.
+What this means is that to generate the JSON for a single `comment` resource, a corresponding instance of the `Comment` class is needed to provide the data for that resource.
+
+The `CommentType` needs to be "aware" how `Comment` entity instances are to be used to return `comment` resources and how to write data into a `Comment` entity in case of an update or creation request.
+But it does not care where the `Comment` entities come from or how exactly data written into the entity finds its way into the database.
+Such is the responsibility of the `RepositoryInterface`, which in turn has no concept of resource types.
+
+Ideally the schema of the entity would be identical to that of the resource.
+This avoids additional steps in the `getResourceConfig` method to mitigate deviations.
+However, major deviations are possible too.
+
+E.g. your entity model may contain a `Product` class, covering a variety of different purchasable products, with its properties allowing to identify the kind of product.
+Based on this entity you could define a `book` resource.
+Products that are not books are skipped.
+For the `Product` instances that are considered valid `book` resources, the `name` property would be used as `title` attribute, the `manufactorer` property could be used as `publisher` and additional attributes like `author` or `pageCount` may be extracted from some kind of `metadata` property.
+
+==== Limiting the access to resources
+
+On a technical level the `getAccessConditions` method returns a list of conditions, which must all match an entity for it to be considered a valid resource.
+On a logical level this can be used to cover two cases.
+
+1. Excluding entities that are not to be considered resources at all (e.g. only specific `Product` entities are actual `book` resources). Such condition are usually static, i.e. not dependent on state like the current user or current date.
+2. Limiting entities by authorization, as done in the `CommentType`, by allowing  moderators to access any comment (an empty list of conditions is returned) and restricting other users to comments that have been approved for public visibility.
+
+By limiting the set of allowed entities, we automatically limit the set of allowed resources, as each resource needs an entity to retrieve its data from.
+
+=== Defining resource properties
+
+The `getResourceConfig` defines what properties are available and how they can be used. In the `CommentType` example the following configuration was done:
+
+* The `id` of the resource is always readable.
+* The `text` attribute is set to be always readable as well. The text of non-approved comments is still not available to non-moderators, because they don't have access to that resource at all and thus to none of its properties, as defined in the `getAccessConditions` method.
+* The `approved` attribute is only readable and updatable by moderators, so they are able to approve comments that adhere to the website's comment policy and hide such that do not.
+
+The showcase of capabilities of the property configuration within the `getResourceConfig` method were kept quite brief in this example.
+Beside simple readability and updatability, it can be used to handle values provided in creation requests, allow filtering and sorting of resources via specific properties, transform values when reading or writing them and define mappings between the schema of the resource and the schema of the underlying `Comment` class.
+Additionally, behavior can be defined that is to be executed independent of specific properties on update and creation requests.
+
+The `AbstractResourceType` implementation can not only use this schema definition to automatically handle requests like `GET /article/42`, but additionally exposes it for further usage, e.g. early request validation or to generate an https://swagger.io/specification/[OpenAPI specification].
+
+
+
+
+//TODO: explain the DynamicTransformer further (e.g. it is not required to be used, but works well with the AbstractResourceType

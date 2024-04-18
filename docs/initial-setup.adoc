@@ -1,5 +1,9 @@
 = Initial Setup
 :toc:
+:sectanchors:
+
+// TODO
+WARNING: Work in progress
 
 == Adding the composer packages
 
@@ -15,5 +19,40 @@ composer install demos-europe/edt-jsonapi demos-europe/edt-extra demos-europe/ed
 TODO
 
 == Writing the necessary glue code
+
+=== Setting up your controller class
+
+TODO
+
+=== Setting up fractal
+
+[source,php]
+----
+// The placeholder in your URL path representing the resource type name
+$urlResourceType = 'resourceType';
+// Upper limit to how many levels of included data are allowed.
+$recursionLimit = 20;
+
+$fractal = new Manager();
+$fractal->setSerializer(new JsonApiSerializer());
+$fractal->setRecursionLimit($recursionLimit);
+$rawIncludes = $this->request->get(UrlParameter::INCLUDE);
+$resourceType = $this->request->attributes->get($urlResourceType);
+// FIXME: $this->validateIncludes($rawIncludes, $resourceType);
+if (null === $rawIncludes) {
+    $rawIncludes = [];
+}
+$fractal->parseIncludes($rawIncludes);
+
+// the JSON:API specification does not support excludes, but Fractal does
+// $fractal->parseExcludes($this->request->get('exclude', ''));
+
+$sparseFieldset = $this->request->get(UrlParameter::FIELDS);
+if (null !== $fields) {
+    $fields = $this->fieldsValidator->validateFormat($fields);
+    // FIXME: $this->validateFieldsets($fields);
+    $fractal->parseFieldsets($fields);
+}
+----
 
 TODO

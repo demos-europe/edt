@@ -21,15 +21,22 @@ use function array_key_exists;
 
 
 /**
- * TODO: rename to `MagicSchemaBuilder`
+ * This class allows to configure a schema by exposing public properties, which property configuration instances.
  *
- * Expects subclasses to define attributes and relationships as `property-read` docblock tags.
+ * ```
+ * $schemaConfig->someProperty->setFilterable();
+ * ```
+ *
+ * It expects subclasses to define attributes and relationships as `property-read` docblock tags.
  *
  * ```
  * property-read AttributeConfigBuilderInterface<TCondition, TEntity> $title
  * property-read ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, Publisher> $publisher
  * property-read ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, Person> $authors
  * ```
+ *
+ * When a property is accessed the magic `__get` method will be used to return the correct property config builder
+ * instance for the accessed property name.
  *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
