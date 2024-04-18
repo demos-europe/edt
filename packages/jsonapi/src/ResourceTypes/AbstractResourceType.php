@@ -7,7 +7,6 @@ namespace EDT\JsonApi\ResourceTypes;
 use EDT\JsonApi\InputHandling\RepositoryInterface;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\ModifiedEntity;
-use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PathsBasedInterface;
@@ -16,8 +15,7 @@ use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\FetchableTypeInterface;
 use EDT\Wrapping\CreationDataInterface;
 use EDT\Wrapping\EntityDataInterface;
-use EDT\Wrapping\ResourceBehavior\ResourceReadability;
-use EDT\Wrapping\ResourceBehavior\ResourceUpdatability;
+use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Pagerfanta\Pagerfanta;
 
@@ -33,26 +31,6 @@ use Pagerfanta\Pagerfanta;
  */
 abstract class AbstractResourceType implements ResourceTypeInterface, FetchableTypeInterface, GetableTypeInterface, DeletableTypeInterface, CreatableTypeInterface
 {
-    public function getReadability(): ResourceReadability
-    {
-        return $this->getResourceConfig()->getReadability();
-    }
-
-    public function getFilteringProperties(): array
-    {
-        return $this->getResourceConfig()->getFilteringProperties();
-    }
-
-    public function getSortingProperties(): array
-    {
-        return $this->getResourceConfig()->getSortingProperties();
-    }
-
-    public function getUpdatability(): ResourceUpdatability
-    {
-        return $this->getResourceConfig()->getUpdatability();
-    }
-
     /**
      * @return RepositoryInterface<TCondition, TSorting, TEntity>
      */
@@ -82,7 +60,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
     public function getExpectedInitializationProperties(): ExpectedPropertyCollectionInterface
     {
-        return $this->getResourceConfig()->getInstantiability()->getExpectedProperties();
+        return $this->getInstantiability()->getExpectedProperties();
     }
 
     public function deleteEntity(string $entityIdentifier): void
@@ -94,7 +72,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
     public function createEntity(CreationDataInterface $entityData): ModifiedEntity
     {
-        $instantiability = $this->getResourceConfig()->getInstantiability();
+        $instantiability = $this->getInstantiability();
 
         [$entity, $requestDeviations] = $instantiability->initializeEntity($entityData);
         $idBasedDeviations = $instantiability->setIdentifier($entity, $entityData);
@@ -143,9 +121,9 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
     abstract protected function getDefaultSortMethods(): array;
 
     /**
-     * @return ResourceConfigInterface<TCondition, TSorting, TEntity>
+     * @return ResourceInstantiability<TEntity>
      */
-    abstract protected function getResourceConfig(): ResourceConfigInterface;
+    abstract protected function getInstantiability(): ResourceInstantiability;
 
     /**
      * Will change the paths of the given conditions and sort methods.

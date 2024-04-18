@@ -17,6 +17,15 @@ use Symfony\Component\Validator\Constraint;
  */
 interface ExpectedPropertyCollectionInterface
 {
+    public function isIdAllowed(): bool;
+
+    public function isIdRequired(): bool;
+
+    /**
+     * @return list<Constraint>
+     */
+    public function getIdConstraints(): array;
+
     /**
      * @param int<0, 8192> $validationLevelDepth
      *

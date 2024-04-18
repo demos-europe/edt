@@ -26,6 +26,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
+ * TODO: allow setting to limit maximum count of items? E.g. return error if 100000 items would be returned?
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  */

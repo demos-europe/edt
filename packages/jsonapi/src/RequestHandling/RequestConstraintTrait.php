@@ -33,7 +33,7 @@ trait RequestConstraintTrait
      *
      * @return list<Constraint>
      */
-    protected function getIdConstraints(?string $idValue): array
+    protected function getIdBaseConstraints(?string $idValue): array
     {
         $idConstraints = [
             new Assert\NotBlank(null, null, false, 'trim'),
@@ -73,7 +73,7 @@ trait RequestConstraintTrait
             new Assert\Type('array'),
             $this->getCollectionConstraintFactory()->exactMatch('relationship references', [
                 ContentField::TYPE => $this->getTypeIdentifierConstraints($typeIdentifier),
-                ContentField::ID => $this->getIdConstraints(null),
+                ContentField::ID => $this->getIdBaseConstraints(null),
             ]),
         ];
     }

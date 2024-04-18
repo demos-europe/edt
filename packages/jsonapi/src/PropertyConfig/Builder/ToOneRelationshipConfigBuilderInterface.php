@@ -7,51 +7,17 @@ namespace EDT\JsonApi\PropertyConfig\Builder;
 use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
+ * This interface defines configuration options that only available for to-one relationships.
+ *
+ * Besides that, its type itself can be used to denote a to-one relationship property.
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends ReadablePropertyConfigBuilderInterface<TEntity, TRelationship|null>
- * @template-extends RelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
+ * @template-extends RelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship, TRelationship|null>
  */
-interface ToOneRelationshipConfigBuilderInterface extends
-    PropertyConfigBuilderInterface,
-    ReadablePropertyConfigBuilderInterface,
-    RelationshipConfigBuilderInterface
+interface ToOneRelationshipConfigBuilderInterface extends RelationshipConfigBuilderInterface
 {
-    /**
-     * @param null|callable(TEntity): (TRelationship|null) $customReadCallback to be set if this property needs special handling when read
-     *
-     * @return $this
-     */
-    public function readable(
-        bool $defaultField = false,
-        callable $customReadCallback = null,
-        bool $defaultInclude = false
-    ): self;
-
-    /**
-     * @param list<TCondition> $entityConditions
-     * @param list<TCondition> $relationshipConditions
-     * @param null|callable(TEntity, TRelationship|null): list<non-empty-string> $updateCallback
-     *
-     * @return $this
-     */
-    public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): self;
-
-    /**
-     * @param null|callable(TEntity, TRelationship|null): list<non-empty-string> $postConstructorCallback
-     * @param non-empty-string|null $customConstructorArgumentName the name of the constructor parameter, or `null` if it is the same as the name of this property
-     * @param list<TCondition> $relationshipConditions
-     *
-     * @return $this
-     */
-    public function initializable(
-        bool $optionalAfterConstructor = false,
-        callable $postConstructorCallback = null,
-        bool $constructorArgument = false,
-        ?string $customConstructorArgumentName = null,
-        array $relationshipConditions = []
-    ): self;
 }

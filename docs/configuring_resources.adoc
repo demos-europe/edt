@@ -1,0 +1,368 @@
+= Configuring Resources
+:toc:
+:sectanchors:
+
+// TODO: add more Q&As
+
+The greater the divergence between the schema of your entities and the schema of your resources is, the more code is necessary to configure your resources accordingly.
+Sophisticated authorizations will have additionally influence on your configuration's complexity.
+This page will go through different cases and how to approach them using the library's highest level of abstraction, i.e. using resource config builders.
+
+There are other, increasingly lower level approaches that allow for more customization with the cost of more complexity, but for most use cases, the usage of config builders should suffice.
+
+[[config-builder-prep]]
+== What preparations are needed to configure a resource at all?
+
+To start configuring a resource you need to create a child class of `ResourceConfigBuilder`, corresponding to your entity.
+Of this class you then create an instance that you can configure.
+
+You could create this class completely xref:config-builder-manually[manually], but it is recommended to xref:config-builder-generated[generate] it from the entity.
+
+[[config-builder-manually]]
+== How can I create a config builder class for my resources manually?
+
+Extend a new class from `ResourceConfigBuilder` and add all resource properties you want to expose as `@property-read` docblock tags in the class docblock.
+You can select from four different types of properties:
+
+* identifier
+* attribute
+* to-one relationship
+* to-many relationship
+
+Consider the following example, created for a `Book` entity.
+
+[source,php]
+----
+
+/**
+ * @template-extends ResourceConfigBuilder<Book>
+ *
+ * @property-read IdentifierConfigBuilderInterface<Book> $id
+ * @property-read AttributeConfigBuilderInterface<Book> $title
+ * @property-read ToOneRelationshipConfigBuilderInterface<Book,Person> $publisher
+ * @property-read ToManyRelationshipConfigBuilderInterface<Book,Organisation> $authors
+ */
+class BookBasedResourceConfigBuilder extends ResourceConfigBuilder {}
+----
+
+You can add any property you like this way with any of the four types, without yet being limited by properties in the corresponding `Book` entity.
+However, none of these properties will be automatically exposed in any way and when you configure them, you need to define how properties behave whose name or type differ from the properties in your entity.
+
+=== Template Parameters
+
+The first template parameter (`Book` in this example) needs to be the entity class this configuration builder is written for.
+I.e. to configure a `Book` resource, which is backed by a `Book` entity, we need to write a `ResourceConfigBuilder` class that corresponds to the `Book` entity.
+A second template parameter is only needed for relationship properties and denotes the type of the target entity of the relationship.
+
+To reiterate the last point: the properties you add to the docblock this way are the properties you can expose in your resources, but their template parameters are the underlying entity classes.
+
+Those template parameters are needed to properly type-hint your code, so that static code analysers like phpstan have a better chance to detect subtle errors in your configuration without even executing it.
+
+=== Type of the stored data
+
+Please note that neither the attribute, nor relationship definitions shown above specify the exact data types returned at runtime.
+However, there are some implicit limitations in place that are evaluated at runtime when the actual data is handled:
+
+* the identifier is required to be a non-empty string by the JSON:API specification
+* attributes can only be primitive data types or (potentially nested) arrays containing such
+* to-one relationships must be a single entity instance or `null`
+* to-many relationships must be a collection of entities
+
+[[config-builder-generated]]
+== How do I generate a config builder class for my resources?
+
+Instead of writing resource config builder classes <<config-builder-manually,manually>>, you can also generate them from your entity classes.
+
+The generated resource config builder class will contain all entity properties, that are marked with Doctrine mapping attributes/annotations:
+
+* `IdentifierConfigBuilderInterface`: not generated, but automatically present with the name `id`, via the parent of the generated class
+* `AttributeConfigBuilderInterface`: property in entity marked as Doctrine `Column`
+* `ToOneRelationshipConfigBuilderInterface`: property in entity marked as Doctrine `OneToOne` or `ManyToOne`
+* `ToOneRelationshipConfigBuilderInterface`: property in entity marked as Doctrine `OneToMany` or `ManyToMany`
+
+After having added this library as dependency to your project and executing `composer dump-autoload`, you can generate a resource config builder template from one of your entities by executing the following command in your project's root directory (where your own `composer.json` typically resides).
+Executing it from a different directory may hinder some class loading necessary for the command to work.
+
+[source,bash]
+----
+./vendor/demos-europe/edt-json/bin/generate_type_config <entity_class> <namespace>
+----
+
+The `entity_class` parameter needs to be set to the fully qualified class name on which the generated resource config builder class should be based on.
+The `namespace` parameter is used as namespace of the generated resource config builder class, it is completely independent of the namespace of your entity.
+The command will print the generated class to the stdout and exits with 0 on success and 1 on failure, for are encouraged to check automatically.
+
+For example, if you want to create config builder class for a `Book` entity with the fully qualified class name `Store\Items\Book` and you want the generated class to reside in the namespace `Store\Api\Builder`, the command to execute may look like this:
+
+[source,bash]
+----
+./vendor/demos-europe/edt-json/bin/generate_type_config "Items\Book" "Api" \
+    > "src/Api/BookBasedResourceBuilder.php" && \
+    echo "success" || echo "failure"
+----
+
+For qmore complex use cases, the script will not be sufficient, and you are encouraged to use the underlying `ResourceConfigBuilderFromEntityGenerator` class manually.
+For more details, please refer to its usage in the `generate_type_config` script and its class documentation.
+
+[[add-property]]
+== How should I add a property to a config builder, that does not correspond to any property in the entity?
+
+After <<config-builder-generated,generating the config builder>> it will contain definitions for configurable resource properties corresponding to the Doctrine properties in your entity.
+However, you may also want to add other properties to your resource than those in your entity.
+
+If you write the resource configuration class <<config-builder-manually,manually>>, you can just add them like any other property to it.
+But if you generated the config builder class from your entity, it is recommended to not simply add them to the generated class, but to extend from the generated class in a manually written child class and add them there.
+This way, when you re-generate the parent class, it will not accidentally remove the new properties in your child class.
+
+Implementing a child class of the generated class is done in the same manner as writing it <<config-builder-manually,manually>> in the first place.
+However, please note that you only need to add those properties to the child class that are not already defined in the parent.
+You do not need to re-define the properties that were already defined in the parent class, except if you want to <<override-property,change their type>>.
+
+[[override-property]]
+== How can I change the type of a property in the generated resource config builder?
+
+As explained in <<config-builder-manually>> resource properties set up to be configured have different types.
+When <<config-builder-generated,generating>> config builder classes the types used for the generated properties depend on the Doctrine annotation/attribute on the property
+
+In rare cases your entity may contain a property with the same name you want to use in your resource type, but you don't want to expose it with the same property type it is set up with in the entity.
+To do so you can override the property with the desired type, as explained in <<add-property>>.
+The added property will override any property with the same name in any parent class, interface or trait.
+When accessing a property of the resource config builder instance, the type will be the one of the property that is not overridden by any other property.
+
+For <<config-builder-manually,manually>> written config builder classes you can simply add the property to your resource config builder, using the correct type in the first place.
+
+[[manytomany-as-to-one-relationship]]
+=== Example case A: exposing an entity `ManyToMany` property as resource to-one relationship property
+
+Your application may contain `User` and `Department` entities.
+Due to business logic requirements having changed over time, the current entity model allows that a `User` is connected to `Department` entities in a many-to-many relationship, i.e. a single user could in theory be connected to multiple departments.
+However, in practice this is not used anymore or even wanted in the application.
+Soon the Doctrine `ManyToMany` relationship in the `User` entity will be refactored to a `ManyToOne` relationship, and the relationship name in `User` was already adjusted from `departments` to `department` accordingly.
+
+When <<config-builder-generated,generating>> the property config class, the generator will detect the `ManyToMany` annotation in the `User` entity class and generate a corresponding `@property-read ToManyRelationshipConfigBuilderInterface<User, Department> $department` line in the resource config builder class.
+However, this would limit you to configure and expose the resource property `department` as to-many relationship, which is not reasonable, knowing that it should already be exposed as to-one relationship, with the database model pending for refactoring.
+Instead, you can simply add the desired line `@property-read ToOneRelationshipConfigBuilderInterface<User, Department> $department` to a class extending from the generated config builder class.
+
+When configuring the property, make sure to set a custom readability, e.g. via a `callable`.
+If you use `setReadableByPath` on a `ToOneRelationshipConfigBuilderInterface<User, Department>` instance, the implementation will expect the actual value read from the entity instance at runtime to be either `null` or `Department`, but due to the unfinished refactoring of your database model, Doctrine would provide a `Collection` instead.
+The following configuration example shows how your readability may be implemented:
+
+[source,php]
+----
+$userConfig->department
+    ->setRelationshipType($departmentConfig)
+    ->setReadableByCallable(static function (User $user): ?Department {
+        $department = $user->getDepartments()->first();
+        return false === $department ? null : $department;
+    });
+----
+
+As always when using custom callables, you need to consider compatibility when setting properties filterable or sortable.
+Using `setFilterable` in this example, with a relational model backing your entities, will not result in any problems. in thIn relational models you can set the property as filterable, and beside special cases like `it will work even if the backing
+
+[[column-as-to-one-relationship]]
+=== Example case B: exposing an entity `Column` property as resource to-one relationship property
+
+Let's assume your `Book` entity class contains a Doctrine `Column` `publisher` property, storing the identifier of a `Publisher` entity instance.
+The reason may be that `Publisher` is not stored in your database or even covered by Doctrine, but retrieved from a microservice instead.
+
+Generating a resource config builder class from the `Book` entity would leave you with a corresponding `@property-read AttributeConfigBuilderInterface<Book> $publisher` line.
+However, you want to hide the detail of different underlying datasources from the client, so it makes more sense to expose `publisher` as to-one relationship instead.
+
+Like in the previous example, you can just override the property in the child resource config builder class.
+The actual configuration of the property may look like this:
+
+[source,php]
+----
+$bookConfig->publisher
+    ->setRelationshipType($publisherConfig)
+    ->setReadableByCallable(static function (Book $book): Publisher {
+        $publisherId = $book->getPublisher();
+        return $this->retrievePublisherEntityFromMicroservice($publisherId);
+    });
+----
+
+[[aliases]]
+== How do I expose a resource property with a different name/location than the one in the corresponding entity?
+
+The most effective way to adjust the schema of your entities when exposing them to clients as resources is the usage of aliases.
+You first <<add-property,add a property to the resource config builder>> that is to be exposed to the client.
+
+When using methods `setReadableByPath`, `setFilterable`, `setSortable`, `addUpdatabableByPath` and `addPathCreationBehavior()`, the library expects the corresponding value to be available via a `Doctrine` property in the entity class corresponding to your resource.
+
+Using `setAliasedPath` changes this behavior.
+With this method you can set the path that should be used instead of the resource property name when retrieving the value from the entity.
+I.e. it sets the path to the entity property, that your resource property is an alias for.
+
+For example, to reference its publisher your `Book` entity may contain a to-many relationship `organisation` to the `Organisation` entity.
+However, when exposing `Book` resources you may want to improve on that and instead of exposing a `organisation` relationship you want to use `publisher` as resource property name.
+
+[source,php]
+----
+$bookConfig->authors
+    ->setRelationshipType($publisherConfig)
+    ->setAliasedPath(['organisation'])
+    ->setReadableByPath()
+    ->setFilterable()
+    ->setSortable()
+    ->addPathUpdateBehavior()
+    ->addPathCreationBehavior();
+----
+
+In this example, reading, filtering, sorting, updates and setting values on resource creations will now use the set path to the `organisation` entity property instead of trying to access any `author` entity propery.
+
+Another example could be your `Book` entity not containing the relationship to its authors directly, but instead referencing a `BookMeta` entity via the `meta` property, which in turn contains the to-many `persons` relationship to `Person` entities.
+
+[source,php]
+----
+$config->authors
+    ->setRelationshipType($authorConfig)
+    ->setAliasedPath(['meta', 'persons'])
+    ->setReadableByPath()
+    ->setFilterable()
+    ->addPathUpdateBehavior()
+    ->addPathCreationBehavior();
+----
+
+When using aliases, please consider the following:
+
+* The general limitation of to-many relationships and sortability still applies. Comparing entities (i.e. sorting them) by a set of values (i.e. the values in a to-many relationship) is currently not supported.
+* If you direct a resource property that is defined as to-one relationship to a to-many entity relationship (or the other way around), the behavior will be undefined. You can however e.g. <<override-property,define a to-many relationship in your resource config builder, even if the corresponding property name in the entity is a to-one relationship>>. When configuring this to-many resource property you can then set it as aliased by a path leading to a backing to-many entity relationship with an entity type matching your resource property.
+* In the examples above we used simple arrays to define the paths, but you may prefer the usage of the paths-utilities.
+// FIXME: add link to paths-utilities documentation
+* As mentioned previously, the path you define must be valid in your Doctrine schema. I.e. except for the last path segment, all others must be set up as Doctrine relationships in your entity.
+* The aliased path will always be applied in the entity schema, you can't set a path to another resource property.
+
+== How do I expose a readable resource property without having a corresponding entity property?
+
+Let's assume you want to add a `localPrice` and `localCurrency` to your `Book` resource.
+These properties will allow to not just show the price of the book in the currency stored in your database (e.g. dollar), but to automatically calculate the price in a different currency, based on the location of the requesting user.
+
+First, the new `localPrice` and `localCurrency` resource properties need to be xref:add-property[added to your config builder class], to be able to expose them.
+
+The following example shows the code in case of a class extending from the generated resource config builder class:
+
+[source,php]
+----
+/**
+ * @property-read AttributeConfigBuilderInterface<Book> $localPrice
+ * @property-read AttributeConfigBuilderInterface<Book> $localCurrency
+ */
+class BookResourceConfigBuilder extends BookBasedResourceConfigBuilder {}
+----
+
+Now that you defined a property to be configured, you can actually configure it.
+To do so we define a callable that automatically generates the desired value for the property at runtime.
+The current `Book` entity instance for which the value is used for, is provided to your `callable`:
+
+[source,php]
+----
+$bookConfig = new BookResourceConfigBuilder($propertyFactory);
+$bookConfig->localPrice
+    ->setReadableByCallable(
+        fn (Book $book): float => $this->convertToLocalCurrencyValue($book->getPrice())
+    );
+$bookConfig->localCurrency
+    ->setReadableByCallable(
+        fn (Book $book): string => $this->determineLocalCurrencyName()
+    );
+----
+
+Implementing `convertToLocalCurrencyValue` and `determineLocalCurrencyName` (i.e. detecting the target currency and converting the value) is your responsibility.
+The library will simply use the returned value when the resource is requested.
+
+WARNING: It is currently not possible to set this property filterable or sortable, because for that the library requires a property to be present in the database.
+
+[[authorization]]
+== How can I change the resource configuration based on authorization?
+
+This library is kept indifferent to your authentication and authorization system.
+When a request is received, the library simply expect a resource configuration to be applied for that specific request and behaves according to that configuration when the request is processed.
+
+Hence, if you want to expose different schemas or behaviors to different users, you would simply add `if` statements when writing the logic to configure your resources and execute it when the request is received and the authorizations are clear to you.
+The created resource configuration, tailored for the user of the current request, can then be applied by this library.
+
+In the following example, a `Book` resource is exposed, but differently for different users.
+E.g. all users can read the book's price adjusted by a hidden factor, but only administrators can see and change the underlying base price of the book.
+
+[source,php]
+----
+$bookConfig->id
+    ->setReadableByPath();
+$bookConfig->title
+    ->setReadableByPath()
+    ->setSortable()
+    ->setFilterable();
+$bookConfig->price
+    ->setReadableByCallable(fn ($book) => $book->getPrice() * $hiddenFactor));
+$bookConfig->author
+    ->setRelationshipType($authorConfig)
+    ->setReadableByPath();
+
+if ($this->isCurrentUserAdmin()) { <1>
+    $bookConfig->basePrice <5>
+        ->setReadableByPath()
+        ->addPathUpdateBehavior();
+    $bookConfig->author
+        ->addPathUpdateBehavior(); <2>
+}
+----
+<1> The implementation of the `isCurrentUserAdmin` in this example completely falls under your responsibility.
+<2> The `author` resource property was already configured in the previous lines, but now it is set as updatable. This call will not replace the previous configuration, but extends it.
+
+== How can I limit the entity instances, that are exposed as resources?
+
+Many methods allow to define a list of conditions to be evaluated against entities.
+For example on every resource config builder the `setAccessConditions` method exists, independent of the resource's properties.
+When not set at all or set to an empty list, you don't define any conditions that must be met by the underlying entities, i.e. requests to this resource will have access to all entities corresponding to that resource in your database, each resource representing one entity instance.
+
+To limit the set of entity instances, that are represented by a resource, you can add conditions, created by the condition factory.
+
+A simple example would be to having a `deleted` property in your entity, but not considering entities with that property set to `true` as actual resource.
+
+[source,php]
+----
+$commentConfig->id->setReadableByPath();
+$commentConfig->text->setReadableByPath();
+$commentConfig->setAccessConditions([
+    $conditionFactory->propertyHasValue(false, 'deleted'),
+]);
+----
+
+For a more complex example let's assume a `Comment` entity in your application, containing a `reviewed` property, implying if the comment was reviewed by a moderator or not.
+Only reviewed comments should be exposed to normal users, with moderators having access to both reviewed and non-reviewed comments. Differentiating between different users is explained in more detail in <<authorization>>.
+
+[source,php]
+----
+if ($this->isCurrentUserModerator()) {
+    $accessConditions = [];
+    $commentConfig->reviewed
+        ->setReadableByPath()
+        ->addPathUpdateBehavior();
+} else {
+    $accessConditions = [
+        $conditionFactory->propertyHasValue(true, 'reviewed'),
+    ];
+}
+
+$commentConfig->id->setReadableByPath();
+$commentConfig->text->setReadableByPath();
+$commentConfig->setAccessConditions($accessConditions);
+----
+
+You could of course use a completely different style, creating the same configuration.
+For example first distinguishing between moderators and non-moderators and defining the full configuration twice, with some duplication between them.
+
+An entity must match all conditions in the list to be considered as resource, if it does not, it will be skipped and not be available via the web-API.
+
+The condition factory provides many different evaluation approaches and is an integral tool to express access restrictions.
+Thus, it becomes especially relevant in applications with many different user roles, each having their own set of authorizations.
+
+--
+
+// FIXME: add the information below somewhere in the documentation
+
+//This allows to focus on a single resource type when writing its configuration.
+//I.e. for the `Book` resources you consider the authorizations of your web-API users and decide what `Book` resource properties should be usable in which way, including the relationship to the `Author` resource.
+//But you do not concern yourself with the details of the `Author` resource yet.
+//Likewise, when configuring the `Author` resources, you don't need to mind the details of the `Book` resources and can focus on the security considerations of the `Author` resources only.

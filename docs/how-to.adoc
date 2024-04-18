@@ -1,5 +1,8 @@
 = How-to
 
+// TODO
+WARNING: Work in progress
+
 == How to add custom Drupal filter operators
 
 The library provides the `PredefinedDrupalConditionFactory` class, which already supports multiple common operators.

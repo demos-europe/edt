@@ -6,7 +6,6 @@ namespace EDT\JsonApi\OutputHandling;
 
 use EDT\JsonApi\RequestHandling\MessageFormatter;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
@@ -15,6 +14,7 @@ use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
+use EDT\Wrapping\ResourceBehavior\ResourceReadability;
 use Exception;
 use InvalidArgumentException;
 use League\Fractal\ParamBag;
@@ -72,24 +72,27 @@ class DynamicTransformer extends TransformerAbstract
     private IdentifierReadabilityInterface $idReadability;
 
     /**
-     * @param TransferableTypeInterface<TCondition, TSorting, TEntity> $type
+     * @param non-empty-string $typeName
+     * @param class-string<TEntity> $entityClass
+     * @param ResourceReadability<TCondition, TSorting, TEntity> $readability
      *
      * @throws InvalidArgumentException
      */
     public function __construct(
-        protected readonly TransferableTypeInterface $type,
+        protected readonly string $typeName,
+        protected readonly string $entityClass,
+        protected readonly ResourceReadability $readability,
         protected readonly MessageFormatter $messageFormatter,
         protected readonly ?LoggerInterface $logger
     ) {
-        $readabilityCollection = $this->type->getReadability();
-        $this->attributeReadabilities = $readabilityCollection->getAttributes();
-        $this->toOneRelationshipReadabilities = $readabilityCollection->getToOneRelationships();
-        $this->toManyRelationshipReadabilities = $readabilityCollection->getToManyRelationships();
-        $this->idReadability = $readabilityCollection->getIdentifierReadability();
+        $this->attributeReadabilities = $this->readability->getAttributes();
+        $this->toOneRelationshipReadabilities = $this->readability->getToOneRelationships();
+        $this->toManyRelationshipReadabilities = $this->readability->getToManyRelationships();
+        $this->idReadability = $this->readability->getIdentifierReadability();
 
         // TODO: why are only the attributes checked here? and why is not checked for the `type` string, which is also not allowed as attribute
         if (array_key_exists(ContentField::ID, $this->attributeReadabilities)) {
-            throw IdAttributeConflictException::create($type->getTypeName());
+            throw IdAttributeConflictException::create($this->typeName);
         }
 
         $relationshipReadabilities = array_merge(
@@ -99,8 +102,8 @@ class DynamicTransformer extends TransformerAbstract
 
         $this->setAvailableIncludes(array_keys($relationshipReadabilities));
         $this->setDefaultIncludes(array_keys(array_filter(
-            $relationshipReadabilities,
-            static fn (RelationshipReadabilityInterface $readability): bool => $readability->isDefaultInclude()))
+                $relationshipReadabilities,
+                static fn (RelationshipReadabilityInterface $readability): bool => $readability->isDefaultInclude()))
         );
     }
 
@@ -121,7 +124,7 @@ class DynamicTransformer extends TransformerAbstract
     {
         $scope = $this->getCurrentScope();
         Assert::notNull($scope);
-        Assert::isInstanceOf($entity, $this->type->getEntityClass());
+        Assert::isInstanceOf($entity, $this->entityClass);
 
         $effectiveAttributes = $this->getEffectiveAttributeReadabilities($scope);
         $effectiveAttributes[ContentField::ID] = $this->idReadability;
@@ -161,7 +164,7 @@ class DynamicTransformer extends TransformerAbstract
 
             [$entity, $paramBag] = $arguments;
 
-            Assert::isInstanceOf($entity, $this->type->getEntityClass());
+            Assert::isInstanceOf($entity, $this->entityClass);
             Assert::isInstanceOf($paramBag, ParamBag::class);
 
             if (array_key_exists($includeName, $this->toOneRelationshipReadabilities)) {
@@ -229,7 +232,9 @@ class DynamicTransformer extends TransformerAbstract
     protected function createRelationshipTransformer(TransferableTypeInterface $relationshipType): TransformerAbstract
     {
         return new DynamicTransformer(
-            $relationshipType,
+            $relationshipType->getTypeName(),
+            $relationshipType->getEntityClass(),
+            $relationshipType->getReadability(),
             $this->messageFormatter,
             $this->logger
         );
@@ -304,7 +309,7 @@ class DynamicTransformer extends TransformerAbstract
     protected function createIncludeErrorMessage(array $notAvailableIncludes): string
     {
         $notAvailableIncludesString = $this->messageFormatter->propertiesToString($notAvailableIncludes);
-        $message = "The following requested includes are not available in the resource type '{$this->type->getTypeName()}': $notAvailableIncludesString.";
+        $message = "The following requested includes are not available in the resource type '$this->typeName': $notAvailableIncludesString.";
 
         if ([] !== $this->availableIncludes) {
             $availableIncludesString = $this->messageFormatter->propertiesToString($this->availableIncludes);
@@ -327,7 +332,7 @@ class DynamicTransformer extends TransformerAbstract
      */
     protected function getEffectiveAttributeReadabilities(Scope $scope): array
     {
-        $fieldsetBag = $scope->getManager()->getFieldset($this->type->getTypeName());
+        $fieldsetBag = $scope->getManager()->getFieldset($this->typeName);
         if (null === $fieldsetBag) {
             // if no fieldset was requested, return default attribute fields
             return array_filter(

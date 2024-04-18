@@ -26,12 +26,12 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 interface ResourceConfigBuilderInterface
 {
     /**
-     * @return IdentifierConfigBuilderInterface<TEntity>|null
+     * @return IdentifierConfigBuilderInterface<TEntity, TCondition>|null
      */
     public function getIdentifierConfigBuilder(): ?IdentifierConfigBuilderInterface;
 
     /**
-     * @param IdentifierConfigBuilder<TEntity> $builder
+     * @param IdentifierConfigBuilder<TEntity, TCondition> $builder
      */
     public function setIdentifierConfigBuilder(IdentifierConfigBuilder $builder): void;
 
@@ -83,8 +83,17 @@ interface ResourceConfigBuilderInterface
      * @param PropertySetBehaviorInterface<TEntity> $behavior
      *
      * @return $this
+     *
+     * @deprecated use {@link addCreationBehavior} instead
      */
     public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): self;
+
+    /**
+     * @param PropertySetBehaviorInterface<TEntity> $behavior
+     *
+     * @return $this
+     */
+    public function addCreationBehavior(PropertySetBehaviorInterface $behavior): self;
 
     /**
      * @param PropertyUpdatabilityInterface<TCondition, TEntity> $updateBehavior
@@ -92,6 +101,16 @@ interface ResourceConfigBuilderInterface
      * @return $this
      */
     public function addUpdateBehavior(PropertyUpdatabilityInterface $updateBehavior): self;
+
+    /**
+     * @return $this
+     */
+    public function removeAllCreationBehaviors(): self;
+
+    /**
+     * @return $this
+     */
+    public function removeAllUpdateBehaviors(): self;
 
     /**
      * @return ResourceConfigInterface<TCondition, TSorting, TEntity>

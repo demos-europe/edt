@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
+use EDT\JsonApi\ApiDocumentation\DefaultField;
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\AttributeConfigInterface;
 use EDT\JsonApi\PropertyConfig\DtoAttributeConfig;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
-use EDT\Wrapping\Contracts\ContentField;
+use EDT\Wrapping\PropertyBehavior\Attribute\AttributeConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\CallbackAttributeReadability;
-use EDT\Wrapping\PropertyBehavior\Attribute\Factory\AttributeConstructorBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\Factory\CallbackAttributeSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\Factory\PathAttributeSetBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeReadability;
@@ -23,7 +24,6 @@ use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
-use Webmozart\Assert\Assert;
 
 /**
  * @template TCondition of PathsBasedInterface
@@ -31,30 +31,18 @@ use Webmozart\Assert\Assert;
  *
  * @template-implements AttributeConfigBuilderInterface<TCondition, TEntity>
  * @template-implements BuildableInterface<AttributeConfigInterface<TCondition, TEntity>>
+ * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>>
  */
 class AttributeConfigBuilder
     extends AbstractPropertyConfigBuilder
     implements AttributeConfigBuilderInterface, BuildableInterface
 {
     /**
+     * TODO: replace with interface and refactor to template-based property in parent?
+     *
      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>): AttributeReadabilityInterface<TEntity>
      */
     protected $readabilityFactory;
-
-    /**
-     * @var list<PropertyUpdatabilityFactoryInterface<TCondition>>
-     */
-    protected array $postConstructorBehaviorFactories = [];
-
-    /**
-     * @var list<PropertyUpdatabilityFactoryInterface<TCondition>>
-     */
-    protected array $updateBehaviorFactories = [];
-
-    /**
-     * @var list<ConstructorBehaviorFactoryInterface>
-     */
-    protected array $constructorBehaviorFactories = [];
 
     /**
      * @param non-empty-string $name
@@ -67,13 +55,8 @@ class AttributeConfigBuilder
         protected readonly AttributeTypeResolverInterface $typeResolver
     ) {
         parent::__construct($name);
-        Assert::notSame($this->name, ContentField::ID);
-        Assert::notSame($this->name, ContentField::TYPE);
     }
 
-    /**
-     * @return $this
-     */
     public function initializable(
         bool $optionalAfterConstructor = false,
         callable $postConstructorCallback = null,
@@ -82,30 +65,48 @@ class AttributeConfigBuilder
     ): self {
         if ($constructorArgument) {
             $this->addConstructorBehavior(
-                new AttributeConstructorBehaviorFactory(
-                    $customConstructorArgumentName,
-                    null
-                )
+                AttributeConstructorBehavior::createFactory($customConstructorArgumentName, OptionalField::NO, null)
             );
         }
 
-        $this->addPostConstructorBehavior(null === $postConstructorCallback
-            ? new PathAttributeSetBehaviorFactory($this->propertyAccessor, [], $optionalAfterConstructor)
-            : new CallbackAttributeSetBehaviorFactory([], $postConstructorCallback, $optionalAfterConstructor)
-        );
+        $optional = OptionalField::fromBoolean($optionalAfterConstructor);
 
-        return $this;
+        return null === $postConstructorCallback
+            ? $this->addPathCreationBehavior($optional)
+            : $this->addCreationBehavior(
+                new CallbackAttributeSetBehaviorFactory([], $postConstructorCallback, $optional)
+            );
     }
 
-    /**
-     * @param bool $defaultField the field is to be returned in responses by default
-     * @param null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null) $customReadCallback to be set if this property needs special handling when read
-     *
-     * @return $this
-     */
+    public function addPathCreationBehavior(OptionalField $optional = OptionalField::NO, array $entityConditions = []): self
+    {
+        return $this->addCreationBehavior(
+            new PathAttributeSetBehaviorFactory($this->propertyAccessor, $entityConditions, $optional)
+        );
+    }
+
+    public function addPathUpdateBehavior(array $entityConditions = []): self
+    {
+        return $this->addUpdateBehavior(
+            new PathAttributeSetBehaviorFactory($this->propertyAccessor, $entityConditions, OptionalField::YES)
+        );
+    }
+
+    public function setReadableByPath(DefaultField $defaultField = DefaultField::NO): self
+    {
+        return $this->readable($defaultField->equals(DefaultField::YES));
+    }
+
+    public function setReadableByCallable(callable $behavior, DefaultField $defaultField = DefaultField::NO): self
+    {
+        return $this->readable($defaultField->equals(DefaultField::YES), $behavior);
+    }
+
     public function readable(bool $defaultField = false, callable $customReadCallback = null): self
     {
-        $this->readabilityFactory = new class ($this->propertyAccessor, $this->typeResolver, $defaultField, $customReadCallback) {
+        // the usage of an invokable class instead of an anonymous function is complicated, but the only way to properly
+        // pass around phpstan types without using actual classes (which MAY be the better solution)
+        $this->readabilityFactory = new class ($this->propertyAccessor, $this->typeResolver, DefaultField::fromBoolean($defaultField), $customReadCallback) {
             /**
              * @var null|callable(TEntity): (simple_primitive|array<int|string, mixed>|null)
              */
@@ -117,7 +118,7 @@ class AttributeConfigBuilder
             public function __construct(
                 protected readonly PropertyAccessorInterface $propertyAccessor,
                 protected readonly AttributeTypeResolverInterface $typeResolver,
-                protected readonly bool $defaultField,
+                protected readonly DefaultField $defaultField,
                 callable $customReadCallback = null
             ) {
                 $this->customReadCallback = $customReadCallback;
@@ -150,15 +151,13 @@ class AttributeConfigBuilder
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function updatable(array $entityConditions = [], callable $updateCallback = null): AttributeConfigBuilderInterface
     {
-        return $this->addUpdateBehavior(null === $updateCallback
-            ? new PathAttributeSetBehaviorFactory($this->propertyAccessor, $entityConditions, true)
-            : new CallbackAttributeSetBehaviorFactory($entityConditions, $updateCallback, true)
-        );
+        return null === $updateCallback
+            ? $this->addPathUpdateBehavior($entityConditions)
+            : $this->addUpdateBehavior(
+                new CallbackAttributeSetBehaviorFactory($entityConditions, $updateCallback, OptionalField::YES)
+            );
     }
 
     public function build(): AttributeConfigInterface
@@ -180,23 +179,9 @@ class AttributeConfigBuilder
         );
     }
 
-    public function addConstructorBehavior(ConstructorBehaviorFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
+    public function setNonReadable(): self
     {
-        $this->constructorBehaviorFactories[] = $behaviorFactory;
-
-        return $this;
-    }
-
-    public function addPostConstructorBehavior(PropertyUpdatabilityFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
-    {
-        $this->postConstructorBehaviorFactories[] = $behaviorFactory;
-
-        return $this;
-    }
-
-    public function addUpdateBehavior(PropertyUpdatabilityFactoryInterface $behaviorFactory): AttributeConfigBuilderInterface
-    {
-        $this->updateBehaviorFactories[] = $behaviorFactory;
+        $this->readabilityFactory = null;
 
         return $this;
     }
@@ -208,7 +193,7 @@ class AttributeConfigBuilder
     {
         return array_map(fn (
             PropertyUpdatabilityFactoryInterface $factory
-        ): PropertySetBehaviorInterface => $factory->createUpdatability(
+        ): PropertySetBehaviorInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass
@@ -220,9 +205,7 @@ class AttributeConfigBuilder
      */
     protected function getConstructorBehaviors(): array
     {
-        return array_map(fn (
-            ConstructorBehaviorFactoryInterface $factory
-        ): ConstructorBehaviorInterface => $factory->createConstructorBehavior(
+        return array_map(fn (callable $factory): ConstructorBehaviorInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass
@@ -236,7 +219,7 @@ class AttributeConfigBuilder
     {
         return array_map(fn (
             PropertyUpdatabilityFactoryInterface $factory
-        ): PropertyUpdatabilityInterface => $factory->createUpdatability(
+        ): PropertyUpdatabilityInterface => $factory(
             $this->name,
             $this->getPropertyPath(),
             $this->entityClass

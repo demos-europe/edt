@@ -1,0 +1,35 @@
+= Implementing types
+:toc:
+:sectanchors:
+
+The actual request processing in this library is build around multiple so-called "Type" classes.
+For example to process a `get` access to a resource via its ID, an instance of `GetableTypeInterface` is needed by the library's request handling when the request is received at runtime.
+
+This page gives an overview of approaches as to how such instances can be created.
+Note that you could use a different approach for different types, depending on your requirements.
+
+1. xref:configuring_resources.adoc[Type config classes]: the most high level approach but still suited for most cases.
+First a config class is written or generated.
+At runtime an instance of this class is created and configured via method calls.
+When the configuration is finished it can be used to create a type instance implementing multiple interfaces, including `GetableTypeInterface`.
+The methods to configure the type tries to guide the developer into using best practices.
+2. xref:extend-abstract-type.adoc[Extending `AbstractResourceType`]: like the type config classes, the `AbstractResourceType` tries to give some guidance.
+But instead of defining the behavior by calling methods, you implement abstract methods that return the defined behavior.
+You can combine your `AbstractResourceType` implementation with the usage of a schema config class.
+By doing so, the major difference to the type config class approach is that when extending from `AbstractResourceType` you need a separate class for each type, whereas using type config classes you have the possibility to define all type configuration in a single class (and method).
+The advantage of the `AbstractResourceType` approach is that you have full control over the implementation, i.e. you are able to completely circumvent the guidance if wanted.
+However, the more you deviate from the guidance, the more it makes sense to implement the interfaces yourself in the first place.
+3. xref:concepts.adoc#request-kinds[Implementing the interfaces manually]:
+In this approach you are left with full control and responsibility to implement interface like `GetableTypeInterface` yourself.
+The methods defined in the interfaces are tailored to the specific task at hand.
+E.g. implementing `GetableTypeInterface` requires three methods: `getTypeName()` to define the value of the resource's `type` field, `getEntity()` to fetch a class instance to be converted to the resource JSON, and `getTransformer()`, containing the necessary logic to actually execute this transformation.
+Other kind of request (`list`, `update`, `create` and `delete`) require different interfaces corresponding to the kind of request, containing potentially different methods.
+
+[cols="1,2,2"]
+|===
+||Advantages|Disadvantages
+
+|Type Config Classes|guidance, free choice of code structure|deviation from guidance not supported
+|`AbstractResourceType` implementation|guidance, deviation from guidance supported|separate class for each type, adjustments may require understanding of underlying concepts
+|Manual interface implementation|full control over every aspect|no guidance, requires understanding the underlying concepts
+|===

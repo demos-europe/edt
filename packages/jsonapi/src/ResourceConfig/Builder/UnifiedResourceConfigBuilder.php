@@ -30,28 +30,13 @@ use function array_key_exists;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements ResourceConfigBuilderInterface<TCondition, TSorting, TEntity>
+ * @template-extends BaseSchemaBuilder<TCondition, TSorting, TEntity>
  */
-class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
+class UnifiedResourceConfigBuilder extends BaseSchemaBuilder
 {
     /**
-     * @var list<ConstructorBehaviorInterface>
-     */
-    protected array $generalConstructorBehavior = [];
-
-    /**
-     * @var list<PropertySetBehaviorInterface<TEntity>>
-     */
-    protected array $generalPostConstructorBehavior = [];
-
-    /**
-     * @var list<PropertyUpdatabilityInterface<TCondition, TEntity>>
-     */
-    protected array $generalUpdateBehaviors = [];
-
-    /**
      * @param class-string<TEntity> $entityClass
-     * @param array<non-empty-string, IdentifierConfigBuilder<TEntity>|AttributeConfigBuilder<TCondition, TEntity>|ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>> $properties
+     * @param array<non-empty-string, IdentifierConfigBuilder<TEntity, TCondition>|AttributeConfigBuilder<TCondition, TEntity>|ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>> $properties
      */
     public function __construct(
         protected readonly string $entityClass,
@@ -178,26 +163,5 @@ class UnifiedResourceConfigBuilder implements ResourceConfigBuilderInterface
     {
         Assert::keyNotExists($this->properties, $propertyName);
         $this->properties[$propertyName] = $builder;
-    }
-
-    public function addConstructorBehavior(ConstructorBehaviorInterface $behavior): ResourceConfigBuilderInterface
-    {
-        $this->generalConstructorBehavior[] = $behavior;
-
-        return $this;
-    }
-
-    public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): ResourceConfigBuilderInterface
-    {
-        $this->generalPostConstructorBehavior[] = $behavior;
-
-        return $this;
-    }
-
-    public function addUpdateBehavior(PropertyUpdatabilityInterface $updateBehavior): ResourceConfigBuilderInterface
-    {
-        $this->generalUpdateBehaviors[] = $updateBehavior;
-
-        return $this;
     }
 }

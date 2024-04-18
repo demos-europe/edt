@@ -29,9 +29,9 @@ use function array_key_exists;
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements ResourceConfigBuilderInterface<TCondition, TSorting, TEntity>
+ * @template-extends BaseSchemaBuilder<TCondition, TSorting, TEntity>
  */
-abstract class AbstractResourceConfigBuilder implements ResourceConfigBuilderInterface
+abstract class AbstractResourceConfigBuilder extends BaseSchemaBuilder
 {
     /**
      * @var array<non-empty-string, AttributeConfigBuilder<TCondition, TEntity>>
@@ -49,23 +49,8 @@ abstract class AbstractResourceConfigBuilder implements ResourceConfigBuilderInt
     private array $toManyRelationships = [];
 
     /**
-     * @var list<ConstructorBehaviorInterface>
-     */
-    protected array $generalConstructorBehavior = [];
-
-    /**
-     * @var list<PropertySetBehaviorInterface<TEntity>>
-     */
-    protected array $generalPostConstructorBehavior = [];
-
-    /**
-     * @var list<PropertyUpdatabilityInterface<TCondition, TEntity>>
-     */
-    protected array $generalUpdateBehaviors = [];
-
-    /**
      * @param class-string<TEntity> $entityClass
-     * @param IdentifierConfigBuilder<TEntity> $identifier
+     * @param IdentifierConfigBuilder<TEntity, TCondition> $identifier
      */
     public function __construct(
         protected readonly string $entityClass,
@@ -73,7 +58,7 @@ abstract class AbstractResourceConfigBuilder implements ResourceConfigBuilderInt
     ) {}
 
     /**
-     * @return IdentifierConfigBuilderInterface<TEntity>
+     * @return IdentifierConfigBuilderInterface<TEntity, TCondition>
      */
     public function getIdentifierConfigBuilder(): IdentifierConfigBuilderInterface
     {
@@ -192,26 +177,5 @@ abstract class AbstractResourceConfigBuilder implements ResourceConfigBuilderInt
             static fn(ToManyRelationshipConfigBuilder $property): ToManyRelationshipConfigInterface => $property->build(),
             $this->toManyRelationships
         );
-    }
-
-    public function addConstructorBehavior(ConstructorBehaviorInterface $behavior): ResourceConfigBuilderInterface
-    {
-        $this->generalConstructorBehavior[] = $behavior;
-
-        return $this;
-    }
-
-    public function addPostConstructorBehavior(PropertySetBehaviorInterface $behavior): ResourceConfigBuilderInterface
-    {
-        $this->generalPostConstructorBehavior[] = $behavior;
-
-        return $this;
-    }
-
-    public function addUpdateBehavior(PropertyUpdatabilityInterface $updateBehavior): ResourceConfigBuilderInterface
-    {
-        $this->generalUpdateBehaviors[] = $updateBehavior;
-
-        return $this;
     }
 }

@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>4</zoom_level>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>824</x>
+      <y>272</y>
+      <w>48</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=yes</panel_attributes>
+    <additional_attributes>100.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>272</y>
+      <w>88</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=no
+fg=green</panel_attributes>
+    <additional_attributes>10.0;10.0;200.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>740</x>
+      <y>140</y>
+      <w>88</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+type=decision
+implement request
+types yourself?</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>780</x>
+      <y>184</y>
+      <w>20</w>
+      <h>76</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=no
+fg=green</panel_attributes>
+    <additional_attributes>10.0;170.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>824</x>
+      <y>160</y>
+      <w>228</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=yes</panel_attributes>
+    <additional_attributes>550.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>832</x>
+      <y>132</y>
+      <w>188</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>Advantage: allows for the greatest flexibility
+Disatvantage: circumvents large parts of the library's guidlines
+
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>616</x>
+      <y>16</y>
+      <w>128</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>It is recommended to chose a default
+and stick to it for most resource types,
+as this establishes a consistent convention.
+But you could as well make these decisions
+for every single resource type you want to
+expose individually.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>780</x>
+      <y>100</y>
+      <w>12</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLObject</id>
+    <coordinates>
+      <x>204</x>
+      <y>72</y>
+      <w>1264</w>
+      <h>896</h>
+    </coordinates>
+    <panel_attributes>How to approach your resource type configuration
+valign=top
+bg=gray
+layer=-2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>780</x>
+      <y>96</y>
+      <w>8</w>
+      <h>8</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>1044</x>
+      <y>136</y>
+      <w>112</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Implement the following interfaces,
+depending on your requirements:
+--
+* GetableTypeInterface
+* ListableTypeInterface
+* CreatableTypeInterface
+* UpdatableTypeInterface
+* DeletableTypeInterface
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>552</x>
+      <y>268</y>
+      <w>112</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Generate a configuration template
+from your entity class
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>1216</x>
+      <y>264</y>
+      <w>180</w>
+      <h>272</h>
+    </coordinates>
+    <panel_attributes>--
+/**
+ * @template-extends YourBaseResourceType&lt;Book&gt;
+ *
+ * @property-read End $title
+ * @property-read End $bookTitle
+ * @property-read End $price
+ * @property-read PublisherResourceType $publisher
+ * @property-read AuthorResourceType $authors
+ * @property-read End $publisherName
+ */
+class BookResourceType extends YourBaseResourceType
+{
+    protected function getProperties(): array
+    {
+        $price = $this-&gt;createAttribute($this-&gt;price);
+        $price-&gt;readable();
+        if ($this-&gt;userIsAdmin()) {
+            $price-&gt;updatable();
+        }
+        
+        return [
+            $this-&gt;createIdentifier()-&gt;readable(),
+            $this-&gt;createAttribute($this-&gt;title)
+                -&gt;aliasedPath($this-&gt;bookTitle)
+                -&gt;readable()
+                -&gt;sortable(),
+            $this-&gt;createAttribute($this-&gt;publisherName)
+                -&gt;aliasedPath($this-&gt;publisher-&gt;name)
+                -&gt;readable()
+                -&gt;filterable(),
+            $this-&gt;createToManyRelationship($this-&gt;authors)
+                -&gt;readable()
+                -&gt;filterable(),
+            $price,
+        ];
+    }
+
+    // ...
+}
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>740</x>
+      <y>252</y>
+      <w>88</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+type=decision
+Write configuration
+completely manually?</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>864</x>
+      <y>252</y>
+      <w>88</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+type=decision
+Keep all related
+configuration in
+a single file?</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>948</x>
+      <y>272</y>
+      <w>276</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=yes
+fg=green</panel_attributes>
+    <additional_attributes>670.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>904</x>
+      <y>296</y>
+      <w>20</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=no</panel_attributes>
+    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1048</x>
+      <y>204</y>
+      <w>176</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>Advantages:
+* concise, only a single class per resource type configuration
+Disadvantages:
+* hard to fully understand
+* no automatic detection of Entity property changes
+* conditional configurations require additional variables
+* writing of boilerplate code may be necessary
+
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>864</x>
+      <y>340</y>
+      <w>88</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+type=decision
+Make usage of
+path instances</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>948</x>
+      <y>356</y>
+      <w>68</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+no</panel_attributes>
+    <additional_attributes>150.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>1008</x>
+      <y>356</y>
+      <w>204</w>
+      <h>292</h>
+    </coordinates>
+    <panel_attributes>--
+/**
+ * @template-extends YourBaseResourceType&lt;Book&gt;
+ */
+class BookResourceType extends YourBaseResourceType
+{
+    protected function getProperties(): ConfigurationTemplate
+    {
+        $config = new BookConfigurationTemplate();
+
+        $config-&gt;id-&gt;readable();
+        $config-&gt;title
+            -&gt;aliasedPath(['bookTitle'])
+            -&gt;readable()
+            -&gt;sortable();
+        $config-&gt;publisherName
+            -&gt;aliasedPath(['publisher', 'name'])
+            -&gt;readable()
+            -&gt;filterable();
+        $config-&gt;authors
+            -&gt;readable()
+            -&gt;filterable();
+        $config-&gt;price-&gt;readable();
+        if ($this-&gt;userIsAdmin()) {
+            $config-&gt;price-&gt;updatable();
+        }
+
+        return $config;
+    }
+
+    // ...
+}
+
+/**
+ * @property-read AttributeConfigBuilderInterface $title
+ * @property-read AttributeConfigBuilderInterface $price
+ * @property-read ToOneRelationshipConfigBuilderInterface $publisher
+ * @property-read ToManyRelationshipConfigBuilderInterface $authors
+ * @property-read End $publisherName
+ */
+class BookConfigurationTemplate extends ConfigurationTemplate
+{
+}
+
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>904</x>
+      <y>384</y>
+      <w>112</w>
+      <h>376</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=yes
+fg=green</panel_attributes>
+    <additional_attributes>260.0;920.0;10.0;920.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>1008</x>
+      <y>736</y>
+      <w>220</w>
+      <h>196</h>
+    </coordinates>
+    <panel_attributes>Like above, but with an additional path classes and aliasedPath adjusted:
+--
+class BookResourceType extends YourBaseResourceType
+{
+    protected function getProperties(): ConfigurationTemplate
+    {
+        // ...
+        $bookPath = new BookPath();
+        
+        $config-&gt;title
+            -&gt;aliasedPath($bookPath-&gt;bookTitle)
+            -&gt;readable()
+            -&gt;sortable();
+        $config-&gt;publisherName
+            -&gt;aliasedPath($bookPath-&gt;publisher-&gt;name)
+            -&gt;readable()
+            -&gt;filterable();
+        // ...
+    }
+}
+
+/**
+ * @property-read End $bookTitle
+ * @property-read PublisherPath $publisher
+ */
+class BookPath
+{
+}
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>956</x>
+      <y>288</y>
+      <w>172</w>
+      <h>52</h>
+    </coordinates>
+    <panel_attributes>Advantages:
+* no process for class re-generation necessary
+* existing code implies it is actually needed
+Disadvantages:
+* no automatic detection of Entity property changes
+* no IDE support when searching for path usages
+* two classes to manually maintain
+
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1016</x>
+      <y>140</y>
+      <w>36</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1220</x>
+      <y>240</y>
+      <w>32</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1036</x>
+      <y>336</y>
+      <w>36</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1016</x>
+      <y>664</y>
+      <w>172</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>Advantages:
+* no process for class re-generation necessary
+* existing code implies it is actually needed
+Disadvantages:
+* no automatic detection of Entity property changes
+* three classes to manually maintain
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1096</x>
+      <y>704</y>
+      <w>36</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>428</x>
+      <y>356</y>
+      <w>236</w>
+      <h>276</h>
+    </coordinates>
+    <panel_attributes>--
+/**
+ * @template-extends YourBaseResourceType&lt;Book&gt;
+ */
+class BookResourceType extends YourBaseResourceType
+{
+    protected function getProperties(): ConfigurationTemplate
+    {
+        $config = new BookConfigurationTemplate();
+
+        $config-&gt;id-&gt;readable();
+        $config-&gt;title
+            -&gt;aliasedPath(['bookTitle'])
+            -&gt;readable()
+            -&gt;sortable();
+        $config-&gt;publisherName
+            -&gt;aliasedPath(['publisher', 'name'])
+            -&gt;readable()
+            -&gt;filterable();
+        $config-&gt;authors
+            -&gt;readable()
+            -&gt;filterable();
+        $config-&gt;price-&gt;readable();
+        if ($this-&gt;userIsAdmin()) {
+            $config-&gt;price-&gt;updatable();
+        }
+
+        return $config;
+    }
+
+    // ...
+}
+
+/**
+ * @property-read AttributeConfigBuilderInterface $title
+ * @property-read End $publisherName
+ */
+class BookConfigurationTemplate extends GeneratedBookConfigurationTemplate
+{
+}
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>316</y>
+      <w>132</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+fg=green</panel_attributes>
+    <additional_attributes>310.0;60.0;310.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>740</x>
+      <y>340</y>
+      <w>88</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+type=decision
+Make usage of
+path instances</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>356</y>
+      <w>88</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+no</panel_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>728</x>
+      <y>724</y>
+      <w>112</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Generate path classes
+from your entity class,
+including an entry point class
+bg=cyan</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>776</x>
+      <y>384</y>
+      <w>24</w>
+      <h>348</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=yes
+fg=green</panel_attributes>
+    <additional_attributes>10.0;850.0;20.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>240</x>
+      <y>272</y>
+      <w>296</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Advantages:
+* automatic detection when entity properties change without adjustment of their configuration usage
+* avoids writing of some boilerplate code
+Disadvantages:
+* process for re-generation of template classes needed
+* no automatic detection of Entity property changes for path usage
+* no IDE support when searching for path usages
+* if aliaing used, two classes to manually maintain
+
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>404</x>
+      <y>332</y>
+      <w>84</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;190.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>752</y>
+      <w>76</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=yes
+fg=green</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>428</x>
+      <y>740</y>
+      <w>236</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>Like above, but with aliasedPath adjusted:
+--
+class BookResourceType extends YourBaseResourceType
+{
+    protected function getProperties(): ConfigurationTemplate
+    {
+        // ...
+        $config-&gt;title
+            -&gt;aliasedPath(Paths::book()-&gt;bookTitle)
+            -&gt;readable()
+            -&gt;sortable();
+        $config-&gt;publisherName
+            -&gt;aliasedPath(Paths::book()-&gt;publisher-&gt;name)
+            -&gt;readable()
+            -&gt;filterable();
+    }
+}
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>252</x>
+      <y>644</y>
+      <w>296</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Advantages:
+* automatic detection when entity properties change without adjustment of their configuration usage
+* automatic detection of Entity property changes for path usage
+* IDE support when searching for path usages
+* avoids writing of boilerplate code
+Disadvantages:
+* process for re-generation of template classes needed
+* if aliaing used, two classes to manually maintain
+
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>452</x>
+      <y>704</y>
+      <w>84</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;190.0;90.0</additional_attributes>
+  </element>
+</diagram>

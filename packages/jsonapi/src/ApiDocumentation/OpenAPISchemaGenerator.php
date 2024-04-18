@@ -21,6 +21,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use function count;
 
 /**
+ * TODO: add description or something similar for conditional properties. I.e. a request may be allowed to update a specific relationship property, but only if the entity or relationship value match specific conditions.
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  */

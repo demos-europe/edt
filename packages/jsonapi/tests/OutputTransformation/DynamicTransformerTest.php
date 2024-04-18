@@ -37,8 +37,12 @@ class DynamicTransformerTest extends ModelBasedTest
 
     public function testEmpty(): void
     {
+        $type = new EmptyType($this->conditionFactory, $this->propertyBuilderFactory, $this->propertyAccessor, $this->typeResolver);
+
         $transformer = new DynamicTransformer(
-            new EmptyType($this->conditionFactory, $this->propertyBuilderFactory, $this->propertyAccessor, $this->typeResolver),
+            $type->getTypeName(),
+            $type->getEntityClass(),
+            $type->getReadability(),
             $this->messageFormatter,
             null
         );

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\data\ApiTypes;
 
+use EDT\JsonApi\ApiDocumentation\DefaultField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\PathAttributeReadability;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
@@ -28,21 +29,21 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
                 'name' => new PathAttributeReadability(
                     $this->getEntityClass(),
                     ['name'],
-                    false,
+                    DefaultField::NO,
                     $this->propertyAccessor,
                     $this->typeResolver
                 ),
                 'pseudonym' => new PathAttributeReadability(
                     $this->getEntityClass(),
                     ['pseudonym'],
-                    false,
+                    DefaultField::NO,
                     $this->propertyAccessor,
                     $this->typeResolver,
                 ),
                 'birthCountry' => new PathAttributeReadability(
                     $this->getEntityClass(),
                     ['birth', 'country'],
-                    false,
+                    DefaultField::NO,
                     $this->propertyAccessor,
                     $this->typeResolver
                 ),

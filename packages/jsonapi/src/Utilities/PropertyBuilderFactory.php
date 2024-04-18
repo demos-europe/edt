@@ -69,13 +69,13 @@ class PropertyBuilderFactory
         );
 
         if ($this->attributesByDefaultSortable) {
-            $builder->sortable();
+            $builder->setSortable();
         }
         if ($this->attributesByDefaultFilterable) {
-            $builder->filterable();
+            $builder->setFilterable();
         }
         if ($this->attributesByDefaultReadable) {
-            $builder->readable();
+            $builder->setReadableByPath();
         }
         
         return $builder;
@@ -132,13 +132,13 @@ class PropertyBuilderFactory
         );
 
         if ($this->toOneRelationshipsByDefaultSortable) {
-            $builder->sortable();
+            $builder->setSortable();
         }
         if ($this->toOneRelationshipsByDefaultFilterable) {
-            $builder->filterable();
+            $builder->setFilterable();
         }
         if ($this->toOneRelationshipsByDefaultReadable) {
-            $builder->readable();
+            $builder->setReadableByPath();
         }
 
         return $builder;
@@ -195,13 +195,13 @@ class PropertyBuilderFactory
         );
 
         if ($this->toManyRelationshipsByDefaultSortable) {
-            $builder->sortable();
+            $builder->setSortable();
         }
         if ($this->toManyRelationshipsByDefaultFilterable) {
-            $builder->filterable();
+            $builder->setFilterable();
         }
         if ($this->toManyRelationshipsByDefaultReadable) {
-            $builder->readable();
+            $builder->setReadableByPath();
         }
 
         return $builder;
@@ -230,17 +230,17 @@ class PropertyBuilderFactory
      *
      * @param class-string<TEntity> $entityClass
      *
-     * @return IdentifierConfigBuilder<TEntity>
+     * @return IdentifierConfigBuilder<TEntity, TCondition>
      */
     public function createIdentifier(string $entityClass): IdentifierConfigBuilder
     {
         $builder = new IdentifierConfigBuilder($entityClass, $this->propertyAccessor, $this->typeResolver);
 
         if ($this->identifierByDefaultSortable) {
-            $builder->sortable();
+            $builder->setSortable();
         }
         if ($this->identifierByDefaultFilterable) {
-            $builder->filterable();
+            $builder->setFilterable();
         }
 
         return $builder;

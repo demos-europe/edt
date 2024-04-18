@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\DtoToOneRelationshipConfig;
 use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipConstructorBehaviorFactoryInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorFactoryInterface;
+use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipReadability;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\CallbackToOneRelationshipSetBehaviorFactory;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\PathToOneRelationshipSetBehaviorFactory;
-use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\Factory\ToOneRelationshipConstructorBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipSetBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipReadability;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\PathToOneRelationshipSetBehavior;
+use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 
 /**
@@ -24,7 +24,7 @@ use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilit
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship>
+ * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship, TRelationship|null, ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>>
  * @template-implements ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
  * @template-implements BuildableInterface<ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, TRelationship>>
  */
@@ -32,11 +32,6 @@ class ToOneRelationshipConfigBuilder
     extends RelationshipConfigBuilder
     implements ToOneRelationshipConfigBuilderInterface, BuildableInterface
 {
-    /**
-     * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>): ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
-     */
-    protected $readabilityFactory;
-
     /**
      * @param class-string<TEntity> $entityClass
      * @param class-string<TRelationship> $relationshipClass
@@ -51,9 +46,6 @@ class ToOneRelationshipConfigBuilder
         parent::__construct($entityClass, $name);
     }
 
-    /**
-     * @return $this
-     */
     public function initializable(
         bool $optionalAfterConstructor = false,
         callable $postConstructorCallback = null,
@@ -63,25 +55,31 @@ class ToOneRelationshipConfigBuilder
     ): self {
         if ($constructorArgument) {
             $this->addConstructorBehavior(
-                new ToOneRelationshipConstructorBehaviorFactory(
+                ToOneRelationshipConstructorBehavior::createFactory(
                     $customConstructorArgumentName,
                     $relationshipConditions,
-                    null
+                    null,
+                    OptionalField::NO
                 )
             );
         }
 
-        $this->addPostConstructorBehavior(null === $postConstructorCallback
-            ? new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, $optionalAfterConstructor, $this->propertyAccessor, [])
-            : new CallbackToOneRelationshipSetBehaviorFactory($postConstructorCallback, $relationshipConditions, $optionalAfterConstructor, [])
-        );
+        $optional = OptionalField::fromBoolean($optionalAfterConstructor);
 
-        return $this;
+        return null === $postConstructorCallback
+            ? $this->addPathCreationBehavior($optional)
+            : $this->addCreationBehavior(
+                CallbackToOneRelationshipSetBehavior::createFactory($postConstructorCallback, $relationshipConditions, $optional, [])
+            );
     }
 
-    /**
-     * @return $this
-     */
+    public function addPathCreationBehavior(OptionalField $optional = OptionalField::NO, array $entityConditions = [], array $relationshipConditions = []): self
+    {
+        return $this->addCreationBehavior(
+            PathToOneRelationshipSetBehavior::createFactory($relationshipConditions, $optional, $this->propertyAccessor, $entityConditions)
+        );
+    }
+
     public function readable(
         bool $defaultField = false,
         callable $customReadCallback = null,
@@ -114,11 +112,11 @@ class ToOneRelationshipConfigBuilder
              * @param non-empty-string $name
              * @param non-empty-list<non-empty-string> $propertyPath
              * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
+             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
              *
              * @return ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
              */
-            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface $relationshipType): ToOneRelationshipReadabilityInterface
+            public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceTypeProviderInterface $relationshipType): ToOneRelationshipReadabilityInterface
             {
                 return null === $this->customReadCallback
                     ? new PathToOneRelationshipReadability(
@@ -143,8 +141,8 @@ class ToOneRelationshipConfigBuilder
     public function updatable(array $entityConditions = [], array $relationshipConditions = [], callable $updateCallback = null): ToOneRelationshipConfigBuilderInterface
     {
         return $this->addUpdateBehavior(null === $updateCallback
-            ? new PathToOneRelationshipSetBehaviorFactory($relationshipConditions, true, $this->propertyAccessor, $entityConditions)
-            : new CallbackToOneRelationshipSetBehaviorFactory($updateCallback, $relationshipConditions, true, $entityConditions)
+            ? PathToOneRelationshipSetBehavior::createFactory($relationshipConditions, OptionalField::YES, $this->propertyAccessor, $entityConditions)
+            : CallbackToOneRelationshipSetBehavior::createFactory($updateCallback, $relationshipConditions, OptionalField::YES, $entityConditions)
         );
     }
 
@@ -166,45 +164,5 @@ class ToOneRelationshipConfigBuilder
             $filterLink,
             $sortLink
         );
-    }
-
-    /**
-     * @return $this
-     */
-    public function addConstructorBehavior(RelationshipConstructorBehaviorFactoryInterface $behaviorFactory): ToOneRelationshipConfigBuilderInterface
-    {
-        $this->constructorBehaviorFactories[] = $behaviorFactory;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function addPostConstructorBehavior(RelationshipSetBehaviorFactoryInterface $behaviorFactory): ToOneRelationshipConfigBuilderInterface
-    {
-        $this->postConstructorBehaviorFactories[] = $behaviorFactory;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function addUpdateBehavior(RelationshipSetBehaviorFactoryInterface $behaviorFactory): ToOneRelationshipConfigBuilderInterface
-    {
-        $this->updateBehaviorFactories[] = $behaviorFactory;
-
-        return $this;
-    }
-
-    /**
-     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship> $relationshipType
-     *
-     * @return ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null
-     */
-    protected function getReadability($relationshipType): ?ToOneRelationshipReadabilityInterface
-    {
-        return ($this->readabilityFactory ?? static fn () => null)($this->name, $this->getPropertyPath(), $this->entityClass, $relationshipType);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Properties;
 
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\Wrapping\EntityData;
 use EDT\Wrapping\EntityDataInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeConstructorBehavior;
@@ -21,7 +22,7 @@ class EntityConstructorBehaviorTest extends TestCase
 
         $instantiability = new ResourceInstantiability(
             $className,
-            ['f' => [new AttributeConstructorBehavior('type', 'type', null)]],
+            ['f' => [new AttributeConstructorBehavior('type', 'type', OptionalField::NO, null)]],
             [],
             [],
             [],
@@ -60,6 +61,16 @@ class EntityConstructorBehaviorTest extends TestCase
                 public function getOptionalToManyRelationships(): array
                 {
                     return [];
+                }
+
+                public function isIdRequired(): bool
+                {
+                    return false;
+                }
+
+                public function isIdOptional(): bool
+                {
+                    return false;
                 }
             }]
         );

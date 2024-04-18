@@ -10,9 +10,9 @@
         "psr/log": "^1.1.4 || ^3.0.0",
         "doctrine/collections": "^1.5 || ^2.1",
         "demos-europe/edt-access-definitions": "^0.25",
-        "symfony/http-foundation": "5.*.* || ^6.1.12",
-        "symfony/validator": "5.*.* || 6.*.*",
-        "symfony/routing": "5.*.* || ^6.3.5",
+        "symfony/http-foundation": "5.*.* || ^6.1.12 || ^7",
+        "symfony/validator": "5.*.* || 6.*.* || ^7",
+        "symfony/routing": "5.*.* || ^6.3.5 || ^7",
         "cebe/php-openapi": "^1.5",
         "ext-json": "*"
     },
@@ -36,6 +36,7 @@
             "Tests\\": "tests/"
         }
     },
+    "bin": ["bin/generate_type_config"],
     "conflict": {
         "demos-europe/edt-extra": "<0.17.1",
         "demos-europe/edt-paths": "<0.17.1",

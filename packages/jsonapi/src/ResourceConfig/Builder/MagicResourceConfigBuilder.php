@@ -21,7 +21,13 @@ use function array_key_exists;
 
 
 /**
- * Expects subclasses to define attributes and relationships as `property-read` docblock tags.
+ * This class allows to configure a schema by exposing public properties, which property configuration instances.
+ *
+ * ```
+ * $schemaConfig->someProperty->setFilterable();
+ * ```
+ *
+ * It expects subclasses to define attributes and relationships as `property-read` docblock tags.
  *
  * ```
  * property-read AttributeConfigBuilderInterface<TCondition, TEntity> $title
@@ -29,11 +35,14 @@ use function array_key_exists;
  * property-read ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, Person> $authors
  * ```
  *
+ * When a property is accessed the magic `__get` method will be used to return the correct property config builder
+ * instance for the accessed property name.
+ *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @property-read IdentifierConfigBuilderInterface<TEntity> $id the property uniquely identifying instances of this type
+ * @property-read IdentifierConfigBuilderInterface<TEntity, TCondition> $id the property uniquely identifying instances of this type
  *
  * @template-extends AbstractResourceConfigBuilder<TCondition, TSorting, TEntity>
  */
@@ -105,7 +114,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
     /**
      * Multiple accesses will return the originally initialized instance.
      *
-     * @return IdentifierConfigBuilderInterface<TEntity>|AttributeConfigBuilderInterface<TCondition, TEntity>|ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>
+     * @return IdentifierConfigBuilderInterface<TEntity, TCondition>|AttributeConfigBuilderInterface<TCondition, TEntity>|ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>
      */
     public function __get(string $name): IdentifierConfigBuilderInterface|AttributeConfigBuilderInterface|ToOneRelationshipConfigBuilderInterface|ToManyRelationshipConfigBuilderInterface
     {

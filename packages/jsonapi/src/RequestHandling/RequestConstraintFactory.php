@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\RequestHandling;
 
 use EDT\Wrapping\Contracts\ContentField;
+use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 
 class RequestConstraintFactory
@@ -40,24 +41,36 @@ class RequestConstraintFactory
         $attributeConstraints = $this->getAttributeConstraints($allowedAttributes, $requiredAttributes);
         $relationshipConstraints = $this->getRelationshipConstraints($expectedProperties->getAllowedRelationships(), $requiredRelationships);
 
+
+        $allowedFields = [
+            ContentField::TYPE => $this->getTypeIdentifierConstraints($urlTypeIdentifier),
+            ContentField::ATTRIBUTES => $attributeConstraints,
+            ContentField::RELATIONSHIPS => $relationshipConstraints,
+        ];
+
+        // If the ID was given in the URL, we're dealing with a resource update request and the ID is always *allowed* and *required* in the request body.
+        // If it is not given in the URL, we're dealing with a resource creation request and *may require* the ID depending on the configuration.
+        $idMustBePresent = null !== $urlId || $expectedProperties->isIdRequired();
+
+        // If ID is required, or just optionally allowed by the configuration, we add it to the allowed fields with its corresponding constraints.
+        if ($idMustBePresent || $expectedProperties->isIdAllowed()) {
+            $allowedFields[ContentField::ID] = array_merge($this->getIdBaseConstraints($urlId), $expectedProperties->getIdConstraints());
+        }
+
         $outerDataConstraints = [
             // validate attributes and relationships
-            $this->getCollectionConstraintFactory()->noExtra(self::ROOT_DATA_CONTEXT, [
-                ContentField::TYPE => $this->getTypeIdentifierConstraints($urlTypeIdentifier),
-                ContentField::ID => $this->getIdConstraints($urlId),
-                ContentField::ATTRIBUTES => $attributeConstraints,
-                ContentField::RELATIONSHIPS => $relationshipConstraints,
-            ]),
+            $this->getCollectionConstraintFactory()->noExtra(self::ROOT_DATA_CONTEXT, $allowedFields),
             // validate `type` field
             $this->getCollectionConstraintFactory()->noMissing(self::ROOT_DATA_CONTEXT, [
                 ContentField::TYPE => $this->getTypeIdentifierConstraints($urlTypeIdentifier)
             ]),
         ];
 
-        if (null !== $urlId) {
-            // validate `id` field (only required if an ID was given in the request, i.e. an update instead of a creation request)
-            $outerDataConstraints[] = $this->getCollectionConstraintFactory()->noMissing('update requests', [
-                ContentField::ID => $this->getIdConstraints($urlId)
+        // If the ID is not just optional, but required, we add it as such
+        if ($idMustBePresent) {
+            $outerDataConstraints[] = $this->getCollectionConstraintFactory()->noMissing('update or creation requests', [
+                // no need to set the attribute constraints here, as they were already set above
+                ContentField::ID => [],
             ]);
         }
 

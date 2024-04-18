@@ -5,29 +5,36 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
+use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\DtoIdentifierConfig;
 use EDT\JsonApi\PropertyConfig\IdentifierConfigInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\CallbackIdentifierReadability;
-use EDT\Wrapping\PropertyBehavior\Identifier\Factory\DataProvidedIdentifierConstructorBehaviorFactory;
+use EDT\Wrapping\PropertyBehavior\Identifier\DataProvidedIdentifierConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierPostConstructorBehaviorFactoryInterface;
-use EDT\Wrapping\PropertyBehavior\Identifier\Factory\PathIdentifierPostConstructorBehaviorFactory;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorInterface;
+use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierPostConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
 use InvalidArgumentException;
 
 /**
  * @template TEntity of object
+ * @template TCondition of PathsBasedInterface
  *
- * @template-implements IdentifierConfigBuilderInterface<TEntity>
+ * @template-implements IdentifierConfigBuilderInterface<TEntity, TCondition>
  */
-class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements IdentifierConfigBuilderInterface
+class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
 {
+    use AliasTrait;
+    use FilterTrait;
+    use SortTrait;
+
     /**
      * @var null|callable(non-empty-list<non-empty-string>, class-string<TEntity>): IdentifierReadabilityInterface<TEntity>
      */
@@ -39,7 +46,7 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
     protected array $postConstructorBehaviorFactories = [];
 
     /**
-     * @var list<IdentifierConstructorBehaviorFactoryInterface<TEntity>>
+     * @var list<IdentifierConstructorBehaviorFactoryInterface>
      */
     protected array $constructorBehaviorFactories = [];
 
@@ -50,15 +57,34 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
         protected readonly string $entityClass,
         protected readonly PropertyAccessorInterface $propertyAccessor,
         protected readonly AttributeTypeResolver $typeResolver
-    ) {
-        parent::__construct(ContentField::ID);
+    ) {}
+
+    /**
+     * @return non-empty-list<non-empty-string>
+     */
+    protected function getPropertyPath(): array
+    {
+        return $this->aliasedPath ?? [ContentField::ID];
     }
 
     /**
-     * @param null|callable(TEntity): non-empty-string $customReadCallback to be set if this property needs special handling when read
-     *
-     * @return $this
+     * @return non-empty-string
      */
+    public function getName(): string
+    {
+        return ContentField::ID;
+    }
+
+    public function setReadableByPath(): self
+    {
+        return $this->readable();
+    }
+
+    public function setReadableByCallable(callable $behavior): self
+    {
+        return $this->readable($behavior);
+    }
+
     public function readable(callable $customReadCallback = null): self
     {
         $this->readabilityFactory = new class ($this->propertyAccessor, $this->typeResolver, $customReadCallback) {
@@ -104,9 +130,7 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
     public function build(): IdentifierConfigInterface
     {
         $postConstructorBehaviors = array_map(
-            fn(
-                IdentifierPostConstructorBehaviorFactoryInterface $factory
-            ): IdentifierPostConstructorBehaviorInterface => $factory->createIdentifierPostConstructorBehavior(
+            fn(IdentifierPostConstructorBehaviorFactoryInterface $factory): IdentifierPostConstructorBehaviorInterface => $factory(
                 $this->getPropertyPath(),
                 $this->entityClass
             ),
@@ -114,9 +138,7 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
         );
 
         $constructorBehaviors = array_map(
-            fn(
-                IdentifierConstructorBehaviorFactoryInterface $factory
-            ): ConstructorBehaviorInterface => $factory->createIdentifierConstructorBehavior(
+            fn(IdentifierConstructorBehaviorFactoryInterface $factory): ConstructorBehaviorInterface => $factory(
                 $this->getPropertyPath(),
                 $this->entityClass
             ),
@@ -137,38 +159,48 @@ class IdentifierConfigBuilder extends AbstractPropertyConfigBuilder implements I
         );
     }
 
-    /**
-     * @return $this
-     */
-    public function addConstructorBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): IdentifierConfigBuilderInterface
+    public function initializable(bool $optionalAfterConstructor = false, bool $constructorArgument = false, ?string $customConstructorArgumentName = null): IdentifierConfigBuilderInterface
+    {
+        if ($constructorArgument) {
+            $this->addConstructorBehavior(
+                DataProvidedIdentifierConstructorBehavior::createFactory($customConstructorArgumentName, OptionalField::NO, null)
+            );
+        }
+
+        return $this->addPathCreationBehavior(OptionalField::fromBoolean($optionalAfterConstructor));
+    }
+
+    public function addConstructorBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): self
     {
         $this->constructorBehaviorFactories[] = $behaviorFactory;
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function addPostConstructorBehavior(IdentifierPostConstructorBehaviorFactoryInterface $behaviorFactory): IdentifierConfigBuilderInterface
+    public function addCreationBehavior(IdentifierPostConstructorBehaviorFactoryInterface $behaviorFactory): self
     {
         $this->postConstructorBehaviorFactories[] = $behaviorFactory;
 
         return $this;
     }
 
-    public function initializable(bool $optionalAfterConstructor = false, bool $constructorArgument = false, ?string $customConstructorArgumentName = null): IdentifierConfigBuilderInterface
+    public function addPathCreationBehavior(OptionalField $optional = OptionalField::NO, array $entityConditions = []): self
     {
-        if ($constructorArgument) {
-            $this->addConstructorBehavior(
-                new DataProvidedIdentifierConstructorBehaviorFactory($customConstructorArgumentName)
-            );
-        }
-
-        $this->addPostConstructorBehavior(
-            new PathIdentifierPostConstructorBehaviorFactory($optionalAfterConstructor, $this->propertyAccessor)
+        return $this->addCreationBehavior(
+            PathIdentifierPostConstructorBehavior::createFactory($optional, $this->propertyAccessor, $entityConditions)
         );
+    }
+
+    public function removeAllCreationBehaviors(): self
+    {
+        $this->constructorBehaviorFactories = [];
+        $this->postConstructorBehaviorFactories = [];
 
         return $this;
+    }
+
+    public function addPostConstructorBehavior(IdentifierPostConstructorBehaviorFactoryInterface $behaviorFactory): IdentifierConfigBuilderInterface
+    {
+        return $this->addCreationBehavior($behaviorFactory);
     }
 }

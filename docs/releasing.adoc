@@ -1,6 +1,9 @@
 = Releasing
 
-This repository uses https://github.com/symplify/monorepo-builder[symplify/monorepo-builder] to
+// TODO
+WARNING: Work in progress
+
+This repository uses link:https://github.com/symplify/monorepo-builder[symplify/monorepo-builder] to
 release several packages.
 
 To create a new release, `bin/monorepo-builder release &lt;major|minor|patch&gt;` can be used after all changes have been done.

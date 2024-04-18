@@ -29,4 +29,9 @@ class Person
     {
         return $this->books;
     }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
 }

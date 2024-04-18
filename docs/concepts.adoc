@@ -1,0 +1,179 @@
+= Concepts
+:toc:
+:sectanchors:
+
+== Resource types as gatekeeper
+
+One concept this library is built around are so-called resource types.
+In the following sections we will introduce the importance of them to the overall architecture and how they are to be used to implement the SoC (separation of concerns) and dry (don't repeat yourself) principles.
+
+=== Catch up -- resource types as defined by the JSON:API specification
+
+Within the JSON:API specification every resource is assigned a type, which is simply a single string.
+The naming of the type depends on decisions made when designing the domain model of the API.
+
+If your website publishes online articles and allows users to post comments under them, an article with a single comment may exist.
+Such case is shown in the following example.
+The JSON displays a single `article` resource with the `id` 42.
+Other typical article relationships, e.g. the authors, are omitted for brevity.
+However, it contains a `comments` relationship, i.e. a list containing a single comment reference.
+
+[source,json]
+----
+{
+  "data": {
+    "id": "42",
+    "type": "article",
+    "attributes": {
+      "text": "…"
+    },
+    "relationships": {
+      "comments": {
+        "data": [
+          {"id": 24, "type": "comment"}
+        ]
+      }
+    }
+  }
+}
+----
+
+In this example the article and the comment have different values for their respective `id` field.
+They could however, by chance, use the same value without conflicting with each other, because resources are uniquely identified by their `id` **and** `type` fields.
+
+=== Approaching the problem
+
+Above we could see that resources consist of an identifier, a type, attributes and relationships.
+All those need to be mapped to a data source, so that, for example, a `GET /article/42` request actually returns the JSON as shown above.
+
+However, it is important to note that there are different ways to get access to the data of resources:
+
+* A `GET` request to a specific identifier (e.g. `GET /article/42`) will return that specific resource.
+* Requests to https://jsonapi.org/format/#crud-creating[create] or https://jsonapi.org/format/#crud-updating[update] a resource (e.g. `POST /article/` and `PATCH /article/42`) will return the created/updated resource if the server applied changes unknown to the client.
+* The JSON:API specification allows to directly fetch resources referenced via relationships (e.g. `GET /article/42/relationships/comments`).
+* Alternatively, by using `include` in a request, resources referenced via relationships can be included in the response (e.g. `GET /article/42?include=comments` will return not only the article with the identifier 42, but also all of its comments, as shown below).
++
+[source,json]
+----
+{
+  "data": {
+    "id": "42",
+    "type": "article",
+    "attributes": {
+      "text": "…"
+    },
+    "relationships": {
+      "comments": {
+        "data": [
+          {"id": 24, "type": "comment"}
+        ]
+      }
+    }
+  },
+  "included": [
+    {
+      "id": 24,
+      "type": "comment",
+      "attributes": {
+        "text": "…",
+        "approved": true
+      }
+    }
+  ]
+}
+----
+
+So different requests need to access the same data.
+However, taking a relational database as example, accessing the data may not be as simple as generating a SQL `SELECT` query from a request like `GET /article/42` and applying an ORM mapping to the result. Instead, there are multiple additional factors to consider:
+
+* Where does the data for the resources come from, what if articles and comments are stored in different databases?
+* Do we need to limit the access to individual resources based on authorization? E.g. moderators being able to see all comments but normal users only seeing approved ones.
+* How can we avoid code duplication and even more importantly ensure that the same access limitations are applied, when accessing the same resources via different requests (e.g. a comment via `GET /article/42?include=comments` or `GET /comment/24`)?
+* How can we limit generic boilerplate code when allowing access to (many) different resource types?
+
+[[request-kinds]]
+=== Coupling resource types to logic and behavior
+
+This library addresses the problem by applying an object-oriented approach.
+A "resource type" is not considered just a string to uniquely identify corresponding resources, but an expert in retrieving and manipulating corresponding resources.
+The idea is that regardless of the way a resource (e.g. an article) is retrieved, ultimately it is always retrieved via a resource type instance that is tailored in retrieving resources of that type.
+This allows to abstract away all details (like access limitations and access to the data source) within the resource type instance.
+
+Using this definition it does not matter how a `User` resource is retrieved by a client.
+It may be fetched directly, or as an included author when fetching a `Comment` resource or even via any other relationship, e.g. when fetching an `Article` resource, including the comments of that article and also including the authors of those comments.
+In all cases, the `User` resource is retrieved via its resource type instance, which takes care of the resource schema, authorizations and database access, avoiding code duplication and thus potential discrepancies.
+
+To make this concept more tangible, we use the process of fetching a single article via `GET /article/42` as example.
+Accessing a single resource via its identifier like that requires a corresponding `GetableTypeInterface` instance to be present.
+Classes inheriting from `GetableTypeInterface` must implement three methods:
+
+* `getTypeName(): non-empty-string`
+* `getEntity(non-empty-string $identifier): object`
+* `getTransformer(): TransformerAbstract`
+
+For this example use-case (`GET /article/42`), the high-level process is relatively simple:
+
+1. The correct `GetableTypeInterface` instances is retrieved, corresponding to `article` resources. How this is done is xref:initial-request-receiver.adoc[left to the application].
+2. An object representation of the resource is retrieved from the `GetableTypeInterface` instance via `getEntity`, by providing the method with the `id` that was given in the request (i.e. `42`).
+3. A `TransformerAbstract`, retrieved via `getTransformer`, and the resource type string are used to convert the resource's object representation into the actual JSON response.
+
+Different kind of requests require the implementation of different interfaces.
+We can distinguish between the following:
+
+* “`get`”, e.g. `GET /article/42`: requires a `GetableTypeInterface` instance
+* “`list`”, e.g. `GET /article`: requires a `ListableTypeInterface` instance
+* “`create`”, e.g. `CREATE /article`: requires a `CreatableTypeInterface` instance
+* “`update`”, e.g. `PATCH /article/42`: requires a `UpdatableTypeInterface` instance
+* “`delete`”, e.g. `DELETE /article/42`: requires a `DeletableTypeInterface` instance
+* accessing resources via requests like `GET /article/42/relationships/comments` has not yet been implemented
+
+It must be noted however, that these interfaces are designed to best fit the needs of the request handling, not the developer.
+What this means is that the request handling may require some resource-specific task to be done (e.g. fetching data for a resource by its `id`) and is provided with method that fulfills exactly this purpose (e.g. `GetableTypeInterface::getEntity`).
+Meanwhile, the developer is left with the burden of somehow implementing the required `getEntity` method.
+
+While this allows for great flexibility regarding the inner workings of resource type implementations and is reasonably doable for some methods, it gets exceedingly difficult for others.
+Therefore, for most cases it is recommended to use higher level approaches, build around typical developer needs and provided by the library.
+I.e. xref:extend-abstract-type.adoc[extending the `AbstractResourceType`] and xref:configuring_resources.adoc[type config classes].
+
+To reiterate: manually implementing the interfaces listed above is only recommended for cases in which the xref:implementing-types.adoc[other approaches] are unsuitable for some reason.
+
+=== The request handling and re-usability of resource types
+
+As explained in the previous sections, most logic is to be abstracted away in resources type instances, but handling the initial request is not one of their purposes.
+
+The goal is the potential re-usability of resource types for different cases than just the JSON:API specification.
+I.e. your resource type implementation may apply not only access restrictions but also schema adjustments, to "prettify" your entities when exposed to external accesses.
+Such external accesses may not be limited to clients using the JSON:API specification but other clients using other APIs.
+It does not make sense to re-create the logic already done in your resource type for those other request formats, hence the resource type interface methods are indifferent to the format or source of the request.
+
+Due to this approach, to handle JSON:API specification compliant requests, a relatively thin request handling layer is needed.
+It receives the request and converts it into data structures that can be created from other specifications as well, before passing them into the resource type instance.
+During this part, most validation of the request can already be done, including validation specific to the accessed resource type.
+E.g. when a JSON:API update request is received, containing a body with new attribute values, the schema of the resource type can be retrieved and compared with the schema given by the client.
+
+If you expose a different API next or instead of the JSON:API, you would need to write this initial request handling yourself, but you would still be able to use the resource types to handle the access to your entities.
+
+See xref:initial-request-receiver.adoc[Request handling] for more details.
+
+== Utilities, singletons, dependency injection and the agony of choice
+
+While the request handling and resource types have their respective responsibility defined, the actual logic (e.g. converting request data, validation or accessing entities) is done in utility classes.
+Where possible, those utility classes were designed to be usable outside the scope of the JSON:API or resource types.
+
+Most utility classes provided by this library are intended to be used as singletons.
+Classes in the library will not `new` them by themselves but expected them to be provided as constructor parameter or in rare cases via abstract methods.
+Though it is not required or enforced to limit them to a single instance (singleton) each, it is recommended and works well with dependency injection frameworks like Symfony.
+Usage without a dependency injection framework is possible, but will probably add additional complexity to the setup.
+
+In either case, defining/creating a utility class instance is often not only a matter of using just any available implementation, but to carefully consider its implications and chose one that fits the requirements or writing a custom one if necessary.
+
+For example some classes require a `PropertyAccessorInterface` instance.
+This class is needed to retrieve or set a value from/into an entity based on a property name or a property path.
+There are multiple child classes implementing `PropertyAccessorInterface` provided, but currently all of them are based on the `ReflectionPropertyAccessor`, which uses reflection as only means of accessing properties.
+If the reflection approach is not suitable for your entities, you want to use something like the link:https://symfony.com/doc/current/components/property_access.html[Symfony's PropertyAccess Component] to access properties via their getters instead.
+To do so you would need to implement a class extending `PropertyAccessorInterface` yourself, which internally uses the mentioned Symfony component.
+
+But even if you are fine with the reflection based access, you have to consider that the stock `ReflectionPropertyAccessor` is suitable for simple classes, but does not work reliably with Doctrine entities.
+When accessing Doctrine entities, `ProxyPropertyAccessor` or extending classes (e.g. `Iso8601PropertyAccessor` for proper datetime column support) must be used.
+
+The `PropertyAccessorInterface` is an extreme example and a high ranking candidate for usability improvements in the future, but until then it is a good case to highlight the importance of informed decisions to select the fitting implementation to inject.

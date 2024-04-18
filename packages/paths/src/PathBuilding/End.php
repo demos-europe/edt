@@ -10,7 +10,7 @@ use IteratorAggregate;
 /**
  * @template T
  */
-class End implements IteratorAggregate, PropertyPathInterface, PropertyAutoPathInterface
+class End implements IteratorAggregate, PropertyAutoPathInterface
 {
     use PropertyAutoPathTrait;
 }
