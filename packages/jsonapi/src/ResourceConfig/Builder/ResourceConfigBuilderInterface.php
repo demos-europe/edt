@@ -77,7 +77,7 @@ interface ResourceConfigBuilderInterface
     /**
      * @return $this
      */
-    public function addConstructorCreationBehavior(ConstructorBehaviorInterface $behavior): self;
+    public function addConstructorBehavior(ConstructorBehaviorInterface $behavior): self;
 
     /**
      * @param PropertySetBehaviorInterface<TEntity> $behavior

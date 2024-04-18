@@ -36,7 +36,7 @@ interface AttributeConfigBuilderInterface extends AttributeOrRelationshipBuilder
      *
      * @return $this
      *
-     * @deprecated use {@link addConstructorCreationBehavior}, {@link addCreationBehavior} or {@link addPathCreationBehavior} instead
+     * @deprecated use {@link addConstructorBehavior}, {@link addCreationBehavior} or {@link addPathCreationBehavior} instead
      */
     public function initializable(
         bool $optionalAfterConstructor = false,

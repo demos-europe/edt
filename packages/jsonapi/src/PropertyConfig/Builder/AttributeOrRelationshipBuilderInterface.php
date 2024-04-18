@@ -70,7 +70,7 @@ interface AttributeOrRelationshipBuilderInterface extends PropertyConfigBuilderI
      *
      * @return $this
      */
-    public function addConstructorCreationBehavior($behaviorFactory): self;
+    public function addConstructorBehavior(object $behaviorFactory): self;
 
     /**
      * @param TPostConstructorBehaviorFactory $behaviorFactory
@@ -105,5 +105,5 @@ interface AttributeOrRelationshipBuilderInterface extends PropertyConfigBuilderI
      *
      * @deprecated use {@link addCreationBehavior} instead
      */
-    public function addPostConstructorBehavior($behaviorFactory): self;
+    public function addPostConstructorBehavior(object $behaviorFactory): self;
 }

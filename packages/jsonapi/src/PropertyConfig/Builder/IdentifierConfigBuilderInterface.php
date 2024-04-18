@@ -32,7 +32,7 @@ interface IdentifierConfigBuilderInterface extends PropertyConfigBuilderInterfac
     /**
      * @return $this
      */
-    public function addConstructorCreationBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): self;
+    public function addConstructorBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): self;
 
     /**
      * @param IdentifierPostConstructorBehaviorFactoryInterface<TEntity> $behaviorFactory

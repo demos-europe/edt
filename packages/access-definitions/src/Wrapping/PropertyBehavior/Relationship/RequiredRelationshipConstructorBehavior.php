@@ -41,7 +41,7 @@ class RequiredRelationshipConstructorBehavior implements ConstructorBehaviorInte
      */
     public static function createFactory(callable $behavior): RelationshipConstructorBehaviorFactoryInterface
     {
-        return new class($behavior) implements RelationshipConstructorBehaviorFactoryInterface {
+        return new class ($behavior) implements RelationshipConstructorBehaviorFactoryInterface {
             /**
              * @param callable(CreationDataInterface): array{mixed, list<non-empty-string>} $callback
              */

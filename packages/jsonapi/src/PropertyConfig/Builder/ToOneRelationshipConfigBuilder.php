@@ -54,7 +54,7 @@ class ToOneRelationshipConfigBuilder
         array $relationshipConditions = []
     ): self {
         if ($constructorArgument) {
-            $this->addConstructorCreationBehavior(
+            $this->addConstructorBehavior(
                 ToOneRelationshipConstructorBehavior::createFactory(
                     $customConstructorArgumentName,
                     $relationshipConditions,

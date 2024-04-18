@@ -54,7 +54,7 @@ class ToManyRelationshipConfigBuilder
         array $relationshipConditions = []
     ): self {
         if ($constructorArgument) {
-            $this->addConstructorCreationBehavior(
+            $this->addConstructorBehavior(
                 ToManyRelationshipConstructorBehavior::createFactory(
                     $customConstructorArgumentName,
                     $relationshipConditions,

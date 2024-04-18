@@ -40,7 +40,7 @@ abstract class BaseSchemaBuilder implements ResourceConfigBuilderInterface
         return $this;
     }
 
-    public function addConstructorCreationBehavior(ConstructorBehaviorInterface $behavior): ResourceConfigBuilderInterface
+    public function addConstructorBehavior(ConstructorBehaviorInterface $behavior): ResourceConfigBuilderInterface
     {
         $this->generalConstructorBehavior[] = $behavior;
 

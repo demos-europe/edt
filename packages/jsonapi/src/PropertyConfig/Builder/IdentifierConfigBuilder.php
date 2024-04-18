@@ -162,7 +162,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
     public function initializable(bool $optionalAfterConstructor = false, bool $constructorArgument = false, ?string $customConstructorArgumentName = null): IdentifierConfigBuilderInterface
     {
         if ($constructorArgument) {
-            $this->addConstructorCreationBehavior(
+            $this->addConstructorBehavior(
                 DataProvidedIdentifierConstructorBehavior::createFactory($customConstructorArgumentName, OptionalField::NO, null)
             );
         }
@@ -170,7 +170,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
         return $this->addPathCreationBehavior(OptionalField::fromBoolean($optionalAfterConstructor));
     }
 
-    public function addConstructorCreationBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): self
+    public function addConstructorBehavior(IdentifierConstructorBehaviorFactoryInterface $behaviorFactory): self
     {
         $this->constructorBehaviorFactories[] = $behaviorFactory;
 

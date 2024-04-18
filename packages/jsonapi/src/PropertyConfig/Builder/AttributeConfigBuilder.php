@@ -64,7 +64,7 @@ class AttributeConfigBuilder
         ?string $customConstructorArgumentName = null
     ): self {
         if ($constructorArgument) {
-            $this->addConstructorCreationBehavior(
+            $this->addConstructorBehavior(
                 AttributeConstructorBehavior::createFactory($customConstructorArgumentName, OptionalField::NO, null)
             );
         }

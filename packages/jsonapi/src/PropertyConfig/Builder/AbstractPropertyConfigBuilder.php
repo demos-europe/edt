@@ -100,7 +100,7 @@ abstract class AbstractPropertyConfigBuilder implements AttributeOrRelationshipB
         return $this;
     }
 
-    public function addPostConstructorBehavior($behaviorFactory): self
+    public function addPostConstructorBehavior(object $behaviorFactory): self
     {
         return $this->addCreationBehavior($behaviorFactory);
     }
@@ -112,7 +112,7 @@ abstract class AbstractPropertyConfigBuilder implements AttributeOrRelationshipB
         return $this;
     }
 
-    public function addConstructorCreationBehavior($behaviorFactory): self
+    public function addConstructorBehavior(object $behaviorFactory): self
     {
         $this->constructorBehaviorFactories[] = $behaviorFactory;
 
