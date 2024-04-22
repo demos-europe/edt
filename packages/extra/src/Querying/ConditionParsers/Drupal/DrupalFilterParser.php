@@ -42,7 +42,7 @@ class DrupalFilterParser implements FilterParserInterface
      *
      * @var positive-int
      */
-    protected int $maxIterations;
+    protected readonly int $maxIterations;
 
     /**
      * The key identifying a field as data for a filter group.
