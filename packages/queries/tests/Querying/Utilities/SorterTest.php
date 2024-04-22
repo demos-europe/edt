@@ -109,4 +109,36 @@ class SorterTest extends ModelBasedTest
         $titleSorting = $this->sortMethodFactory->propertyAscending(['books', 'title']);
         $this->sorter->sortArray($this->authors, [$titleSorting]);
     }
+
+    public function testFailOrderSmallSetRestrict(): void
+    {
+        $pseudonymSorting = $this->sortMethodFactory->propertyDescending(['author', 'pseudonym']);
+        $titleSorting = $this->sortMethodFactory->propertyDescending(['title']);
+        $input = [
+            0 => $this->books['beowulf'],
+            1 => $this->books['pickwickPapers'],
+        ];
+        $sortedBooks = $this->sorter->sortArray($input, [$pseudonymSorting, $titleSorting]);
+        $expected = [
+            0 => $this->books['beowulf'],
+            1 => $this->books['pickwickPapers'],
+        ];
+        self::assertNotEquals($expected, $sortedBooks);
+    }
+
+    public function testSmallSetRestrict(): void
+    {
+        $pseudonymSorting = $this->sortMethodFactory->propertyDescending(['author', 'pseudonym']);
+        $titleSorting = $this->sortMethodFactory->propertyDescending(['title']);
+        $input = [
+            1 => $this->books['beowulf'],
+            0 => $this->books['pickwickPapers'],
+        ];
+        $sortedBooks = $this->sorter->sortArray($input, [$pseudonymSorting, $titleSorting]);
+        $expected = [
+            0 => $this->books['pickwickPapers'],
+            1 => $this->books['beowulf'],
+        ];
+        self::assertEquals($expected, $sortedBooks);
+    }
 }
