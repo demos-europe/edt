@@ -45,59 +45,6 @@ class RequestTransformer
     }
 
     /**
-     * @param non-empty-string $urlTypeIdentifier
-     *
-     * @return CreationRequestBody
-     * @throws RequestException
-     */
-    public function getCreationRequestBody(
-        string $urlTypeIdentifier,
-        ExpectedPropertyCollectionInterface $expectedProperties
-    ): CreationRequestBody {
-        $body = $this->getRequestData(
-            $urlTypeIdentifier,
-            null,
-            $expectedProperties
-        );
-        $relationships = $body[ContentField::RELATIONSHIPS] ?? [];
-        [$toOneRelationships, $toManyRelationships] = $this->splitRelationships($relationships);
-
-        return new CreationRequestBody(
-            $body[ContentField::ID] ?? null,
-            $body[ContentField::TYPE],
-            $body[ContentField::ATTRIBUTES] ?? [],
-            $toOneRelationships,
-            $toManyRelationships
-        );
-    }
-
-    /**
-     * @param non-empty-string $urlTypeIdentifier
-     * @param non-empty-string $urlId
-     */
-    public function getUpdateRequestBody(
-        string $urlTypeIdentifier,
-        string $urlId,
-        ExpectedPropertyCollectionInterface $expectedProperties
-    ): UpdateRequestBody {
-        $body = $this->getRequestData(
-            $urlTypeIdentifier,
-            $urlId,
-            $expectedProperties
-        );
-        $relationships = $body[ContentField::RELATIONSHIPS] ?? [];
-        [$toOneRelationships, $toManyRelationships] = $this->splitRelationships($relationships);
-
-        return new UpdateRequestBody(
-            $urlId,
-            $body[ContentField::TYPE],
-            $body[ContentField::ATTRIBUTES] ?? [],
-            $toOneRelationships,
-            $toManyRelationships
-        );
-    }
-
-    /**
      * @throws RequestException
      */
     protected function getRequest(): Request
@@ -119,7 +66,7 @@ class RequestTransformer
      * @throws ValidationFailedException
      * @throws RequestException
      */
-    protected function getRequestData(
+    public function getRequestData(
         string $urlTypeIdentifier,
         ?string $urlId,
         ExpectedPropertyCollectionInterface $expectedProperties
@@ -141,7 +88,7 @@ class RequestTransformer
      *
      * @return array{array<non-empty-string, JsonApiRelationship|null>, array<non-empty-string, list<JsonApiRelationship>>}
      */
-    protected function splitRelationships(array $relationships): array
+    public function splitRelationships(array $relationships): array
     {
         $toOneRelationships = [];
         $toManyRelationships = [];

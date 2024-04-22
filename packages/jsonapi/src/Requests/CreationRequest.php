@@ -6,9 +6,12 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\Event\AfterCreationEvent;
 use EDT\JsonApi\Event\BeforeCreationEvent;
+use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
+use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\ResourceTypes\CreatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ContentField;
 use Exception;
 use League\Fractal\Resource\Item;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -42,7 +45,7 @@ class CreationRequest
         $typeName = $type->getTypeName();
         $expectedProperties = $type->getExpectedInitializationProperties();
 
-        $requestBody = $this->requestTransformer->getCreationRequestBody($typeName, $expectedProperties);
+        $requestBody = $this->getCreationRequestBody($typeName, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
         $beforeCreationEvent = new BeforeCreationEvent($type, $requestBody);
@@ -66,5 +69,32 @@ class CreationRequest
         }
 
         return new Item($entity, $type->getTransformer(), $type->getTypeName());
+    }
+
+    /**
+     * @param non-empty-string $urlTypeIdentifier
+     *
+     * @return CreationRequestBody
+     * @throws RequestException
+     */
+    protected function getCreationRequestBody(
+        string $urlTypeIdentifier,
+        ExpectedPropertyCollectionInterface $expectedProperties
+    ): CreationRequestBody {
+        $body = $this->requestTransformer->getRequestData(
+            $urlTypeIdentifier,
+            null,
+            $expectedProperties
+        );
+        $relationships = $body[ContentField::RELATIONSHIPS] ?? [];
+        [$toOneRelationships, $toManyRelationships] = $this->requestTransformer->splitRelationships($relationships);
+
+        return new CreationRequestBody(
+            $body[ContentField::ID] ?? null,
+            $body[ContentField::TYPE],
+            $body[ContentField::ATTRIBUTES] ?? [],
+            $toOneRelationships,
+            $toManyRelationships
+        );
     }
 }

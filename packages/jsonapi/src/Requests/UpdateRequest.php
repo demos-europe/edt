@@ -6,9 +6,12 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\Event\AfterUpdateEvent;
 use EDT\JsonApi\Event\BeforeUpdateEvent;
+use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
+use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 use Exception;
 use League\Fractal\Resource\Item;
@@ -39,7 +42,7 @@ class UpdateRequest
         $expectedProperties = $type->getExpectedUpdateProperties();
 
         // get request data
-        $requestBody = $this->requestTransformer->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
+        $requestBody = $this->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
         $urlParams = $this->requestTransformer->getUrlParameters();
 
         $beforeUpdateEvent = new BeforeUpdateEvent($type, $requestBody);
@@ -63,5 +66,31 @@ class UpdateRequest
         }
 
         return new Item($entity, $type->getTransformer(), $type->getTypeName());
+    }
+
+    /**
+     * @param non-empty-string $urlTypeIdentifier
+     * @param non-empty-string $urlId
+     */
+    protected function getUpdateRequestBody(
+        string $urlTypeIdentifier,
+        string $urlId,
+        ExpectedPropertyCollectionInterface $expectedProperties
+    ): UpdateRequestBody {
+        $body = $this->requestTransformer->getRequestData(
+            $urlTypeIdentifier,
+            $urlId,
+            $expectedProperties
+        );
+        $relationships = $body[ContentField::RELATIONSHIPS] ?? [];
+        [$toOneRelationships, $toManyRelationships] = $this->requestTransformer->splitRelationships($relationships);
+
+        return new UpdateRequestBody(
+            $urlId,
+            $body[ContentField::TYPE],
+            $body[ContentField::ATTRIBUTES] ?? [],
+            $toOneRelationships,
+            $toManyRelationships
+        );
     }
 }
