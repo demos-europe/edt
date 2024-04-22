@@ -98,6 +98,6 @@ abstract class AbstractFunction implements FunctionInterface
             $this->functions
         );
 
-        return array_map('array_values', Iterables::split($propertyValues, ...$propertyAliasCountables));
+        return array_map('array_values', Iterables::split($propertyValues, $propertyAliasCountables));
     }
 }

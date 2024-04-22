@@ -43,23 +43,22 @@ final class Iterables
      *
      * Can be used to revert a {@link Iterables::mapFlat} operation.
      *
-     * @template TKey of int|string
      * @template V
      *
-     * @param array<TKey, V> $toSplit The array to split. Length must be equal to the sum of $sizes, otherwise the behavior is undefined.
-     * @param int ...$sizes        The intended array size of each item in the result array.
+     * @param list<V> $toSplit The array to split. Length must be equal to the sum of $sizes, otherwise the behavior is undefined.
+     * @param list<int> $sizes The intended array size of each item in the result array.
      *
-     * @return list<array<TKey, V>> The nested result array, same length as the $sizes array.
+     * @return list<list<V>> The nested result array, same length as the $sizes array.
      */
-    public static function split(iterable $toSplit, int ...$sizes): array
+    public static function split(array $toSplit, array $sizes): array
     {
         $toSplit = self::asArray($toSplit);
 
         $result = [];
         $valuesOffset = 0;
         foreach ($sizes as $count) {
-            /** @var array<TKey, V> $slice */
-            $slice = array_slice($toSplit, $valuesOffset, $count, true);
+            /** @var list<V> $slice */
+            $slice = array_slice($toSplit, $valuesOffset, $count);
             $result[] = $slice;
             $valuesOffset += $count;
         }

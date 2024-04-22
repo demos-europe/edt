@@ -21,13 +21,12 @@ class Sorter
     ) {}
 
     /**
-     * @template TKey of int|string
      * @template TEntity of object
      *
-     * @param array<TKey, TEntity> $entitiesToSort
+     * @param list<TEntity> $entitiesToSort
      * @param non-empty-list<SortMethodInterface> $sortMethods
      *
-     * @return array<TKey, TEntity>
+     * @return list<TEntity>
      *
      * @throws SortException
      */
