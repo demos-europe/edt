@@ -12,6 +12,11 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function is_array;
 
+/**
+ * Validates sparse fieldset definitions that may be present in a request.
+ *
+ * @see https://jsonapi.org/format/#fetching-sparse-fieldsets
+ */
 class FieldsValidator
 {
     /**
@@ -52,6 +57,10 @@ class FieldsValidator
      * Its keys must be strings that should correspond to a known resource type.
      *
      * Its values must be a comma-separated list of properties that should exist in that type.
+     *
+     * This will **only** partly assert the correct format, and not the content at all.
+     * I.e. it will not be counter-checked with the corresponding types and properties.
+     * Use {@link self::getNonReadableProperties()} to do so.
      *
      * @return array<non-empty-string, string>
      *

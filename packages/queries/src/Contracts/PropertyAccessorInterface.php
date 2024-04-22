@@ -5,7 +5,22 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * Provides the means to access the property of a target in a reading or writing manner.
+ * Provides the means to access the property of a target entity in a reading or writing manner.
+ *
+ * **An implementation of this interface MAY work with all target entity (or property) implementations.
+ * See their documentation regarding requirements and limitations and evaluate them against your entity implementations.**
+ *
+ * Implementations of this interface MUST support a path-based access. However, it MAY be subject to technical
+ * limitations like recursion limits.
+ *
+ * Implementations of this interface SHOULD NOT apply access limitations or authorization considerations.
+ *
+ * Implementations of this interface SHOULD NOT apply logical schema adjustments, like "aliasing" or "property mapping".
+ * They may access getter and setter methods, i.e. are not required to directly access a property by its name, but if a
+ * property name is not considered part of the entity schema of the target, the implementation of this interface SHOULD
+ * throw an exception.
+ *
+ * Implementations of this interface MAY change the data structure/format when getting or setting a property value.
  */
 interface PropertyAccessorInterface
 {
@@ -47,7 +62,7 @@ interface PropertyAccessorInterface
     public function getValuesByPropertyPath(object $target, int $depth, array $properties): array;
 
     /**
-     * Sets a property values of the given target.
+     * Sets a property's value of the given target.
      *
      * @param non-empty-string $propertyName
      */

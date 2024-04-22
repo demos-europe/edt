@@ -66,8 +66,27 @@ class SchemaPathProcessor
     }
 
     /**
-     * Compares the given path with the {@link TransferableTypeInterface::getReadability()}
-     * of the involved types.
+     * Compares the given path with the {@link TransferableTypeInterface::getReadability()} of the involved types.
+     *
+     * I.e. the given type specifies properties that are set as readable.
+     * If such property is a relationship, it will point to another type, which itself specifies another set of
+     * readable properties.
+     *
+     * The verification is done for the whole given path.
+     * The first path segment must be present in the readable properties of the given type.
+     * All path segments except for the last one must be represented as relationship property in their corresponding
+     * type.
+     * So if a path consisting of two segments is given, the first one must be a relationship in the given type.
+     * The second path segment is unrelated to the given type.
+     * Instead, it must be present in the type of the relationship property that corresponds to the first path segment.
+     *
+     * The last segment may be represented in the corresponding type by a relationship property or an attribute
+     * property.
+     * Except if `$allowAttribute` is set to false, in which case all segments in the given path must be represented
+     * by a corresponding relationship.
+     *
+     * Note that {@link ContentField::ID} and {@link ContentField::TYPE} are not allowed in the given path, as they
+     * are always readable.
      *
      * @param TransferableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
      * @param non-empty-list<non-empty-string> $path
@@ -89,6 +108,7 @@ class SchemaPathProcessor
                 throw PropertyAccessException::propertyNotAvailableInType($pathSegment, $type, $availablePropertyNames);
             }
 
+            // after processing the path segment above, we check if there are more segments to check, if not, we are done
             if ([] === $path) {
                 return;
             }
@@ -101,6 +121,7 @@ class SchemaPathProcessor
             $relationshipType = $property->getRelationshipType();
 
             try {
+                // go into the next recursion level, to check the remaining path segments
                 $this->verifyExternReadablePath($relationshipType, $path, $allowAttribute);
             } catch (Exception $exception) {
                 throw new ExternReadableRelationshipSchemaVerificationException($relationshipType, $path, $exception);

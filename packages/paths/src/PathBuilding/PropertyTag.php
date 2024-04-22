@@ -18,7 +18,7 @@ enum PropertyTag: string
     case PROPERTY_READ = 'property-read';
 
     /**
-     * Usage is discouraged, as accesses will be reading, not writing.
+     * Usage is discouraged, as the use case of this enum is getting property values, not setting them.
      */
     case PROPERTY_WRITE = 'property-write';
     case PARAM = 'param';

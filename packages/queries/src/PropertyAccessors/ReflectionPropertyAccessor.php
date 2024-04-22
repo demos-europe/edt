@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\PropertyAccessors;
 
+use EDT\DqlQuerying\PropertyAccessors\ProxyPropertyAccessor;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Utilities\Iterables;
 use InvalidArgumentException;
@@ -14,7 +15,12 @@ use function array_slice;
 use function is_array;
 
 /**
- * Accesses properties of objects directly via reflection, circumventing any methods.
+ * Accesses properties of target entities directly via reflection, circumventing any methods.
+ *
+ * Capabilities and limitations of this specific class (subclasses may mitigate them or add their own limitations):
+ * * does work with `protected` and `public` properties
+ * * does not work with `private` properties
+ * * does not reliably work with the target being a Doctrine entity, see {@link ProxyPropertyAccessor} for a mitigation
  */
 class ReflectionPropertyAccessor implements PropertyAccessorInterface
 {
