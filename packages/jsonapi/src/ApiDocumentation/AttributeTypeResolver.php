@@ -74,7 +74,7 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
     }
 
     /**
-     * @param class-string<object>             $entityClass
+     * @param class-string $entityClass
      * @param non-empty-list<non-empty-string> $propertyPath
      *
      * @throws ReflectionException
