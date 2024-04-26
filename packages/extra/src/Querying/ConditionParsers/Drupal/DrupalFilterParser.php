@@ -22,7 +22,7 @@ use function in_array;
  *            memberOf?: non-empty-string
  *          }
  * @phpstan-type DrupalFilterCondition = array{
- *            path: non-empty-string,
+ *            path?: non-empty-string,
  *            value?: DrupalValue,
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
@@ -84,23 +84,15 @@ class DrupalFilterParser implements FilterParserInterface
      */
     public const CONJUNCTION = 'conjunction';
 
-    /**
-     * @var string
-     */
     public const PATH = 'path';
 
-    /**
-     * @var string
-     */
     public const OPERATOR = 'operator';
 
-    /**
-     * @var string
-     */
     public const VALUE = 'value';
 
     /**
-     * @param ConditionParserInterface<DrupalFilterCondition, TCondition> $conditionParser
+     * @param PathsBasedConditionGroupFactoryInterface<TCondition> $conditionGroupFactory
+     * @param ConditionParserInterface<TCondition> $conditionParser
      * @param positive-int $maxIterations How deep groups are allowed to be nested.
      */
     public function __construct(

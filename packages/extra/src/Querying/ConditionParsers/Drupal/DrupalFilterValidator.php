@@ -31,7 +31,7 @@ class DrupalFilterValidator
 
     public function __construct(
         protected ValidatorInterface $validator,
-        DrupalConditionFactoryInterface $drupalConditionFactory
+        OperatorConstraintProviderInterface $drupalConditionFactory
     ) {
         $this->collectionConstraintFactory = new CollectionConstraintFactory();
         $this->filterNamesConstraints = $this->getFilterNamesConstraints();
@@ -72,7 +72,6 @@ class DrupalFilterValidator
     {
         $filterTypeConstraints = $this->getFilterTypeConstraints($validOperators);
 
-        /** @var mixed $assertionsOnRootItems (avoid incorrect type concern) */
         $assertionsOnRootItems = [
             new Assert\Type('array'),
             new Assert\Count(1),
@@ -105,7 +104,7 @@ class DrupalFilterValidator
      */
     protected function getConditionConstraints(array $validOperators): array
     {
-        // FIXME: use constraints provided for each operator to validate drupal conditions
+        // FIXME: use constraints provided for each operator in context of the corresponding operator name to validate Drupal conditions
         $validOperatorNames = array_keys($validOperators);
         $filterNameConstraints = $this->getFilterNameConstraints();
         $pathConstraints = [

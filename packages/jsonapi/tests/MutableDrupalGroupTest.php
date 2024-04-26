@@ -10,7 +10,7 @@ use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
 use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
-use EDT\Querying\Drupal\StandardOperator;
+use EDT\Querying\Conditions\Equals;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 
@@ -29,15 +29,15 @@ class MutableDrupalGroupTest extends TestCase
         $groupA->addChild($groupB, 'groupB');
         $groupA->addChild($groupC, 'groupC');
 
-        $groupA->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupA->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupA->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupB->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupB->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupB->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupC->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupC->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
-        $groupC->addChild(MutableDrupalCondition::createWithValue('x', StandardOperator::EQUALS, true), 'anotherPrefix');
+        $groupA->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupA->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupA->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupB->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupB->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupB->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupC->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupC->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
+        $groupC->addChild(MutableDrupalCondition::createWithValue('x', Equals::OPERATOR, true), 'anotherPrefix');
 
         $drupalFilter = $groupA->toDrupalArray('groupA');
         $validator->validateFilter($drupalFilter);

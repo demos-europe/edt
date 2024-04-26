@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
+use EDT\Querying\Conditions\Equals;
 use EDT\Querying\Contracts\ConditionParserInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Querying\Drupal\StandardOperator;
 use function array_key_exists;
 
 /**
- * Parses specific conditions inside a Drupal filter format.
+ * Transform specific conditions inside a Drupal filter format that use the typical Drupal format.
+ *
+ * Conditions must contain a path and may contain a value and operator. If no operator is present, a default
+ * operator will be used. If no value is given, it is expected that the operator can be applied without a value. If
+ * this expectation is not met the behavior is undefined.
  *
  * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser
  *
  * @template TCondition of PathsBasedInterface
- * @template-implements ConditionParserInterface<DrupalFilterCondition, TCondition>
+ * @template-implements ConditionParserInterface<TCondition>
  */
 class DrupalConditionParser implements ConditionParserInterface
 {
@@ -25,13 +29,13 @@ class DrupalConditionParser implements ConditionParserInterface
      */
     public function __construct(
         protected readonly DrupalConditionFactoryInterface $drupalConditionFactory,
-        protected readonly string $defaultOperator = StandardOperator::EQUALS
+        protected readonly string $defaultOperator = Equals::OPERATOR
     ) {}
 
     /**
      * @throws DrupalFilterException
      */
-    public function parseCondition($condition): PathsBasedInterface
+    public function parseCondition(array $condition): PathsBasedInterface
     {
         $operatorName = array_key_exists(DrupalFilterParser::OPERATOR, $condition)
             ? $condition[DrupalFilterParser::OPERATOR]
@@ -42,14 +46,16 @@ class DrupalConditionParser implements ConditionParserInterface
             throw DrupalFilterException::nullValue();
         }
 
-        $pathString = $condition[DrupalFilterParser::PATH];
-        $path = array_map(static function (string $pathSegment) use ($operatorName, $pathString): string {
-            if ('' === $pathSegment) {
-                throw DrupalFilterException::emptyPathSegment($operatorName, $pathString);
-            }
+        $pathString = $condition[DrupalFilterParser::PATH] ?? null;
+        $path = null === $pathString
+            ? null
+            : array_map(static function (string $pathSegment) use ($operatorName, $pathString): string {
+                if ('' === $pathSegment) {
+                    throw DrupalFilterException::emptyPathSegment($operatorName, $pathString);
+                }
 
-            return $pathSegment;
-        }, explode('.', $pathString));
+                return $pathSegment;
+            }, explode('.', $pathString));
 
         return array_key_exists(DrupalFilterParser::VALUE, $condition)
             ? $this->drupalConditionFactory->createConditionWithValue($operatorName, $condition[DrupalFilterParser::VALUE], $path)

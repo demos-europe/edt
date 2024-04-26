@@ -5,9 +5,24 @@ declare(strict_types=1);
 namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\Querying\Conditions\ArrayContains;
+use EDT\Querying\Conditions\Between;
+use EDT\Querying\Conditions\EndsWith;
+use EDT\Querying\Conditions\Equals;
+use EDT\Querying\Conditions\GreaterEqualsThan;
+use EDT\Querying\Conditions\GreaterThan;
+use EDT\Querying\Conditions\In;
+use EDT\Querying\Conditions\IsNotNull;
+use EDT\Querying\Conditions\IsNull;
+use EDT\Querying\Conditions\LesserEqualsThan;
+use EDT\Querying\Conditions\LesserThan;
+use EDT\Querying\Conditions\NotBetween;
+use EDT\Querying\Conditions\NotEquals;
+use EDT\Querying\Conditions\NotIn;
+use EDT\Querying\Conditions\StartsWith;
+use EDT\Querying\Conditions\StringContains;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Drupal\ConditionValueException;
-use EDT\Querying\Drupal\StandardOperator;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 use function is_bool;
@@ -22,12 +37,12 @@ use function is_string;
 class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterface
 {
     /**
-     * @var array<non-empty-string, callable(DrupalValue, non-empty-list<non-empty-string>):TCondition>
+     * @var array<non-empty-string, callable(DrupalValue, non-empty-list<non-empty-string>|null):TCondition>
      */
     private array $operatorFunctionsWithValue;
 
     /**
-     * @var array<non-empty-string, callable(non-empty-list<non-empty-string>):TCondition>
+     * @var array<non-empty-string, callable(non-empty-list<non-empty-string>|null):TCondition>
      */
     private array $operatorFunctionsWithoutValue;
 
@@ -52,7 +67,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
         );
     }
 
-    public function createConditionWithValue(string $operatorName, array|string|int|float|bool|null $value, array $path): PathsBasedInterface
+    public function createConditionWithValue(string $operatorName, array|string|int|float|bool|null $value, ?array $path): PathsBasedInterface
     {
         if (!array_key_exists($operatorName, $this->operatorFunctionsWithValue)) {
             throw DrupalFilterException::unknownCondition($operatorName, ...array_keys($this->getSupportedOperators()));
@@ -61,7 +76,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
         return $this->operatorFunctionsWithValue[$operatorName]($value, $path);
     }
 
-    public function createConditionWithoutValue(string $operatorName, array $path): PathsBasedInterface
+    public function createConditionWithoutValue(string $operatorName, ?array $path): PathsBasedInterface
     {
         if (!array_key_exists($operatorName, $this->operatorFunctionsWithoutValue)) {
             throw DrupalFilterException::unknownCondition($operatorName, ...array_keys($this->getSupportedOperators()));
@@ -129,52 +144,51 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     }
 
     /**
-     * @return array<non-empty-string, callable(DrupalValue, non-empty-list<non-empty-string>): TCondition>
+     * @return array<non-empty-string, callable(DrupalValue, non-empty-list<non-empty-string>|null): TCondition>
      */
     protected function getOperatorFunctionsWithValue(): array
     {
         return [
-            StandardOperator::EQUALS => fn ($value, array $path) => $this->conditionFactory->propertyHasValue($this->assertPrimitiveNonNull($value), $this->assertPath($path)),
-            StandardOperator::NOT_EQUALS => fn ($value, array $path) => $this->conditionFactory->propertyHasNotValue($this->assertPrimitiveNonNull($value), $this->assertPath($path)),
-            StandardOperator::STRING_CONTAINS_CASE_INSENSITIVE => fn ($value, array $path) => $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($this->assertString($value), $this->assertPath($path)),
-            StandardOperator::IN => fn ($value, array $path) => $this->conditionFactory->propertyHasAnyOfValues($this->assertList($value), $this->assertPath($path)),
-            StandardOperator::NOT_IN => fn ($value, array $path) => $this->conditionFactory->propertyHasNotAnyOfValues($this->assertList($value), $this->assertPath($path)),
-            StandardOperator::BETWEEN => function ($value, array $path): PathsBasedInterface {
+            Equals::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasValue($this->assertPrimitiveNonNull($value), $this->assertPath($path)),
+            NotEquals::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasNotValue($this->assertPrimitiveNonNull($value), $this->assertPath($path)),
+            StringContains::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($this->assertString($value), $this->assertPath($path)),
+            In::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasAnyOfValues($this->assertList($value), $this->assertPath($path)),
+            NotIn::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasNotAnyOfValues($this->assertList($value), $this->assertPath($path)),
+            Between::OPERATOR => function ($value, ?array $path): PathsBasedInterface {
                 $value = $this->assertRange($value);
                 return $this->conditionFactory->propertyBetweenValuesInclusive($value[0], $value[1], $this->assertPath($path));
             },
-            StandardOperator::NOT_BETWEEN => function ($value, array $path): PathsBasedInterface {
+            NotBetween::OPERATOR => function ($value, ?array $path): PathsBasedInterface {
                 $value = $this->assertRange($value);
                 return $this->conditionFactory->propertyNotBetweenValuesInclusive($value[0], $value[1], $this->assertPath($path));
             },
-            StandardOperator::ARRAY_CONTAINS_VALUE => fn ($value, array $path) => $this->conditionFactory->propertyHasStringAsMember($this->assertString($value), $this->assertPath($path)),
-            StandardOperator::GT => fn ($value, array $path) => $this->conditionFactory->valueGreaterThan($this->assertNumeric($value), $this->assertPath($path)),
-            StandardOperator::GTEQ => fn ($value, array $path) => $this->conditionFactory->valueGreaterEqualsThan($this->assertNumeric($value), $this->assertPath($path)),
-            StandardOperator::LT => fn ($value, array $path) => $this->conditionFactory->valueSmallerThan($this->assertNumeric($value), $this->assertPath($path)),
-            StandardOperator::LTEQ => fn ($value, array $path) => $this->conditionFactory->valueSmallerEqualsThan($this->assertNumeric($value), $this->assertPath($path)),
-            StandardOperator::STARTS_WITH_CASE_INSENSITIVE => fn ($value, array $path) => $this->conditionFactory->propertyStartsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
-            StandardOperator::ENDS_WITH_CASE_INSENSITIVE => fn ($value, array $path) => $this->conditionFactory->propertyEndsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
+            ArrayContains::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasStringAsMember($this->assertString($value), $this->assertPath($path)),
+            GreaterThan::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->valueGreaterThan($this->assertNumeric($value), $this->assertPath($path)),
+            GreaterEqualsThan::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->valueGreaterEqualsThan($this->assertNumeric($value), $this->assertPath($path)),
+            LesserThan::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->valueSmallerThan($this->assertNumeric($value), $this->assertPath($path)),
+            LesserEqualsThan::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->valueSmallerEqualsThan($this->assertNumeric($value), $this->assertPath($path)),
+            StartsWith::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyStartsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
+            EndsWith::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyEndsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
         ];
     }
 
     /**
-     * @return array<non-empty-string, callable(non-empty-list<non-empty-string>): TCondition>
+     * @return array<non-empty-string, callable(non-empty-list<non-empty-string>|null): TCondition>
      */
     protected function getOperatorFunctionsWithoutValue(): array
     {
         return [
-            StandardOperator::IS_NULL => fn (array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNull($path),
-            StandardOperator::IS_NOT_NULL => fn (array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull($path),
+            IsNull::OPERATOR => fn (?array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNull($this->assertPath($path)),
+            IsNotNull::OPERATOR => fn (?array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull($this->assertPath($path)),
         ];
     }
 
     /**
-     * @param array<int|string, mixed> $path
-     *
      * @return non-empty-list<non-empty-string>
      */
-    protected function assertPath(array $path): array
+    protected function assertPath(?array $path): array
     {
+        Assert::notNull($path);
         Assert::isList($path);
         Assert::notEmpty($path);
         Assert::allStringNotEmpty($path);

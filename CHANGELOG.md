@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* refactor: (bc break) allow to pass `null` paths into `DrupalConditionFactoryInterface::createConditionWithoutValue` and `createConditionWithValue`; overriding methods need to be adjusted accordingly
 * refactor: (bc break) adjust constructor of `DynamicTransformer` to take some specific values instead of a whole `TransferableTypeInterface` instance
 * refactor: (bc break) require the implementation of five other methods instead of `getResourceConfig` in children of `AbstractResourceType`
 * refactor: (bc break) replace `RequiredRelationshipConstructorBehavior` constructor boolean parameter with `Cardinality` enum
