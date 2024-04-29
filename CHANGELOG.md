@@ -2,15 +2,120 @@
 
 ## Unreleased
 
-* refactor: (bc break) allow to pass `null` paths into `DrupalConditionFactoryInterface::createConditionWithoutValue` and `createConditionWithValue`; overriding methods need to be adjusted accordingly
-* refactor: (bc break) adjust constructor of `DynamicTransformer` to take some specific values instead of a whole `TransferableTypeInterface` instance
-* refactor: (bc break) require the implementation of five other methods instead of `getResourceConfig` in children of `AbstractResourceType`
-* refactor: (bc break) replace `RequiredRelationshipConstructorBehavior` constructor boolean parameter with `Cardinality` enum
-* refactor: (bc break) remove `*ConstructorBehaviorFactory` classes, you can use added static `createFactory` methods in the corresponding `*Behavior` classes instead.
-* refactor: (bc break) adjust `*SetBehavior` and `*SetBehaviorFactory` class constructors to take the `OptionalField` enum instead of `bool`
-* refactor: (bc break) adjust `*Readability` class constructors to take `DefaultField` instead of `bool`
-* refactor: (bc break) remove `ReadablePropertyConfigBuilderInterface`
-* refactor: remove unnecessary template parameters from `FilteringTypeInterface`
+### BC BREAK: Allow to pass `null` paths into `DrupalConditionFactoryInterface::createConditionWithoutValue` and `createConditionWithValue`
+
+If you did not override these two methods, you don't need to do anything.
+If you did override either of them, you need to adjust the signatures of your overriding method to accept not only `array` as path but also `null`.
+Accordingly, your logic needs to handle a `null` value as path.
+However, it is valid to just throw an exception if your implementation does not support it.
+
+### BC BREAK: Adjust constructor of `DynamicTransformer` to take some specific values instead of a whole `TransferableTypeInterface` instance
+
+Previously the `DynamicTransformer` constructor required an instance of `TransferableTypeInterface` from which it retrieved data internally.
+Now the constructor does no longer accept a `TransferableTypeInterface` instance, but requires the values it retrieved internally instead.
+I.e., instead of calling
+```php
+$transformer = new \EDT\JsonApi\OutputHandling\DynamicTransformer(
+    $type
+);
+```
+you can now call it like this:
+```php
+$transformer = new \EDT\JsonApi\OutputHandling\DynamicTransformer(
+    $type->getTypeName(),
+    $type->getEntityClass(),
+    $type->getReadability(),
+);
+```
+
+### BC BREAK: Require the implementation of five other methods instead of `getResourceConfig` in children of `AbstractResourceType`
+
+Previously, the `AbstractResourceType` implementation did define the abstract method `getResourceConfig(): ResourceConfigInterface` to implement multiple methods defined by its parent interfaces by itself.
+Classes extending from `AbstractResourceType` were required to implement the `getResourceConfig` method.
+
+Instead, the `AbstractResourceType` now leaves the implementation of the parent interface methods to extending classes and thus does no longer define `getResourceConfig` at all.
+
+To keep the previous behavior, the following code can be added to the classes directly extending from `AbstractResourceType`:
+
+```php
+public function getReadability(): ResourceReadability
+{
+    return $this->getResourceConfig()->getReadability();
+}
+
+public function getFilteringProperties(): array
+{
+    return $this->getResourceConfig()->getFilteringProperties();
+}
+
+public function getSortingProperties(): array
+{
+    return $this->getResourceConfig()->getSortingProperties();
+}
+
+public function getUpdatability(): ResourceUpdatability
+{
+    return $this->getResourceConfig()->getUpdatability();
+}
+
+protected function getInstantiability(): ResourceInstantiability
+{
+    return $this->getResourceConfig()->getInstantiability();
+}
+```
+
+### BC BREAK: Replace `RequiredRelationshipConstructorBehavior` constructor boolean parameter with `Cardinality` enum
+
+Instead of taking a simple `bool $toOne` parameter in the constructor, you now need to use the `Cardinality` enum. I.e. calls with `true` needs to be replaced with `Cardinality::TO_ONE` and calls with `false` needs to be replaced with `Cardinality::TO_MANY`.
+
+### BC BREAK: Remove `*ConstructorBehaviorFactory` classes, you can use added static `createFactory` methods in the corresponding `*Behavior` classes instead
+
+When configuring resource properties you can connect them to behaviors, which is done by passing a factory instance into the corresponding property config method, which is internally used to create the behavior to be connected.
+There are many different kind of properties with different behavior implementations provided by the library, which required many corresponding factory classes.
+To make the behavior configuration more approachable, all factory class implementations were moved as anonymous classes into their corresponding behavior, hidden from the configuring developer.
+E.g. instead of using
+```php
+$config->title->addConstructorBehavior(
+    new AttributeConstructorBehaviorFactory(null, null));
+```
+you would now use
+```php
+$config->title->addConstructorBehavior(
+    AttributeConstructorBehavior::createFactory(null, OptionalField::NO, null));
+```
+
+The additional `OptionalField::NO` parameter is independent of this change and explained further down below.
+
+To mitigate to the new approach, search in your application for all usages of classes that end with `ConstructorBehaviorFactory`.
+For each one, a corresponding class ending with `ConstructorBehavior` exists, providing a `createFactory` method, as shown above.
+
+### BC BREAK: Adjust `*SetBehavior` and `*SetBehaviorFactory` class constructors to take the `OptionalField` enum instead of `bool`
+
+Previously, some classes ending with the name `SetBehavior` or `SetBehaviorFactory` took a boolean to imply if the properties they were configured for are required in the request data or not.
+Now creating instances of these classes requires an `OptionalField` enum instead.
+I.e. a call with `true` is to be replaced with `OptionalField::YES`.
+A call with `false` is to be replaced with `OptionalField::NO`.
+
+### BC BREAK: Adjust `*Readability` class constructors to take `DefaultField` instead of `bool`
+
+Previously, some classes ending with the name `Readability` took a boolean to imply if the corresponding property should be present in the response if no fieldset was specified in the request.
+Now creating instances of these classes requires a `DefaultField` enum instead.
+I.e. a call with `true` is to be replaced with `DefaultField::YES`.
+A call with `false` is to be replaced with `DefaultField::NO`.
+
+### BC BREAK: Remove `ReadablePropertyConfigBuilderInterface`
+
+Its only method `readable` is still present in all of its former child classes and interfaces.
+The root interface in which the signature is defined is now `AttributeOrRelationshipBuilderInterface`.
+If you used `ReadablePropertyConfigBuilderInterface` directly in your application you need to adjust your inheritance hierarchy.
+If you did not use `ReadablePropertyConfigBuilderInterface` directly, you don't need to do anything.
+
+### Remove unnecessary template parameters from `FilteringTypeInterface`
+
+If you used `FilteringTypeInterface` directly in your application you can now remove the previously necessary template parameters. If you did not use the interface directly or did not specify its template parameters anyway, you don't need to do anything.
+
+Using the wrong template parameters will not affect your application at runtime.
+However, on certain phpstan levels, the static code checker may raise concerns.
 
 ## 0.24.42 - 2024-02-13
 
