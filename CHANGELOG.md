@@ -2,6 +2,75 @@
 
 ## Unreleased
 
+### BC BREAK: fix OpenApi generator and rework it for generic usage
+
+Multiple problems existed in the `OpenAPISchemaGenerator` class.
+1. erroneous: recursion loop for bidirectional relationships
+2. hardcoded: coupling to specific translation keys
+3. limited: no distinction between different kind of exposures (get/list/create/update/delete)
+
+To mitigate these problems, the class and its usage was reworked.
+The class itself was renamed to `OpenApiDocumentBuilder`, but it should now be used via the newly introduced `Manager` class anyway.
+
+Previously you would initialize `OpenAPISchemaGenerator` yourself and retrieve an `OpenApi` instance (containing the OpenApi document data) via `getOpenAPISpecification`.
+Now you create a `Manager` instance and fill it with the types that should be directly accessible (i.e. not only reachable via includes).
+Afterward its `Manager::createOpenApiDocumentBuilder` can be used to retrieve an `OpenApiDocumentBuilder`.
+In that `OpenApiDocumentBuilder` instance, you can set configurations for actions you are interested in (e.g. `get` and `list`).
+After the configuration of the builder, you can call `OpenApiDocumentBuilder::buildDocument` to retrieve the `OpenApi` instance.
+
+This seemingly increased complexity is mainly the result of keeping the generation more generic, without assuming specific translation keys to exist.
+Besides that, it also allows to re-usage the same instance to generate the documentation in different languages and introduces the `Manager` class as future major entry point into the library.
+
+The following shows the adjustment needed to mitigate from the old approach to the new one.
+
+#### Old approach
+
+Note that no distinction was possible between types available via `get` and `list`. I.e. it was not possible to expose a type for JSON:API `get` actions only, as it was not possible to expose it for JSON:API `list` actions only. If either exposure was wanted, the documentation would state the type as exposed with the other action too.
+Also, the `OpenApiSchemaGenerator` implementation would simply assume specific translation keys to be available via the given translator.
+
+```php
+$types = [
+    /* your resource type instances, that shall be directly accessible via JSON:API `get` or `list` */ 
+];
+
+$schemaGenerator = new \EDT\JsonApi\ApiDocumentation\OpenApiSchemaGenerator(
+    $types,
+    $router, // \Symfony\Component\Routing\RouterInterface
+    new \EDT\JsonApi\ApiDocumentation\SchemaStore(),
+    $translator, // \Symfony\Contracts\Translation\TranslatorInterface
+    $defaultPageSize
+);
+
+$openApiDocument = $schemaGenerator->getOpenAPISpecification();
+```
+
+#### New approach
+
+To keep the migration easy, the old behavior can be configured using prepared configuration classes as shown below.
+Those are however set as deprecated from the start, as applications should provide their own implementation instead.
+
+```php
+$getableTypes = [
+    /* your resource type instances that shall be accessible via JSON:API `get` actions */
+];
+$listableTypes = [
+    /* your resource type instances that shall be accessible via JSON:API `list` actions */
+];
+
+$manager = new \EDT\JsonApi\Manager();
+$manager->setPaginationDefaultPageSize($defaultPageSize);
+$manager->addGetableTypes($getableTypes);
+$manager->addListableTypes($listableTypes);
+$schemaGenerator = $manager->createOpenApiDocumentBuilder();
+$schemaGenerator->setGetActionConfig(
+    new \EDT\JsonApi\ApiDocumentation\GetActionConfig($router, $translator)
+);
+$schemaGenerator->setListActionConfig(
+    new \EDT\JsonApi\ApiDocumentation\ListActionConfig($router, $translator)
+);
+$schemaGenerator->buildDocument(new \EDT\JsonApi\ApiDocumentation\OpenApiWording($translator));
+```
+
 ### BC BREAK: Allow to pass `null` paths into `DrupalConditionFactoryInterface::createConditionWithoutValue` and `createConditionWithValue`
 
 If you did not override these two methods, you don't need to do anything.
