@@ -95,6 +95,19 @@ interface ConditionFactoryInterface
     public function propertyHasStringContainingCaseInsensitiveValue(string $value, string|array|PropertyPathInterface $properties);
 
     /**
+     * Returns a condition that matches an entity, if it contains the given value in the given property path.
+     *
+     * For example if you want to match an author that has written any book with the title `'A'` you would call this
+     * method with `'A'` as value and `['books', 'title']` as path.
+     *
+     * However, note that with this method it is not possible to match a single author that has written both a book with
+     * the title `A` and another book with the title `B`. E.g. it is not sufficient to simply create a group with
+     * {@link ConditionGroupFactoryInterface::allConditionsApply()}, containing two
+     * {@link ConditionFactoryInterface::propertyHasValue()} conditions, one comparing `books.title`
+     * with `A` and the other one comparing `book.title` with `B`. This would match no author, as it requires that an
+     * author has written at least one book that has the title `A` and `B` at the same time, which is not possible in
+     * this example entity model. For such a case, you need to use {@link allValuesPresentInMemberListProperties()}.
+     *
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
@@ -134,6 +147,11 @@ interface ConditionFactoryInterface
     );
 
     /**
+     * Check if an entity is part of a to-many collection by providing the entity ID.
+     *
+     * E.g. if you wanted to know if an author with a to-many relationship to books has a reference to a specific book,
+     * you would provide the ID of that specific book as value and `['books']` as path.
+     *
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
@@ -199,15 +217,18 @@ interface ConditionFactoryInterface
     public function propertyEndsWithCaseInsensitive(string $value, string|array|PropertyPathInterface $properties);
 
     /**
-     * It is expected that the given property path contains a to-many relationship and thus will
+     * It is expected that the given property path contains at least one to-many relationship and thus will
      * lead to multiple values. The returned condition will evaluate to true if the given values
-     * can all be found in the set of values.
+     * can all be found in the set of values the path leads to.
      *
      * For example: assume an author with a to-many relationship to books. Each book has
      * exactly one title. If you want a condition to match only authors that have written
-     * both a book with the title `A` and another one with the title `B`, then you need to
+     * both a book with the title `A` and another book with the title `B`, then you need to
      * use this method with the parameters `['A', 'B']` (the required titles as array),
-     * and `'books'` and `'title'` (the path to the titles).
+     * and `['books', 'title']` as property path (the path to the titles).
+     *
+     * A more detailed explanation in the context of relational databases can be found in
+     * {@link \EDT\DqlQuerying\ConditionFactories\DqlConditionFactory::allValuesPresentInMemberListProperties}.
      *
      * @param non-empty-list<mixed> $values
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
