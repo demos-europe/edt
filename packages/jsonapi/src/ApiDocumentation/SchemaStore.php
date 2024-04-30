@@ -9,9 +9,7 @@ use cebe\openapi\spec\Schema;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\RelationshipInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
-use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipReadabilityInterface;
 use Exception;
-use Safe\Exceptions\StringsException;
 use function array_key_exists;
 
 /**
