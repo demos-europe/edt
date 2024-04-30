@@ -143,7 +143,7 @@ interface PropertyConfigBuilderInterface
     /**
      * Mark this property as readable, i.e. allow its value to be read.
      *
-     * Overwrites any previously set readability.
+     * **Overwrites any previously set readability.**
      *
      * When used on an attribute the actual attribute value can be accessed. When used on a
      * relationship the relationship reference can be accessed, but to access the properties
@@ -158,6 +158,8 @@ interface PropertyConfigBuilderInterface
 
     /**
      * Mark this property as readable, i.e. allow its value to be read.
+     *
+     * **Overwrites any previously set readability.**
      *
      * When used on an attribute the actual attribute value can be accessed. When used on a
      * relationship the relationship reference can be accessed, but to access the properties
