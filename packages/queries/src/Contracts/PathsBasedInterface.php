@@ -12,7 +12,7 @@ interface PathsBasedInterface
      * Get all {@link PropertyPathInterface property paths} of the implementation of
      * this interface.
      *
-     * @return list<PathInfo> may be empty
+     * @return list<PathInfo>
      */
     public function getPropertyPaths(): array;
 }
