@@ -43,7 +43,6 @@ class UpdateRequest
 
         // get request data
         $requestBody = $this->getUpdateRequestBody($typeName, $resourceId, $expectedProperties);
-        $urlParams = $this->requestTransformer->getUrlParameters();
 
         $beforeUpdateEvent = new BeforeUpdateEvent($type, $requestBody);
         $this->eventDispatcher->dispatch($beforeUpdateEvent);

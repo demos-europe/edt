@@ -46,7 +46,6 @@ class CreationRequest
         $expectedProperties = $type->getExpectedInitializationProperties();
 
         $requestBody = $this->getCreationRequestBody($typeName, $expectedProperties);
-        $urlParams = $this->requestTransformer->getUrlParameters();
 
         $beforeCreationEvent = new BeforeCreationEvent($type, $requestBody);
         $this->eventDispatcher->dispatch($beforeCreationEvent);

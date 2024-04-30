@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### BC BREAK: The `GetRequest` and `DeletionRequest` constructors no longer take a `RequestTransformer` instance
+
+Previously the `RequestTransformer` instance was not actually used anyway in the implementation of `GetRequest` and `DeletionRequest`.
+Hence, the constructors was adjusted and do no longer accept such instance.
+
+If you call the constructors manually or define the parameter manually in your dependency injection configuration (e.g. in Symfony), you need to adjust these places. If you extend from `GetRequest` or `DeletionRequest`, you also need to adjust the child class constructors that call the constructor as their parent.
+
 ### BC BREAK: fix OpenApi generator and rework it for generic usage
 
 Multiple problems existed in the `OpenAPISchemaGenerator` class.

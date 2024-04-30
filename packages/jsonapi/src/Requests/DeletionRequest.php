@@ -14,7 +14,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class DeletionRequest
 {
     public function __construct(
-        protected readonly RequestTransformer $requestParser,
         protected readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
@@ -25,8 +24,6 @@ class DeletionRequest
      */
     public function deleteResource(DeletableTypeInterface $type, string $resourceId): void
     {
-        $urlParams = $this->requestParser->getUrlParameters();
-
         $beforeDeletionEvent = new BeforeDeletionEvent($type, $resourceId);
         $this->eventDispatcher->dispatch($beforeDeletionEvent);
 

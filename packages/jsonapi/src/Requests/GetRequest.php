@@ -22,7 +22,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class GetRequest
 {
     public function __construct(
-        protected readonly RequestTransformer $requestParser,
         protected readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
@@ -34,8 +33,6 @@ class GetRequest
      */
     public function getResource(GetableTypeInterface $type, string $resourceId): Item
     {
-        $urlParams = $this->requestParser->getUrlParameters();
-
         $beforeGetEvent = new BeforeGetEvent($type);
         $this->eventDispatcher->dispatch($beforeGetEvent);
 
