@@ -1,14 +1,50 @@
 = Releasing
+:sectanchors:
 
-// TODO
-WARNING: Work in progress
+This repository contains the code for multiple link:https://getcomposer.org/[composer] packages inside the corresponding directories in the `packages` folder. Using link:https://github.com/symplify/monorepo-builder[symplify/monorepo-builder] these packages can be released simultaneously onto link:https://packagist.org/[Packagist], which allows them to be used as dependency in applications via composer.
 
-This repository uses link:https://github.com/symplify/monorepo-builder[symplify/monorepo-builder] to
-release several packages.
+WARNING: The final command will execute multiple steps to release all packages at once. Because of this, utmost care should be taken before executing it.
 
-To create a new release, `bin/monorepo-builder release &lt;major|minor|patch&gt;` can be used after all changes have been done.
+The following list focuses on the process for minor releases and patch releases, which is to be used until the first stable release was done.
 
-== Changelog management
+1. Make sure you are on the `main` branch.
+2. Make sure you have the latest state using `fetch` and `pull`.
+3. Make sure your local state does not contain changes not yet pushed to the `main`, i.e. committed as well as uncommitted changes. **Even if the following steps succeed, you would automatically include these changes in the release!**
+4. Make sure all phpunit tests are successfully running. The test suite is defined in `phpunit.xml`. If tests fail, fix the tests or the code. **Failing tests on the `main` branch are not acceptable at all.**
+5. Make sure phpstan raises no concerns at all. It can be executed via `composer phpstan`. **phpstan concerns on the `main` branch are not acceptable at all.** However, concerns especially difficult (i.e. requiring architectural changes) or impossible (i.e. resulting from deprecated code or third party libraries) to resolve can be added to the `ignoreErrors` section in the `phpstan.neon` file. To do so remove that section completely and run `./vendor/phpstan/phpstan/phpstan analyse -c phpstan.neon --generate-baseline`. A `phpstan-baseline.neon` file will be generated. Copy the `ignoreErrors` from that file into the `phpstan.neon`. Afterward, remove the `phpstan-baseline.neon` file and commit `phpstan.neon`.
+6. Make sure the `changelog.md` contains (at least) all breaking changes, **with migration explanations for each of those**.
+If necessary, adjust the changelog and do not forget to commit and push the changes. It was not yet decided on a final changelog format.
+It is, however, a markdown file, and it must start with the following headers, directly followed by the unreleased changes.
 
-The monorepo builder release flow kinda expects a `## Unreleased` headline to be at the top of the Changelog
-but does not currently create a new one after a release. So please remember to manually add it after releases.
+        # Changelog
+        ## Unreleased
+
+7. (Final step!) Execute `bin/monorepo-builder release patch` for a patch release or  `bin/monorepo-builder release minor` for a minor release.
+Until the first stable release has been published (i.e. as long as the version starts with `0`), the following rules apply.
+* A patch release (incrementing the last version place) is to be used if the release does not contain any breaking changes.
+* A minor release (incrementing the middle version place, resetting the last version place) is to be used if the release does contain breaking changes.
+
+Shortly (less than an hour) after the last step the link:https://packagist.org/?query=demos-europe%2Fedt[EDT packages on Packagist] should all be available with the new version number, **which you must manually verify**. All packages must be on the same version. When they reference each other, they must reference that version as well.
+
+== Stable release
+
+No stable release has been published yet.
+A first stable release could be done using `bin/monorepo-builder release major`. This however changes the rules for step 7 in the previous section and must only be done when multiple requirements are met, including the successful realization of all link:https://github.com/demos-europe/edt/milestone/1[issues preventing a stable release].
+
+Note however that this list of issues is not exhaustive. The major goals for a stable release are:
+
+1. A relatively stable,
+2. relatively well documented programmer API
+3. without known bug potential in code that is not specifically marked as experimental.
+
+"Relatively stable" means that changes on namespaces, class/interface naming, inheritance hierarchy and the overall architecture should be very unlikely after the stable release.
+This should not discourage from introducing breaking changes later, but a stable release should not be done if changes in those areas are foreseeable.
+Marking classes not intended for direct access by library users as `@internal` or deprecating code that is to be removed in the future are valid strategies to reduce the API area that needs to be stabilized for the release.
+
+"Relatively well documented" means that it should be possible for at least a programmer knowledgeable in Symfony, Doctrine and the JSON:API specification to set up an application using this library.
+Note that it may be more efficient to implement a clean programmer API instead of trying to document a bad programmer API.
+If a simple example Symfony project using this library is a hard requirement was not decided yet.
+
+"Without known bug potential" means not only that actual bugs need to be fixed (or alternatively that all code depending on the affected logic needs to be marked as experimental), but also that sufficient validation possibilities need to be provided, so that the validity of all input data can be verified.
+
+**These requirements may seem strict depending on your background, but please note that after marking it as stable, the development of this library is not supposed to embrace values like "agile", "move fast and break things" or "just ship it".**
