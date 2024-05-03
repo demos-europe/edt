@@ -22,8 +22,10 @@ use Psr\Log\LoggerInterface;
  * @template TEntity of object
  *
  * @template-extends AbstractResourceType<TCondition, TSorting, TEntity>
+ * @template-implements UpdatableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements ListableTypeInterface<TCondition, TSorting, TEntity>
  */
-class PassThroughType extends AbstractResourceType
+class PassThroughType extends AbstractResourceType implements UpdatableTypeInterface, ListableTypeInterface
 {
     protected readonly MessageFormatter $messageFormatter;
 

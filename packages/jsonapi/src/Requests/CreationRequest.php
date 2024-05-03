@@ -8,24 +8,40 @@ use EDT\JsonApi\Event\AfterCreationEvent;
 use EDT\JsonApi\Event\BeforeCreationEvent;
 use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
-use EDT\JsonApi\RequestHandling\RequestTransformer;
+use EDT\JsonApi\RequestHandling\RequestConstraintFactory;
+use EDT\JsonApi\RequestHandling\RequestWithBody;
 use EDT\JsonApi\ResourceTypes\CreatableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use Exception;
 use League\Fractal\Resource\Item;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  */
-class CreationRequest
+class CreationRequest extends RequestWithBody
 {
+    /**
+     * @param int<1, 8192> $maxBodyNestingDepth see {@link RequestWithBody::getRequestBody}
+     */
     public function __construct(
-        protected readonly RequestTransformer $requestTransformer,
-        protected readonly EventDispatcherInterface $eventDispatcher
-    ) {}
+        protected readonly EventDispatcherInterface $eventDispatcher,
+        Request $request,
+        ValidatorInterface $validator,
+        RequestConstraintFactory $requestConstraintFactory,
+        int $maxBodyNestingDepth
+    ) {
+        parent::__construct(
+            $validator,
+            $requestConstraintFactory,
+            $request,
+            $maxBodyNestingDepth
+        );
+    }
 
     /**
      * Note that if this method returns an {@link Item} (instead of `null`), it will contain only the attributes
@@ -80,13 +96,13 @@ class CreationRequest
         string $urlTypeIdentifier,
         ExpectedPropertyCollectionInterface $expectedProperties
     ): CreationRequestBody {
-        $body = $this->requestTransformer->getRequestData(
+        $body = $this->getRequestData(
             $urlTypeIdentifier,
             null,
             $expectedProperties
         );
         $relationships = $body[ContentField::RELATIONSHIPS] ?? [];
-        [$toOneRelationships, $toManyRelationships] = $this->requestTransformer->splitRelationships($relationships);
+        [$toOneRelationships, $toManyRelationships] = $this->splitRelationships($relationships);
 
         return new CreationRequestBody(
             $body[ContentField::ID] ?? null,

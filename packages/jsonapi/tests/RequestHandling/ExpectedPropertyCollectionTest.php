@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\RequestHandling;
 
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollection;
-use EDT\JsonApi\RequestHandling\RequestTransformer;
+use EDT\JsonApi\RequestHandling\RequestWithBody;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Symfony\Component\Validator\Validation;
@@ -22,7 +22,7 @@ class ExpectedPropertyCollectionTest extends TestCase
     private ValidatorInterface $validator;
 
     /**
-     * @see RequestTransformer::splitRelationships()
+     * @see RequestWithBody::splitRelationships()
      */
     protected function setUp(): void
     {
@@ -45,7 +45,7 @@ class ExpectedPropertyCollectionTest extends TestCase
         self::assertCount($expectedViolationsCount, $violations);
     }
 
-    public function getConstraintsForAttributeData(): array
+    public static function getConstraintsForAttributeData(): array
     {
         return [
             [0, 1, false, ['foo']],

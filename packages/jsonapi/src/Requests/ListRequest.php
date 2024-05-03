@@ -10,7 +10,6 @@ use EDT\JsonApi\Pagination\PagePaginationParser;
 use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\JsonApi\RequestHandling\JsonApiSortingParser;
 use EDT\JsonApi\RequestHandling\PaginatorFactory;
-use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\RequestHandling\UrlParameter;
 use EDT\JsonApi\ResourceTypes\ListableTypeInterface;
 use EDT\JsonApi\Validation\SortValidator;
@@ -24,10 +23,9 @@ use InvalidArgumentException;
 use League\Fractal\Resource\Collection;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * TODO: allow setting to limit maximum count of items? E.g. return error if 100000 items would be returned?
- *
  * @template TCondition of PathsBasedInterface
  * @template TSorting of PathsBasedInterface
  */
@@ -42,7 +40,7 @@ class ListRequest
         protected readonly JsonApiSortingParser $sortingParser,
         protected readonly PaginatorFactory $paginatorFactory,
         protected readonly PagePaginationParser $paginationParser,
-        protected readonly RequestTransformer $requestParser,
+        protected readonly Request $request,
         protected readonly SchemaPathProcessor $schemaPathProcessor,
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly SortValidator $sortValidator
@@ -56,7 +54,7 @@ class ListRequest
     public function listResources(ListableTypeInterface $type): Collection
     {
         $typeName = $type->getTypeName();
-        $urlParams = $this->requestParser->getUrlParameters();
+        $urlParams = $this->request->query;
 
         $conditions = $this->getConditions($urlParams);
         $sortMethods = $this->getSortMethods($urlParams);
@@ -80,7 +78,8 @@ class ListRequest
         $collection = new Collection($entities, $type->getTransformer(), $typeName);
         $collection->setMeta([]);
         if (null !== $paginator) {
-            $collection->setPaginator($this->paginatorFactory->createPaginatorAdapter($paginator));
+            $paginatorAdapter = $this->paginatorFactory->createPaginatorAdapter($paginator, $this->request);
+            $collection->setPaginator($paginatorAdapter);
         }
 
         return $collection;

@@ -6,7 +6,6 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\Event\AfterDeletionEvent;
 use EDT\JsonApi\Event\BeforeDeletionEvent;
-use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\ResourceTypes\DeletableTypeInterface;
 use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;

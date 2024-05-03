@@ -2,6 +2,102 @@
 
 ## Unreleased
 
+### BC BREAK: provide `PaginatorFactory` with request on method call
+
+Instead of providing a `RequestStack` instance to the `PaginatorFactory` constructor, now the `createPaginatorAdapter` method takes the `Request` instance as second parameter.
+
+I.e. instead of
+
+```php
+$paginatorFactory = new \EDT\JsonApi\RequestHandling\PaginatorFactory(
+    $requestStack,
+    $router
+);
+$paginatorFactory->createPaginatorAdapter($paginator);
+```
+
+use
+
+```php
+$paginatorFactory = new \EDT\JsonApi\RequestHandling\PaginatorFactory(
+    $router
+);
+$request = $requestStack->getCurrentRequest();
+Assert::notNull($request);
+$paginatorFactory->createPaginatorAdapter($paginator, $request);
+```
+
+### BC BREAK: refactor `RequestTransformer` to abstract `RequestWithBody`, functioning as parent of request classes
+
+Beside the `RequestTransformer` class itself, this affects `ListRequest`, `CreationRequest` and `UpdateRequest`.
+
+Instead of
+
+```php
+$requestTransformer = new \EDT\JsonApi\RequestHandling\RequestTransformer(
+    $requestStack,
+    $typeProvider,
+    $validator,
+    $requestConstraintFactory
+);
+
+$listRequest = new \EDT\JsonApi\Requests\ListRequest(
+    $filterParser,
+    $sortingParser,
+    $paginationFactory,
+    $paginationParser,
+    $requestTransformer,
+    $schemaPathProcessor,
+    $eventDispatcher,
+    $sortValidator
+);
+
+$creationRequest = new \EDT\JsonApi\Requests\CreationRequest(
+    $requestTransformer,
+    $eventDispatcher
+)
+
+$updateRequest = new \EDT\JsonApi\Requests\UpdateRequest(
+    $requestTransformer,
+    $eventDispatcher
+);
+```
+
+use
+
+```php
+$request = $requestStack->getCurrentRequest();
+\Webmozart\Assert\Assert::notNull($request);
+$maxBodyNestingDepth = 512;
+
+$listRequest = new \EDT\JsonApi\Requests\ListRequest(
+    $filterParser,
+    $sortingParser,
+    $paginationFactory,
+    $paginationParser,
+    $request,
+    $schemaPathProcessor,
+    $eventDispatcher,
+    $sortValidator
+);
+
+$creationRequest = new \EDT\JsonApi\Requests\CreationRequest(
+    $eventDispatcher,
+    $request,
+    $validator,
+    $requestConstraintFactory,
+    $maxBodyNestingDepth
+)
+
+$updateRequest = new \EDT\JsonApi\Requests\UpdateRequest(
+    $eventDispatcher,
+    $request,
+    $validator,
+    $requestConstraintFactory,
+    $maxBodyNestingDepth
+);
+```
+
 ### BC BREAK: The `GetRequest` and `DeletionRequest` constructors no longer take a `RequestTransformer` instance
 
 Previously the `RequestTransformer` instance was not actually used anyway in the implementation of `GetRequest` and `DeletionRequest`.
@@ -66,8 +162,8 @@ $listableTypes = [
 
 $manager = new \EDT\JsonApi\Manager();
 $manager->setPaginationDefaultPageSize($defaultPageSize);
-$manager->addGetableTypes($getableTypes);
-$manager->addListableTypes($listableTypes);
+$manager->registerGetableTypes($getableTypes);
+$manager->registerListableTypes($listableTypes);
 $schemaGenerator = $manager->createOpenApiDocumentBuilder();
 $schemaGenerator->setGetActionConfig(
     new \EDT\JsonApi\ApiDocumentation\GetActionConfig($router, $translator)

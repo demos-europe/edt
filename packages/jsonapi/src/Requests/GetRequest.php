@@ -6,7 +6,6 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\Event\AfterGetEvent;
 use EDT\JsonApi\Event\BeforeGetEvent;
-use EDT\JsonApi\RequestHandling\RequestTransformer;
 use EDT\JsonApi\ResourceTypes\GetableTypeInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use Exception;

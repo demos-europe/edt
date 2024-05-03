@@ -68,7 +68,7 @@ class FieldsValidatorTest extends TestCase
         self::assertSame($fields, $validatedFields);
     }
 
-    public function getInvalidFieldsFormats(): array
+    public static function getInvalidFieldsFormats(): array
     {
         return array_map(static fn ($fields): array => [$fields], [
             [1 => 'x'],
@@ -94,7 +94,7 @@ class FieldsValidatorTest extends TestCase
         ]);
     }
 
-    public function getValidFieldsFormats(): array
+    public static function getValidFieldsFormats(): array
     {
         return array_map(static fn ($fields): array => [$fields], [
             [],
@@ -109,7 +109,7 @@ class FieldsValidatorTest extends TestCase
         ]);
     }
 
-    public function getFieldsValues(): array
+    public static function getFieldsValues(): array
     {
         return [
             ['Tests\data\ApiTypes\AuthorType', '', []],

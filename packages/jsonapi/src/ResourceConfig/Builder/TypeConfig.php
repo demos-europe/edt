@@ -29,9 +29,9 @@ use function is_array;
 class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProviderInterface
 {
     /**
-     * @var null|ResourceTypeInterface<TCondition, TSorting, TEntity>
+     * @var null|PassThroughType<TCondition, TSorting, TEntity>
      */
-    protected ?ResourceTypeInterface $correspondingType = null;
+    protected ?PassThroughType $correspondingType = null;
 
     /**
      * @var list<TCondition>
@@ -120,8 +120,10 @@ class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProvi
      *
      * Later changes to this config builder or its properties may or may not be reflected in previously returned config
      * instances.
+     *
+     * @return PassThroughType<TCondition, TSorting, TEntity>
      */
-    public function getType(): ResourceTypeInterface
+    public function getType(): PassThroughType
     {
         if (null === $this->correspondingType) {
             $config = $this->build();

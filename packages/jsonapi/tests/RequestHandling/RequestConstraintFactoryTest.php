@@ -54,7 +54,7 @@ class RequestConstraintFactoryTest extends TestCase
         self::assertCount($expectedViolationsCount, $violations);
     }
 
-    public function getEmptyUpdateData(): array
+    public static function getEmptyUpdateData(): array
     {
         return [
             [2, ['a'], ['b' => 'b'], ['c' => 'c'], ['d'], ['e' => 'e'], ['f' => 'f']],

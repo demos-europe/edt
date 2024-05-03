@@ -21,41 +21,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function array_key_exists;
 use const JSON_THROW_ON_ERROR;
 
-class RequestTransformer
+abstract class RequestWithBody
 {
     use RequestConstraintTrait;
 
     /**
-     * TODO: check if $typeProvider is needed and if not remove it from the constructor
-     *
-     * @param TypeProviderInterface<PathsBasedInterface, PathsBasedInterface> $typeProvider
-     * @param int<1, 8192> $maxBodyNestingDepth the maximum allowed depth when parsing the JSON body, see {@link self::getRequestBody}
+     * @param int<1, 8192> $maxBodyNestingDepth see {@link self::getRequestBody}
      */
     public function __construct(
-        protected readonly RequestStack $requestStack,
-        protected readonly TypeProviderInterface $typeProvider,
         protected readonly ValidatorInterface $validator,
         protected readonly RequestConstraintFactory $requestConstraintFactory,
-        protected readonly int $maxBodyNestingDepth = 512
+        protected readonly Request $request,
+        protected readonly int $maxBodyNestingDepth
     ) {}
-
-    public function getUrlParameters(): ParameterBag
-    {
-        return $this->getRequest()->query;
-    }
-
-    /**
-     * @throws RequestException
-     */
-    protected function getRequest(): Request
-    {
-        $request = $this->requestStack->getCurrentRequest();
-        if (null === $request) {
-            throw RequestException::noRequest();
-        }
-
-        return $request;
-    }
 
     /**
      * @param non-empty-string $urlTypeIdentifier
@@ -71,8 +49,9 @@ class RequestTransformer
         ?string $urlId,
         ExpectedPropertyCollectionInterface $expectedProperties
     ): array {
-        $requestBody = $this->getRequestBody($this->getRequest(), $this->maxBodyNestingDepth);
-        $this->validateRequestBodyFormat(
+        $requestBody = $this->getRequestBody($this->maxBodyNestingDepth);
+        $this->requestConstraintFactory->validate(
+            $this->validator,
             $requestBody,
             $urlTypeIdentifier,
             $urlId,
@@ -126,28 +105,6 @@ class RequestTransformer
     }
 
     /**
-     * @param non-empty-string $urlTypeIdentifier
-     * @param non-empty-string|null $urlId
-     *
-     * @phpstan-assert array{data: array{id?: non-empty-string, type: non-empty-string, attributes?: array<non-empty-string, mixed>, relationships?: JsonApiRelationships}} $body
-     *
-     * @throws ValidationFailedException
-     */
-    protected function validateRequestBodyFormat(
-        mixed $body,
-        string $urlTypeIdentifier,
-        ?string $urlId,
-        ExpectedPropertyCollectionInterface $expectedProperties
-    ): void {
-        $constraints = $this->requestConstraintFactory->getBodyConstraints($urlTypeIdentifier, $urlId, $expectedProperties);
-        $violations = $this->validator->validate($body, $constraints);
-
-        if (0 !== $violations->count()) {
-            throw new ValidationFailedException($body, $violations);
-        }
-    }
-
-    /**
      * @param array{data: array{id?: non-empty-string, type: non-empty-string, attributes?: array<non-empty-string, mixed>, relationships?: JsonApiRelationships}} $body
      *
      * @throws ValidationFailedException
@@ -184,15 +141,16 @@ class RequestTransformer
     }
 
     /**
-     * @param int<1, 8192> $maxDepth Structures with a nesting exceeding the maximum seem quite unlikely, but we will
+     * @param int<1, 8192> $maxDepth The maximum allowed depth when parsing the JSON body. Structures with a nesting
+     *                               exceeding the type-hinted maximum seem quite unlikely, but we will
      *                               refrain from throwing an exception just in case there is a use case requiring
      *                               deeper nesting. The user has to deal with the phpstan concern though.
      *
      * @throws RequestException
      */
-    protected function getRequestBody(Request $request, int $maxDepth): mixed
+    protected function getRequestBody(int $maxDepth): mixed
     {
-        $content = $request->getContent();
+        $content = $this->request->getContent();
         \Webmozart\Assert\Assert::string($content);
         try {
             return json_decode($content, true, $maxDepth, JSON_THROW_ON_ERROR);

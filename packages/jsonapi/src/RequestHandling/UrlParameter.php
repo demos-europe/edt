@@ -23,4 +23,6 @@ class UrlParameter
     public const OFFSET = 'offset';
 
     public const LIMIT = 'limit';
+
+    public const EXCLUDE = 'exclude';
 }

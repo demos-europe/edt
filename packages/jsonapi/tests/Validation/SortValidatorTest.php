@@ -30,7 +30,7 @@ class SortValidatorTest extends TestCase
         $sortValidator->validateFormat($sortValue);
     }
 
-    public function getSuccessData(): array
+    public static function getSuccessData(): array
     {
         return [
             ['a'],
@@ -48,7 +48,7 @@ class SortValidatorTest extends TestCase
         ];
     }
 
-    public function getFailureData(): array
+    public static function getFailureData(): array
     {
         return [
             [null], // #0

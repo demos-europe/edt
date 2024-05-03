@@ -203,14 +203,14 @@ class TableJoinerTest extends ModelBasedTest
         self::assertEquals($expected, $input);
     }
 
-    public function cartesianProductPerformanceTestData(): array
+    public static function cartesianProductPerformanceTestData(): array
     {
         return [
             [[1000, 50, 25], 0.5],
         ];
     }
 
-    public function cartesianProductTestData(): array
+    public static function cartesianProductTestData(): array
     {
         return [
             [[], []], // no columns

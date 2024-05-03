@@ -39,7 +39,7 @@ class DocblockTagParserTest extends TestCase
         }
     }
 
-    public function getGetTypeData(): array
+    public static function getGetTypeData(): array
     {
         return [
             [DummyResource::class, [
@@ -95,7 +95,7 @@ class DocblockTagParserTest extends TestCase
         TypeResolver::getSplitOffTemplateParameters($rawInputString);
     }
 
-    public function getValidPropertyTypeTestData(): array
+    public static function getValidPropertyTypeTestData(): array
     {
         return [
             ['MyClass<Foo>', 'MyClass', ['Foo']],
@@ -122,7 +122,7 @@ class DocblockTagParserTest extends TestCase
         ];
     }
 
-    public function getInvalidPropertyTypeTestData(): array
+    public static function getInvalidPropertyTypeTestData(): array
     {
         return [
             ['MyClass<>'],

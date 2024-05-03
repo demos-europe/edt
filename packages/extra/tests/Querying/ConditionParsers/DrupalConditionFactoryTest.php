@@ -579,7 +579,7 @@ class DrupalConditionFactoryTest extends TestCase
 
     public function testNullValue(): void
     {
-        $this->markTestSkipped('currently not sure if null should be allowed as value or not');
+        $this->markTestSkipped('TODO: Add/adjusts tests and adjust validation implementation: if `value` must be present and if it is allowed to be null dependes on the operator');
         $this->expectException(DrupalFilterException::class);
         $this->filterValidator->validateFilter([
             'condition_a' => [
@@ -753,7 +753,7 @@ class DrupalConditionFactoryTest extends TestCase
     /**
      * @return list<non-empty-string>
      */
-    public function getValidFilterNames(): array
+    public static function getValidFilterNames(): array
     {
         return array_map(static fn (string $name): array => [$name], [
             'x',
@@ -774,7 +774,7 @@ class DrupalConditionFactoryTest extends TestCase
     /**
      * @return list<string|int>
      */
-    public function getInvalidFilterNames(): array
+    public static function getInvalidFilterNames(): array
     {
         return array_map(static fn (string $name): array => [$name], [
             '',

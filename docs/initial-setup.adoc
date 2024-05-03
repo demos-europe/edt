@@ -22,37 +22,54 @@ TODO
 
 === Setting up your controller class
 
-TODO
-
-=== Setting up fractal
+As the implementation of the routing controller and its actions is highly dependent on the architecture and practices of the using application, it is not covered by this library.
+However, the following code shows a naïve implementation to handle `get` requests, that may serve as a starting point.
+In this example a single resource type `Book` is supported to be accessed via `get` requests and its authors can be included in the response.
 
 [source,php]
 ----
-// The placeholder in your URL path representing the resource type name
-$urlResourceType = 'resourceType';
-// Upper limit to how many levels of included data are allowed.
-$recursionLimit = 20;
+#[Route(path: '/api/{resourceType}/{resourceId}', name: 'api_resource_get', methods: ['GET'])]
+public function getAction(
+    Request $request
+    ValidatorInterface $validator,
+    EventDispatcherInterface $eventDispatcher,
+    Router $router,
+): Response {
+    $manager = $this->createManager();
+    $getProcessor = $manager->createGetProcessor(
+        new \EDT\JsonApi\Requests\DefaultProcessorConfig(
+            $validator,
+            $eventDispatcher,
+            $router,
+            new DqlConditionFactory(),
+            new SortMethodFactory()
+        )
+    );
 
-$fractal = new Manager();
-$fractal->setSerializer(new JsonApiSerializer());
-$fractal->setRecursionLimit($recursionLimit);
-$rawIncludes = $this->request->get(UrlParameter::INCLUDE);
-$resourceType = $this->request->attributes->get($urlResourceType);
-// FIXME: $this->validateIncludes($rawIncludes, $resourceType);
-if (null === $rawIncludes) {
-    $rawIncludes = [];
+    return $getProcessor->createResponse($request);
 }
-$fractal->parseIncludes($rawIncludes);
 
-// the JSON:API specification does not support excludes, but Fractal does
-// $fractal->parseExcludes($this->request->get('exclude', ''));
+protected function createManager(): \EDT\JsonApi\Manager {
+    // create the manager
+    $manager = new \EDT\JsonApi\Manager();
 
-$sparseFieldset = $this->request->get(UrlParameter::FIELDS);
-if (null !== $fields) {
-    $fields = $this->fieldsValidator->validateFormat($fields);
-    // FIXME: $this->validateFieldsets($fields);
-    $fractal->parseFieldsets($fields);
+    // create and configure your resources type configurations
+    $bookConfig = new BookBasedResourceConfig($propertyFactory);
+    $authorConfig = new PersonBasedResourceConfig($propertyFactory);
+    $bookConfig->id->setReadableByPath();
+    $bookConfig->title->setReadableByPath();
+    $bookConfig->price->setReadableByPath();
+    $bookConfig->authors
+        ->setRelationshipType($authorConfig)
+        ->setReadableByPath(DefaultField::YES, DefaultInclude::YES);
+    $authorConfig->setTypeName('Author');
+    $authorConfig->id->setReadableByPath();
+    $authorConfig->fullName->setReadableByPath();
+
+    // finalize the configuration and add your resource types to the manager
+    $manager->registerGetableType($bookConfig->getType());
+    $manager->registerType($authorConfig->getType());
+
+    return $manager;
 }
 ----
-
-TODO

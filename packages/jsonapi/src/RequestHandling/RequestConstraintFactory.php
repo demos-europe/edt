@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace EDT\JsonApi\RequestHandling;
 
 use EDT\Wrapping\Contracts\ContentField;
-use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestConstraintFactory
 {
@@ -23,6 +24,30 @@ class RequestConstraintFactory
         protected readonly int $attributeValidationDepth,
         protected readonly bool $attributeAllowAnythingBelowValidationDepth
     ) {}
+
+
+    /**
+     * @param non-empty-string $urlTypeIdentifier
+     * @param non-empty-string|null $urlId
+     *
+     * @phpstan-assert array{data: array{id?: non-empty-string, type: non-empty-string, attributes?: array<non-empty-string, mixed>, relationships?: JsonApiRelationships}} $body
+     *
+     * @throws ValidationFailedException
+     */
+    public function validate(
+        ValidatorInterface $validator,
+        mixed $body,
+        string $urlTypeIdentifier,
+        ?string $urlId,
+        ExpectedPropertyCollectionInterface $expectedProperties
+    ): void {
+        $constraints = $this->getBodyConstraints($urlTypeIdentifier, $urlId, $expectedProperties);
+        $violations = $validator->validate($body, $constraints);
+
+        if (0 !== $violations->count()) {
+            throw new ValidationFailedException($body, $violations);
+        }
+    }
 
     /**
      * @param non-empty-string $urlTypeIdentifier

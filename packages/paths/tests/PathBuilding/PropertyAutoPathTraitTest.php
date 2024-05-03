@@ -304,7 +304,7 @@ class PropertyAutoPathTraitTest extends TestCase
         static::assertEquals([ImplementationIncompletePath::class], $this->toClassNames($path));
     }
 
-    public function getIncompleteImplementation(): array
+    public static function getIncompleteImplementation(): array
     {
         return [
             [new ImplementationIncompletePath()],

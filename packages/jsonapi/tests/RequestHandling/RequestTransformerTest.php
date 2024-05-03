@@ -5,29 +5,36 @@ declare(strict_types=1);
 namespace Tests\RequestHandling;
 
 use EDT\JsonApi\RequestHandling\RequestConstraintFactory;
-use EDT\JsonApi\RequestHandling\RequestTransformer;
-use EDT\Wrapping\TypeProviders\LazyTypeProvider;
+use EDT\JsonApi\RequestHandling\RequestWithBody;
+use EDT\JsonApi\Requests\UpdateRequest;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionMethod;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validation;
 
 class RequestTransformerTest extends TestCase
 {
-    private RequestTransformer $requestTransformer;
+    private RequestWithBody $requestTransformer;
     private ReflectionMethod $splitRelationships;
 
     /**
-     * @see RequestTransformer::splitRelationships()
+     * @see RequestWithBody::splitRelationships()
      */
     protected function setUp(): void
     {
         parent::setUp();
-        $this->requestTransformer = new RequestTransformer(
-            new RequestStack(),
-            new LazyTypeProvider(),
+        $this->requestTransformer = new UpdateRequest(
+            new class () implements EventDispatcherInterface {
+                public function dispatch(object $event)
+                {
+                    throw new \Exception('Unexpected call');
+                }
+            },
+            new Request(),
             Validation::createValidator(),
-            new RequestConstraintFactory(1, false)
+            new RequestConstraintFactory(1, false),
+            512
         );
         $this->splitRelationships = new ReflectionMethod($this->requestTransformer, 'splitRelationships');
         $this->splitRelationships->setAccessible(true);
@@ -46,7 +53,7 @@ class RequestTransformerTest extends TestCase
         self::assertEquals($expectedToMany, $actualToMany);
     }
 
-    public function splitRelationshipsData(): array
+    public static function splitRelationshipsData(): array
     {
         $twoToOneAndOneEmptyToManyInput = [
             'bars' => [

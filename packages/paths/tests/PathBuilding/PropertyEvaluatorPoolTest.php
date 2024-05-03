@@ -22,7 +22,7 @@ class PropertyEvaluatorPoolTest extends TestCase
         self::assertTrue(true);
     }
 
-    public function getGetEvaluatorParams()
+    public static function getGetEvaluatorParams()
     {
         return [
             [[], [PropertyTag::VAR]],

@@ -4,33 +4,27 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
-use InvalidArgumentException;
 use League\Fractal\Pagination\PagerfantaPaginatorAdapter;
 use League\Fractal\Pagination\PaginatorInterface;
 use Pagerfanta\Pagerfanta;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
 
 class PaginatorFactory
 {
     public function __construct(
-        protected readonly RequestStack $requestStack,
         protected readonly RouterInterface $router
     ) {}
 
     /**
      * @param Pagerfanta<object> $paginator
      */
-    public function createPaginatorAdapter(Pagerfanta $paginator): PaginatorInterface
+    public function createPaginatorAdapter(Pagerfanta $paginator, Request $request): PaginatorInterface
     {
         return new PagerfantaPaginatorAdapter(
             $paginator,
-            function ($page) {
-                $request = $this->requestStack->getCurrentRequest();
-                if (null === $request) {
-                    throw new InvalidArgumentException('No request available in request stack.');
-                }
+            function (int $page) use ($request): string {
                 $route = $request->attributes->get('_route');
                 Assert::stringNotEmpty($route);
                 $inputParams = $request->attributes->get('_route_params');
