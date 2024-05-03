@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace EDT\ConditionFactory;
 
 use EDT\Querying\Contracts\PropertyPathInterface;
+use function is_array;
+use function is_string;
 
 abstract class AbstractDrupalFilter
 {
