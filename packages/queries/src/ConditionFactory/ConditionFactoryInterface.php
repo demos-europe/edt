@@ -26,7 +26,7 @@ interface ConditionFactoryInterface
      * the given path has a value assigned that is present in the given
      * array of values.
      *
-     * @param list<mixed> $values
+     * @param non-empty-list<mixed> $values
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
@@ -36,7 +36,7 @@ interface ConditionFactoryInterface
     public function propertyHasAnyOfValues(array $values, string|array|PropertyPathInterface $properties);
 
     /**
-     * @param list<mixed> $values
+     * @param non-empty-list<mixed> $values
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
      *
      * @return TCondition
