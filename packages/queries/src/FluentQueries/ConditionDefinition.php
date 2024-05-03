@@ -73,7 +73,7 @@ class ConditionDefinition
     }
 
     /**
-     * @param list<mixed> $values
+     * @param non-empty-list<mixed> $values
      * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this
@@ -84,7 +84,7 @@ class ConditionDefinition
     }
 
     /**
-     * @param list<mixed> $values
+     * @param non-empty-list<mixed> $values
      * @param non-empty-list<non-empty-string> $properties
      *
      * @return $this

@@ -4,6 +4,8 @@
 
 ### BC BREAK: disallow empty lists for `propertyHasAnyOfValues` and `propertyHasNotAnyOfValues` methods
 
+This affects all implementations of `ConditionFactoryInterface` as well as `ConditionDefinition`.
+
 Creating those conditions by not passing any values to check against is not only unnecessary, as the result is known even before execution, but it may also cause mistakes due to confusions.
 Thus, an empty list of values in no longer allowed.
 To mitigate, simply check your list before calling these methods, like shown in the following example.

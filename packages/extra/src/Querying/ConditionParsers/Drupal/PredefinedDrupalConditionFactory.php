@@ -118,6 +118,16 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     }
 
     /**
+     * @return non-empty-list<mixed>
+     */
+    protected function assertNonEmptyList(mixed $value): array
+    {
+        Assert::isNonEmptyList($value);
+
+        return $value;
+    }
+
+    /**
      * @return array{numeric-string|int|float, numeric-string|int|float}
      */
     protected function assertRange(mixed $value): array
@@ -152,8 +162,8 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
             Equals::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasValue($this->assertPrimitiveNonNull($value), $this->assertPath($path)),
             NotEquals::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasNotValue($this->assertPrimitiveNonNull($value), $this->assertPath($path)),
             StringContains::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($this->assertString($value), $this->assertPath($path)),
-            In::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasAnyOfValues($this->assertList($value), $this->assertPath($path)),
-            NotIn::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasNotAnyOfValues($this->assertList($value), $this->assertPath($path)),
+            In::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasAnyOfValues($this->assertNonEmptyList($value), $this->assertPath($path)),
+            NotIn::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasNotAnyOfValues($this->assertNonEmptyList($value), $this->assertPath($path)),
             Between::OPERATOR => function ($value, ?array $path): PathsBasedInterface {
                 $value = $this->assertRange($value);
                 return $this->conditionFactory->propertyBetweenValuesInclusive($value[0], $value[1], $this->assertPath($path));
