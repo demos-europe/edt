@@ -262,34 +262,19 @@ parameters:
             path: packages/dql/src/Functions/Sum.php
 
         -
-            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:__construct\\(\\) has parameter \\$conditionGroupFactory with generic interface EDT\\\\ConditionFactory\\\\PathsBasedConditionGroupFactoryInterface but does not specify its types\\: TCondition$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
-
-        -
-            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\:\\:createGroup\\(\\) should return TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface but returns mixed\\.$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterParser.php
-
-        -
-            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterValidator\\:\\:__construct\\(\\) has parameter \\$drupalConditionFactory with generic interface EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalConditionFactoryInterface but does not specify its types\\: TCondition$#"
-            count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
-
-        -
             message: "#^Parameter \\#1 \\$array of function array_keys expects array, mixed given\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/DrupalFilterValidator.php
 
         -
-            message: "#^Parameter \\#1 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyIsNotNull\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
+            message: "#^Method EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\PredefinedDrupalConditionFactory\\:\\:assertPath\\(\\) has parameter \\$path with no value type specified in iterable type array\\.$#"
             count: 1
             path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
 
         -
-            message: "#^Parameter \\#1 \\$properties of method EDT\\\\ConditionFactory\\\\ConditionFactoryInterface\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>\\:\\:propertyIsNull\\(\\) expects non\\-empty\\-array\\<int, non\\-empty\\-string\\>\\|EDT\\\\Querying\\\\Contracts\\\\PropertyPathInterface\\|non\\-empty\\-string, array given\\.$#"
+            message: "#^Method EDT\\\\JsonApi\\\\ApiDocumentation\\\\OpenApiTranslator\\:\\:trans\\(\\) has parameter \\$parameters with no value type specified in iterable type array\\.$#"
             count: 1
-            path: packages/extra/src/Querying/ConditionParsers/Drupal/PredefinedDrupalConditionFactory.php
+            path: packages/jsonapi/src/ApiDocumentation/OpenApiTranslator.php
 
         -
             message: "#^Method EDT\\\\JsonApi\\\\OutputHandling\\\\DynamicTransformer\\:\\:processIncludedResources\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -389,6 +374,11 @@ parameters:
             path: packages/jsonapi/src/PropertyConfig/Builder/ToOneRelationshipConfigBuilder.php
 
         -
+            message: "#^Parameter \\#1 \\$filterParser of class EDT\\\\JsonApi\\\\Requests\\\\ListRequest constructor expects EDT\\\\JsonApi\\\\RequestHandling\\\\FilterParserInterface\\<mixed, TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\>, EDT\\\\Querying\\\\ConditionParsers\\\\Drupal\\\\DrupalFilterParser\\<TCondition of EDT\\\\Querying\\\\Contracts\\\\PathsBasedInterface\\> given\\.$#"
+            count: 1
+            path: packages/jsonapi/src/Requests/ListProcessor.php
+
+        -
             message: """
                 #^Call to deprecated method validateFilter\\(\\) of class EDT\\\\JsonApi\\\\RequestHandling\\\\FilterParserInterface\\:
                 call a validator manually, that asserts that the type of \\$filter matches the type required by \\{@link self\\:\\:parseFilter\\(\\)\\}$#
@@ -482,7 +472,7 @@ parameters:
             path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
 
         -
-            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<array\\<int, mixed\\>\\> given\\.$#"
+            message: "#^Parameter \\#1 \\$function of class EDT\\\\Querying\\\\Functions\\\\OneOf constructor expects EDT\\\\Querying\\\\Contracts\\\\FunctionInterface\\<mixed\\>, EDT\\\\Querying\\\\Functions\\\\Value\\<non\\-empty\\-array\\<int, mixed\\>\\> given\\.$#"
             count: 1
             path: packages/queries/src/ConditionFactories/PhpConditionFactory.php
 
