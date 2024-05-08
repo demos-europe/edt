@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.25.0 - 2024-05-08
 
 ### BC BREAK: disallow empty lists for `propertyHasAnyOfValues` and `propertyHasNotAnyOfValues` methods
 

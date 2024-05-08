@@ -36,7 +36,9 @@
             "Tests\\": "tests/"
         }
     },
-    "bin": ["bin/generate_type_config"],
+    "bin": [
+        "bin/generate_type_config"
+    ],
     "conflict": {
         "demos-europe/edt-extra": "<0.17.1",
         "demos-europe/edt-paths": "<0.17.1",
