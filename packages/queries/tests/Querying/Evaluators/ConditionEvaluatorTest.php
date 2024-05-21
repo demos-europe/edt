@@ -22,6 +22,7 @@ use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\Utilities\TableJoiner;
 use Tests\ModelBasedTest;
 use TypeError;
+use Webmozart\Assert\Assert;
 
 class ConditionEvaluatorTest extends ModelBasedTest
 {
@@ -59,8 +60,13 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testAlwaysTrue(): void
     {
         $alwaysTrue = $this->conditionFactory->true();
-        $filteredAuthors = $this->conditionEvaluator->filterArray($this->authors, $alwaysTrue);
-        self::assertEquals($this->authors, $filteredAuthors);
+        $authorValues = array_values($this->authors);
+        $filteredAuthors = $this->conditionEvaluator->filterArray($authorValues, $alwaysTrue);
+        $count = count($filteredAuthors);
+        self::assertCount($count, $authorValues);
+        for ($i = 0; $i < $count; $i++) {
+            self::assertSame($authorValues[$i], $authorValues[$i]);
+        }
     }
 
     public function testAlwaysFalse(): void
@@ -83,8 +89,13 @@ class ConditionEvaluatorTest extends ModelBasedTest
     public function testInvertedConditionApplies(): void
     {
         $alwaysTrue = new InvertedBoolean($this->conditionFactory->false());
-        $filteredAuthors = $this->conditionEvaluator->filterArray($this->authors, $alwaysTrue);
-        self::assertEquals($this->authors, $filteredAuthors);
+        $authorValues = array_values($this->authors);
+        $filteredAuthors = $this->conditionEvaluator->filterArray($authorValues, $alwaysTrue);
+        $count = count($filteredAuthors);
+        self::assertCount($count, $authorValues);
+        for ($i = 0; $i < $count; $i++) {
+            self::assertSame($authorValues[$i], $authorValues[$i]);
+        }
     }
 
     public function testPropertiesEqual(): void

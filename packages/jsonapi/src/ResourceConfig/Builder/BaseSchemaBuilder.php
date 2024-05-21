@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceConfig\Builder;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements ResourceConfigBuilderInterface<TCondition, TSorting, TEntity>
+ * @template-implements ResourceConfigBuilderInterface<TEntity>
  */
 abstract class BaseSchemaBuilder implements ResourceConfigBuilderInterface
 {
@@ -29,7 +26,7 @@ abstract class BaseSchemaBuilder implements ResourceConfigBuilderInterface
     protected array $generalPostConstructorBehavior = [];
 
     /**
-     * @var list<PropertyUpdatabilityInterface<TCondition, TEntity>>
+     * @var list<PropertyUpdatabilityInterface<TEntity>>
      */
     protected array $generalUpdateBehaviors = [];
 

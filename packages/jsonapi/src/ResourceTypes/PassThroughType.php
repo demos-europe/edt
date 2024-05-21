@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
+use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\InputHandling\RepositoryInterface;
 use EDT\JsonApi\OutputHandling\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
+use EDT\Querying\SortMethodFactories\SortMethodInterface;
 use EDT\Wrapping\ResourceBehavior\ResourceInstantiability;
 use EDT\Wrapping\ResourceBehavior\ResourceReadability;
 use EDT\Wrapping\ResourceBehavior\ResourceUpdatability;
@@ -17,29 +18,27 @@ use League\Fractal\TransformerAbstract;
 use Psr\Log\LoggerInterface;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends AbstractResourceType<TCondition, TSorting, TEntity>
- * @template-implements UpdatableTypeInterface<TCondition, TSorting, TEntity>
- * @template-implements ListableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-extends AbstractResourceType<TEntity>
+ * @template-implements UpdatableTypeInterface<TEntity>
+ * @template-implements ListableTypeInterface<TEntity>
  */
 class PassThroughType extends AbstractResourceType implements UpdatableTypeInterface, ListableTypeInterface
 {
     protected readonly MessageFormatter $messageFormatter;
 
     /**
-     * @param RepositoryInterface<TCondition, TSorting, TEntity> $repository
-     * @param list<TCondition> $accessConditions
-     * @param list<TSorting> $defaultSortMethods
+     * @param RepositoryInterface<TEntity> $repository
+     * @param list<DrupalFilterInterface> $accessConditions
+     * @param list<SortMethodInterface> $defaultSortMethods
      * @param ResourceInstantiability<TEntity> $instantiability
      * @param non-empty-list<non-empty-string> $identifierPropertyPath
      * @param class-string<TEntity> $entityClass
      * @param array<non-empty-string, PropertyLinkInterface> $filteringProperties
      * @param non-empty-string $typeName
-     * @param ResourceReadability<TCondition, TSorting, TEntity> $readability
-     * @param ResourceUpdatability<TCondition, TSorting, TEntity> $updatability
+     * @param ResourceReadability<TEntity> $readability
+     * @param ResourceUpdatability<TEntity> $updatability
      * @param array<non-empty-string, PropertyLinkInterface> $sortingProperties
      */
     public function __construct(

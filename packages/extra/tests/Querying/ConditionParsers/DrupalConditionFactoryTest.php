@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Querying\ConditionParsers;
 
+use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
 use EDT\Querying\ConditionParsers\Drupal\DrupalConditionParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
 use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
-use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Functions\InvertedBoolean;
 use EDT\Querying\Functions\IsNull;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Validation;
 
 class DrupalConditionFactoryTest extends TestCase
 {
-    private PathsBasedConditionFactoryInterface $conditionFactory;
+    private ConditionFactoryInterface $conditionFactory;
 
     private DrupalFilterParser $filterFactory;
 

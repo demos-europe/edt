@@ -7,13 +7,11 @@ namespace EDT\JsonApi\OutputHandling;
 use EDT\JsonApi\InputHandling\FractalManagerFactory;
 use EDT\JsonApi\RequestHandling\RequestHeader;
 use EDT\JsonApi\RequestHandling\UrlParameter;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use League\Fractal\Resource\ResourceAbstract;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 use const JSON_OBJECT_AS_ARRAY;
@@ -29,7 +27,7 @@ class ResponseFactory
     ) {}
 
     /**
-     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     * @param PropertyReadableTypeInterface<object> $type
      * @param int<100,599> $statusCode
      */
     public function createResourceResponse(

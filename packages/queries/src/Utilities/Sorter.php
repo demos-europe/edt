@@ -56,7 +56,7 @@ class Sorter
                 return 0;
             });
 
-            return $entitiesToSort;
+            return array_values($entitiesToSort);
         } catch (Throwable $exception) {
             throw SortException::forCountAndMethods($exception, count($entitiesToSort), $sortMethods);
         }

@@ -37,13 +37,7 @@ public function getAction(
 ): Response {
     $manager = $this->createManager();
     $getProcessor = $manager->createGetProcessor(
-        new \EDT\JsonApi\Requests\DefaultProcessorConfig(
-            $validator,
-            $eventDispatcher,
-            $router,
-            new DqlConditionFactory(),
-            new SortMethodFactory()
-        )
+        new \EDT\JsonApi\Requests\DefaultProcessorConfig($validator, $eventDispatcher, $router)
     );
 
     return $getProcessor->createResponse($request);

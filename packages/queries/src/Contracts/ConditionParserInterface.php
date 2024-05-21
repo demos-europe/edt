@@ -17,7 +17,7 @@ use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
  *
  * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser
  *
- * @template TCondition of PathsBasedInterface
+ * @template TCondition
  */
 interface ConditionParserInterface
 {
@@ -26,5 +26,5 @@ interface ConditionParserInterface
      *
      * @return TCondition
      */
-    public function parseCondition(array $condition): PathsBasedInterface;
+    public function parseCondition(array $condition);
 }

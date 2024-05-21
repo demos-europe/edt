@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
+use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 
 /**
@@ -13,7 +13,6 @@ use EDT\Querying\Contracts\PropertyPathInterface;
  * but the resource ID too.
  *
  * @template TEntity of object
- * @template TCondition of PathsBasedInterface
  * @template TValue
  */
 interface PropertyConfigBuilderInterface
@@ -129,7 +128,7 @@ interface PropertyConfigBuilderInterface
     public function setNonSortable(): self;
 
     /**
-     * @param list<TCondition> $entityConditions
+     * @param list<DrupalFilterInterface> $entityConditions
      *
      * @return $this
      */

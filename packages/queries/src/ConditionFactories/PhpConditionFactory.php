@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionFactories;
 
-use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
-use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
+use EDT\ConditionFactory\ConditionFactoryInterface;
+use EDT\ConditionFactory\ConditionGroupFactoryInterface;
 use EDT\Querying\Contracts\FunctionInterface;
 use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathAccessInterface;
@@ -31,10 +31,10 @@ use EDT\Querying\PropertyPaths\PropertyPath;
 use function count;
 
 /**
- * @template-implements PathsBasedConditionFactoryInterface<FunctionInterface<bool>>
- * @template-implements PathsBasedConditionGroupFactoryInterface<FunctionInterface<bool>>
+ * @template-implements ConditionFactoryInterface<FunctionInterface<bool>>
+ * @template-implements ConditionGroupFactoryInterface<FunctionInterface<bool>>
  */
-class PhpConditionFactory implements PathsBasedConditionFactoryInterface, PathsBasedConditionGroupFactoryInterface
+class PhpConditionFactory implements ConditionFactoryInterface, ConditionGroupFactoryInterface
 {
     public function true(): PathsBasedInterface
     {

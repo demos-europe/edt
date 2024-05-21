@@ -10,7 +10,6 @@ use EDT\JsonApi\PropertyConfig\PropertyConfigInterface;
 use EDT\JsonApi\PropertyConfig\RelationshipConfigInterface;
 use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Contracts\ContentField;
@@ -26,28 +25,26 @@ use EDT\Wrapping\ResourceBehavior\ResourceUpdatability;
 use Webmozart\Assert\Assert;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements ResourceConfigInterface<TCondition, TSorting, TEntity>
+ * @template-implements ResourceConfigInterface<TEntity>
  */
 class ResourceConfig implements ResourceConfigInterface
 {
     /**
-     * @var array<non-empty-string, AttributeConfigInterface<TCondition, TEntity>|RelationshipConfigInterface<TCondition, TSorting, TEntity, object>>
+     * @var array<non-empty-string, AttributeConfigInterface<TEntity>|RelationshipConfigInterface<TEntity, object>>
      */
     protected readonly array $propertyConfigs;
 
     /**
      * @param class-string<TEntity> $entityClass
      * @param IdentifierConfigInterface<TEntity> $identifierConfig
-     * @param array<non-empty-string, AttributeConfigInterface<TCondition, TEntity>> $attributeConfigs
-     * @param array<non-empty-string, ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, object>> $toOneRelationshipConfigs
-     * @param array<non-empty-string, ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, object>> $toManyRelationshipConfigs
+     * @param array<non-empty-string, AttributeConfigInterface<TEntity>> $attributeConfigs
+     * @param array<non-empty-string, ToOneRelationshipConfigInterface<TEntity, object>> $toOneRelationshipConfigs
+     * @param array<non-empty-string, ToManyRelationshipConfigInterface<TEntity, object>> $toManyRelationshipConfigs
      * @param list<ConstructorBehaviorInterface> $generalConstructorBehaviors
      * @param list<PropertySetBehaviorInterface<TEntity>> $generalPostConstructorBehaviors
-     * @param list<PropertyUpdatabilityInterface<TCondition, TEntity>> $generalUpdateBehaviors
+     * @param list<PropertyUpdatabilityInterface<TEntity>> $generalUpdateBehaviors
      */
     public function __construct(
         protected readonly string $entityClass,

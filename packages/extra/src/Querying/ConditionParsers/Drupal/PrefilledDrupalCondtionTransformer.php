@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Conditions\ConditionInterface;
 use EDT\Querying\Conditions\ValueDependentConditionInterface;
 use EDT\Querying\Conditions\ValueIndependentConditionInterface;
@@ -12,7 +11,7 @@ use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
 /**
- * @template TCondition of PathsBasedInterface
+ * @template TCondition
  *
  * @template-implements DrupalConditionFactoryInterface<TCondition>
  */
@@ -45,7 +44,7 @@ class PrefilledDrupalCondtionTransformer implements DrupalConditionFactoryInterf
         );
     }
 
-    public function createConditionWithValue(string $operatorName, float|int|bool|array|string|null $value, ?array $path): PathsBasedInterface
+    public function createConditionWithValue(string $operatorName, float|int|bool|array|string|null $value, ?array $path)
     {
         $operator = $this->getOperator($operatorName);
         Assert::isInstanceOf($operator, ValueDependentConditionInterface::class);
@@ -53,7 +52,7 @@ class PrefilledDrupalCondtionTransformer implements DrupalConditionFactoryInterf
         return $operator->transform($path, $value);
     }
 
-    public function createConditionWithoutValue(string $operatorName, ?array $path): PathsBasedInterface
+    public function createConditionWithoutValue(string $operatorName, ?array $path)
     {
         $operator = $this->getOperator($operatorName);
         Assert::isInstanceOf($operator, ValueIndependentConditionInterface::class);

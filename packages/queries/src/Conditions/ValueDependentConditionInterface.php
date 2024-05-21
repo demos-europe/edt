@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace EDT\Querying\Conditions;
 
 use EDT\Querying\Contracts\PathException;
-use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
- * @template TCondition of PathsBasedInterface
- *
- * @template-extends ConditionInterface<TCondition>
+ * @template TCondition
  */
 interface ValueDependentConditionInterface extends ConditionInterface
 {
@@ -21,5 +18,5 @@ interface ValueDependentConditionInterface extends ConditionInterface
      *
      * @throws PathException
      */
-    public function transform(?array $path, mixed $value): PathsBasedInterface;
+    public function transform(?array $path, mixed $value);
 }

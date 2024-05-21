@@ -11,7 +11,6 @@ use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\RequestConstraintFactory;
 use EDT\JsonApi\RequestHandling\RequestWithBody;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 use Exception;
@@ -20,10 +19,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
- */
 class UpdateRequest extends RequestWithBody
 {
     use EntityVerificationTrait;
@@ -47,7 +42,7 @@ class UpdateRequest extends RequestWithBody
     }
 
     /**
-     * @param UpdatableTypeInterface<TCondition, TSorting, object> $type
+     * @param UpdatableTypeInterface<object> $type
      * @param non-empty-string $resourceId the identifier of the resource to be updated, must match the corresponding `id` field in the request body
      *
      * @throws Exception

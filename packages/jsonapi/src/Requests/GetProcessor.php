@@ -6,7 +6,6 @@ namespace EDT\JsonApi\Requests;
 
 use EDT\JsonApi\OutputHandling\ResponseFactory;
 use EDT\JsonApi\ResourceTypes\GetableTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use Exception;
 use League\Fractal\Resource\Item;
@@ -14,16 +13,12 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
- */
 class GetProcessor
 {
     use ProcessorTrait;
 
     /**
-     * @param array<non-empty-string, GetableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $getableTypes
+     * @param array<non-empty-string, GetableTypeInterface<object>&PropertyReadableTypeInterface<object>> $getableTypes
      * @param non-empty-string $resourceTypeAttribute
      * @param non-empty-string $resourceIdAttribute
      */
@@ -44,7 +39,7 @@ class GetProcessor
     }
 
     /**
-     * @param GetableTypeInterface<TCondition, TSorting, object> $type
+     * @param GetableTypeInterface<object> $type
      * @param non-empty-string $resourceId
      *
      * @throws Exception

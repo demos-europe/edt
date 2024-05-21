@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceConfig\Builder;
 
+use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\InputHandling\RepositoryInterface;
 use EDT\JsonApi\ResourceTypes\PassThroughType;
-use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\JsonApi\Utilities\PropertyBuilderFactory;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
+use EDT\Querying\SortMethodFactories\SortMethodInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
@@ -19,22 +19,20 @@ use Webmozart\Assert\Assert;
 use function is_array;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends MagicResourceConfigBuilder<TCondition, TSorting, TEntity>
- * @template-implements ResourceTypeProviderInterface<TCondition, TSorting, TEntity>
+ * @template-extends MagicResourceConfigBuilder<TEntity>
+ * @template-implements ResourceTypeProviderInterface<TEntity>
  */
 class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProviderInterface
 {
     /**
-     * @var null|PassThroughType<TCondition, TSorting, TEntity>
+     * @var null|PassThroughType<TEntity>
      */
     protected ?PassThroughType $correspondingType = null;
 
     /**
-     * @var list<TCondition>
+     * @var list<DrupalFilterInterface>
      */
     protected array $accessConditions = [];
 
@@ -44,7 +42,7 @@ class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProvi
     protected ?string $typeName = null;
 
     /**
-     * @var list<TSorting>
+     * @var list<SortMethodInterface>
      */
     protected array $defaultSortMethods = [];
 
@@ -55,8 +53,7 @@ class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProvi
 
     /**
      * @param class-string<TEntity> $entityClass
-     * @param PropertyBuilderFactory<TCondition, TSorting> $propertyBuilderFactory
-     * @param RepositoryInterface<TCondition, TSorting, TEntity> $repository
+     * @param RepositoryInterface<TEntity> $repository
      */
     public function __construct(
         string $entityClass,
@@ -69,7 +66,7 @@ class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProvi
     }
 
     /**
-     * @param list<TCondition> $conditions
+     * @param list<DrupalFilterInterface> $conditions
      */
     public function setAccessConditions(array $conditions): void
     {
@@ -85,7 +82,7 @@ class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProvi
     }
 
     /**
-     * @param list<TSorting> $sortMethods
+     * @param list<SortMethodInterface> $sortMethods
      */
     public function setDefaultSortMethods(array $sortMethods): void
     {
@@ -121,7 +118,7 @@ class TypeConfig extends MagicResourceConfigBuilder implements ResourceTypeProvi
      * Later changes to this config builder or its properties may or may not be reflected in previously returned config
      * instances.
      *
-     * @return PassThroughType<TCondition, TSorting, TEntity>
+     * @return PassThroughType<TEntity>
      */
     public function getType(): PassThroughType
     {

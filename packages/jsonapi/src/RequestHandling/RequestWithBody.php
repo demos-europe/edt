@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\RequestHandling;
 
-use EDT\JsonApi\RequestHandling\Body\CreationRequestBody;
-use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
 use EDT\JsonApi\Requests\RequestException;
 use EDT\JsonApi\Validation\Patterns;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
-use EDT\Wrapping\Contracts\TypeProviderInterface;
 use JsonException;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

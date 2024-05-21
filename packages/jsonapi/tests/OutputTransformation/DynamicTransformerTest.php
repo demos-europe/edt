@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\OutputTransformation;
 
+use EDT\ConditionFactory\ConditionFactory;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\OutputHandling\DynamicTransformer;
 use EDT\JsonApi\RequestHandling\MessageFormatter;
@@ -27,7 +28,7 @@ class DynamicTransformerTest extends ModelBasedTest
 {
     private Manager $fractal;
 
-    private PhpConditionFactory $conditionFactory;
+    private ConditionFactory $conditionFactory;
 
     private PropertyBuilderFactory $propertyBuilderFactory;
     private MessageFormatter $messageFormatter;
@@ -82,7 +83,7 @@ class DynamicTransformerTest extends ModelBasedTest
 
         $this->propertyAccessor = new ReflectionPropertyAccessor();
         $this->messageFormatter = new MessageFormatter();
-        $conditionFactory = new PhpConditionFactory();
+        $conditionFactory = new ConditionFactory();
         $this->conditionFactory = $conditionFactory;
         $lazyTypeProvider = new LazyTypeProvider();
         $this->typeResolver = new AttributeTypeResolver();

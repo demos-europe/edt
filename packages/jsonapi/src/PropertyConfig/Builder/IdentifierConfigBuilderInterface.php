@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierPostConstructorBehaviorFactoryInterface;
 
@@ -14,9 +13,8 @@ use EDT\Wrapping\PropertyBehavior\Identifier\Factory\IdentifierPostConstructorBe
  * Besides that, its type itself can be used to denote a to-one relationship property.
  *
  * @template TEntity of object
- * @template TCondition of PathsBasedInterface
  *
- * @template-extends PropertyConfigBuilderInterface<TEntity, TCondition, non-empty-string>
+ * @template-extends PropertyConfigBuilderInterface<TEntity, non-empty-string>
  */
 interface IdentifierConfigBuilderInterface extends PropertyConfigBuilderInterface
 {

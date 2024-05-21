@@ -8,7 +8,6 @@ use EDT\JsonApi\ApiDocumentation\DefaultField;
 use EDT\JsonApi\ApiDocumentation\DefaultInclude;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Querying\PropertyPaths\RelationshipLink;
 use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
@@ -22,25 +21,23 @@ use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 use Webmozart\Assert\Assert;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
  * @template TValue of list<TRelationship>|TRelationship|null
  * @template TReadability of RelationshipReadabilityInterface
  *
- * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, TValue, RelationshipConstructorBehaviorFactoryInterface<TCondition>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>, RelationshipSetBehaviorFactoryInterface<TCondition, TSorting, TEntity, TRelationship>>
- * @template-implements RelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship, TValue>
+ * @template-extends AbstractPropertyConfigBuilder<TEntity, TValue, RelationshipConstructorBehaviorFactoryInterface, RelationshipSetBehaviorFactoryInterface<TEntity, TRelationship>, RelationshipSetBehaviorFactoryInterface<TEntity, TRelationship>>
+ * @template-implements RelationshipConfigBuilderInterface<TEntity, TRelationship, TValue>
  */
 abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder implements RelationshipConfigBuilderInterface
 {
      /**
-      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship>): TReadability
+      * @var null|callable(non-empty-string, non-empty-list<non-empty-string>, class-string<TEntity>, ResourceTypeInterface<TRelationship>|ResourceTypeProviderInterface<TRelationship>): TReadability
       */
      protected $readabilityFactory;
 
     /**
-     * @var ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship>|null
+     * @var ResourceTypeInterface<TRelationship>|ResourceTypeProviderInterface<TRelationship>|null
      */
     protected ResourceTypeInterface|ResourceTypeProviderInterface|null $relationshipType = null;
 
@@ -88,7 +85,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @param FilteringTypeInterface|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param FilteringTypeInterface|ResourceTypeProviderInterface<TRelationship> $relationshipType
      */
     protected function getFilterLink(FilteringTypeInterface|ResourceTypeProviderInterface $relationshipType): ?PropertyLinkInterface
     {
@@ -103,7 +100,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @param SortingTypeInterface<TCondition, TSorting>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param SortingTypeInterface|ResourceTypeProviderInterface<TRelationship> $relationshipType
      */
     protected function getSortLink(SortingTypeInterface|ResourceTypeProviderInterface $relationshipType): ?PropertyLinkInterface
     {
@@ -118,7 +115,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @return list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>>
+     * @return list<RelationshipSetBehaviorInterface<TEntity, TRelationship>>
      */
     protected function getPostConstructorBehaviors(): array
     {
@@ -146,7 +143,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @return list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>>
+     * @return list<RelationshipSetBehaviorInterface<TEntity, TRelationship>>
      */
     protected function getUpdateBehaviors(): array
     {
@@ -161,7 +158,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @return ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship>
+     * @return ResourceTypeInterface<TRelationship>|ResourceTypeProviderInterface<TRelationship>
      */
     protected function getFinalRelationshipType(): ResourceTypeInterface|ResourceTypeProviderInterface
     {
@@ -171,7 +168,7 @@ abstract class RelationshipConfigBuilder extends AbstractPropertyConfigBuilder i
     }
 
     /**
-     * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+     * @param ResourceTypeInterface<TRelationship>|ResourceTypeProviderInterface<TRelationship> $relationshipType
      *
      * @return TReadability|null
      */

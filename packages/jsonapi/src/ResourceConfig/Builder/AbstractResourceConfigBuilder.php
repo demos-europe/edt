@@ -18,39 +18,33 @@ use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceConfig\ResourceConfig;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
-use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use function array_key_exists;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends BaseSchemaBuilder<TCondition, TSorting, TEntity>
+ * @template-extends BaseSchemaBuilder<TEntity>
  */
 abstract class AbstractResourceConfigBuilder extends BaseSchemaBuilder
 {
     /**
-     * @var array<non-empty-string, AttributeConfigBuilder<TCondition, TEntity>>
+     * @var array<non-empty-string, AttributeConfigBuilder<TEntity>>
      */
     private array $attributes = [];
 
     /**
-     * @var array<non-empty-string, ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>>
+     * @var array<non-empty-string, ToOneRelationshipConfigBuilder<TEntity, object>>
      */
     private array $toOneRelationships = [];
 
     /**
-     * @var array<non-empty-string, ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>>
+     * @var array<non-empty-string, ToManyRelationshipConfigBuilder<TEntity, object>>
      */
     private array $toManyRelationships = [];
 
     /**
      * @param class-string<TEntity> $entityClass
-     * @param IdentifierConfigBuilder<TEntity, TCondition> $identifier
+     * @param IdentifierConfigBuilder<TEntity> $identifier
      */
     public function __construct(
         protected readonly string $entityClass,
@@ -58,7 +52,7 @@ abstract class AbstractResourceConfigBuilder extends BaseSchemaBuilder
     ) {}
 
     /**
-     * @return IdentifierConfigBuilderInterface<TEntity, TCondition>
+     * @return IdentifierConfigBuilderInterface<TEntity>
      */
     public function getIdentifierConfigBuilder(): IdentifierConfigBuilderInterface
     {
@@ -147,7 +141,7 @@ abstract class AbstractResourceConfigBuilder extends BaseSchemaBuilder
     }
 
     /**
-     * @return array<non-empty-string, AttributeConfigInterface<TCondition, TEntity>>
+     * @return array<non-empty-string, AttributeConfigInterface<TEntity>>
      */
     protected function getBuiltAttributeConfigs(): array
     {
@@ -158,7 +152,7 @@ abstract class AbstractResourceConfigBuilder extends BaseSchemaBuilder
     }
 
     /**
-     * @return array<non-empty-string, ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, object>>
+     * @return array<non-empty-string, ToOneRelationshipConfigInterface<TEntity, object>>
      */
     protected function getBuiltToOneRelationshipConfigs(): array
     {
@@ -169,7 +163,7 @@ abstract class AbstractResourceConfigBuilder extends BaseSchemaBuilder
     }
 
     /**
-     * @return array<non-empty-string, ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, object>>
+     * @return array<non-empty-string, ToManyRelationshipConfigInterface<TEntity, object>>
      */
     protected function getBuiltToManyRelationshipConfigs(): array
     {

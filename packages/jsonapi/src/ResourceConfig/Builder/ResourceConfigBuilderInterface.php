@@ -13,64 +13,61 @@ use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilderInterface;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilderInterface;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 interface ResourceConfigBuilderInterface
 {
     /**
-     * @return IdentifierConfigBuilderInterface<TEntity, TCondition>|null
+     * @return IdentifierConfigBuilderInterface<TEntity>|null
      */
     public function getIdentifierConfigBuilder(): ?IdentifierConfigBuilderInterface;
 
     /**
-     * @param IdentifierConfigBuilder<TEntity, TCondition> $builder
+     * @param IdentifierConfigBuilder<TEntity> $builder
      */
     public function setIdentifierConfigBuilder(IdentifierConfigBuilder $builder): void;
 
     /**
      * @param non-empty-string $propertyName
      *
-     * @return AttributeConfigBuilderInterface<TCondition, TEntity>|null
+     * @return AttributeConfigBuilderInterface<TEntity>|null
      */
     public function getAttributeConfigBuilder(string $propertyName): ?AttributeConfigBuilderInterface;
 
     /**
      * @param non-empty-string $propertyName
-     * @param AttributeConfigBuilder<TCondition, TEntity> $builder
+     * @param AttributeConfigBuilder<TEntity> $builder
      */
     public function setAttributeConfigBuilder(string $propertyName, AttributeConfigBuilder $builder): void;
 
     /**
      * @param non-empty-string $propertyName
      *
-     * @return ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>|null
+     * @return ToOneRelationshipConfigBuilderInterface<TEntity, object>|null
      */
     public function getToOneRelationshipConfigBuilder(string $propertyName): ?ToOneRelationshipConfigBuilderInterface;
 
     /**
      * @param non-empty-string $propertyName
-     * @param ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object> $builder
+     * @param ToOneRelationshipConfigBuilder<TEntity, object> $builder
      */
     public function setToOneRelationshipConfigBuilder(string $propertyName, ToOneRelationshipConfigBuilder $builder): void;
 
     /**
      * @param non-empty-string $propertyName
      *
-     * @return ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>|null
+     * @return ToManyRelationshipConfigBuilderInterface<TEntity, object>|null
      */
     public function getToManyRelationshipConfigBuilder(string $propertyName): ?ToManyRelationshipConfigBuilderInterface;
 
     /**
      * @param non-empty-string $propertyName
-     * @param ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object> $builder
+     * @param ToManyRelationshipConfigBuilder<TEntity, object> $builder
      */
     public function setToManyRelationshipConfigBuilder(string $propertyName, ToManyRelationshipConfigBuilder $builder): void;
 
@@ -96,7 +93,7 @@ interface ResourceConfigBuilderInterface
     public function addCreationBehavior(PropertySetBehaviorInterface $behavior): self;
 
     /**
-     * @param PropertyUpdatabilityInterface<TCondition, TEntity> $updateBehavior
+     * @param PropertyUpdatabilityInterface<TEntity> $updateBehavior
      *
      * @return $this
      */
@@ -113,7 +110,7 @@ interface ResourceConfigBuilderInterface
     public function removeAllUpdateBehaviors(): self;
 
     /**
-     * @return ResourceConfigInterface<TCondition, TSorting, TEntity>
+     * @return ResourceConfigInterface<TEntity>
      */
     public function build(): ResourceConfigInterface;
 }

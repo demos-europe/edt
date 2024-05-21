@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Contracts;
 
 /**
- * @template TSorting of PathsBasedInterface
+ * @template TSorting
  */
 interface SortMethodFactoryInterface
 {
@@ -16,7 +16,7 @@ interface SortMethodFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyAscending(string|array|PropertyPathInterface $properties): PathsBasedInterface;
+    public function propertyAscending(string|array|PropertyPathInterface $properties);
 
     /**
      * @param non-empty-string|non-empty-list<non-empty-string>|PropertyPathInterface $properties
@@ -25,5 +25,5 @@ interface SortMethodFactoryInterface
      *
      * @throws PathException
      */
-    public function propertyDescending(string|array|PropertyPathInterface $properties): PathsBasedInterface;
+    public function propertyDescending(string|array|PropertyPathInterface $properties);
 }

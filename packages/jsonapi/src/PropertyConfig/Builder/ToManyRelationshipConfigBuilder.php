@@ -8,7 +8,6 @@ use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\DtoToManyRelationshipConfig;
 use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\CallbackToManyRelationshipReadability;
@@ -19,14 +18,12 @@ use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipConstruc
 use EDT\Wrapping\PropertyBehavior\Relationship\ToMany\ToManyRelationshipReadabilityInterface;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship, list<TRelationship>, ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>>
- * @template-implements ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
- * @template-implements BuildableInterface<ToManyRelationshipConfigInterface<TCondition, TSorting, TEntity, TRelationship>>
+ * @template-extends RelationshipConfigBuilder<TEntity, TRelationship, list<TRelationship>, ToManyRelationshipReadabilityInterface<TEntity, TRelationship>>
+ * @template-implements ToManyRelationshipConfigBuilderInterface<TEntity, TRelationship>
+ * @template-implements BuildableInterface<ToManyRelationshipConfigInterface<TEntity, TRelationship>>
  */
 class ToManyRelationshipConfigBuilder
     extends RelationshipConfigBuilder
@@ -112,9 +109,9 @@ class ToManyRelationshipConfigBuilder
              * @param non-empty-string $name
              * @param non-empty-list<non-empty-string> $propertyPath
              * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
+             * @param ResourceTypeInterface<TRelationship>|ResourceTypeProviderInterface<TRelationship> $relationshipType
              *
-             * @return ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
+             * @return ToManyRelationshipReadabilityInterface<TEntity, TRelationship>
              */
             public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceTypeProviderInterface $relationshipType): ToManyRelationshipReadabilityInterface
             {

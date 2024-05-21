@@ -43,13 +43,4 @@ class DrupalFilterException extends FilterException
     {
         return new self("Can't build tree. Does it contain a loop (ie. a condition group referencing itself, directly or indirectly)? Aborted after $iterations iterations");
     }
-
-    /**
-     * @param non-empty-string $operatorName
-     * @param non-empty-string $pathString
-     */
-    public static function emptyPathSegment(string $operatorName, string $pathString): self
-    {
-        return new self("Path '$pathString' used in operator '$operatorName' contains an empty path segment.");
-    }
 }

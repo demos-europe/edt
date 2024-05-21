@@ -9,7 +9,6 @@ use EDT\JsonApi\OutputHandling\ResponseFactory;
 use EDT\JsonApi\RequestHandling\RequestConstraintFactory;
 use EDT\JsonApi\RequestHandling\RequestWithBody;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\EntityVerificationTrait;
 use Exception;
@@ -19,10 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface,
- */
 class UpdateProcessor
 {
     use EmptyResponseTrait;
@@ -30,7 +25,7 @@ class UpdateProcessor
     use EntityVerificationTrait;
 
     /**
-     * @param array<non-empty-string, UpdatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $updatableTypes
+     * @param array<non-empty-string, UpdatableTypeInterface<object>&PropertyReadableTypeInterface<object>> $updatableTypes
      * @param non-empty-string $resourceTypeAttribute
      * @param non-empty-string $resourceIdAttribute
      * @param int<1, 8192> $maxBodyNestingDepth see {@link RequestWithBody::getRequestBody}
@@ -58,7 +53,7 @@ class UpdateProcessor
     }
 
     /**
-     * @param UpdatableTypeInterface<TCondition, TSorting, object> $type
+     * @param UpdatableTypeInterface<object> $type
      * @param non-empty-string $resourceId
      *
      * @throws Exception

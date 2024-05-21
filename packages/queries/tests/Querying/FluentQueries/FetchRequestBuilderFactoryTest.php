@@ -4,42 +4,55 @@ declare(strict_types=1);
 
 namespace Tests\Querying\FluentQueries;
 
+use EDT\ConditionFactory\ConditionFactory;
+use EDT\JsonApi\InputHandling\ConditionConverter;
+use EDT\JsonApi\InputHandling\PhpEntityRepository;
+use EDT\JsonApi\InputHandling\SortMethodConverter;
+use EDT\JsonApi\RequestHandling\JsonApiSortingParser;
+use EDT\JsonApi\Validation\SortValidator;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
+use EDT\Querying\ConditionParsers\Drupal\DrupalConditionParser;
+use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
+use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
+use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
 use EDT\Querying\Contracts\FluentQueryException;
 use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\OffsetEntityProviderInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
 use EDT\Querying\FluentQueries\ConditionDefinition;
 use EDT\Querying\FluentQueries\SliceDefinition;
 use EDT\Querying\FluentQueries\SortDefinition;
+use EDT\Querying\ObjectProviders\MutableEntityProvider;
 use EDT\Querying\ObjectProviders\PrefilledEntityProvider;
+use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\PropertyAccessors\ReflectionPropertyAccessor;
 use EDT\Querying\FluentQueries\FluentQuery;
 use EDT\Querying\SortMethodFactories\PhpSortMethodFactory;
+use EDT\Querying\SortMethodFactories\SortMethodFactory;
 use EDT\Querying\Utilities\ConditionEvaluator;
+use EDT\Querying\Utilities\Reindexer;
 use EDT\Querying\Utilities\Sorter;
 use EDT\Querying\Utilities\TableJoiner;
+use Symfony\Component\Validator\Validation;
 use Tests\data\Model\Person;
 use Tests\ModelBasedTest;
 
 class FetchRequestBuilderFactoryTest extends ModelBasedTest
 {
-    private PhpConditionFactory $conditionFactory;
-
-    private PrefilledEntityProvider $authorProvider;
-
-    private PhpSortMethodFactory $sortMethodFactory;
+    private MutableEntityProvider $authorProvider;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->conditionFactory = new PhpConditionFactory();
         $propertyAccessor = new ReflectionPropertyAccessor();
-        $this->authorProvider = new PrefilledEntityProvider(
-            new ConditionEvaluator(new TableJoiner($propertyAccessor)),
-            new Sorter(new TableJoiner($propertyAccessor)),
+        $tableJoiner = new TableJoiner($propertyAccessor);
+        $conditionEvaluator = new ConditionEvaluator($tableJoiner);
+        $sorter = new Sorter($tableJoiner);
+        $this->authorProvider = new MutableEntityProvider(
+            $conditionEvaluator,
+            $sorter,
             $this->authors
         );
-        $this->sortMethodFactory = new PhpSortMethodFactory();
     }
 
     /**
@@ -48,9 +61,21 @@ class FetchRequestBuilderFactoryTest extends ModelBasedTest
     protected function createFetchRequest(): FluentQuery
     {
         return new FluentQuery(
-            $this->authorProvider,
-            new ConditionDefinition($this->conditionFactory, true),
-            new SortDefinition($this->sortMethodFactory),
+            new class ($this->authorProvider) implements OffsetEntityProviderInterface {
+                public function __construct(protected readonly MutableEntityProvider $entityProvider){}
+
+                public function getEntities(array $conditions, array $sortMethods, ?OffsetPagination $pagination): array
+                {
+                    $conditionConverter = ConditionConverter::createDefault(Validation::createValidator(), new PhpConditionFactory());
+                    $sortMethodConverter = SortMethodConverter::createDefault(Validation::createValidator(), new PhpSortMethodFactory());
+                    $conditions = $conditionConverter->convertConditions($conditions);
+                    $sortMethods = $sortMethodConverter->convertSortMethods($sortMethods);
+
+                    return $this->entityProvider->getEntities($conditions, $sortMethods, $pagination);
+                }
+            },
+            new ConditionDefinition(new ConditionFactory(), true),
+            new SortDefinition(new SortMethodFactory()),
             new SliceDefinition()
         );
     }

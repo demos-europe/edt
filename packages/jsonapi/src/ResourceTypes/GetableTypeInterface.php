@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use Exception;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 interface GetableTypeInterface extends ReadableTypeInterface, NamedTypeInterface

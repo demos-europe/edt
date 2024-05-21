@@ -32,11 +32,13 @@ class ConditionEvaluator
         $conditions = array_values($conditions);
 
         // nested loop: for each item check all conditions
-        return array_filter($arrayToFilter, fn (object $value): bool => $this->evaluateConditions($value, $conditions));
+        return array_values(array_filter($arrayToFilter, fn (object $value): bool => $this->evaluateConditions($value, $conditions)));
     }
 
     /**
      * @param list<FunctionInterface<bool>> $conditions
+     *
+     * @return bool `true` if the given object matches each of the given conditions; `false` otherwise
      *
      * @throws PathException
      * @throws InvalidArgumentException

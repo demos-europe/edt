@@ -63,7 +63,6 @@ class AuthorType extends \Tests\data\Types\AuthorType implements ResourceTypeInt
                 $this->getEntityClass(),
                 ['id'],
                 $this->propertyAccessor,
-                $this->typeResolver
             )
         );
     }

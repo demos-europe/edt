@@ -9,7 +9,6 @@ use EDT\JsonApi\OutputHandling\ResponseFactory;
 use EDT\JsonApi\RequestHandling\RequestConstraintFactory;
 use EDT\JsonApi\RequestHandling\RequestWithBody;
 use EDT\JsonApi\ResourceTypes\CreatableTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use Exception;
 use League\Fractal\Resource\Item;
@@ -18,17 +17,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
- */
 class CreationProcessor
 {
     use EmptyResponseTrait;
     use ProcessorTrait;
 
     /**
-     * @param array<non-empty-string, CreatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $creatableTypes
+     * @param array<non-empty-string, CreatableTypeInterface<object>&PropertyReadableTypeInterface<object>> $creatableTypes
      * @param non-empty-string $resourceTypeAttribute
      * @param non-empty-string $resourceIdAttribute
      * @param int<1,8192> $maxBodyNestingDepth see {@link RequestWithBody::getRequestBody()}
@@ -55,7 +50,7 @@ class CreationProcessor
     }
 
     /**
-     * @param CreatableTypeInterface<TCondition, TSorting, object> $type
+     * @param CreatableTypeInterface<object> $type
      *
      * @throws Exception
      */

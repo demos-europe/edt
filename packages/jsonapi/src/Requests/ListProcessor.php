@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
+use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\OutputHandling\ResponseFactory;
 use EDT\JsonApi\Pagination\PagePaginationParser;
 use EDT\JsonApi\RequestHandling\JsonApiSortingParser;
@@ -12,7 +13,7 @@ use EDT\JsonApi\ResourceTypes\ListableTypeInterface;
 use EDT\JsonApi\Validation\SortValidator;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
-use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\SortMethodFactories\SortMethodInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Exception;
@@ -22,18 +23,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
- */
 class ListProcessor
 {
     use ProcessorTrait;
 
     /**
-     * @param DrupalFilterParser<TCondition> $filterTransformer
-     * @param JsonApiSortingParser<TSorting> $sortingTransformer
-     * @param array<non-empty-string, ListableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $listableTypes
+     * @param DrupalFilterParser<DrupalFilterInterface> $filterTransformer
+     * @param JsonApiSortingParser<SortMethodInterface> $sortingTransformer
+     * @param array<non-empty-string, ListableTypeInterface<object>&PropertyReadableTypeInterface<object>> $listableTypes
      * @param non-empty-string $resourceTypeAttribute
      */
     public function __construct(
@@ -59,7 +56,7 @@ class ListProcessor
     }
 
     /**
-     * @param ListableTypeInterface<TCondition, TSorting, object> $type
+     * @param ListableTypeInterface<object> $type
      *
      * @throws Exception
      */

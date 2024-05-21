@@ -7,8 +7,8 @@ namespace EDT\Querying\Contracts;
 use EDT\Querying\Pagination\OffsetPagination;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
+ * @template TCondition
+ * @template TSorting
  * @template TEntity of object
  */
 interface OffsetEntityProviderInterface
@@ -18,7 +18,6 @@ interface OffsetEntityProviderInterface
      *
      * @param list<TCondition> $conditions
      * @param list<TSorting> $sortMethods
-     * @param OffsetPagination|null $pagination
      *
      * @return list<TEntity>
      *

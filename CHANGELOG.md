@@ -1,6 +1,249 @@
 # Changelog
 
+## Unreleased
+
+> [!CAUTION]
+> Like all other releases, this one was done to the best of one's ability. However, it has not been tested as thoroughly as previous releases. It is thus to be considered even more experimental than the version number already implies.
+
+### BC BREAK: pass conditions and sort methods through the application as specific types, instead of template parameters
+
+#### Old approach
+
+When a request is received that contains filters or sorting definitions, they are at some point (and in some form) passed to the data source, to apply them.
+
+Previously those definitions were immediately converted to instances supporting specific data sources, when the request was received.
+The implementation of these instances depended on a factory instance provided to the request handling.
+
+E.g. if the data source was based on Doctrine, the application developer would choose a factory that converted the given filter into conditions that could be used for Doctrine queries.
+The created conditions where then passed through the library down to the data source, where they could be directly applied.
+The same was true for the sorting definitions.
+
+Using template parameters to type-hint the instances wherever they were passed through, allowed to ensure that static code checking tools like phpstan could detect incompatibilities between the factory chosen by the developer and the data source chosen by the developer.
+However, the disadvantage was the considerable complexity overhead due to the type-hinting.
+
+#### New approach
+
+The current version changes the approach and passes a predefined format through the application.
+Logic directly responsible to access the data source, receiving filter or sorting definitions, must be able to handle this predefined format to use it for that specific data source.
+E.g. if the developer previously chose a condition factory compatible with his Doctrine data source, they now have to convert the predefined format to such Drupal conditions before accessing Doctrine.
+
+Due to the flexibility required in the format (especially for filters) it is significantly more difficult to fully validate it early, which is needed for easily understandable error messages.
+For now the logic evaluating the format to access the data source must throw an exception if parts of the definitions are not supported.
+In future versions the logic accessing the data source may be allowed to pass validation information (like supported filter operators) up, allowing to the request handling, to validate the definitions early.
+
+#### Summary of resulting changes
+
+Beside the extensive adjustments of type-hinting within the library, the following changes were done to the developer API.
+
+Note that the following examples show only the migration from one of many previous possibility to one of many current possibilities.
+If in doubt, you can manually verify your method/constructor usages against the corresponding docblock type-hinting, or verify it automatically using static code checkers like phpstan on the appropriate levels.
+
+Otherwise, you must ensure that the filter operators supported by the request handling are supported by the data source as well, as explained above, the new approach currently can not automatically verify this aspect any longer.
+
+#### Use different condition factory/sort method factory implementation
+
+`ListRequest` instances still need a `DrupalFilterParser` and `JsonApiSortingParser` instance.
+However, how these instances are created needs to be adjusted.
+
+Instead of selecting the implementations yourself
+
+```php
+// both implementations chosen by you
+$sortMethodFactory = new \EDT\DqlQuerying\SortMethodFactories\SortMethodFactory();
+$conditionFactory = new \EDT\DqlQuerying\ConditionFactories\DqlConditionFactory();
+
+$sortingTransformer = new \EDT\JsonApi\RequestHandling\JsonApiSortingParser($sortMethodFactory);
+$drupalConditionFactory = new \EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory($conditionFactory);
+$filterTransformer = new \EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser(
+    $conditionFactory,
+    new \EDT\Querying\ConditionParsers\Drupal\DrupalConditionParser($drupalConditionFactory)
+);
+```
+
+you must now use specific implementations:
+
+```php
+// implementations required by the library
+$sortMethodFactory = new \EDT\ConditionFactory\ConditionFactory();
+$conditionFactory = new \EDT\Querying\SortMethodFactories\SortMethodFactory();
+
+$sortingTransformer = new \EDT\JsonApi\RequestHandling\JsonApiSortingParser($sortMethodFactory);
+$drupalConditionFactory = new \EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory($conditionFactory)
+$filterTransformer = new \EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser(
+    $conditionFactory,
+    new \EDT\Querying\ConditionParsers\Drupal\DrupalConditionParser($drupalConditionFactory)
+);
+```
+
+These specific implementations must also be used when creating conditions or sort methods to be applied to resources or entities.
+
+#### Remove unnecessary constructor parameters from `DefaultProcessorConfig`
+
+As the needed implementations for the condition factory and sort method factory are now fixed, they are no longer needed as constructor parameters in `DefaultProcessorConfig`.
+
+Instead of
+```php
+// both implementations chosen by you
+$sortMethodFactory = new \EDT\DqlQuerying\SortMethodFactories\SortMethodFactory();
+$conditionFactory = new \EDT\DqlQuerying\ConditionFactories\DqlConditionFactory();
+
+$defaultProcessorConfig = new \EDT\JsonApi\Requests\DefaultProcessorConfig(
+    $validator,
+    $eventDispatcher,
+    $router,
+    $conditionFactory,
+    $sortMethodFactory
+);
+```
+
+simply use
+
+```php
+new \EDT\JsonApi\Requests\DefaultProcessorConfig(
+    $validator,
+    $eventDispatcher,
+    $router
+);
+```
+
+#### Remove unnecessary interfaces
+
+The interfaces `PathsBasedConditionFactoryInterface` and `PathsBasedConditionGroupFactoryInterface` were removed. If you implemented any of them directly, you can simply replace the parent with `ConditionFactoryInterface` or `ConditionGroupFactoryInterface` respectively.
+
+#### Apply conversion logic where necessary
+
+This affects the classes closest to the data source.
+As they now receive the predefined condition and sort method types, these must be converted to types usable for the data source.
+
+##### 1. `OffsetEntityProviderInterface`
+
+`OffsetEntityProviderInterface` is still generic (i.e. takes the type of conditions and sort methods as template parameters) and its implementations (`PrefilledEntityProvider` and `DoctrineOrmEntityProvider`) are still bound to specific types of conditions and sort methods.
+I.e. `PrefilledEntityProvider` expects instances of `FunctionInterface` and `SortMethodInterface`, which can be applied on PHP objects without additional data source like a DBMS.
+Likewise, `DoctrineOrmEntityProvider` expects instances of `ClauseInterface` and `OrderByInterface`, which it uses to create Doctrine queries.
+
+This means that you can *not* call those two provider classes with the predefined definition instances.
+Where you used them, you should instead use the new `MappingEntityProvider` class instead.
+
+```php
+// your entity class
+$entityClass = Book::class;
+// the factory creating conditions that can be applied in your data source, e.g. Doctrine
+$conditionFactory = new \EDT\DqlQuerying\ConditionFactories\DqlConditionFactory();
+// the factory creating sort methods that can be applied in your data source, e.g. Doctrine
+$sortMethodFactory = new \EDT\DqlQuerying\SortMethodFactories\SortMethodFactory();
+ 
+// create the entity provider like you did previously, e.g. one that accesses Doctrine
+$queryBuilderPreparer = new \EDT\DqlQuerying\Utilities\QueryBuilderPreparer($entityClass);
+$doctrineEntityProvider = new \EDT\DqlQuerying\ObjectProviders\DoctrineOrmEntityProvider(
+    $doctrineEntityManager,
+    $queryBuilderPreparer,
+    $entityClass
+);
+
+// create a `MappingEntityProvider` instance that automatically converts the predefined
+// conditions and sort methods into ones suited for your entity provider defined above.
+$conditionConverter = \EDT\JsonApi\InputHandling\ConditionConverter::createDefault($validator, $conditionFactory);
+$sortMethodConverter = \EDT\JsonApi\InputHandling\SortMethodConverter::createDefault($validator, $sortMethodFactory);
+$entityProvider = new \EDT\Querying\Contracts\MappingEntityProvider(
+    $conditionConverter,
+    $sortMethodConverter,
+    $doctrineEntityProvider
+);
+
+```
+
+##### 2. `FluentQuery`
+
+Previously the type of conditions and sort methods accepted by a `FluentQuery` instance depended on the `OffsetEntityProviderInterface` it was initialized with.
+
+Now it only accepts the predefined condition and sort method types and consequently its constructor only accepts an `OffsetEntityProviderInterface` that has these types set as template parameters, e.g. `MappingEntityProvider`.
+To re-iterate: its constructor does no longer accept `PrefilledEntityProvider` nor `DoctrineOrmEntityProvider`.
+
+##### 3. `RepositoryInterface`
+
+Similar to `FluentQuery`, the methods in `RepositoryInterface` do no longer accept any type of conditions and sort methods, but the predefined ones only.
+
+You will need to adjust your implementation to convert the predefined types to the ones needed by your data source.
+To do so you may use `MappingEntityProvider` directly or follow the approach used in its implementation, depending on your use case.
+
+#### Skip unnecessary template parameters in resource configuration classes
+
+Property config types were affected by the removal of the condition and sort method template parameters as well.
+
+When manually implementing config classes, you don't need to specify these template parameters anymore.
+
+The following example assumes you used a data source taking `FunctionInterface<bool>` and `OrderBySortMethodInterface` as condition/sort method implementations.
+
+I.e. instead of
+
+```php
+use \EDT\DqlQuerying\Contracts\OrderBySortMethodInterface;
+/**
+ * @template-extends MagicResourceConfigBuilder<FunctionInterface<bool>,OrderBySortMethodInterface,EntityAInterface>
+ *
+ * @property-read AttributeConfigBuilderInterface<FunctionInterface<bool>,EntityAInterface> $propertyA
+ * @property-read ToOneRelationshipConfigBuilderInterface<FunctionInterface<bool>,OrderBySortMethodInterface,EntityAInterface,EntityBInterface> $propertyB
+ * @property-read ToManyRelationshipConfigBuilderInterface<FunctionInterface<bool>,OrderBySortMethodInterface,EntityAInterface,EntityBInterface> $propertyC
+ */
+class EntityAConfig extends MagicResourceConfigBuilder
+```
+
+simply remove the condition/sort method template parameters and use
+
+```php
+/**
+ * @template-extends MagicResourceConfigBuilder<EntityAInterface>
+ *
+ * @property-read AttributeConfigBuilderInterface<EntityAInterface> $propertyA
+ * @property-read ToOneRelationshipConfigBuilderInterface<EntityAInterface,EntityBInterface> $propertyB
+ * @property-read ToManyRelationshipConfigBuilderInterface<EntityAInterface,EntityBInterface> $propertyC
+ */
+class EntityAConfig extends MagicResourceConfigBuilder
+```
+
+Also, when generating these classes the template parameters do no longer need to be set.
+
+Instead of
+
+```php
+$conditionClass = ClassOrInterfaceType::fromFqcn(
+    FunctionInterface::class,
+    [NonClassOrInterfaceType::fromRawString('bool')]
+);
+$sortingClass = ClassOrInterfaceType::fromFqcn(OrderBySortMethodInterface::class);
+$interfaceClass = ClassOrInterfaceType::fromFqcn(EntityAInterface::class);
+$parentClass = ClassOrInterfaceType::fromFqcn(
+    MagicResourceConfigBuilder::class,
+    [$conditionClass, $sortingClass, $interfaceClass]
+);
+
+new \EDT\DqlQuerying\ClassGeneration\ResourceConfigBuilderFromEntityGenerator(
+    $conditionClass,
+    $sortingClass,
+    $parentClass,
+    $traitEvaluator
+);
+```
+
+simply use
+
+```php
+$interfaceClass = ClassOrInterfaceType::fromFqcn(EntityAInterface::class);
+$parentClass = ClassOrInterfaceType::fromFqcn(
+    MagicResourceConfigBuilder::class,
+    [$interfaceClass]
+);
+
+new \EDT\DqlQuerying\ClassGeneration\ResourceConfigBuilderFromEntityGenerator(
+    $parentClass,
+    $traitEvaluator
+);
+```
+
 ## 0.25.0 - 2024-05-08
+
+> [!CAUTION]
+> Like all other releases, this one was done to the best of one's ability. However, it has not been tested as thoroughly as previous releases. It is thus to be considered even more experimental than the version number already implies.
 
 ### BC BREAK: disallow empty lists for `propertyHasAnyOfValues` and `propertyHasNotAnyOfValues` methods
 
@@ -8,7 +251,7 @@ This affects all implementations of `ConditionFactoryInterface` as well as `Cond
 
 Creating those conditions by not passing any values to check against is not only unnecessary, as the result is known even before execution, but it may also cause mistakes due to confusions.
 Thus, an empty list of values in no longer allowed.
-To mitigate, simply check your list before calling these methods, like shown in the following example.
+To migrate, simply check your list before calling these methods, like shown in the following example.
 
 ```php
 $condition = [] === $values 
@@ -136,13 +379,15 @@ In that `OpenApiDocumentBuilder` instance, you can set configurations for action
 After the configuration of the builder, you can call `OpenApiDocumentBuilder::buildDocument` to retrieve the `OpenApi` instance.
 
 This seemingly increased complexity is mainly the result of keeping the generation more generic, without assuming specific translation keys to exist.
-Besides that, it also allows to re-usage the same instance to generate the documentation in different languages and introduces the `Manager` class as future major entry point into the library.
+Besides that, it also allows to re-use the same instance to generate the documentation in different languages and introduces the `Manager` class as future major entry point into the library.
 
-The following shows the adjustment needed to mitigate from the old approach to the new one.
+The following shows the adjustment needed to migrate from the old approach to the new one.
 
 #### Old approach
 
-Note that no distinction was possible between types available via `get` and `list`. I.e. it was not possible to expose a type for JSON:API `get` actions only, as it was not possible to expose it for JSON:API `list` actions only. If either exposure was wanted, the documentation would state the type as exposed with the other action too.
+Note that no distinction was possible between types available via `get` and `list`.
+I.e. it was not possible to expose a type for JSON:API `get` actions only, like it was not possible to expose it for JSON:API `list` actions only as well.
+If either exposure was wanted, the documentation would state the type as exposed with the other action too.
 Also, the `OpenApiSchemaGenerator` implementation would simply assume specific translation keys to be available via the given translator.
 
 ```php
@@ -272,7 +517,7 @@ $config->title->addConstructorBehavior(
 
 The additional `OptionalField::NO` parameter is independent of this change and explained further down below.
 
-To mitigate to the new approach, search in your application for all usages of classes that end with `ConstructorBehaviorFactory`.
+To migrate to the new approach, search in your application for all usages of classes that end with `ConstructorBehaviorFactory`.
 For each one, a corresponding class ending with `ConstructorBehavior` exists, providing a `createFactory` method, as shown above.
 
 ### BC BREAK: Adjust `*SetBehavior` and `*SetBehaviorFactory` class constructors to take the `OptionalField` enum instead of `bool`

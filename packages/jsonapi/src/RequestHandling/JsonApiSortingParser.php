@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace EDT\JsonApi\RequestHandling;
 
 use EDT\Querying\Contracts\PathException;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
 use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\Utilities\PathConverterTrait;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
 /**
- * @template TSorting of PathsBasedInterface
+ * @template TSorting
  */
 class JsonApiSortingParser
 {
+    use PathConverterTrait;
+
     /**
      * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
@@ -45,7 +47,7 @@ class JsonApiSortingParser
      * @throws PathException
      * @throws InvalidArgumentException
      */
-    protected function parseSortMethod(string $sortMethodRaw): PathsBasedInterface
+    protected function parseSortMethod(string $sortMethodRaw)
     {
         Assert::stringNotEmpty($sortMethodRaw);
 
@@ -62,10 +64,10 @@ class JsonApiSortingParser
      *
      * @throws PathException
      */
-    protected function parseNegativeDirection(string $sortMethodRaw): PathsBasedInterface
+    protected function parseNegativeDirection(string $sortMethodRaw)
     {
         $pathString = substr($sortMethodRaw, 1);
-        $pathArray = $this->toPathArray($pathString);
+        $pathArray = static::inputPathToArray($pathString);
         return $this->sortMethodFactory->propertyDescending($pathArray);
     }
 
@@ -76,9 +78,9 @@ class JsonApiSortingParser
      *
      * @throws PathException
      */
-    protected function parsePositiveDirection(string $sortMethodRaw): PathsBasedInterface
+    protected function parsePositiveDirection(string $sortMethodRaw)
     {
-        $pathArray = $this->toPathArray($sortMethodRaw);
+        $pathArray = static::pathToArray($sortMethodRaw);
         return $this->sortMethodFactory->propertyAscending($pathArray);
     }
 
@@ -88,18 +90,5 @@ class JsonApiSortingParser
     protected function isNegativeDirection(string $sortMethodRaw): bool
     {
         return 0 === strncmp($sortMethodRaw, '-', 1);
-    }
-
-    /**
-     * @return non-empty-list<non-empty-string>
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function toPathArray(string $pathString): array
-    {
-        $path = explode('.', $pathString);
-        Assert::allStringNotEmpty($path, "Invalid path `$pathString`, contains empty segments.");
-
-        return $path;
     }
 }

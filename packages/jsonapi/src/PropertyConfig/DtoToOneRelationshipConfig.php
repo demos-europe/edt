@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig;
 
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
@@ -12,18 +11,16 @@ use EDT\Wrapping\PropertyBehavior\Relationship\RelationshipSetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-implements ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, TRelationship>
+ * @template-implements ToOneRelationshipConfigInterface<TEntity, TRelationship>
  */
 class DtoToOneRelationshipConfig implements ToOneRelationshipConfigInterface
 {
     /**
-     * @param ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>|null $readability
-     * @param list<RelationshipSetBehaviorInterface<TCondition, TSorting, TEntity, TRelationship>> $updateBehaviors
+     * @param ToOneRelationshipReadabilityInterface<TEntity, TRelationship>|null $readability
+     * @param list<RelationshipSetBehaviorInterface<TEntity, TRelationship>> $updateBehaviors
      * @param list<PropertySetBehaviorInterface<TEntity>> $postConstructorBehaviors
      * @param list<ConstructorBehaviorInterface> $constructorBehaviors
      * @param PropertyLinkInterface|null $filterLink

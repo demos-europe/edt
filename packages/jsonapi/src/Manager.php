@@ -24,31 +24,26 @@ use EDT\JsonApi\ResourceTypes\GetableTypeInterface;
 use EDT\JsonApi\ResourceTypes\ListableTypeInterface;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\JsonApi\Utilities\NameBasedTypeProvider;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use Webmozart\Assert\Assert;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
- */
 class Manager
 {
     /**
-     * @var array<non-empty-string, GetableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
+     * @var array<non-empty-string, GetableTypeInterface<object>&PropertyReadableTypeInterface<object>>
      */
     protected array $getableTypes = [];
     /**
-     * @var array<non-empty-string, ListableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
+     * @var array<non-empty-string, ListableTypeInterface<object>&PropertyReadableTypeInterface<object>>
      */
     protected array $listableTypes = [];
     /**
-     * @var array<non-empty-string, UpdatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
+     * @var array<non-empty-string, UpdatableTypeInterface<object>&PropertyReadableTypeInterface<object>>
      */
     protected array $updatableTypes = [];
     /**
-     * @var array<non-empty-string, CreatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
+     * @var array<non-empty-string, CreatableTypeInterface<object>&PropertyReadableTypeInterface<object>>
      */
     protected array $creatableTypes = [];
     /**
@@ -120,7 +115,7 @@ class Manager
     }
 
     /**
-     * @param GetableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
+     * @param GetableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
      */
     public function registerGetableType(GetableTypeInterface $type): void
     {
@@ -129,7 +124,7 @@ class Manager
     }
 
     /**
-     * @param list<GetableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
+     * @param list<GetableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
      */
     public function registerGetableTypes(array $types): void
     {
@@ -137,7 +132,7 @@ class Manager
     }
 
     /**
-     * @param ListableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
+     * @param ListableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
      */
     public function registerListableType(ListableTypeInterface $type): void
     {
@@ -146,7 +141,7 @@ class Manager
     }
 
     /**
-     * @param UpdatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
+     * @param UpdatableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
      */
     public function registerUpdatableType(UpdatableTypeInterface $type): void
     {
@@ -155,7 +150,7 @@ class Manager
     }
 
     /**
-     * @param CreatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
+     * @param CreatableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
      */
     public function registerCreatableType(CreatableTypeInterface $type): void
     {
@@ -171,7 +166,7 @@ class Manager
     }
 
     /**
-     * @param list<ListableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
+     * @param list<ListableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
      */
     public function registerListableTypes(array $types): void
     {
@@ -179,7 +174,7 @@ class Manager
     }
 
     /**
-     * @param list<UpdatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
+     * @param list<UpdatableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
      */
     public function registerUpdatableTypes(array $types): void
     {
@@ -187,7 +182,7 @@ class Manager
     }
 
     /**
-     * @param list<CreatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
+     * @param list<CreatableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
      */
     public function registerCreatableTypes(array $types): void
     {
@@ -214,7 +209,7 @@ class Manager
      *
      * Do not call this method if your type is registered as directly available via the other register methods.
      *
-     * @param PropertyReadableTypeInterface<TCondition, TSorting, object>&NamedTypeInterface $type
+     * @param PropertyReadableTypeInterface<object>&NamedTypeInterface $type
      */
     public function registerType(PropertyReadableTypeInterface&NamedTypeInterface $type): void
     {
@@ -233,7 +228,7 @@ class Manager
      *
      * Do not call this method if your types are registered as directly available via the other register methods.
      *
-     * @param list<PropertyReadableTypeInterface<TCondition, TSorting, object>&NamedTypeInterface> $type
+     * @param list<PropertyReadableTypeInterface<object>&NamedTypeInterface> $type
      */
     public function registerTypes(array $type): void
     {
@@ -258,9 +253,6 @@ class Manager
         );
     }
 
-    /**
-     * @return GetProcessor<TCondition, TSorting>
-     */
     public function createGetProcessor(GetProcessorConfigInterface $config): GetProcessor
     {
         return new GetProcessor(
@@ -272,11 +264,6 @@ class Manager
         );
     }
 
-    /**
-     * @param ListProcessorConfigInterface<TCondition, TSorting> $config
-     *
-     * @return ListProcessor<TCondition, TSorting>
-     */
     public function createListProcessor(ListProcessorConfigInterface $config): ListProcessor
     {
         return new ListProcessor(
@@ -294,9 +281,6 @@ class Manager
         );
     }
 
-    /**
-     * @return CreationProcessor<TCondition, TSorting>
-     */
     public function createCreationProcessor(CreationProcessorConfigInterface $config): CreationProcessor
     {
         return new CreationProcessor(
@@ -311,9 +295,6 @@ class Manager
         );
     }
 
-    /**
-     * @return UpdateProcessor<TCondition, TSorting>
-     */
     public function createUpdateProcessor(UpdateProcessorConfigInterface $config): UpdateProcessor
     {
         return new UpdateProcessor(

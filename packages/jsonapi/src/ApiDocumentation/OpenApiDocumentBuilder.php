@@ -13,8 +13,6 @@ use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Response;
 use cebe\openapi\spec\Schema;
 use cebe\openapi\spec\Tag;
-use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use function count;
@@ -39,8 +37,8 @@ class OpenApiDocumentBuilder
 
     /**
      * @param int<0, max> $defaultPageSize
-     * @param array<non-empty-string, PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object>> $getableTypes
-     * @param array<non-empty-string, PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object>> $listableTypes
+     * @param array<non-empty-string, PropertyReadableTypeInterface<object>> $getableTypes
+     * @param array<non-empty-string, PropertyReadableTypeInterface<object>> $listableTypes
      */
     public function __construct(
         protected readonly SchemaStore $schemaStore,
@@ -104,7 +102,7 @@ class OpenApiDocumentBuilder
     }
 
     /**
-     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     * @param PropertyReadableTypeInterface<object> $type
      * @param non-empty-string $typeName
      *
      * @throws TypeErrorException
@@ -153,7 +151,7 @@ class OpenApiDocumentBuilder
     }
 
     /**
-     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     * @param PropertyReadableTypeInterface<object> $type
      * @param non-empty-string $typeName
      *
      * @throws TypeErrorException

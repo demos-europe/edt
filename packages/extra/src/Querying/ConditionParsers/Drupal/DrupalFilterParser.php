@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
+use EDT\ConditionFactory\ConditionGroupFactoryInterface;
 use EDT\JsonApi\RequestHandling\FilterParserInterface;
 use EDT\Querying\Contracts\ConditionParserInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use function count;
 use function in_array;
 
@@ -27,7 +26,7 @@ use function in_array;
  *            operator?: non-empty-string,
  *            memberOf?: non-empty-string
  *          }
- * @template TCondition of PathsBasedInterface
+ * @template TCondition
  * @template-implements FilterParserInterface<array<non-empty-string, array{condition: DrupalFilterCondition}|array{group: DrupalFilterGroup}>, TCondition>
  */
 class DrupalFilterParser implements FilterParserInterface
@@ -91,12 +90,12 @@ class DrupalFilterParser implements FilterParserInterface
     public const VALUE = 'value';
 
     /**
-     * @param PathsBasedConditionGroupFactoryInterface<TCondition> $conditionGroupFactory
+     * @param ConditionGroupFactoryInterface<TCondition> $conditionGroupFactory
      * @param ConditionParserInterface<TCondition> $conditionParser
      * @param positive-int $maxIterations How deep groups are allowed to be nested.
      */
     public function __construct(
-        protected readonly PathsBasedConditionGroupFactoryInterface $conditionGroupFactory,
+        protected readonly ConditionGroupFactoryInterface $conditionGroupFactory,
         protected readonly ConditionParserInterface $conditionParser,
         protected readonly DrupalFilterValidator $filterValidator,
         int $maxIterations = 5000
@@ -193,7 +192,7 @@ class DrupalFilterParser implements FilterParserInterface
      *
      * @throws DrupalFilterException
      */
-    protected function createGroup(string $conjunction, array $conditions): PathsBasedInterface
+    protected function createGroup(string $conjunction, array $conditions)
     {
         return match ($conjunction) {
             self::AND => $this->conditionGroupFactory->allConditionsApply(...$conditions),

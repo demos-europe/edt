@@ -11,7 +11,6 @@ use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\RequestConstraintFactory;
 use EDT\JsonApi\RequestHandling\RequestWithBody;
 use EDT\JsonApi\ResourceTypes\CreatableTypeInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use Exception;
 use League\Fractal\Resource\Item;
@@ -19,10 +18,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
- */
 class CreationRequest extends RequestWithBody
 {
     /**
@@ -52,7 +47,7 @@ class CreationRequest extends RequestWithBody
      *
      * TODO: test if the statement above is compatible with the specification and actually true regarding the libraries behavior
      *
-     * @param CreatableTypeInterface<TCondition, TSorting, object> $type
+     * @param CreatableTypeInterface<object> $type
      *
      * @throws Exception
      */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Validation;
 
+use EDT\ConditionFactory\ConditionFactory;
 use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\Validation\FieldsException;
 use EDT\JsonApi\Validation\FieldsValidator;
@@ -26,7 +27,7 @@ class FieldsValidatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $conditionFactory = new PhpConditionFactory();
+        $conditionFactory = new ConditionFactory();
         $lazyTypeProvider = new LazyTypeProvider();
         $propertyAccessor = new ReflectionPropertyAccessor();
         $attributeTypeResover = new AttributeTypeResolver();

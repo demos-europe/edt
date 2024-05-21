@@ -6,7 +6,6 @@ namespace EDT\JsonApi\ApiDocumentation;
 
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\Schema;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\RelationshipInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use Exception;
@@ -27,7 +26,7 @@ class SchemaStore
     protected array $schemas = [];
 
     /**
-     * @var array<non-empty-string, PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object>>
+     * @var array<non-empty-string, PropertyReadableTypeInterface<object>>
      */
     protected array $schemasToCreate = [];
 
@@ -48,7 +47,7 @@ class SchemaStore
     }
 
     /**
-     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     * @param PropertyReadableTypeInterface<object> $type
      * @param non-empty-string $typeName
      *
      * @return non-empty-string
@@ -109,7 +108,7 @@ class SchemaStore
     }
 
     /**
-     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
+     * @param PropertyReadableTypeInterface<object> $type
      * @param non-empty-string $typeName
      *
      * @throws TypeErrorException

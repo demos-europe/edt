@@ -6,7 +6,7 @@ namespace EDT\Querying\ConditionParsers\Drupal;
 
 use EDT\Querying\Conditions\Equals;
 use EDT\Querying\Contracts\ConditionParserInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Querying\Utilities\PathConverterTrait;
 use function array_key_exists;
 
 /**
@@ -18,11 +18,13 @@ use function array_key_exists;
  *
  * @phpstan-import-type DrupalFilterCondition from DrupalFilterParser
  *
- * @template TCondition of PathsBasedInterface
+ * @template TCondition
  * @template-implements ConditionParserInterface<TCondition>
  */
 class DrupalConditionParser implements ConditionParserInterface
 {
+    use PathConverterTrait;
+
     /**
      * @param DrupalConditionFactoryInterface<TCondition> $drupalConditionFactory
      * @param non-empty-string $defaultOperator
@@ -35,7 +37,7 @@ class DrupalConditionParser implements ConditionParserInterface
     /**
      * @throws DrupalFilterException
      */
-    public function parseCondition(array $condition): PathsBasedInterface
+    public function parseCondition(array $condition)
     {
         $operatorName = array_key_exists(DrupalFilterParser::OPERATOR, $condition)
             ? $condition[DrupalFilterParser::OPERATOR]
@@ -49,13 +51,7 @@ class DrupalConditionParser implements ConditionParserInterface
         $pathString = $condition[DrupalFilterParser::PATH] ?? null;
         $path = null === $pathString
             ? null
-            : array_map(static function (string $pathSegment) use ($operatorName, $pathString): string {
-                if ('' === $pathSegment) {
-                    throw DrupalFilterException::emptyPathSegment($operatorName, $pathString);
-                }
-
-                return $pathSegment;
-            }, explode('.', $pathString));
+            : self::inputPathToArray($pathString);
 
         return array_key_exists(DrupalFilterParser::VALUE, $condition)
             ? $this->drupalConditionFactory->createConditionWithValue($operatorName, $condition[DrupalFilterParser::VALUE], $path)

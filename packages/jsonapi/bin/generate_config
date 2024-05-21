@@ -50,12 +50,7 @@ $parentClass = ClassOrInterfaceType::fromFqcn(
     TypeConfig::class,
     [$conditionClass, $sortingClass, $entityClass]
 );
-$configGenerator = new ResourceConfigBuilderFromEntityGenerator(
-    $conditionClass,
-    $sortingClass,
-    $parentClass,
-    $traitEvaluator
-);
+$configGenerator = new ResourceConfigBuilderFromEntityGenerator($parentClass, $traitEvaluator);
 
 $entityShortName = $entityClass->getShortClassName();
 $configBuilderClassName = "{$entityShortName}BasedResourceConfigBuilderTemplate";

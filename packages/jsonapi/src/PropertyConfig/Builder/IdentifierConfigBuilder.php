@@ -8,7 +8,6 @@ use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\DtoIdentifierConfig;
 use EDT\JsonApi\PropertyConfig\IdentifierConfigInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
 use EDT\Wrapping\Contracts\ContentField;
@@ -25,9 +24,8 @@ use InvalidArgumentException;
 
 /**
  * @template TEntity of object
- * @template TCondition of PathsBasedInterface
  *
- * @template-implements IdentifierConfigBuilderInterface<TEntity, TCondition>
+ * @template-implements IdentifierConfigBuilderInterface<TEntity>
  */
 class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
 {

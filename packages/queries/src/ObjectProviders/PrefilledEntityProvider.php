@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ObjectProviders;
 
-use EDT\Querying\Contracts\OffsetEntityProviderInterface;
-use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Contracts\FunctionInterface;
+use EDT\Querying\Contracts\OffsetEntityProviderInterface;
 use EDT\Querying\Contracts\PaginationException;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Contracts\SortMethodInterface;
+use EDT\Querying\Pagination\OffsetPagination;
 use EDT\Querying\Utilities\ConditionEvaluator;
 use EDT\Querying\Utilities\Sorter;
 use function array_slice;
@@ -22,17 +22,17 @@ use function array_slice;
 class PrefilledEntityProvider implements OffsetEntityProviderInterface
 {
     /**
-     * @param list<TEntity> $prefilledArray
+     * @param list<TEntity> $entities
      */
     public function __construct(
         protected readonly ConditionEvaluator $conditionEvaluator,
         protected readonly Sorter $sorter,
-        protected readonly array $prefilledArray
+        protected array $entities = []
     ) {}
 
     public function getEntities(array $conditions, array $sortMethods, ?OffsetPagination $pagination): array
     {
-        $result = $this->prefilledArray;
+        $result = $this->entities;
         $result = $this->filter($result, $conditions);
         $result = $this->sort($result, $sortMethods);
 
@@ -54,11 +54,11 @@ class PrefilledEntityProvider implements OffsetEntityProviderInterface
             return $list;
         }
 
-        return array_values($this->sorter->sortArray($list, $sortMethods));
+        return $this->sorter->sortArray($list, $sortMethods);
     }
 
     /**
-     * @param list<TEntity>          $list
+     * @param list<TEntity> $list
      * @param list<FunctionInterface<bool>> $conditions
      *
      * @return list<TEntity>
@@ -66,7 +66,7 @@ class PrefilledEntityProvider implements OffsetEntityProviderInterface
     protected function filter(array $list, array $conditions): array
     {
         if ([] !== $conditions) {
-            $list = array_values($this->conditionEvaluator->filterArray($list, ...$conditions));
+            return $this->conditionEvaluator->filterArray($list, ...$conditions);
         }
 
         return $list;
@@ -74,8 +74,8 @@ class PrefilledEntityProvider implements OffsetEntityProviderInterface
 
     /**
      * @param list<TEntity> $list
-     * @param int<0, max>          $offset
-     * @param int<0, max>|null     $limit
+     * @param int<0, max> $offset
+     * @param int<0, max>|null $limit
      *
      * @return list<TEntity>
      * @throws PaginationException
@@ -83,7 +83,7 @@ class PrefilledEntityProvider implements OffsetEntityProviderInterface
     protected function slice(array $list, int $offset, ?int $limit): array
     {
         if (0 !== $offset || null !== $limit) {
-            $list = array_slice($list, $offset, $limit);
+            return array_slice($list, $offset, $limit);
         }
 
         return $list;

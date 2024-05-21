@@ -31,12 +31,12 @@ class DrupalFilterValidator
 
     public function __construct(
         protected ValidatorInterface $validator,
-        OperatorConstraintProviderInterface $drupalConditionFactory
+        OperatorConstraintProviderInterface $operatorConstraintProvider
     ) {
         $this->collectionConstraintFactory = new CollectionConstraintFactory();
         $this->filterNamesConstraints = $this->getFilterNamesConstraints();
 
-        $supportedOperators = $drupalConditionFactory->getSupportedOperators();
+        $supportedOperators = $operatorConstraintProvider->getSupportedOperators();
         $this->filterSchemaConstraints = $this->getFilterSchemaConstraints($supportedOperators);
     }
 

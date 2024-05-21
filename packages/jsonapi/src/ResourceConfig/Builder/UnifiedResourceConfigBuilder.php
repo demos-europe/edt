@@ -17,26 +17,20 @@ use EDT\JsonApi\PropertyConfig\ToManyRelationshipConfigInterface;
 use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceConfig\ResourceConfig;
 use EDT\JsonApi\ResourceConfig\ResourceConfigInterface;
-use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
-use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
-use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
-use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 
 /**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends BaseSchemaBuilder<TCondition, TSorting, TEntity>
+ * @template-extends BaseSchemaBuilder<TEntity>
  */
 class UnifiedResourceConfigBuilder extends BaseSchemaBuilder
 {
     /**
      * @param class-string<TEntity> $entityClass
-     * @param array<non-empty-string, IdentifierConfigBuilder<TEntity, TCondition>|AttributeConfigBuilder<TCondition, TEntity>|ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, object>> $properties
+     * @param array<non-empty-string, IdentifierConfigBuilder<TEntity>|AttributeConfigBuilder<TEntity>|ToOneRelationshipConfigBuilder<TEntity, object>|ToManyRelationshipConfigBuilder<TEntity, object>> $properties
      */
     public function __construct(
         protected readonly string $entityClass,

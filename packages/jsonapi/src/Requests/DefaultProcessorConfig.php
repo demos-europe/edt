@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
-use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
-use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
+use EDT\ConditionFactory\DrupalFilterInterface;
+use EDT\ConditionFactory\ConditionFactory;
 use EDT\JsonApi\InputHandling\FractalManagerFactory;
 use EDT\JsonApi\OutputHandling\PropertyReadableTypeProviderInterface;
 use EDT\JsonApi\OutputHandling\ResponseFactory;
@@ -21,25 +21,16 @@ use EDT\Querying\ConditionParsers\Drupal\DrupalConditionParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
 use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
-use EDT\Querying\Contracts\PathsBasedInterface;
-use EDT\Querying\Contracts\SortMethodFactoryInterface;
+use EDT\Querying\SortMethodFactories\SortMethodFactory;
 use EDT\Wrapping\Utilities\PropertyPathProcessorFactory;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @template TCondition of PathsBasedInterface
- * @template TSorting of PathsBasedInterface
- *
- * @template-implements ListProcessorConfigInterface<TCondition, TSorting>
- */
 class DefaultProcessorConfig implements GetProcessorConfigInterface, ListProcessorConfigInterface, CreationProcessorConfigInterface, UpdateProcessorConfigInterface, DeletionProcessorConfigInterface
 {
     /**
-     * @param PathsBasedConditionGroupFactoryInterface<TCondition>&PathsBasedConditionFactoryInterface<TCondition> $conditionFactory
-     * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      * @param int<0,max> $fractalRecursionLimit
      * @param int<0,8192> $attributeValidationDepth
      * @param int<1,8192> $maxBodyNestingDepth see {@link RequestWithBody::getRequestBody()}
@@ -48,8 +39,6 @@ class DefaultProcessorConfig implements GetProcessorConfigInterface, ListProcess
         protected readonly ValidatorInterface $validator,
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly Router $router,
-        protected readonly PathsBasedConditionGroupFactoryInterface&PathsBasedConditionFactoryInterface $conditionFactory,
-        protected readonly SortMethodFactoryInterface $sortMethodFactory,
         protected readonly int $fractalRecursionLimit = 20,
         protected readonly int $attributeValidationDepth = 20,
         protected readonly bool $attributeAllowAnythingBelowValidationDepth = true,
@@ -57,16 +46,16 @@ class DefaultProcessorConfig implements GetProcessorConfigInterface, ListProcess
     ) {}
 
     /**
-     * @return DrupalFilterParser<TCondition>
+     * @return DrupalFilterParser<DrupalFilterInterface>
      */
     public function getFilterTransformer(): DrupalFilterParser
     {
-        return new DrupalFilterParser($this->conditionFactory, $this->getDrupalConditionTransformer(), $this->getFilterValidator());
+        return new DrupalFilterParser($this->getConditionFactory(), $this->getDrupalConditionTransformer(), $this->getFilterValidator());
     }
 
     public function getSortingTransformer(): JsonApiSortingParser
     {
-        return new JsonApiSortingParser($this->sortMethodFactory);
+        return new JsonApiSortingParser($this->getSortMethodFactory());
     }
 
     public function getPaginatorFactory(): PaginatorFactory
@@ -113,11 +102,11 @@ class DefaultProcessorConfig implements GetProcessorConfigInterface, ListProcess
     }
 
     /**
-     * @return PredefinedDrupalConditionFactory<TCondition>
+     * @return PredefinedDrupalConditionFactory<DrupalFilterInterface>
      */
     protected function getDrupalConditionFactory(): PredefinedDrupalConditionFactory
     {
-        return new PredefinedDrupalConditionFactory($this->conditionFactory);
+        return new PredefinedDrupalConditionFactory($this->getConditionFactory());
     }
 
     protected function getFractalManagerFactory(PropertyReadableTypeProviderInterface $typeProvider): FractalManagerFactory
@@ -141,7 +130,7 @@ class DefaultProcessorConfig implements GetProcessorConfigInterface, ListProcess
     }
 
     /**
-     * @return DrupalConditionParser<TCondition>
+     * @return DrupalConditionParser<DrupalFilterInterface>
      */
     protected function getDrupalConditionTransformer(): DrupalConditionParser
     {
@@ -161,5 +150,15 @@ class DefaultProcessorConfig implements GetProcessorConfigInterface, ListProcess
     public function getMaxBodyNestingDepth(): int
     {
         return $this->maxBodyNestingDepth;
+    }
+
+    protected function getConditionFactory(): ConditionFactory
+    {
+        return new ConditionFactory();
+    }
+
+    protected function getSortMethodFactory(): SortMethodFactory
+    {
+        return new SortMethodFactory();
     }
 }
