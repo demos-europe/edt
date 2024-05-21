@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.26.0 - 2024-05-21
 
 > [!CAUTION]
 > Like all other releases, this one was done to the best of one's ability. However, it has not been tested as thoroughly as previous releases. It is thus to be considered even more experimental than the version number already implies.
