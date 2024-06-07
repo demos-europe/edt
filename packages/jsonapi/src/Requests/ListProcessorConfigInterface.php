@@ -17,6 +17,9 @@ use EDT\Querying\SortMethodFactories\SortMethodInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Instances must provide logic and implementations needed by {@link ListProcessor} instances.
+ */
 interface ListProcessorConfigInterface
 {
     /**
