@@ -91,6 +91,8 @@
     },
     "scripts": {
         "sniffer:php8": "phpcs -p ./packages/ --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0",
-        "phpstan": "phpstan analyse"
+        "phpstan": "phpstan analyse",
+        "phpstan-baseline": "vendor/phpstan/phpstan/phpstan analyse --configuration phpstan.neon --generate-baseline",
+        "phpunit": "./bin/phpunit"
     }
 }
