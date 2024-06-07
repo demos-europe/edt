@@ -104,7 +104,7 @@ class DrupalFilterValidator
      */
     protected function getConditionConstraints(array $validOperators): array
     {
-        // FIXME: use constraints provided for each operator in context of the corresponding operator name to validate Drupal conditions
+        // FIXME (#144): use constraints provided for each operator in context of the corresponding operator name to validate Drupal conditions
         $validOperatorNames = array_keys($validOperators);
         $filterNameConstraints = $this->getFilterNameConstraints();
         $pathConstraints = [

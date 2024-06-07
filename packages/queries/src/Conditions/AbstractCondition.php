@@ -19,7 +19,7 @@ abstract class AbstractCondition implements ConditionInterface
 
     public function getFormatConstraints(): array
     {
-        // FIXME: remove here and implement in children
+        // FIXME (#144): remove here and implement in children
         return [];
     }
 }

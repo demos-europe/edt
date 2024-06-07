@@ -31,7 +31,7 @@ use function strlen;
 /**
  * Map Doctrine or native types to OpenAPI types.
  *
- * TODO: abstract this class away from the doctrine parts and move doctrine parts into separate class in separate package (service or subclass)
+ * TODO (#152): abstract this class away from the doctrine parts and move doctrine parts into separate class in separate package (service or subclass)
  */
 class AttributeTypeResolver implements AttributeTypeResolverInterface
 {
@@ -130,7 +130,7 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
     }
 
     /**
-     * TODO: handle (Doctrine) type `json`, but how?
+     * TODO (#133): handle (Doctrine) type `json`, but how?
      *
      * @return array{type: non-empty-string, format?: non-empty-string}
      */

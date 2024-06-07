@@ -7,7 +7,7 @@ namespace EDT\JsonApi\Validation;
 use InvalidArgumentException;
 
 /**
- * TODO: rename to FieldsetFormatException
+ * TODO (#130): rename to FieldsetFormatException
  */
 class FieldsException extends InvalidArgumentException
 {
