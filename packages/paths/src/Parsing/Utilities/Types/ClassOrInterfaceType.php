@@ -9,6 +9,13 @@ use phpDocumentor\Reflection\Types\Collection;
 use phpDocumentor\Reflection\Types\Object_;
 use Webmozart\Assert\Assert;
 
+/**
+ * Represents a class or interface.
+ * 
+ * Unlike with alternatives like `class-string` or {@link \ReflectionClass}, you can
+ * define template parameters that open up possibilities especially useful when generating
+ * source code. 
+ */
 class ClassOrInterfaceType implements TypeInterface
 {
     /**

@@ -8,6 +8,9 @@ use EDT\JsonApi\OutputHandling\PropertyReadableTypeProviderInterface;
 use EDT\JsonApi\OutputHandling\ResponseFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Instances must provide logic and implementations needed by {@link GetProcessor} instances.
+ */
 interface GetProcessorConfigInterface
 {
     public function getEventDispatcher(): EventDispatcherInterface;

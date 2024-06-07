@@ -19,6 +19,7 @@ use Nette\PhpGenerator\PhpFile;
 use ReflectionClass;
 use ReflectionProperty;
 use function array_key_exists;
+use Nette\PhpGenerator\PhpNamespace;
 
 class ResourceConfigBuilderFromEntityGenerator
 {
@@ -46,8 +47,13 @@ class ResourceConfigBuilderFromEntityGenerator
     /**
      * Generate a config builder class from the given base class.
      *
+     * For each generated property, a comment can be added via the `$generatePropertyComments` parameter.
+     * The comment of the property will contain a reference to the entity property it was based on.
+     * In rare cases you may want to disable the generation of those comments to keep the generated
+     * config class as independent of the entity it is based on as possible.
+     *
      * @param non-empty-string $targetName
-     * @param non-empty-string $targetNamespace
+     * @param non-empty-string $targetNamespace TODO: use {@link PhpNamespace} as type instead
      */
     public function generateConfigBuilderClass(
         ClassOrInterfaceType $entityType,
@@ -75,6 +81,7 @@ class ResourceConfigBuilderFromEntityGenerator
         $class->addComment('');
 
         // skip properties that are already defined in the parent class
+        // TODO: this is intended for something like the `id` property, so that it is only defined once and not in every type, however it may be problematic if something should be overridden, because of a different type  hint
         $properties = array_filter(
             $reflectionClass->getProperties(),
             fn (ReflectionProperty $property): bool => !array_key_exists($property->getName(), $this->existingProperties)

@@ -11,12 +11,17 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Instances can be used to create a response to a given request, based on the configuration given in the constructor.
+ */
 class DeletionProcessor
 {
     use EmptyResponseTrait;
     use ProcessorTrait;
 
     /**
+     * Instead of creating instances manually, you may want to use {@link Manager::createDeletionProcessor()}.
+     *
      * @param array<non-empty-string, DeletableTypeInterface> $deletableTypes
      * @param non-empty-string $resourceTypeAttribute
      * @param non-empty-string $resourceIdAttribute

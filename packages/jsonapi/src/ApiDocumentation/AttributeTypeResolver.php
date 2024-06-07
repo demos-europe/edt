@@ -187,10 +187,7 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
     }
 
     /**
-     * @param ReflectionMethod|ReflectionFunction $reflection
-     *
      * @throws InvalidArgumentException if there is no return type hint or if it could not be determined
-     *
      */
     protected function getReturnType(ReflectionMethod|ReflectionFunction $reflection): ReflectionNamedType
     {
