@@ -120,7 +120,7 @@ class Manager
     public function registerGetableType(GetableTypeInterface $type): void
     {
         $this->addToArray($type, $this->getableTypes);
-        $this->typeProvider->addType($type->getTypeName(), $type);
+        $this->typeProvider->addNamedType($type);
     }
 
     /**
@@ -137,7 +137,7 @@ class Manager
     public function registerListableType(ListableTypeInterface $type): void
     {
         $this->addToArray($type, $this->listableTypes);
-        $this->typeProvider->addType($type->getTypeName(), $type);
+        $this->typeProvider->addNamedType($type);
     }
 
     /**
@@ -146,7 +146,7 @@ class Manager
     public function registerUpdatableType(UpdatableTypeInterface $type): void
     {
         $this->addToArray($type, $this->updatableTypes);
-        $this->typeProvider->addType($type->getTypeName(), $type);
+        $this->typeProvider->addNamedType($type);
     }
 
     /**
@@ -155,14 +155,14 @@ class Manager
     public function registerCreatableType(CreatableTypeInterface $type): void
     {
         $this->addToArray($type, $this->creatableTypes);
-        $this->typeProvider->addType($type->getTypeName(), $type);
+        $this->typeProvider->addNamedType($type);
     }
 
     public function registerDeletableType(DeletableTypeInterface&NamedTypeInterface $type): void
     {
         $this->addToArray($type, $this->deletableTypes);
-        // no need to add it to the type provider, as it is only needed for sparse fieldsets,
-        // i.e. responses potentially containing resources
+	    // no need to note type for sparse fieldsets if it is only deletable, as deletions do not return a resource
+	    // if the same type is registered for a different action, it will be added to the type provider as usual
     }
 
     /**
@@ -195,44 +195,6 @@ class Manager
     public function registerDeletableTypes(array $types): void
     {
         array_map($this->registerDeletableType(...), $types);
-    }
-
-    /**
-     * Register a type whose resources should not be directly available via `get`, `list`, `create`, `update` or
-     * `delete`, but can still be included in a response beside the primary resources.
-     *
-     * Note that these types are still available via the relationships pointing to them. I.e. if `Book` resources
-     * can be fetched directly via `list` request and have a relationship to `Author` resources, then it may be possible
-     * to include the authors in the response, even if the `Author` resource type was not registered with this method.
-     * However, to ensure a consistent behavior in case of the usage of sparse fieldsets too, you must register them via
-     * this method.
-     *
-     * Do not call this method if your type is registered as directly available via the other register methods.
-     *
-     * @param PropertyReadableTypeInterface<object>&NamedTypeInterface $type
-     */
-    public function registerType(PropertyReadableTypeInterface&NamedTypeInterface $type): void
-    {
-        $this->typeProvider->addType($type->getTypeName(), $type);
-    }
-
-    /**
-     * Register types whose resources should not be directly available via `get`, `list`, `create`, `update` or
-     * `delete`, but can still be included in a response beside the primary resources.
-     *
-     * Note that these types are still available via the relationships pointing to them. I.e. if `Book` resources
-     * can be fetched directly via `list` request and have a relationship to `Author` resources, then it may be possible
-     * to include the authors in the response, even if the `Author` resource type was not registered with this method.
-     * However, to ensure a consistent behavior in case of the usage of sparse fieldsets too, you must register them via
-     * this method.
-     *
-     * Do not call this method if your types are registered as directly available via the other register methods.
-     *
-     * @param list<PropertyReadableTypeInterface<object>&NamedTypeInterface> $type
-     */
-    public function registerTypes(array $type): void
-    {
-        array_map($this->registerType(...), $type);
     }
 
     /**
