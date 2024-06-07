@@ -62,7 +62,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
         $operators = array_merge($this->operatorFunctionsWithValue, $this->operatorFunctionsWithoutValue);
 
         return array_map(
-            // FIXME: add operator specific conditions and validate condition-specific values and their type
+            // FIXME (#144): add operator specific conditions and validate condition-specific values and their type
             fn (callable $callable): array => [],
             $operators
         );

@@ -41,7 +41,7 @@ use InvalidArgumentException;
  *
  * In the following sections each step listed above is explained in more detail.
  *
- * 1. Create an instance of this class
+ * **1. Create an instance of this class**
  *
  * Due to implementation details, this class will store registered types in different manners, but currently only one "storage" implementation can be
  * adjusted via the constructor.
@@ -55,7 +55,7 @@ use InvalidArgumentException;
  * only specific types, that should be exposed to guest users.
  * For more dynamic authorizations you may have to create and fill a new manager instance for each request.
  *
- * 2. Register your types into it
+ * **2. Register your types into it**
  *
  * After initializing an instance of this class, you can use it to register type instances of varying implementations.
  * The registration methods are specific to a capability.
@@ -75,17 +75,16 @@ use InvalidArgumentException;
  * * have been created via one of the {@link ResourceConfigBuilderInterface}
  * * have been created by any other means
  *
- * 3. (Optionally) create an OpenApi document
+ * **3. (Optionally) create an OpenApi document**
  *
  * You may want to expose your APIs capabilities via an OpenApi page.
  * To do so, you can use {@link self::createOpenApiDocumentBuilder()} and build an OpenApi
  * document, containing the capabilities provided by your API based on the types you've registered into the manager instance.
  * The document instance can then be used by you in any manner you like, e.g. building a web page.
  *
- * TODO: Note that currently only getable and listable types are considered by the OpenApi document builder, even if you registered
- * additional types like deletable.
+ * *NOTE (#134): Currently only getable and listable types are considered by the OpenApi document builder, even if you registered additional types like deletable.*
  *
- * 4. React to a client request
+ * **4. React to a client request**
  *
  * After registering your type instances in the manager, you can create processors for each kind of request as needed.
  * E.g. the {@link self::createGetProcessor()} method can be used to react to JSON:API `get` requests. 
@@ -323,7 +322,7 @@ class Manager
      * configurations (e.g. {@link OpenApiDocumentBuilder::setGetActionConfig()} and
      * {@link OpenApiDocumentBuilder::setListActionConfig()}).
      *
-     * TODO: Currently only getable and listable types are supported (i.e. considered) when building the OpenApi document.
+     * **NOTE (#134): Currently only getable and listable types are supported (i.e. considered) when building the OpenApi document.**
      */
     public function createOpenApiDocumentBuilder(): OpenApiDocumentBuilder
     {

@@ -25,7 +25,7 @@ use function count;
  * You can change these configurations at any time to {@link self::buildDocument() generate} the next document based
  * on a different configuration.
  *
- * **This implementation is to be considered WIP.**
+ * **NOTE (#143): This implementation is to be considered WIP.**
  * It has not yet been evaluated if the generated schema is valid.
  * Most application dependent information can be configured, but the implementation still makes assumptions about your
  * application (e.g. Symfony route attributes), that may not be accurate.
