@@ -40,12 +40,9 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
      */
     private array $classReflectionCache = [];
 
-    private AnnotationReader $annotationReader;
-
-    public function __construct()
-    {
-        $this->annotationReader = new AnnotationReader();
-    }
+    public function __construct(
+        protected readonly AnnotationReader $annotationReader = new AnnotationReader()
+    ) {}
 
     public function resolveTypeFromEntityClass(
         string $rootEntityClass,

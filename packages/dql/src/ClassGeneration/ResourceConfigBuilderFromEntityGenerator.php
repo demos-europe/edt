@@ -28,7 +28,7 @@ class ResourceConfigBuilderFromEntityGenerator
     /**
      * @var array<non-empty-string, TypeInterface>
      */
-    private readonly array $existingProperties;
+    protected readonly array $existingProperties;
 
     /**
      * @param null|callable(TypeInterface): TypeInterface $entityTypeCallback adjust the entity type to be used in the property type hint
@@ -133,7 +133,7 @@ class ResourceConfigBuilderFromEntityGenerator
         $targetEntityClass = $this->getTargetEntityClass($originalEntityClassFqcn, $property->getName(), $annotationOrAttribute);
 
         // TODO: detect template parameters?
-        $targetEntityClass = ClassOrInterfaceType::fromFqcn($targetEntityClass, []);
+        $targetEntityClass = ClassOrInterfaceType::fromFqcn($targetEntityClass);
         if (null !== $this->relationshipTypeCallback) {
             $targetEntityClass = ($this->relationshipTypeCallback)($targetEntityClass);
         }

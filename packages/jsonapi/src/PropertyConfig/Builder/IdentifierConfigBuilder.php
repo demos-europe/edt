@@ -85,7 +85,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
 
     public function readable(callable $customReadCallback = null): self
     {
-        $this->readabilityFactory = new class ($this->propertyAccessor, $this->typeResolver, $customReadCallback) {
+        $this->readabilityFactory = new class($this->propertyAccessor, $this->typeResolver, $customReadCallback) {
             /**
              * @var null|callable(TEntity): non-empty-string
              */
