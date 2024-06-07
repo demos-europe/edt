@@ -30,7 +30,7 @@ use function array_key_exists;
 class SchemaPathProcessor
 {
     public function __construct(
-        protected readonly PropertyPathProcessorFactory $propertyPathProcessorFactory
+        protected readonly PropertyPathProcessorFactory $propertyPathProcessorFactory = new PropertyPathProcessorFactory()
     ) {}
 
     /**

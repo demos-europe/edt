@@ -21,7 +21,7 @@ class ClassOrInterfaceType implements TypeInterface
     /**
      * @var non-empty-string
      */
-    private readonly string $shortClassName;
+    protected readonly string $shortClassName;
 
     /**
      * @param class-string $fullyQualifiedName

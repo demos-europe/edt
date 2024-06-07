@@ -209,7 +209,7 @@ class PropertyBuilderFactory
      *
      * @throws PathException
      */
-    protected function getSingleName(PropertyPathInterface|string $nameOrPath)
+    protected function getSingleName(PropertyPathInterface|string $nameOrPath): string
     {
         if (!is_string($nameOrPath)) {
             $pathNames = $nameOrPath->getAsNames();
