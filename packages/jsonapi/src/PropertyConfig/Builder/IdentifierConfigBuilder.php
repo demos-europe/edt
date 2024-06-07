@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
-use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\DtoIdentifierConfig;
 use EDT\JsonApi\PropertyConfig\IdentifierConfigInterface;
@@ -21,6 +20,7 @@ use EDT\Wrapping\PropertyBehavior\Identifier\IdentifierPostConstructorBehaviorIn
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierPostConstructorBehavior;
 use EDT\Wrapping\PropertyBehavior\Identifier\PathIdentifierReadability;
 use InvalidArgumentException;
+use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 
 /**
  * @template TEntity of object
@@ -54,7 +54,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
     public function __construct(
         protected readonly string $entityClass,
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver $typeResolver
+        protected readonly AttributeTypeResolverInterface $typeResolver
     ) {}
 
     /**
@@ -96,7 +96,7 @@ class IdentifierConfigBuilder implements IdentifierConfigBuilderInterface
              */
             public function __construct(
                 protected readonly PropertyAccessorInterface $propertyAccessor,
-                protected readonly AttributeTypeResolver $typeResolver,
+                protected readonly AttributeTypeResolverInterface $typeResolver,
                 callable $customReadCallback = null
             ) {
                 $this->customReadCallback = $customReadCallback;
