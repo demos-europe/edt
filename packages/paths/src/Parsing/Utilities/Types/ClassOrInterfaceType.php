@@ -38,9 +38,7 @@ class ClassOrInterfaceType implements TypeInterface
     }
 
     /**
-     * FIXME: phpDocumentor currently does not support proper generics. Classes/interfaces with
-     * template parameters will result in a {@link Collection} instance. That class however silently
-     * omits all template parameters except the last two, and thus is not reliable to use.
+     * FIXME (#147): phpDocumentor currently does not support proper generics
      *
      * @see https://github.com/phpDocumentor/phpDocumentor/issues/2122
      */

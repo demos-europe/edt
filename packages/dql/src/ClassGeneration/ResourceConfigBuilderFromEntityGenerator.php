@@ -132,7 +132,7 @@ class ResourceConfigBuilderFromEntityGenerator
 
         $targetEntityClass = $this->getTargetEntityClass($originalEntityClassFqcn, $property->getName(), $annotationOrAttribute);
 
-        // TODO: detect template parameters?
+        // TODO (#147): detect template parameters?
         $targetEntityClass = ClassOrInterfaceType::fromFqcn($targetEntityClass);
         if (null !== $this->relationshipTypeCallback) {
             $targetEntityClass = ($this->relationshipTypeCallback)($targetEntityClass);
@@ -140,7 +140,7 @@ class ResourceConfigBuilderFromEntityGenerator
 
         $templateParameters = [
             $entityClass,
-            // TODO: parse docblock further to detect types with template parameters
+            // TODO (#147): check docblock further to detect types with template parameters
             $targetEntityClass
         ];
 

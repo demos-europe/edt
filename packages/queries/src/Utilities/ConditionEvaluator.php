@@ -22,7 +22,7 @@ class ConditionEvaluator
      * @template TEntity of object
      *
      * @param list<TEntity> $arrayToFilter
-     * @param FunctionInterface<bool> $condition TODO: refactor to non-empty-list<FunctionInterface<bool>>
+     * @param FunctionInterface<bool> $condition TODO (#151): refactor to non-empty-list<FunctionInterface<bool>>
      * @param FunctionInterface<bool> ...$conditions
      * @return list<TEntity>
      */
