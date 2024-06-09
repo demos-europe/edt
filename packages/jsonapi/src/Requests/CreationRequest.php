@@ -84,7 +84,6 @@ class CreationRequest extends RequestWithBody
     /**
      * @param non-empty-string $urlTypeIdentifier
      *
-     * @return CreationRequestBody
      * @throws RequestException
      */
     protected function getCreationRequestBody(

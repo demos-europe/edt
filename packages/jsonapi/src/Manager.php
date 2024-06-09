@@ -26,6 +26,7 @@ use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\JsonApi\Utilities\NameBasedTypeProvider;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Webmozart\Assert\Assert;
 use InvalidArgumentException;
 
@@ -43,15 +44,16 @@ use InvalidArgumentException;
  *
  * **1. Create an instance of this class**
  *
- * Due to implementation details, this class will store registered types in different manners, but currently only one "storage" implementation can be
+ * Due to implementation details, this class will store registered types in different manners, but currently only one
+ * of those multiple "storage" implementation can be
  * adjusted via the constructor.
- * However, the default implementation should work fine in most cases.
+ * However, the default implementation should be sufficient in most cases anyway.
  *
  * Please note that if you want to create sets of different types, you'd create a separate manager instance for each set.
  * For example this may be useful if you have predefined user authorizations, with different users having access to different
  * types.
  * E.g. for users with the role `administrator` you'd use a corresponding `$adminManager`, into which you registered all types.
- * On the other hand, for users with the role `guest` you'd use a corresponding `guestManager`, into which you registered
+ * On the other hand, for users with the role `guest` you'd use a corresponding `$guestManager`, into which you registered
  * only specific types, that should be exposed to guest users.
  * For more dynamic authorizations you may have to create and fill a new manager instance for each request.
  *
@@ -60,11 +62,11 @@ use InvalidArgumentException;
  * After initializing an instance of this class, you can use it to register type instances of varying implementations.
  * The registration methods are specific to a capability.
  * E.g. the {@link self::registerGetableType()} method requires a type that can be used to process JSON:API `get` requests,
- * but it will not investigate the given type further nor automatically register it as listable, even if the implementation
+ * but it will not investigate the given type further nor automatically register it as listable, even if its implementation
  * indeed inherits from {@link ListableTypeInterface}.
  * If you want to register that type as listable as well, you have to call {@link self::registerListableType()} with the same instance manually.
  *
- * This allows fine grained control which types you want to support (i.e. expose) when processing different requests like `get` or `list`.
+ * This allows fine-grained control over which types you want to support (i.e. expose) when processing different requests like `get` or `list`.
  * To create different sets of registered types, you'd create a separate instance of this class for each set, as explained above.
  *
  * The manager is indifferent as to how a type instance was created.
@@ -79,27 +81,27 @@ use InvalidArgumentException;
  *
  * You may want to expose your APIs capabilities via an OpenApi page.
  * To do so, you can use {@link self::createOpenApiDocumentBuilder()} and build an OpenApi
- * document, containing the capabilities provided by your API based on the types you've registered into the manager instance.
- * The document instance can then be used by you in any manner you like, e.g. building a web page.
+ * document, containing the capabilities provided by your API, based on the types you've registered into the manager instance.
+ * The document instance can then be used by you in any manner you like, e.g. building a web page presenting the API to potential clients.
  *
  * *NOTE (#134): Currently only getable and listable types are considered by the OpenApi document builder, even if you registered additional types like deletable.*
  *
  * **4. React to a client request**
  *
- * After registering your type instances in the manager, you can create processors for each kind of request as needed.
+ * After registering your type instances into the manager, you can create processors for each kind of request as needed.
  * E.g. the {@link self::createGetProcessor()} method can be used to react to JSON:API `get` requests. 
- * Including the aforementioned `get`, the following requests are supported:
+ * The following list shows the supported kind of requests:
  *
- * * `get`
- * * `list`
- * * `create`
- * * `update`
- * * `delete`
+ * * `get`: {@link self::createGetProcessor()}
+ * * `list`: {@link self::createListProcessor()}
+ * * `create`: {@link self::createCreationProcessor()}
+ * * `update`: {@link self::createUpdateProcessor()}
+ * * `delete`: {@link self::createDeletionProcessor()}
  *
- * As mentioned previously no processor will be automatically created nor will become automatically active when a request is
+ * As mentioned previously, no processor will be automatically created nor will become automatically active when a request is
  * received.
  * Instead, you have to determine the kind of request you want to handle and retrieve the corresponding processor.
- * With the actual request already present as object instance, you can then pass control to that processor.
+ * With the actual request already present as {@link Request} instance, you can then pass control to that processor.
  */
 class Manager
 {
