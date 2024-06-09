@@ -73,7 +73,7 @@ class DefaultProcessorConfig implements GetProcessorConfigInterface, ListProcess
      *
      * @var (ConditionFactoryInterface<DrupalFilterInterface>&ConditionGroupFactoryInterface<DrupalFilterInterface>)|null
      */
-    protected (ConditionFactoryInterface&ConditionGroupFactoryInterface)|null $conditionFactory = null;
+    protected ?object $conditionFactory = null;
     
     /**
      * Cache instance for re-usage.
