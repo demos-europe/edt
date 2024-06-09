@@ -54,8 +54,9 @@ class PhpEntityRepository extends EntityProviderBasedRepository
     ): self {
         $conditionFactory = new PhpConditionFactory();
         $sortMethodFactory = new PhpSortMethodFactory();
-        $conditionConverter = ConditionConverter::createDefault($validator, $conditionFactory);
-        $sortMethodConverter = SortMethodConverter::createDefault($validator, $sortMethodFactory);
+        $converterFactory = new DefaultConverterFactory($validator);
+        $conditionConverter = $converterFactory->createConditionConverter($conditionFactory);
+        $sortMethodConverter = $converterFactory->createSortMethodConverter($sortMethodFactory);
         $tableJoiner = new TableJoiner($propertyAccessor);
         $conditionEvaluator = new ConditionEvaluator($tableJoiner);
         $sorter = new Sorter($tableJoiner);
@@ -70,7 +71,6 @@ class PhpEntityRepository extends EntityProviderBasedRepository
             $entityProvider
         );
     }
-
 
     public function deleteEntityByIdentifier(string $entityIdentifier, array $conditions, array $identifierPropertyPath): void
     {

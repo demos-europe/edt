@@ -7,10 +7,8 @@ namespace EDT\JsonApi\InputHandling;
 use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\ConditionFactory\ConditionGroupFactoryInterface;
-use EDT\Querying\ConditionParsers\Drupal\DrupalConditionParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
-use EDT\Querying\ConditionParsers\Drupal\PredefinedDrupalConditionFactory;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -32,15 +30,14 @@ class ConditionConverter
      * @param ConditionFactoryInterface<TCond>&ConditionGroupFactoryInterface<TCond> $conditionFactory
      *
      * @return ConditionConverter<TCond>
+     *
+     * @deprecated use {@link DefaultConverterFactory::createConditionConverter} instead
      */
     public static function createDefault(ValidatorInterface $validator, ConditionFactoryInterface&ConditionGroupFactoryInterface $conditionFactory): self
     {
-        $drupalConditionFactory = new PredefinedDrupalConditionFactory($conditionFactory);
-        $drupalConditionParser = new DrupalConditionParser($drupalConditionFactory);
-        $drupalFilterValidator = new DrupalFilterValidator($validator, $drupalConditionFactory);
-        $filterTransformer = new DrupalFilterParser($conditionFactory, $drupalConditionParser, $drupalFilterValidator);
+        $converterFactory = new DefaultConverterFactory($validator);
 
-        return new self($filterTransformer, $drupalFilterValidator);
+        return $converterFactory->createConditionConverter($conditionFactory);
     }
 
     /**

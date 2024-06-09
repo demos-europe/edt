@@ -29,13 +29,14 @@ class SortMethodConverter
      * @param SortMethodFactoryInterface<TSort> $sortMethodFactory
      *
      * @return SortMethodConverter<TSort>
+     *
+     * @deprecated use {@link DefaultConverterFactory::createSortMethodConverter()} instead
      */
     public static function createDefault(ValidatorInterface $validator, SortMethodFactoryInterface $sortMethodFactory)
     {
-        $sortingTransformer = new JsonApiSortingParser($sortMethodFactory);
-        $sortingValidator = new SortValidator($validator);
+        $converterFactory = new DefaultConverterFactory($validator);
 
-        return new self($sortingTransformer, $sortingValidator);
+        return $converterFactory->createSortMethodConverter($sortMethodFactory);
     }
 
     /**
