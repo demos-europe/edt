@@ -12,7 +12,7 @@ use Webmozart\Assert\Assert;
 /**
  * Represents a class or interface.
  * 
- * Unlike with alternatives like `class-string` or {@link \ReflectionClass}, you can
+ * Unlike alternatives like `class-string` or {@link \ReflectionClass}, instances of this class can
  * define template parameters that open up possibilities especially useful when generating
  * source code. 
  */
