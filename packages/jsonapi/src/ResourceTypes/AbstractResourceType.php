@@ -75,7 +75,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         [$entity, $requestDeviations] = $instantiability->initializeEntity($entityData);
         $idBasedDeviations = $instantiability->setIdentifier($entity, $entityData);
-        // FIXME: check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
+        // FIXME (#145): check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
         $fillRequestDeviations = $instantiability->fillProperties($entity, $entityData);
         if (null === $idBasedDeviations) {
             // if no ID was provided in the request, we can expect that one will be created by the backend at some point,

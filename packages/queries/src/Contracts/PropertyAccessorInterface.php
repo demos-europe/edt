@@ -40,7 +40,7 @@ interface PropertyAccessorInterface
      *
      * If any property in results in a `null` value then `null` will be returned.
      *
-     * @param non-empty-string $property TODO: refactor to non-empty-list<non-empty-string>
+     * @param non-empty-string $property TODO (#151): refactor to non-empty-list<non-empty-string>
      * @param non-empty-string ...$properties
      */
     public function getValueByPropertyPath(?object $target, string $property, string ...$properties): mixed;
