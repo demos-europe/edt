@@ -77,7 +77,7 @@ class ConditionFactory implements ConditionGroupFactoryInterface, ConditionFacto
 
     public function propertiesEqual(array $leftProperties, array $rightProperties)
     {
-        // TODO: support different context for right property path?
+        // TODO (#150): support different context for right property path?
         return MutableDrupalCondition::createWithValue(
             $leftProperties,
             PropertiesEqual::OPERATOR,

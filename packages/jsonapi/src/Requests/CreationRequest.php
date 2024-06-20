@@ -45,7 +45,7 @@ class CreationRequest extends RequestWithBody
      * This may conflict with the assumption, that the {@link Item} always contains the attributes and relationships,
      * that were created differently than requested by the client.
      *
-     * TODO: test if the statement above is compatible with the specification and actually true regarding the libraries behavior
+     * TODO (#139): test if the statement above is compatible with the specification and actually true regarding the libraries behavior
      *
      * @param CreatableTypeInterface<object> $type
      *
@@ -84,7 +84,6 @@ class CreationRequest extends RequestWithBody
     /**
      * @param non-empty-string $urlTypeIdentifier
      *
-     * @return CreationRequestBody
      * @throws RequestException
      */
     protected function getCreationRequestBody(

@@ -275,7 +275,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * TODO: by validating the request before invoking the root transformer the warning logging in this class can be replaced with an exception, as it should never occur
+     * TODO (#103): by validating the request before invoking the root transformer the warning logging in this class can be replaced with an exception, as it should never occur
      *
      * @throws InvalidArgumentException
      */
