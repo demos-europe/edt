@@ -41,7 +41,7 @@ class ResponseFactory
         $rawFieldsets = $request->get(UrlParameter::FIELDS);
         Assert::nullOrString($rawFieldsets);
         $rawExcludes = $request->get(UrlParameter::EXCLUDE);
-        // TODO: add validation of exclude definitions and verify specification compatibility with JSON:API before allowing this feature
+        // TODO (#155): add validation of exclude definitions and verify specification compatibility with JSON:API before allowing this feature
         Assert::null($rawExcludes);
 
         $fractalManager = $this->fractalManagerFactory->createFractalManager(
@@ -54,7 +54,7 @@ class ResponseFactory
         Assert::isArray($data);
 
         if (array_key_exists(ContentField::INCLUDED, $data)) {
-            // TODO: only add 'included', if the request URL contained the `include` parameter
+            // TODO (#157): investigate if correct
             $data[ContentField::INCLUDED] = [];
         }
 
