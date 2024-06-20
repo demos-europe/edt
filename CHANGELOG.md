@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### BC BREAK: register non-directly accessible types automatically
+
+The methods `registerType` and `registerTypes` were removed from `EDT/jsonapi/Manager`.
+Those were used as workaround to handle sparse fieldsets of non-directly accessible types correctly (i.e. types that were reachable via include only).
+The new approach will automatically register such types by investigating the relationships of directly accessible types.
+
+Calls to those methods can simply be deleted.
+No other migration action is required.
+
+### BC BREAK: add convenience method to interface
+
+Implementations of `PropertyReadableTypeProviderInterface` must now implement the method `addNamedType`.
+An example for a simple, but valid implementation can be found in `NameBasedTypeProvider`.
+
+If you don't implement `PropertyReadableTypeProviderInterface` yourself, no migration action is required.
+
 ## 0.26.0 - 2024-05-21
 
 > [!CAUTION]
