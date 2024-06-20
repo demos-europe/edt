@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Utilities;
 
-use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\PropertyConfig\Builder\AttributeConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilder;
@@ -16,6 +15,7 @@ use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use Webmozart\Assert\Assert;
 use function is_string;
+use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 
 /**
  * Allows to create instances to configure properties (id/attribute/relationship). Each instance created can be used to
@@ -31,7 +31,7 @@ class PropertyBuilderFactory
      */
     public function __construct(
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolver $typeResolver,
+        protected readonly AttributeTypeResolverInterface $typeResolver,
         protected readonly bool $identifierByDefaultSortable = false,
         protected readonly bool $identifierByDefaultFilterable = false,
         protected readonly bool $attributesByDefaultSortable = false,
@@ -209,7 +209,7 @@ class PropertyBuilderFactory
      *
      * @throws PathException
      */
-    protected function getSingleName(PropertyPathInterface|string $nameOrPath)
+    protected function getSingleName(PropertyPathInterface|string $nameOrPath): string
     {
         if (!is_string($nameOrPath)) {
             $pathNames = $nameOrPath->getAsNames();

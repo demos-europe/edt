@@ -23,11 +23,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Instances can be used to create a response to a given request, based on the configuration given in the constructor.
+ */
 class ListProcessor
 {
     use ProcessorTrait;
 
     /**
+     * Instead of creating instances manually, you may want to use {@link Manager::createListProcessor()}.
+     *
      * @param DrupalFilterParser<DrupalFilterInterface> $filterTransformer
      * @param JsonApiSortingParser<SortMethodInterface> $sortingTransformer
      * @param array<non-empty-string, ListableTypeInterface<object>&PropertyReadableTypeInterface<object>> $listableTypes
