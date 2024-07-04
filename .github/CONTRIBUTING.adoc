@@ -1,0 +1,6 @@
+= CONTRIBUTING
+
+The next version to be released is 0.27.0.
+
+* https://github.com/demos-europe/edt/pulls?q=is%3Aopen+is%3Apr+milestone%3A0.27.0+draft%3Ano[ready to review pull requests]
+* https://github.com/demos-europe/edt/issues?q=is%3Aopen+is%3Aissue+milestone%3A0.27.0[open issues]
