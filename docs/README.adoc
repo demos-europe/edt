@@ -148,6 +148,12 @@ Even though the packages are already used in production, they're not recommended
 While development has settled down in some parts, in others refactorings are still necessary, resulting in deprecations and backward compatibility breaking changes.
 Because the initial setup still requires extensive work and crucial documentation is missing, the entry barrier can also be deemed too high.
 
+However, contributions are welcome:
+
+* https://github.com/demos-europe/edt/issues/new[Create a new issue (e.g. a question, bug report or feature request)]
+* https://github.com/demos-europe/edt/contribute[Work on open issues]
+* https://github.com/demos-europe/edt/pulls?q=is%3Aopen+is%3Apr+milestone%3A0.27.0+label%3APrerequisite[Review prerequisite pull requests] (*current bottleneck*)
+
 The objective is to get the project to a more stable state over the course of the year 2024, ideally releasing a xref:releasing.adoc#_stable_release[1.0.0 version with a more reliable API and proper documentation] before 2025.
 
 Even after a stable release, adding optional features and support for future JSON:API specification versions is left as an ongoing process. Similarly, easing the usage with applications not based on Symfony and Doctrine is not the scope of a first stable version.
