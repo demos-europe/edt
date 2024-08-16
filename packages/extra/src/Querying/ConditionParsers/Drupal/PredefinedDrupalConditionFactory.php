@@ -154,6 +154,8 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
             StandardOperator::LTEQ => fn ($value, array $path) => $this->conditionFactory->valueSmallerEqualsThan($this->assertNumeric($value), $this->assertPath($path)),
             StandardOperator::STARTS_WITH_CASE_INSENSITIVE => fn ($value, array $path) => $this->conditionFactory->propertyStartsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
             StandardOperator::ENDS_WITH_CASE_INSENSITIVE => fn ($value, array $path) => $this->conditionFactory->propertyEndsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
+            StandardOperator::IS_NULL => fn ($value, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNull($path),
+            StandardOperator::IS_NOT_NULL => fn ($value, array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull($path),
         ];
     }
 
