@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- handle condition: in some cases however conditions do have values, we do need the OPERATORS 'IS NULL' and 'IS NOT NULL' and since they 
+  are only available in the condition without values, some filters are not working anymore.
+
 ## 0.24.42 - 2024-02-13
 
 * feature: add classes to programmatically create Drupal filters
