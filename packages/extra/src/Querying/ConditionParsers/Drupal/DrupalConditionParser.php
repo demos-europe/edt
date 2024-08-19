@@ -51,15 +51,8 @@ class DrupalConditionParser implements ConditionParserInterface
             return $pathSegment;
         }, explode('.', $pathString));
 
-        if (array_key_exists(DrupalFilterParser::VALUE, $condition )) {
-            if (!array_key_exists(DrupalFilterParser::OPERATOR, $condition )
-                || (array_key_exists(DrupalFilterParser::OPERATOR, $condition )
-                    && ($condition[DrupalFilterParser::OPERATOR] !== 'IS NULL'
-                        && $condition[DrupalFilterParser::OPERATOR] !== 'IS NOT NULL'))) {
-                return $this->drupalConditionFactory->createConditionWithValue($operatorName, $condition[DrupalFilterParser::VALUE], $path);
-            }
-        }
-
-        return $this->drupalConditionFactory->createConditionWithoutValue($operatorName, $path);
+        return array_key_exists(DrupalFilterParser::VALUE, $condition)
+            ? $this->drupalConditionFactory->createConditionWithValue($operatorName, $condition[DrupalFilterParser::VALUE], $path)
+            : $this->drupalConditionFactory->createConditionWithoutValue($operatorName, $path);
     }
 }
