@@ -34,7 +34,7 @@ class OffsetPaginationParser implements PaginationParserInterface
             return null;
         }
 
-        $page = $urlParameters->get(UrlParameter::PAGE);
+        $page = $urlParameters->all(UrlParameter::PAGE);
         $page = $this->getValidatedPage($page);
 
         /** @var int<0, max> $offset */

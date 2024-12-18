@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* chore: fix deprecation in InputBag::get
+
 ## 0.25.0 - 2024-05-08
 
 ### BC BREAK: disallow empty lists for `propertyHasAnyOfValues` and `propertyHasNotAnyOfValues` methods
