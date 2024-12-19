@@ -97,7 +97,7 @@ class ListRequest
             return [];
         }
 
-        $filterParam = $query->get(UrlParameter::FILTER);
+        $filterParam = $query->all(UrlParameter::FILTER);
         $query->remove(UrlParameter::FILTER);
         $filterParam = $this->filterParser->validateFilter($filterParam);
 

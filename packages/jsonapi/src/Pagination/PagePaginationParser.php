@@ -39,7 +39,7 @@ class PagePaginationParser implements PaginationParserInterface
             return null;
         }
 
-        $page = $urlParameters->get(UrlParameter::PAGE);
+        $page = $urlParameters->all(UrlParameter::PAGE);
         $page = $this->getValidatedPage($page);
 
         /** @var positive-int $size */
