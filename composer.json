@@ -2,6 +2,16 @@
     "name": "demos-europe/edt",
     "description": "This repository uses symplify/monorepo-builder to release several packages. Check the packages folder for more information.",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Dressler",
+            "email": "dressler@demos-deutschland.de"
+        },
+        {
+            "name": "Stefan Graupner",
+            "email": "efrane@meanderingsoul.com"
+        }
+    ],
     "require": {
         "cebe/php-openapi": "^1.5",
         "doctrine/collections": "^1.5 || ^2.1",
@@ -22,16 +32,6 @@
         "thecodingmachine/safe": "^2.4.0",
         "webmozart/assert": "^1.11"
     },
-    "authors": [
-        {
-            "name": "Christian Dressler",
-            "email": "dressler@demos-deutschland.de"
-        },
-        {
-            "name": "Stefan Graupner",
-            "email": "efrane@meanderingsoul.com"
-        }
-    ],
     "require-dev": {
         "doctrine/annotations": "^2.0",
         "ergebnis/phpstan-rules": "^2.0",
@@ -74,13 +74,9 @@
             ]
         }
     },
-    "replace": {
-        "demos-europe/edt-access-definitions": "0.25.0",
-        "demos-europe/edt-dql": "0.25.0",
-        "demos-europe/edt-extra": "0.25.0",
-        "demos-europe/edt-jsonapi": "0.25.0",
-        "demos-europe/edt-paths": "0.25.0",
-        "demos-europe/edt-queries": "0.25.0"
+    "scripts": {
+        "sniffer:php8": "phpcs -p ./packages/ --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0",
+        "phpstan": "phpstan analyse"
     },
     "config": {
         "bin-dir": "bin",
@@ -89,8 +85,12 @@
             "symfony/flex": true
         }
     },
-    "scripts": {
-        "sniffer:php8": "phpcs -p ./packages/ --standard=vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0",
-        "phpstan": "phpstan analyse"
+    "replace": {
+        "demos-europe/edt-access-definitions": "0.25.1",
+        "demos-europe/edt-dql": "0.25.1",
+        "demos-europe/edt-extra": "0.25.1",
+        "demos-europe/edt-jsonapi": "0.25.1",
+        "demos-europe/edt-paths": "0.25.1",
+        "demos-europe/edt-queries": "0.25.1"
     }
 }

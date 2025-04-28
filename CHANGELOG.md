@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.25.1 - 2025-04-28
 
 * chore: fix deprecation in InputBag::get
 
