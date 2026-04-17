@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 
 /**
+ * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  */
 interface PropertyConfigInterface

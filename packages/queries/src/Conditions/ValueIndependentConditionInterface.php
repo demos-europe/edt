@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace EDT\Querying\Conditions;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
+
 /**
- * @template TCondition
+ * @template TCondition of PathsBasedInterface
+ *
+ * @template-extends ConditionInterface<TCondition>
  */
 interface ValueIndependentConditionInterface extends ConditionInterface
 {
@@ -14,5 +18,5 @@ interface ValueIndependentConditionInterface extends ConditionInterface
      *
      * @return TCondition
      */
-    public function transform(?array $path);
+    public function transform(?array $path): PathsBasedInterface;
 }

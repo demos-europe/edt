@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
-use EDT\ConditionFactory\ConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Conditions\ArrayContains;
 use EDT\Querying\Conditions\Between;
 use EDT\Querying\Conditions\EndsWith;
@@ -19,10 +19,9 @@ use EDT\Querying\Conditions\LesserThan;
 use EDT\Querying\Conditions\NotBetween;
 use EDT\Querying\Conditions\NotEquals;
 use EDT\Querying\Conditions\NotIn;
-use EDT\Querying\Conditions\NotSize;
-use EDT\Querying\Conditions\Size;
 use EDT\Querying\Conditions\StartsWith;
 use EDT\Querying\Conditions\StringContains;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Drupal\ConditionValueException;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
@@ -30,10 +29,10 @@ use function is_bool;
 use function is_string;
 
 /**
- * @template TCondition
+ * @template TCondition of PathsBasedInterface
  * @template-implements DrupalConditionFactoryInterface<TCondition>
  *
- * @phpstan-import-type DrupalValue from DrupalFilterParser
+ * @phpstan-import-type DrupalValue from DrupalConditionFactoryInterface
  */
 class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterface
 {
@@ -48,10 +47,10 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     private array $operatorFunctionsWithoutValue;
 
     /**
-     * @param ConditionFactoryInterface<TCondition> $conditionFactory
+     * @param PathsBasedConditionFactoryInterface<TCondition> $conditionFactory
      */
     public function __construct(
-        protected readonly ConditionFactoryInterface $conditionFactory
+        protected readonly PathsBasedConditionFactoryInterface $conditionFactory
     ) {
         $this->operatorFunctionsWithValue = $this->getOperatorFunctionsWithValue();
         $this->operatorFunctionsWithoutValue = $this->getOperatorFunctionsWithoutValue();
@@ -62,13 +61,13 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
         $operators = array_merge($this->operatorFunctionsWithValue, $this->operatorFunctionsWithoutValue);
 
         return array_map(
-            // FIXME (#144): add operator specific conditions and validate condition-specific values and their type
+            // FIXME: add operator specific conditions and validate condition-specific values and their type
             fn (callable $callable): array => [],
             $operators
         );
     }
 
-    public function createConditionWithValue(string $operatorName, array|string|int|float|bool|null $value, ?array $path)
+    public function createConditionWithValue(string $operatorName, array|string|int|float|bool|null $value, ?array $path): PathsBasedInterface
     {
         if (!array_key_exists($operatorName, $this->operatorFunctionsWithValue)) {
             throw DrupalFilterException::unknownCondition($operatorName, ...array_keys($this->getSupportedOperators()));
@@ -77,7 +76,7 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
         return $this->operatorFunctionsWithValue[$operatorName]($value, $path);
     }
 
-    public function createConditionWithoutValue(string $operatorName, ?array $path)
+    public function createConditionWithoutValue(string $operatorName, ?array $path): PathsBasedInterface
     {
         if (!array_key_exists($operatorName, $this->operatorFunctionsWithoutValue)) {
             throw DrupalFilterException::unknownCondition($operatorName, ...array_keys($this->getSupportedOperators()));
@@ -104,17 +103,6 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     protected function assertString(mixed $value): string
     {
         Assert::string($value);
-
-        return $value;
-    }
-
-    /**
-     * @return int<0,max>
-     */
-    protected function assertNonNegativeInt(mixed $value): int
-    {
-        Assert::integer($value);
-        Assert::greaterThanEq($value, 0);
 
         return $value;
     }
@@ -176,11 +164,11 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
             StringContains::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasStringContainingCaseInsensitiveValue($this->assertString($value), $this->assertPath($path)),
             In::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasAnyOfValues($this->assertNonEmptyList($value), $this->assertPath($path)),
             NotIn::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasNotAnyOfValues($this->assertNonEmptyList($value), $this->assertPath($path)),
-            Between::OPERATOR => function ($value, ?array $path) {
+            Between::OPERATOR => function ($value, ?array $path): PathsBasedInterface {
                 $value = $this->assertRange($value);
                 return $this->conditionFactory->propertyBetweenValuesInclusive($value[0], $value[1], $this->assertPath($path));
             },
-            NotBetween::OPERATOR => function ($value, ?array $path) {
+            NotBetween::OPERATOR => function ($value, ?array $path): PathsBasedInterface {
                 $value = $this->assertRange($value);
                 return $this->conditionFactory->propertyNotBetweenValuesInclusive($value[0], $value[1], $this->assertPath($path));
             },
@@ -191,8 +179,6 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
             LesserEqualsThan::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->valueSmallerEqualsThan($this->assertNumeric($value), $this->assertPath($path)),
             StartsWith::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyStartsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
             EndsWith::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyEndsWithCaseInsensitive($this->assertString($value), $this->assertPath($path)),
-            NotSize::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasNotSize($this->assertNonNegativeInt($value), $this->assertPath($path)),
-            Size::OPERATOR => fn ($value, ?array $path) => $this->conditionFactory->propertyHasSize($this->assertNonNegativeInt($value), $this->assertPath($path)),
         ];
     }
 
@@ -202,8 +188,8 @@ class PredefinedDrupalConditionFactory implements DrupalConditionFactoryInterfac
     protected function getOperatorFunctionsWithoutValue(): array
     {
         return [
-            IsNull::OPERATOR => fn (?array $path) => $this->conditionFactory->propertyIsNull($this->assertPath($path)),
-            IsNotNull::OPERATOR => fn (?array $path) => $this->conditionFactory->propertyIsNotNull($this->assertPath($path)),
+            IsNull::OPERATOR => fn (?array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNull($this->assertPath($path)),
+            IsNotNull::OPERATOR => fn (?array $path): PathsBasedInterface => $this->conditionFactory->propertyIsNotNull($this->assertPath($path)),
         ];
     }
 

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ResourceTypes;
 
-use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\InputHandling\RepositoryInterface;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\ModifiedEntity;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Pagination\PagePagination;
-use EDT\Querying\SortMethodFactories\SortMethodInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\FetchableTypeInterface;
 use EDT\Wrapping\CreationDataInterface;
@@ -21,17 +20,19 @@ use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Pagerfanta\Pagerfanta;
 
 /**
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements ResourceTypeInterface<TEntity>
- * @template-implements FetchableTypeInterface<TEntity>
- * @template-implements GetableTypeInterface<TEntity>
- * @template-implements CreatableTypeInterface<TEntity>
+ * @template-implements ResourceTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements FetchableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements GetableTypeInterface<TCondition, TSorting, TEntity>
+ * @template-implements CreatableTypeInterface<TCondition, TSorting, TEntity>
  */
 abstract class AbstractResourceType implements ResourceTypeInterface, FetchableTypeInterface, GetableTypeInterface, DeletableTypeInterface, CreatableTypeInterface
 {
     /**
-     * @return RepositoryInterface<TEntity>
+     * @return RepositoryInterface<TCondition, TSorting, TEntity>
      */
     abstract protected function getRepository(): RepositoryInterface;
 
@@ -75,7 +76,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
 
         [$entity, $requestDeviations] = $instantiability->initializeEntity($entityData);
         $idBasedDeviations = $instantiability->setIdentifier($entity, $entityData);
-        // FIXME (#145): check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
+        // FIXME: check entity conditions, even though entity may not be persisted; responsibility to set them (or not) lies with the using dev
         $fillRequestDeviations = $instantiability->fillProperties($entity, $entityData);
         if (null === $idBasedDeviations) {
             // if no ID was provided in the request, we can expect that one will be created by the backend at some point,
@@ -101,7 +102,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      * For a list query on a `CatType` the condition returned by this method must define
      * limits to only get `Animal` instances that are a `Cat`.
      *
-     * @return list<DrupalFilterInterface>
+     * @return list<TCondition>
      */
     abstract protected function getAccessConditions(): array;
 
@@ -115,7 +116,7 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      *
      * Return an empty array to not define any default sorting.
      *
-     * @return list<SortMethodInterface>
+     * @return list<TSorting>
      */
     abstract protected function getDefaultSortMethods(): array;
 
@@ -136,8 +137,8 @@ abstract class AbstractResourceType implements ResourceTypeInterface, FetchableT
      * be passed into this method, as their paths are expected to already denote actual properties in a
      * backing entity.
      *
-     * @param list<DrupalFilterInterface> $conditions
-     * @param list<SortMethodInterface> $sortMethods
+     * @param list<TCondition> $conditions
+     * @param list<TSorting> $sortMethods
      *
      * @throws PathException
      */

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
-use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\Event\AfterListEvent;
 use EDT\JsonApi\Event\BeforeListEvent;
 use EDT\JsonApi\Pagination\PagePaginationParser;
@@ -16,7 +15,7 @@ use EDT\JsonApi\ResourceTypes\ListableTypeInterface;
 use EDT\JsonApi\Validation\SortValidator;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterException;
 use EDT\Querying\Contracts\PathException;
-use EDT\Querying\SortMethodFactories\SortMethodInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Utilities\Iterables;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Exception;
@@ -26,11 +25,15 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
+ */
 class ListRequest
 {
     /**
-     * @param FilterParserInterface<mixed, DrupalFilterInterface> $filterParser
-     * @param JsonApiSortingParser<SortMethodInterface> $sortingParser
+     * @param FilterParserInterface<mixed, TCondition> $filterParser
+     * @param JsonApiSortingParser<TSorting> $sortingParser
      */
     public function __construct(
         protected readonly FilterParserInterface $filterParser,
@@ -44,7 +47,7 @@ class ListRequest
     ) {}
 
     /**
-     * @param ListableTypeInterface<object> $type
+     * @param ListableTypeInterface<TCondition, TSorting, object> $type
      *
      * @throws Exception
      */
@@ -83,7 +86,7 @@ class ListRequest
     }
 
     /**
-     * @return list<DrupalFilterInterface>
+     * @return list<TCondition>
      *
      * @throws DrupalFilterException
      * @throws PathException
@@ -102,7 +105,7 @@ class ListRequest
     }
 
     /**
-     * @return list<SortMethodInterface>
+     * @return list<TSorting>
      *
      * @throws PathException
      * @throws InvalidArgumentException

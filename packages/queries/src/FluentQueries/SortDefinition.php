@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortMethodFactoryInterface;
-use EDT\Querying\SortMethodFactories\SortMethodInterface;
 
+/**
+ * @template TSorting of PathsBasedInterface
+ */
 class SortDefinition
 {
     /**
-     * @var list<SortMethodInterface>
+     * @var list<TSorting>
      */
     private array $sortMethods = [];
 
     /**
-     * @param SortMethodFactoryInterface<SortMethodInterface> $sortMethodFactory
+     * @param SortMethodFactoryInterface<TSorting> $sortMethodFactory
      */
     public function __construct(
         protected readonly SortMethodFactoryInterface $sortMethodFactory
@@ -44,7 +47,7 @@ class SortDefinition
     }
 
     /**
-     * @return list<SortMethodInterface>
+     * @return list<TSorting>
      */
     public function getSortMethods(): array
     {

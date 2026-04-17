@@ -8,6 +8,7 @@ on:
     paths:
       - '**.php'
       - 'phpstan.neon'
+
 jobs:
   phpstan8_1:
     name: phpstan @ PHP 8.1
@@ -18,14 +19,16 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - uses: php-actions/composer@v6
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php_version: 8.1
+          php-version: '8.1'
+          coverage: none
+          tools: composer:v2, phpstan:1.8.2
+          ini-values: memory_limit=256M
 
-      - uses: php-actions/phpstan@v3
-        with:
-          php_version: 8.1
-          level: 8
-          configuration: 'phpstan.neon'
-          version: '1.8.2'
-          memory_limit: 256M
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run phpstan
+        run: phpstan analyse -c phpstan.neon --memory-limit=256M --no-progress

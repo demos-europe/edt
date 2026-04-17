@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\OutputHandling;
 
 use EDT\JsonApi\RequestHandling\MessageFormatter;
-use EDT\Querying\Utilities\PathConverterTrait;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
@@ -46,23 +46,23 @@ use const ARRAY_FILTER_USE_KEY;
  * properties that do not exist in the entity to be transformed, then the behavior is undefined.
  *
  * @template TEntity of object
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 class DynamicTransformer extends TransformerAbstract
 {
-    use PathConverterTrait;
-
     /**
      * @var array<non-empty-string, AttributeReadabilityInterface<TEntity>>
      */
     private array $attributeReadabilities;
 
     /**
-     * @var array<non-empty-string, ToOneRelationshipReadabilityInterface<TEntity, object>>
+     * @var array<non-empty-string, ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object>>
      */
     private array $toOneRelationshipReadabilities;
 
     /**
-     * @var array<non-empty-string, ToManyRelationshipReadabilityInterface<TEntity, object>>
+     * @var array<non-empty-string, ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object>>
      */
     private array $toManyRelationshipReadabilities;
 
@@ -74,7 +74,7 @@ class DynamicTransformer extends TransformerAbstract
     /**
      * @param non-empty-string $typeName
      * @param class-string<TEntity> $entityClass
-     * @param ResourceReadability<TEntity> $readability
+     * @param ResourceReadability<TCondition, TSorting, TEntity> $readability
      *
      * @throws InvalidArgumentException
      */
@@ -188,7 +188,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param ToOneRelationshipReadabilityInterface<TEntity, object> $readability
+     * @param ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object> $readability
      * @param TEntity $entity
      *
      * @throws InvalidArgumentException
@@ -208,7 +208,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param ToManyRelationshipReadabilityInterface<TEntity, object> $readability
+     * @param ToManyRelationshipReadabilityInterface<TCondition, TSorting, TEntity, object> $readability
      * @param TEntity $entity
      *
      * @throws InvalidArgumentException
@@ -225,7 +225,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * @param TransferableTypeInterface<object> $relationshipType
+     * @param TransferableTypeInterface<TCondition, TSorting, object> $relationshipType
      *
      * @throws InvalidArgumentException
      */
@@ -275,7 +275,7 @@ class DynamicTransformer extends TransformerAbstract
     }
 
     /**
-     * TODO (#103): by validating the request before invoking the root transformer the warning logging in this class can be replaced with an exception, as it should never occur
+     * TODO: by validating the request before invoking the root transformer the warning logging in this class can be replaced with an exception, as it should never occur
      *
      * @throws InvalidArgumentException
      */
@@ -289,7 +289,7 @@ class DynamicTransformer extends TransformerAbstract
                 // continue if the include was not requested for this specific type
                 continue;
             }
-            $requestedIncludePath = self::pathToArray($requestedInclude);
+            $requestedIncludePath = explode('.', $requestedInclude);
             $firstSegment = array_shift($requestedIncludePath);
             Assert::stringNotEmpty($firstSegment);
             if (!in_array($firstSegment, $this->availableIncludes, true)) {

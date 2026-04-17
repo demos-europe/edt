@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
-use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\ApiDocumentation\DefaultField;
+use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
  * This interface defines configuration options that are available for attributes and relationships, but *not* the ID.
  *
  * @template TEntity of object
+ * @template TCondition of PathsBasedInterface
  * @template TValue the type of value corresponding to the resource property
  * @template TConstructorBehaviorFactory of object
  * @template TPostConstructorBehaviorFactory of object
  * @template TUpdateBehaviorFactory of object
  *
- * @template-extends PropertyConfigBuilderInterface<TEntity, TValue>
+ * @template-extends PropertyConfigBuilderInterface<TEntity, TCondition, TValue>
  */
 interface AttributeOrRelationshipBuilderInterface extends PropertyConfigBuilderInterface
 {
@@ -58,7 +59,7 @@ interface AttributeOrRelationshipBuilderInterface extends PropertyConfigBuilderI
      * provided on that call. How the path is handled to set the value provided in the request depends on the
      * {@link PropertyAccessorInterface} implementation configured.
      *
-     * @param list<DrupalFilterInterface> $entityConditions
+     * @param list<TCondition> $entityConditions
      *
      * @return $this
      */

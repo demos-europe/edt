@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace EDT\JsonApi\Event;
 
 use EDT\JsonApi\ResourceTypes\GetableTypeInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 class AfterGetEvent
 {
     /**
-     * @param GetableTypeInterface<TEntity> $type
+     * @param GetableTypeInterface<TCondition, TSorting, TEntity> $type
      * @param TEntity $entity
      */
     public function __construct(
@@ -21,7 +24,7 @@ class AfterGetEvent
     ) {}
 
     /**
-     * @return GetableTypeInterface<TEntity>
+     * @return GetableTypeInterface<TCondition, TSorting, TEntity>
      */
     public function getType(): GetableTypeInterface
     {

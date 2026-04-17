@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use Webmozart\Assert\Assert;
 
@@ -20,12 +21,13 @@ use Webmozart\Assert\Assert;
  * entity exist.
  *
  * @template TEntity of object
+ * @template TCondition of PathsBasedInterface
  * @template TValue
  * @template TConstructorBehaviorFactory of object
  * @template TPostConstructorBehaviorFactory of object
  * @template TUpdateBehaviorFactory of object
  *
- * @template-implements AttributeOrRelationshipBuilderInterface<TEntity, TValue, TConstructorBehaviorFactory, TPostConstructorBehaviorFactory, TUpdateBehaviorFactory>
+ * @template-implements AttributeOrRelationshipBuilderInterface<TEntity, TCondition, TValue, TConstructorBehaviorFactory, TPostConstructorBehaviorFactory, TUpdateBehaviorFactory>
  */
 abstract class AbstractPropertyConfigBuilder implements AttributeOrRelationshipBuilderInterface
 {

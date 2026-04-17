@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace EDT\Querying\ConditionParsers\Drupal;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
+use Symfony\Component\Validator\Constraint;
+
 /**
- * @template TCondition
+ * @template TCondition of PathsBasedInterface
  * @phpstan-import-type DrupalValue from DrupalFilterParser
  */
 interface DrupalConditionFactoryInterface extends OperatorConstraintProviderInterface
@@ -19,7 +22,7 @@ interface DrupalConditionFactoryInterface extends OperatorConstraintProviderInte
      *
      * @throws DrupalFilterException if the given operator name is not supported
      */
-    public function createConditionWithValue(string $operatorName, array|string|int|float|bool|null $value, ?array $path);
+    public function createConditionWithValue(string $operatorName, array|string|int|float|bool|null $value, ?array $path): PathsBasedInterface;
 
     /**
      * @param non-empty-string $operatorName
@@ -29,5 +32,5 @@ interface DrupalConditionFactoryInterface extends OperatorConstraintProviderInte
      *
      * @throws DrupalFilterException if the given operator name is not supported
      */
-    public function createConditionWithoutValue(string $operatorName, ?array $path);
+    public function createConditionWithoutValue(string $operatorName, ?array $path): PathsBasedInterface;
 }

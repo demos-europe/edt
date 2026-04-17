@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Requests;
 
-use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\JsonApi\OutputHandling\PropertyReadableTypeProviderInterface;
 use EDT\JsonApi\OutputHandling\ResponseFactory;
 use EDT\JsonApi\Pagination\PagePaginationParser;
@@ -13,22 +12,23 @@ use EDT\JsonApi\RequestHandling\PaginatorFactory;
 use EDT\JsonApi\Validation\SortValidator;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterValidator;
-use EDT\Querying\SortMethodFactories\SortMethodInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Instances must provide logic and implementations needed by {@link ListProcessor} instances.
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 interface ListProcessorConfigInterface
 {
     /**
-     * @return DrupalFilterParser<DrupalFilterInterface>
+     * @return DrupalFilterParser<TCondition>
      */
     public function getFilterTransformer(): DrupalFilterParser;
 
     /**
-     * @return JsonApiSortingParser<SortMethodInterface>
+     * @return JsonApiSortingParser<TSorting>
      */
     public function getSortingTransformer(): JsonApiSortingParser;
 

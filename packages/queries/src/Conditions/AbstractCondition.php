@@ -9,6 +9,8 @@ use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
  * @template TCondition of PathsBasedInterface
+ *
+ * @template-implements ConditionInterface<TCondition>
  */
 abstract class AbstractCondition implements ConditionInterface
 {
@@ -19,7 +21,7 @@ abstract class AbstractCondition implements ConditionInterface
 
     public function getFormatConstraints(): array
     {
-        // FIXME (#144): remove here and implement in children
+        // FIXME: remove here and implement in children
         return [];
     }
 }

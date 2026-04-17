@@ -8,9 +8,6 @@ use EDT\JsonApi\OutputHandling\PropertyReadableTypeProviderInterface;
 use EDT\JsonApi\OutputHandling\ResponseFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-/**
- * Instances must provide logic and implementations needed by {@link DeletionProcessor} instances.
- */
 interface DeletionProcessorConfigInterface
 {
     public function getEventDispatcher(): EventDispatcherInterface;

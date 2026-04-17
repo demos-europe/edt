@@ -4,31 +4,37 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
-use EDT\ConditionFactory\DrupalFilterInterface;
-use EDT\ConditionFactory\ConditionFactoryInterface;
-use EDT\ConditionFactory\ConditionGroupFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
+use EDT\ConditionFactory\PathsBasedConditionGroupFactoryInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use function count;
 
+/**
+ * @template TCondition of PathsBasedInterface
+ */
 class ConditionDefinition
 {
     /**
-     * @var list<DrupalFilterInterface>
+     * @var list<TCondition>
      */
     protected array $conditions = [];
 
     /**
-     * @var list<ConditionDefinition>
+     * @var list<ConditionDefinition<TCondition>>
      */
     protected array $subDefinitions = [];
 
     /**
-     * @param ConditionFactoryInterface<DrupalFilterInterface>&ConditionGroupFactoryInterface<DrupalFilterInterface> $conditionFactory
+     * @param PathsBasedConditionFactoryInterface<TCondition>&PathsBasedConditionGroupFactoryInterface<TCondition> $conditionFactory
      */
     public function __construct(
-        protected ConditionFactoryInterface&ConditionGroupFactoryInterface $conditionFactory,
+        protected PathsBasedConditionFactoryInterface $conditionFactory,
         protected bool $andConjunction
     ) {}
 
+    /**
+     * @return ConditionDefinition<TCondition>
+     */
     public function anyConditionApplies(): ConditionDefinition
     {
         $subDefinition = new ConditionDefinition($this->conditionFactory, false);
@@ -36,6 +42,9 @@ class ConditionDefinition
         return $subDefinition;
     }
 
+    /**
+     * @return ConditionDefinition<TCondition>
+     */
     public function allConditionsApply(): ConditionDefinition
     {
         $subDefinition = new ConditionDefinition($this->conditionFactory, true);
@@ -54,9 +63,10 @@ class ConditionDefinition
     }
 
     /**
+     * @param TCondition $condition
      * @return $this
      */
-    protected function add(DrupalFilterInterface $condition): self
+    protected function add(PathsBasedInterface $condition): self
     {
         $this->conditions[] = $condition;
         return $this;
@@ -291,7 +301,7 @@ class ConditionDefinition
     }
 
     /**
-     * @return list<DrupalFilterInterface>
+     * @return list<TCondition>
      */
     public function getConditions(): array
     {
@@ -314,7 +324,7 @@ class ConditionDefinition
      * **No {@link ConditionDefinition::conditions} property of any {@link ConditionDefinition} instance will be modified
      * in the process.**
      *
-     * @return list<DrupalFilterInterface>
+     * @return list<TCondition>
      */
     protected function processSubDefinitions(): array
     {

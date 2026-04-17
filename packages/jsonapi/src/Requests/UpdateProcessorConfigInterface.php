@@ -11,9 +11,6 @@ use EDT\JsonApi\RequestHandling\RequestWithBody;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * Instances must provide logic and implementations needed by {@link UpdateProcessor} instances.
- */
 interface UpdateProcessorConfigInterface
 {
     public function getRequestConstraintFactory(): RequestConstraintFactory;

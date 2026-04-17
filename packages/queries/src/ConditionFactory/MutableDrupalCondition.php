@@ -6,23 +6,19 @@ namespace EDT\ConditionFactory;
 
 use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 use EDT\Querying\Contracts\PropertyPathInterface;
-use EDT\Querying\Utilities\PathConverterTrait;
-use Webmozart\Assert\Assert;
 
 /**
  * @phpstan-import-type DrupalValue from DrupalFilterParser
  */
 class MutableDrupalCondition extends AbstractDrupalFilter
 {
-    use PathConverterTrait;
-
     /**
      * @param non-empty-string $type
      * @param array<non-empty-string, mixed> $content
      */
     public function __construct(
         protected readonly string $type,
-        protected array $content
+        protected readonly array $content
     ) {}
 
     /**
@@ -73,24 +69,12 @@ class MutableDrupalCondition extends AbstractDrupalFilter
         ];
     }
 
-    public function deepCopy(callable $contentRewriter = null): DrupalFilterInterface
+    public function deepCopy(callable $contentRewriter = null): AbstractDrupalFilter
     {
         $content = null === $contentRewriter
             ? $this->content
             : $contentRewriter($this->content);
 
         return new self($this->type, $content);
-    }
-
-    public function adjustPath(callable $callable): void
-    {
-        $pathString = $this->content[DrupalFilterParser::PATH] ?? null;
-        if (null !== $pathString) {
-            Assert::stringNotEmpty($pathString);
-            $oldPath = self::pathToArray($pathString);
-            Assert::allStringNotEmpty($oldPath);
-            $newPath = $callable($oldPath);
-            $this->content[DrupalFilterParser::PATH] = static::pathToString($newPath);
-        }
     }
 }

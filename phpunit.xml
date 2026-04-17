@@ -28,12 +28,14 @@
         </testsuite>
         <testsuite name="access-definitions">
             <directory>packages/access-definitions/tests</directory>
+            <exclude>packages/access-definitions/tests/data/AdModelBasedTest.php</exclude>
         </testsuite>
         <testsuite name="extra">
             <directory>packages/extra/tests</directory>
         </testsuite>
         <testsuite name="queries">
             <directory>packages/queries/tests</directory>
+            <exclude>packages/queries/tests/ModelBasedTest.php</exclude>
         </testsuite>
     </testsuites>
     <!--<filter>

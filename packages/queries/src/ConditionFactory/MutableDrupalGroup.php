@@ -13,7 +13,7 @@ use EDT\Querying\ConditionParsers\Drupal\DrupalFilterParser;
 class MutableDrupalGroup extends AbstractDrupalFilter
 {
     /**
-     * @var list<array{namePrefix: string, filter: DrupalFilterInterface}>
+     * @var list<array{namePrefix: string, filter: AbstractDrupalFilter}>
      */
     protected array $children = [];
 
@@ -34,7 +34,7 @@ class MutableDrupalGroup extends AbstractDrupalFilter
         return new self(DrupalFilterParser::OR);
     }
 
-    public function addChild(DrupalFilterInterface $filter, string $namePrefix): void
+    public function addChild(AbstractDrupalFilter $filter, string $namePrefix): void
     {
         $this->children[] = [
             'namePrefix' => $namePrefix,
@@ -59,7 +59,7 @@ class MutableDrupalGroup extends AbstractDrupalFilter
         return $result;
     }
 
-    public function deepCopy(callable $contentRewriter = null): DrupalFilterInterface
+    public function deepCopy(callable $contentRewriter = null): AbstractDrupalFilter
     {
         $copy = new self($this->conjunction);
         foreach ($this->children as ['namePrefix' => $namePrefix, 'filter' => $filter]) {
@@ -97,13 +97,5 @@ class MutableDrupalGroup extends AbstractDrupalFilter
     {
         return null === $index ? $identifier : "$identifier-$index";
 
-    }
-
-    public function adjustPath(callable $callable): void
-    {
-        array_map(
-            static fn (DrupalFilterInterface $filter) => $filter->adjustPath($callable),
-            array_column($this->children, 'filter')
-        );
     }
 }

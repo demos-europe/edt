@@ -8,6 +8,7 @@ use EDT\JsonApi\ApiDocumentation\DefaultField;
 use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\AttributeConfigInterface;
 use EDT\JsonApi\PropertyConfig\DtoAttributeConfig;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\PropertyPaths\NonRelationshipLink;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
@@ -25,11 +26,12 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 
 /**
+ * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements AttributeConfigBuilderInterface<TEntity>
- * @template-implements BuildableInterface<AttributeConfigInterface<TEntity>>
- * @template-extends AbstractPropertyConfigBuilder<TEntity, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TEntity>, PropertyUpdatabilityFactoryInterface<TEntity>>
+ * @template-implements AttributeConfigBuilderInterface<TCondition, TEntity>
+ * @template-implements BuildableInterface<AttributeConfigInterface<TCondition, TEntity>>
+ * @template-extends AbstractPropertyConfigBuilder<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>>
  */
 class AttributeConfigBuilder
     extends AbstractPropertyConfigBuilder
@@ -211,7 +213,7 @@ class AttributeConfigBuilder
     }
 
     /**
-     * @return list<PropertyUpdatabilityInterface<TEntity>>
+     * @return list<PropertyUpdatabilityInterface<TCondition, TEntity>>
      */
     protected function getUpdateBehaviors(): array
     {

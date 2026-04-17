@@ -6,8 +6,11 @@ namespace EDT\JsonApi\Event;
 
 use EDT\JsonApi\RequestHandling\Body\UpdateRequestBody;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 
 /**
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 class BeforeUpdateEvent
@@ -15,7 +18,7 @@ class BeforeUpdateEvent
     use ModifyEventTrait;
 
     /**
-     * @param UpdatableTypeInterface<TEntity> $type
+     * @param UpdatableTypeInterface<TCondition, TSorting, TEntity> $type
      */
     public function __construct(
         protected readonly UpdatableTypeInterface $type,
@@ -23,7 +26,7 @@ class BeforeUpdateEvent
     ) {}
 
     /**
-     * @return UpdatableTypeInterface<TEntity>
+     * @return UpdatableTypeInterface<TCondition, TSorting, TEntity>
      */
     public function getType(): UpdatableTypeInterface
     {

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Rollback to the state of 0.25.1
+
+The code tree of this release is identical to `0.25.1`. The changes introduced in `0.26.0` (and in the subsequent development commits on the main line) were not deemed stable enough for continued use and have been reverted. Those changes are currently not developed further on the main line and may be reintroduced in a later release.
+
+Note that this is an intentional rollback, not a new set of breaking changes: consumers already on `0.25.1` can upgrade without code adjustments. Consumers on `0.26.0` should pin back to `0.25.1` or migrate to this release, which is functionally equivalent to `0.25.1`.
+
+The changelog entry for `0.26.0` below is kept as a historical record of the reverted changes.
+
 ## 0.25.1 - 2025-04-28
 
 * chore: fix deprecation in InputBag::get

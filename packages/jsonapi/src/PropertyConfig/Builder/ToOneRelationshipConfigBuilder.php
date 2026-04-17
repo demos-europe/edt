@@ -8,6 +8,7 @@ use EDT\JsonApi\ApiDocumentation\OptionalField;
 use EDT\JsonApi\PropertyConfig\DtoToOneRelationshipConfig;
 use EDT\JsonApi\PropertyConfig\ToOneRelationshipConfigInterface;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Wrapping\Contracts\ResourceTypeProviderInterface;
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\CallbackToOneRelationshipReadability;
@@ -18,12 +19,14 @@ use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipConstructo
 use EDT\Wrapping\PropertyBehavior\Relationship\ToOne\ToOneRelationshipReadabilityInterface;
 
 /**
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  * @template TRelationship of object
  *
- * @template-extends RelationshipConfigBuilder<TEntity, TRelationship, TRelationship|null, ToOneRelationshipReadabilityInterface<TEntity, TRelationship>>
- * @template-implements ToOneRelationshipConfigBuilderInterface<TEntity, TRelationship>
- * @template-implements BuildableInterface<ToOneRelationshipConfigInterface<TEntity, TRelationship>>
+ * @template-extends RelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship, TRelationship|null, ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>>
+ * @template-implements ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, TRelationship>
+ * @template-implements BuildableInterface<ToOneRelationshipConfigInterface<TCondition, TSorting, TEntity, TRelationship>>
  */
 class ToOneRelationshipConfigBuilder
     extends RelationshipConfigBuilder
@@ -109,9 +112,9 @@ class ToOneRelationshipConfigBuilder
              * @param non-empty-string $name
              * @param non-empty-list<non-empty-string> $propertyPath
              * @param class-string<TEntity> $entityClass
-             * @param ResourceTypeInterface<TRelationship>|ResourceTypeProviderInterface<TRelationship> $relationshipType
+             * @param ResourceTypeInterface<TCondition, TSorting, TRelationship>|ResourceTypeProviderInterface<TCondition, TSorting, TRelationship> $relationshipType
              *
-             * @return ToOneRelationshipReadabilityInterface<TEntity, TRelationship>
+             * @return ToOneRelationshipReadabilityInterface<TCondition, TSorting, TEntity, TRelationship>
              */
             public function __invoke(string $name, array $propertyPath, string $entityClass, ResourceTypeInterface|ResourceTypeProviderInterface $relationshipType): ToOneRelationshipReadabilityInterface
             {

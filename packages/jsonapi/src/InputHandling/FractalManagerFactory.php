@@ -7,6 +7,7 @@ namespace EDT\JsonApi\InputHandling;
 use EDT\JsonApi\OutputHandling\PropertyReadableTypeProviderInterface;
 use EDT\JsonApi\Validation\FieldsValidator;
 use EDT\JsonApi\Validation\IncludeValidator;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\TypeRetrievalAccessException;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use League\Fractal\Manager;
@@ -26,7 +27,7 @@ class FractalManagerFactory
     }
 
     /**
-     * @param PropertyReadableTypeInterface<object> $type
+     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
      * @param string|null $rawIncludes
      * @param string|null $rawExcludes The JSON:API specification does not support excludes, but Fractal does.
      *

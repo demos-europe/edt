@@ -9,19 +9,12 @@ use phpDocumentor\Reflection\Types\Collection;
 use phpDocumentor\Reflection\Types\Object_;
 use Webmozart\Assert\Assert;
 
-/**
- * Represents a class or interface.
- * 
- * Unlike alternatives like `class-string` or {@link \ReflectionClass}, instances of this class can
- * define template parameters that open up possibilities especially useful when generating
- * source code. 
- */
 class ClassOrInterfaceType implements TypeInterface
 {
     /**
      * @var non-empty-string
      */
-    protected readonly string $shortClassName;
+    private readonly string $shortClassName;
 
     /**
      * @param class-string $fullyQualifiedName
@@ -38,7 +31,9 @@ class ClassOrInterfaceType implements TypeInterface
     }
 
     /**
-     * FIXME (#147): phpDocumentor currently does not support proper generics
+     * FIXME: phpDocumentor currently does not support proper generics. Classes/interfaces with
+     * template parameters will result in a {@link Collection} instance. That class however silently
+     * omits all template parameters except the last two, and thus is not reliable to use.
      *
      * @see https://github.com/phpDocumentor/phpDocumentor/issues/2122
      */
