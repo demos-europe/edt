@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.27.0 - 2026-04-17
 
 ### Rollback to the state of 0.25.1
 
