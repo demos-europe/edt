@@ -24,107 +24,33 @@ use EDT\JsonApi\ResourceTypes\GetableTypeInterface;
 use EDT\JsonApi\ResourceTypes\ListableTypeInterface;
 use EDT\JsonApi\ResourceTypes\UpdatableTypeInterface;
 use EDT\JsonApi\Utilities\NameBasedTypeProvider;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Webmozart\Assert\Assert;
-use InvalidArgumentException;
 
 /**
- * This class attempts to provide an easy (i.e. high level) entry point into the library's API capabilities.
- *
- * The intended usage is as follows:
- *
- * 1. Create an instance of this class
- * 2. Register your types into it, to expose them to potential clients
- * 3. (Optionally) create an OpenApi document, containing the capabilities of your API
- * 4. React to a client request by retrieving the processor corresponding to the kind of request and passing control to it
- *
- * In the following sections each step listed above is explained in more detail.
- *
- * **1. Create an instance of this class**
- *
- * Due to implementation details, this class will store registered types in different manners, but currently only one
- * of those multiple "storage" implementation can be
- * adjusted via the constructor.
- * However, the default implementation should be sufficient in most cases anyway.
- *
- * Please note that if you want to create sets of different types, you'd create a separate manager instance for each set.
- * For example this may be useful if you have predefined user authorizations, with different users having access to different
- * types.
- * E.g. for users with the role `administrator` you'd use a corresponding `$adminManager`, into which you registered all types.
- * On the other hand, for users with the role `guest` you'd use a corresponding `$guestManager`, into which you registered
- * only specific types, that should be exposed to guest users.
- * For more dynamic authorizations you may have to create and fill a new manager instance for each request.
- *
- * **2. Register your types into it**
- *
- * After initializing an instance of this class, you can use it to register type instances of varying implementations.
- * The registration methods are specific to a capability.
- * E.g. the {@link self::registerGetableType()} method requires a type that can be used to process JSON:API `get` requests,
- * but it will not investigate the given type further nor automatically register it as listable, even if its implementation
- * indeed inherits from {@link ListableTypeInterface}.
- * If you want to register that type as listable as well, you have to call {@link self::registerListableType()} with the same instance manually.
- *
- * This allows fine-grained control over which types you want to support (i.e. expose) when processing different requests like `get` or `list`.
- * To create different sets of registered types, you'd create a separate instance of this class for each set, as explained above.
- *
- * The manager is indifferent as to how a type instance was created.
- * It may
- *
- * * be a custom implementation directly implementing the interface required by the registration method
- * * extend from {@link AbstractResourceType}
- * * have been created via one of the {@link ResourceConfigBuilderInterface}
- * * have been created by any other means
- *
- * **3. (Optionally) create an OpenApi document**
- *
- * You may want to expose your APIs capabilities via an OpenApi page.
- * To do so, you can use {@link self::createOpenApiDocumentBuilder()} and build an OpenApi
- * document, containing the capabilities provided by your API, based on the types you've registered into the manager instance.
- * The document instance can then be used by you in any manner you like, e.g. building a web page presenting the API to potential clients.
- *
- * *NOTE (#134): Currently only getable and listable types are considered by the OpenApi document builder, even if you registered additional types like deletable.*
- *
- * **4. React to a client request**
- *
- * After registering your type instances into the manager, you can create processors for each kind of request as needed.
- * E.g. the {@link self::createGetProcessor()} method can be used to react to JSON:API `get` requests. 
- * The following list shows the supported kind of requests:
- *
- * * `get`: {@link self::createGetProcessor()}
- * * `list`: {@link self::createListProcessor()}
- * * `create`: {@link self::createCreationProcessor()}
- * * `update`: {@link self::createUpdateProcessor()}
- * * `delete`: {@link self::createDeletionProcessor()}
- *
- * As mentioned previously, no processor will be automatically created nor will become automatically active when a request is
- * received.
- * Instead, you have to determine the kind of request you want to handle and retrieve the corresponding processor.
- * With the actual request already present as {@link Request} instance, you can then pass control to that processor.
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 class Manager
 {
     /**
-     * @var array<non-empty-string, GetableTypeInterface<object>&PropertyReadableTypeInterface<object>>
+     * @var array<non-empty-string, GetableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
      */
     protected array $getableTypes = [];
-
     /**
-     * @var array<non-empty-string, ListableTypeInterface<object>&PropertyReadableTypeInterface<object>>
+     * @var array<non-empty-string, ListableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
      */
     protected array $listableTypes = [];
-
     /**
-     * @var array<non-empty-string, UpdatableTypeInterface<object>&PropertyReadableTypeInterface<object>>
+     * @var array<non-empty-string, UpdatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
      */
     protected array $updatableTypes = [];
-
     /**
-     * @var array<non-empty-string, CreatableTypeInterface<object>&PropertyReadableTypeInterface<object>>
+     * @var array<non-empty-string, CreatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>>
      */
     protected array $creatableTypes = [];
-
     /**
      * @var array<non-empty-string, DeletableTypeInterface>
      */
@@ -144,9 +70,6 @@ class Manager
      */
     protected string $resourceIdAttribute = 'resourceId';
 
-    /**
-     * @param PropertyReadableTypeProviderInterface $typeProvider this instance will be automatically filled as types are registered into the manager
-     */
     public function __construct(
         protected readonly PropertyReadableTypeProviderInterface $typeProvider = new NameBasedTypeProvider()
     ) {}
@@ -197,7 +120,7 @@ class Manager
     }
 
     /**
-     * @param GetableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
+     * @param GetableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
      */
     public function registerGetableType(GetableTypeInterface $type): void
     {
@@ -206,7 +129,7 @@ class Manager
     }
 
     /**
-     * @param list<GetableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
+     * @param list<GetableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
      */
     public function registerGetableTypes(array $types): void
     {
@@ -214,7 +137,7 @@ class Manager
     }
 
     /**
-     * @param ListableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
+     * @param ListableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
      */
     public function registerListableType(ListableTypeInterface $type): void
     {
@@ -223,7 +146,7 @@ class Manager
     }
 
     /**
-     * @param UpdatableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
+     * @param UpdatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
      */
     public function registerUpdatableType(UpdatableTypeInterface $type): void
     {
@@ -232,7 +155,7 @@ class Manager
     }
 
     /**
-     * @param CreatableTypeInterface<object>&PropertyReadableTypeInterface<object> $type
+     * @param CreatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object> $type
      */
     public function registerCreatableType(CreatableTypeInterface $type): void
     {
@@ -248,7 +171,7 @@ class Manager
     }
 
     /**
-     * @param list<ListableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
+     * @param list<ListableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
      */
     public function registerListableTypes(array $types): void
     {
@@ -256,7 +179,7 @@ class Manager
     }
 
     /**
-     * @param list<UpdatableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
+     * @param list<UpdatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
      */
     public function registerUpdatableTypes(array $types): void
     {
@@ -264,7 +187,7 @@ class Manager
     }
 
     /**
-     * @param list<CreatableTypeInterface<object>&PropertyReadableTypeInterface<object>> $types
+     * @param list<CreatableTypeInterface<TCondition, TSorting, object>&PropertyReadableTypeInterface<TCondition, TSorting, object>> $types
      */
     public function registerCreatableTypes(array $types): void
     {
@@ -291,7 +214,7 @@ class Manager
      *
      * Do not call this method if your type is registered as directly available via the other register methods.
      *
-     * @param PropertyReadableTypeInterface<object>&NamedTypeInterface $type
+     * @param PropertyReadableTypeInterface<TCondition, TSorting, object>&NamedTypeInterface $type
      */
     public function registerType(PropertyReadableTypeInterface&NamedTypeInterface $type): void
     {
@@ -310,7 +233,7 @@ class Manager
      *
      * Do not call this method if your types are registered as directly available via the other register methods.
      *
-     * @param list<PropertyReadableTypeInterface<object>&NamedTypeInterface> $type
+     * @param list<PropertyReadableTypeInterface<TCondition, TSorting, object>&NamedTypeInterface> $type
      */
     public function registerTypes(array $type): void
     {
@@ -323,8 +246,6 @@ class Manager
      * To activate the generation of documentation for specific actions, make sure to set the corresponding
      * configurations (e.g. {@link OpenApiDocumentBuilder::setGetActionConfig()} and
      * {@link OpenApiDocumentBuilder::setListActionConfig()}).
-     *
-     * **NOTE (#134): Currently only getable and listable types are supported (i.e. considered) when building the OpenApi document.**
      */
     public function createOpenApiDocumentBuilder(): OpenApiDocumentBuilder
     {
@@ -338,9 +259,7 @@ class Manager
     }
 
     /**
-     * Create a processor to handle JSON:API `get` requests.
-     *
-     * The returned instance will support access to the types currently registered as getable in this manager instance.
+     * @return GetProcessor<TCondition, TSorting>
      */
     public function createGetProcessor(GetProcessorConfigInterface $config): GetProcessor
     {
@@ -354,9 +273,9 @@ class Manager
     }
 
     /**
-     * Create a processor to handle JSON:API `list` requests.
+     * @param ListProcessorConfigInterface<TCondition, TSorting> $config
      *
-     * The returned instance will support access to the types currently registered as listable in this manager instance.
+     * @return ListProcessor<TCondition, TSorting>
      */
     public function createListProcessor(ListProcessorConfigInterface $config): ListProcessor
     {
@@ -376,9 +295,7 @@ class Manager
     }
 
     /**
-     * Create a processor to handle JSON:API `create` requests.
-     *
-     * The returned instance will support access to the types currently registered as creatable in this manager instance.
+     * @return CreationProcessor<TCondition, TSorting>
      */
     public function createCreationProcessor(CreationProcessorConfigInterface $config): CreationProcessor
     {
@@ -395,9 +312,7 @@ class Manager
     }
 
     /**
-     * Create a processor to handle JSON:API `update` requests.
-     *
-     * The returned instance will support access to the types currently registered as updatable in this manager instance.
+     * @return UpdateProcessor<TCondition, TSorting>
      */
     public function createUpdateProcessor(UpdateProcessorConfigInterface $config): UpdateProcessor
     {
@@ -413,11 +328,6 @@ class Manager
         );
     }
 
-    /**
-     * Create a processor to handle JSON:API `delete` requests.
-     *
-     * The returned instance will support access to the types currently registered as deletable in this manager instance.
-     */
     public function createDeletionProcessor(DeletionProcessorConfigInterface $config): DeletionProcessor
     {
         return new DeletionProcessor(
@@ -429,18 +339,12 @@ class Manager
     }
 
     /**
-     * Add the given type to the given array, using the result of {@link NmaedTypeInterface::getTypeName()} as array key.
-     *
-     * The type will be added directly to the given array reference, i.e. using the return is optional.
-     *
      * @template T of NamedTypeInterface
      *
-     * @param T $type the type to be added to the given array
-     * @param array<non-empty-string, T> $array the array to add the given type to
+     * @param T $type
+     * @param array<non-empty-string, T> $array
      *
-     * @return array<non-empty-string, T> the given array, now containing the given type
-     *
-     * @throws InvalidArgumentException if the corresponding array key is already in use
+     * @return array<non-empty-string, T>
      */
     protected function addToArray(NamedTypeInterface $type, array &$array): array
     {

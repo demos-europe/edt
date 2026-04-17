@@ -7,12 +7,16 @@ namespace EDT\JsonApi\Requests;
 use EDT\JsonApi\Event\AfterGetEvent;
 use EDT\JsonApi\Event\BeforeGetEvent;
 use EDT\JsonApi\ResourceTypes\GetableTypeInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use Exception;
 use League\Fractal\Resource\Item;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * This request fetches a single resource by its `id` property value.
+ *
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 class GetRequest
 {
@@ -21,7 +25,7 @@ class GetRequest
     ) {}
 
     /**
-     * @param GetableTypeInterface<object> $type
+     * @param GetableTypeInterface<TCondition, TSorting, object> $type
      * @param non-empty-string $resourceId the identifier of the resource to be retrieved
      *
      * @throws Exception

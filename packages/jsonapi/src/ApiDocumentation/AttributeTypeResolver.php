@@ -31,7 +31,7 @@ use function strlen;
 /**
  * Map Doctrine or native types to OpenAPI types.
  *
- * TODO (#152): abstract this class away from the doctrine parts and move doctrine parts into separate class in separate package (service or subclass)
+ * TODO: abstract this class away from the doctrine parts and move doctrine parts into separate class in separate package (service or subclass)
  */
 class AttributeTypeResolver implements AttributeTypeResolverInterface
 {
@@ -40,9 +40,12 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
      */
     private array $classReflectionCache = [];
 
-    public function __construct(
-        protected readonly AnnotationReader $annotationReader = new AnnotationReader()
-    ) {}
+    private AnnotationReader $annotationReader;
+
+    public function __construct()
+    {
+        $this->annotationReader = new AnnotationReader();
+    }
 
     public function resolveTypeFromEntityClass(
         string $rootEntityClass,
@@ -130,7 +133,7 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
     }
 
     /**
-     * TODO (#133): handle (Doctrine) type `json`, but how?
+     * TODO: handle (Doctrine) type `json`, but how?
      *
      * @return array{type: non-empty-string, format?: non-empty-string}
      */
@@ -184,7 +187,10 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
     }
 
     /**
+     * @param ReflectionMethod|ReflectionFunction $reflection
+     *
      * @throws InvalidArgumentException if there is no return type hint or if it could not be determined
+     *
      */
     protected function getReturnType(ReflectionMethod|ReflectionFunction $reflection): ReflectionNamedType
     {

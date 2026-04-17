@@ -7,11 +7,13 @@ namespace EDT\JsonApi\OutputHandling;
 use EDT\JsonApi\InputHandling\FractalManagerFactory;
 use EDT\JsonApi\RequestHandling\RequestHeader;
 use EDT\JsonApi\RequestHandling\UrlParameter;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use League\Fractal\Resource\ResourceAbstract;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Webmozart\Assert\Assert;
 use function array_key_exists;
 use const JSON_OBJECT_AS_ARRAY;
@@ -27,7 +29,7 @@ class ResponseFactory
     ) {}
 
     /**
-     * @param PropertyReadableTypeInterface<object> $type
+     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
      * @param int<100,599> $statusCode
      */
     public function createResourceResponse(
@@ -41,7 +43,7 @@ class ResponseFactory
         $rawFieldsets = $request->get(UrlParameter::FIELDS);
         Assert::nullOrString($rawFieldsets);
         $rawExcludes = $request->get(UrlParameter::EXCLUDE);
-        // TODO (#155): add validation of exclude definitions and verify specification compatibility with JSON:API before allowing this feature
+        // TODO: add validation of exclude definitions and verify specification compatibility with JSON:API before allowing this feature
         Assert::null($rawExcludes);
 
         $fractalManager = $this->fractalManagerFactory->createFractalManager(
@@ -54,7 +56,7 @@ class ResponseFactory
         Assert::isArray($data);
 
         if (array_key_exists(ContentField::INCLUDED, $data)) {
-            // TODO (#157): investigate if correct
+            // TODO: only add 'included', if the request URL contained the `include` parameter
             $data[ContentField::INCLUDED] = [];
         }
 

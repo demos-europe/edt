@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Utilities;
 
+use EDT\JsonApi\ApiDocumentation\AttributeTypeResolver;
 use EDT\JsonApi\PropertyConfig\Builder\AttributeConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\IdentifierConfigBuilder;
 use EDT\JsonApi\PropertyConfig\Builder\ToManyRelationshipConfigBuilder;
@@ -11,15 +12,18 @@ use EDT\JsonApi\PropertyConfig\Builder\ToOneRelationshipConfigBuilder;
 use EDT\JsonApi\ResourceTypes\ResourceTypeInterface;
 use EDT\Querying\Contracts\EntityBasedInterface;
 use EDT\Querying\Contracts\PathException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\PropertyAccessorInterface;
 use EDT\Querying\Contracts\PropertyPathInterface;
 use Webmozart\Assert\Assert;
 use function is_string;
-use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 
 /**
  * Allows to create instances to configure properties (id/attribute/relationship). Each instance created can be used to
  * configure the single property it was created for.
+ *
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  */
 class PropertyBuilderFactory
 {
@@ -31,7 +35,7 @@ class PropertyBuilderFactory
      */
     public function __construct(
         protected readonly PropertyAccessorInterface $propertyAccessor,
-        protected readonly AttributeTypeResolverInterface $typeResolver,
+        protected readonly AttributeTypeResolver $typeResolver,
         protected readonly bool $identifierByDefaultSortable = false,
         protected readonly bool $identifierByDefaultFilterable = false,
         protected readonly bool $attributesByDefaultSortable = false,
@@ -51,7 +55,7 @@ class PropertyBuilderFactory
      * @param class-string<TEntity> $entityClass
      * @param PropertyPathInterface|non-empty-string $name
      *
-     * @return AttributeConfigBuilder<TEntity>
+     * @return AttributeConfigBuilder<TCondition, TEntity>
      *
      * @throws PathException
      */
@@ -82,9 +86,9 @@ class PropertyBuilderFactory
      * @template TRelationship of object
      *
      * @param class-string<TEntity> $entityClass
-     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TRelationship> $nameAndType
+     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TCondition, TSorting, TRelationship> $nameAndType
      *
-     * @return ToOneRelationshipConfigBuilder<TEntity, TRelationship>
+     * @return ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws PathException
      */
@@ -111,7 +115,7 @@ class PropertyBuilderFactory
      * @param class-string<TRelationship> $relationshipClass
      * @param PropertyPathInterface|non-empty-string $name
      *
-     * @return ToOneRelationshipConfigBuilder<TEntity, TRelationship>
+     * @return ToOneRelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws PathException
      */
@@ -145,9 +149,9 @@ class PropertyBuilderFactory
      * @template TRelationship of object
      *
      * @param class-string<TEntity> $entityClass
-     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TRelationship> $nameAndType
+     * @param PropertyPathInterface&EntityBasedInterface<TRelationship>&ResourceTypeInterface<TCondition, TSorting, TRelationship> $nameAndType
      *
-     * @return ToManyRelationshipConfigBuilder<TEntity, TRelationship>
+     * @return ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws PathException
      */
@@ -174,7 +178,7 @@ class PropertyBuilderFactory
      * @param class-string<TRelationship> $relationshipClass
      * @param PropertyPathInterface|non-empty-string $nameOrPath
      *
-     * @return ToManyRelationshipConfigBuilder<TEntity, TRelationship>
+     * @return ToManyRelationshipConfigBuilder<TCondition, TSorting, TEntity, TRelationship>
      *
      * @throws PathException
      */
@@ -209,7 +213,7 @@ class PropertyBuilderFactory
      *
      * @throws PathException
      */
-    protected function getSingleName(PropertyPathInterface|string $nameOrPath): string
+    protected function getSingleName(PropertyPathInterface|string $nameOrPath)
     {
         if (!is_string($nameOrPath)) {
             $pathNames = $nameOrPath->getAsNames();
@@ -226,7 +230,7 @@ class PropertyBuilderFactory
      *
      * @param class-string<TEntity> $entityClass
      *
-     * @return IdentifierConfigBuilder<TEntity>
+     * @return IdentifierConfigBuilder<TEntity, TCondition>
      */
     public function createIdentifier(string $entityClass): IdentifierConfigBuilder
     {

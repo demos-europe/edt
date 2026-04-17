@@ -6,11 +6,6 @@ namespace EDT\Parsing\Utilities\Types;
 
 use OutOfBoundsException;
 
-/**
- * Instances represent a class or interface.
- * 
- * Supports template parameters on the represented class/interface.
- */
 interface TypeInterface
 {
     /**

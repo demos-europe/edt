@@ -9,7 +9,3 @@ psalm_cache
 phpstan-baseline.neon
 phpDocumentor.phar
 .phpdoc
-.settings
-.buildpath
-.project
-

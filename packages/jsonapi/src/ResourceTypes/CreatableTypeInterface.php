@@ -7,10 +7,13 @@ namespace EDT\JsonApi\ResourceTypes;
 use EDT\JsonApi\RequestHandling\ExpectedPropertyCollectionInterface;
 use EDT\JsonApi\RequestHandling\ModifiedEntity;
 use EDT\Querying\Contracts\EntityBasedInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\NamedTypeInterface;
 use EDT\Wrapping\CreationDataInterface;
 
 /**
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 interface CreatableTypeInterface extends NamedTypeInterface, ReadableTypeInterface

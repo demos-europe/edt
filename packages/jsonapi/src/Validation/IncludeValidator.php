@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Validation;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use EDT\Wrapping\Utilities\SchemaPathProcessor;
 use Exception;
@@ -27,7 +28,7 @@ class IncludeValidator
      * The required include format can be ensured by calling {@link assertIncludeFormat} first.
      *
      * @param list<non-empty-list<non-empty-string>> $includes a list of paths
-     * @param PropertyReadableTypeInterface<object> $type
+     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
      *
      * @throws Exception if any path segment in the given paths is not set as readable in the corresponding type; thrown at the first problem
      */

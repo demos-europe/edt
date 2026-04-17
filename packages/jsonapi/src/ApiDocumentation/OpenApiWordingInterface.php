@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
+use EDT\Wrapping\Contracts\Types\TransferableTypeInterface;
+
 interface OpenApiWordingInterface
 {
     public function getOpenApiDescription(): string;

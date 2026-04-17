@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\Validation;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\Types\PropertyReadableTypeInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -99,7 +100,7 @@ class FieldsValidator
      * I.e. after calling {@link validateFormat} you would loop through the result and retrieve the corresponding type
      * for each array key. The type instance and the array's value are then passed into this method.
      *
-     * @param PropertyReadableTypeInterface<object> $type
+     * @param PropertyReadableTypeInterface<PathsBasedInterface, PathsBasedInterface, object> $type
      *
      * @return list<string> All property names in that the given string, that are readable in the given type.
      * This includes malformed property names like empty strings.

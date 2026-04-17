@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace EDT\Querying\FluentQueries;
 
-use EDT\ConditionFactory\DrupalFilterInterface;
 use EDT\Querying\Contracts\OffsetEntityProviderInterface;
 use EDT\Querying\Contracts\FluentQueryException;
 use EDT\Querying\Contracts\PathException;
 use EDT\Querying\Contracts\PaginationException;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\Contracts\SortException;
 use EDT\Querying\Pagination\OffsetPagination;
-use EDT\Querying\SortMethodFactories\SortMethodInterface;
 use const PHP_INT_MAX;
 
 /**
@@ -23,12 +22,16 @@ use const PHP_INT_MAX;
  * You may want to implement a factory to create instances of this class instead of using
  * its constructor, to avoid manually providing the same parameters on every usage.
  *
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  */
 class FluentQuery
 {
     /**
-     * @param OffsetEntityProviderInterface<DrupalFilterInterface, SortMethodInterface, TEntity> $objectProvider
+     * @param OffsetEntityProviderInterface<TCondition, TSorting, TEntity> $objectProvider
+     * @param ConditionDefinition<TCondition> $conditionDefinition
+     * @param SortDefinition<TSorting> $sortDefinition
      */
     public function __construct(
         protected readonly OffsetEntityProviderInterface $objectProvider,
@@ -85,11 +88,17 @@ class FluentQuery
         return $first;
     }
 
+    /**
+     * @return SortDefinition<TSorting>
+     */
     public function getSortDefinition(): SortDefinition
     {
         return $this->sortDefinition;
     }
 
+    /**
+     * @return ConditionDefinition<TCondition>
+     */
     public function getConditionDefinition(): ConditionDefinition
     {
         return $this->conditionDefinition;

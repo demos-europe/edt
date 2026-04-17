@@ -13,7 +13,7 @@ use function Safe\class_uses;
 use function Safe\class_parents;
 
 /**
- * TODO (#149): prevent endless loops (traits using each other directly or indirectly)
+ * TODO: prevent endless loops (traits using each other directly or indirectly)
  */
 class TraitEvaluator
 {

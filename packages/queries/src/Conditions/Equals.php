@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EDT\Querying\Conditions;
 
 use EDT\Querying\Contracts\PathsBasedInterface;
+use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 use function is_bool;
 use function is_float;

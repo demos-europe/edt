@@ -13,6 +13,7 @@ use EDT\Parsing\Utilities\Types\TypeInterface;
 use EDT\PathBuilding\DocblockPropertyByTraitEvaluator;
 use EDT\PathBuilding\PropertyEvaluatorPool;
 use EDT\PathBuilding\PropertyTag;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\Contracts\ContentField;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
@@ -29,19 +30,21 @@ use function array_key_exists;
  * It expects subclasses to define attributes and relationships as `property-read` docblock tags.
  *
  * ```
- * property-read AttributeConfigBuilderInterface<TEntity> $title
- * property-read ToOneRelationshipConfigBuilderInterface<TEntity, Publisher> $publisher
- * property-read ToManyRelationshipConfigBuilderInterface<TEntity, Person> $authors
+ * property-read AttributeConfigBuilderInterface<TCondition, TEntity> $title
+ * property-read ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, Publisher> $publisher
+ * property-read ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, Person> $authors
  * ```
  *
  * When a property is accessed the magic `__get` method will be used to return the correct property config builder
  * instance for the accessed property name.
  *
+ * @template TCondition of PathsBasedInterface
+ * @template TSorting of PathsBasedInterface
  * @template TEntity of object
  *
- * @property-read IdentifierConfigBuilderInterface<TEntity> $id the property uniquely identifying instances of this type
+ * @property-read IdentifierConfigBuilderInterface<TEntity, TCondition> $id the property uniquely identifying instances of this type
  *
- * @template-extends AbstractResourceConfigBuilder<TEntity>
+ * @template-extends AbstractResourceConfigBuilder<TCondition, TSorting, TEntity>
  */
 abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 {
@@ -54,6 +57,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
 
     /**
      * @param class-string<TEntity> $entityClass
+     * @param PropertyBuilderFactory<TCondition, TSorting> $propertyBuilderFactory
      */
     public function __construct(
         string $entityClass,
@@ -110,7 +114,7 @@ abstract class MagicResourceConfigBuilder extends AbstractResourceConfigBuilder
     /**
      * Multiple accesses will return the originally initialized instance.
      *
-     * @return IdentifierConfigBuilderInterface<TEntity>|AttributeConfigBuilderInterface<TEntity>|ToOneRelationshipConfigBuilderInterface<TEntity, object>|ToManyRelationshipConfigBuilderInterface<TEntity, object>
+     * @return IdentifierConfigBuilderInterface<TEntity, TCondition>|AttributeConfigBuilderInterface<TCondition, TEntity>|ToOneRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>|ToManyRelationshipConfigBuilderInterface<TCondition, TSorting, TEntity, object>
      */
     public function __get(string $name): IdentifierConfigBuilderInterface|AttributeConfigBuilderInterface|ToOneRelationshipConfigBuilderInterface|ToManyRelationshipConfigBuilderInterface
     {

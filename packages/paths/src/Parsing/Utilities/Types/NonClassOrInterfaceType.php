@@ -27,7 +27,7 @@ class NonClassOrInterfaceType implements TypeInterface
     }
 
     /**
-     * FIXME (#146): currently always returns an empty list, thus does not fully support: array, iterable, callable and tuple, as those may contain classes or interfaces
+     * FIXME: currently always returns an empty list, thus does not fully support: array, iterable, callable and tuple, as those may contain classes or interfaces
      */
     public function getAllFullyQualifiedNames(): array
     {
@@ -41,7 +41,7 @@ class NonClassOrInterfaceType implements TypeInterface
 
     public function getTemplateParameter(int $index): TypeInterface
     {
-        // TODO (#146)
+        // TODO
         throw new \InvalidArgumentException('Support for template parameters of non-classes and non-interfaces was not implemented yet.');
     }
 }

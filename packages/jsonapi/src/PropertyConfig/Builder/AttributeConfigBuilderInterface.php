@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig\Builder;
 
-use EDT\ConditionFactory\DrupalFilterInterface;
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorFactoryInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
 
@@ -13,14 +13,15 @@ use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityFactoryInterface;
  *
  * Besides that, its type itself can be used to denote a resource attribute.
  *
+ * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TEntity>, PropertyUpdatabilityFactoryInterface<TEntity>>
+ * @template-extends AttributeOrRelationshipBuilderInterface<TEntity, TCondition, simple_primitive|array<int|string, mixed>|null, ConstructorBehaviorFactoryInterface, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>, PropertyUpdatabilityFactoryInterface<TCondition, TEntity>>
  */
 interface AttributeConfigBuilderInterface extends AttributeOrRelationshipBuilderInterface
 {
     /**
-     * @param list<DrupalFilterInterface> $entityConditions
+     * @param list<TCondition> $entityConditions
      * @param null|callable(TEntity, simple_primitive|array<int|string, mixed>|null): list<non-empty-string> $updateCallback
      *
      * @return $this

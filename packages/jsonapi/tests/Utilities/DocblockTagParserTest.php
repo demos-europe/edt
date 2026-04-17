@@ -63,7 +63,7 @@ class DocblockTagParserTest extends TestCase
                 SingleTemplateClassForProperty::class.'<'.\Tests\Utilities\subnamespace\SingleTemplateClassForProperty::class.'<string>>',
                 DoubleTemplateClassForProperty::class.'<string,'.\Tests\Utilities\subnamespace\DoubleTemplateClassForProperty::class.'<string,string>>',
                 // second level with template parameter:
-                // FIXME (#147): generics are not well supported, unknown types will be prefixed with a backslash and handled as string without further trying to resolve it
+                // FIXME: generics are not well supported, unknown types will be prefixed with a backslash and handled as string without further trying to resolve it
                 SingleTemplateClassForProperty::class.'<'.\Tests\Utilities\subnamespace\SingleTemplateClassForProperty::class.'<\T>>',
                 DoubleTemplateClassForProperty::class.'<\T,'.\Tests\Utilities\subnamespace\DoubleTemplateClassForProperty::class.'<\T,\T>>',
             ]],

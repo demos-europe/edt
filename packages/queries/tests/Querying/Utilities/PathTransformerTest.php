@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Querying\Utilities;
 
-use EDT\ConditionFactory\ConditionFactoryInterface;
 use EDT\Querying\ConditionFactories\PhpConditionFactory;
+use EDT\ConditionFactory\PathsBasedConditionFactoryInterface;
 use EDT\Querying\Utilities\PathTransformer;
 use PHPUnit\Framework\TestCase;
 
 class PathTransformerTest extends TestCase
 {
-    private ConditionFactoryInterface $conditionFactory;
+    private PathsBasedConditionFactoryInterface $conditionFactory;
 
     private PathTransformer $pathTransformer;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\PropertyConfig;
 
+use EDT\Querying\Contracts\PathsBasedInterface;
 use EDT\Querying\PropertyPaths\PropertyLinkInterface;
 use EDT\Wrapping\PropertyBehavior\Attribute\AttributeReadabilityInterface;
 use EDT\Wrapping\PropertyBehavior\ConstructorBehaviorInterface;
@@ -11,15 +12,16 @@ use EDT\Wrapping\PropertyBehavior\PropertySetBehaviorInterface;
 use EDT\Wrapping\PropertyBehavior\PropertyUpdatabilityInterface;
 
 /**
+ * @template TCondition of PathsBasedInterface
  * @template TEntity of object
  *
- * @template-implements AttributeConfigInterface<TEntity>
+ * @template-implements AttributeConfigInterface<TCondition, TEntity>
  */
 class DtoAttributeConfig implements AttributeConfigInterface
 {
     /**
      * @param AttributeReadabilityInterface<TEntity>|null $readability
-     * @param list<PropertyUpdatabilityInterface<TEntity>> $updateBehaviors
+     * @param list<PropertyUpdatabilityInterface<TCondition, TEntity>> $updateBehaviors
      * @param list<PropertySetBehaviorInterface<TEntity>> $postConstructorBehaviors
      * @param list<ConstructorBehaviorInterface> $constructorBehaviors
      */
