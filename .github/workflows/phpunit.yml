@@ -19,10 +19,15 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - uses: php-actions/composer@v6
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php_version: 8.1
+          php-version: '8.1'
+          coverage: none
+          tools: composer:v2
 
-      - uses: php-actions/phpunit@v9
-        with:
-          php_version: 8.1
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run PHPUnit
+        run: ./bin/phpunit
