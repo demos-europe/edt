@@ -50,7 +50,7 @@ class TypeResolver
         protected readonly ReflectionClass $reflectionClass,
     ) {
         try {
-            $this->phpParser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+            $this->phpParser = (new ParserFactory())->createForNewestSupportedVersion();
             $fileName = $this->reflectionClass->getFileName();
             $this->sourceCode = is_string($fileName)
                 ? $this->readSourceCode($fileName)
