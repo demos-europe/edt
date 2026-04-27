@@ -1,5 +1,70 @@
 # Changelog
 
+## 0.28.0 - 2026-04-27
+
+### Add support for `doctrine/orm ^3.0`
+
+The `doctrine/orm` constraint is widened to `^2.5 || ^3.0` in both the umbrella package and `demos-europe/edt-dql`. The library now installs and runs against either ORM major. CI runs the full test suite against both via a matrix job (`phpunit.yml`).
+
+The required code adaptations follow ORM v3's removal of `Doctrine\ORM\Mapping\ClassMetadataInfo`, of the `doctrine/annotations` integration, and of several `EntityManager`/`QueryBuilder` APIs. These adaptations are mostly internal but produce two BC breaks for direct consumers, described below.
+
+In addition, ORM v3 needs a lazy-ghost proxy mechanism to instantiate entity proxies. Consumers must provide one of:
+
+* `symfony/var-exporter ^6.4 || ^7.0` (transitively pulled in by Symfony's framework bundle in most apps), or
+* PHP 8.4 with native lazy objects enabled in the Doctrine configuration.
+
+Without one of the above, the first entity fetch will fail with `Symfony LazyGhost is not available`. The library declares `symfony/var-exporter` as `require-dev` only, so consumers stay free to choose their proxy strategy.
+
+### BC BREAK: drop annotation-comment support in entity inspection
+
+ORM v3 itself removes support for `/** @ORM\Column */` and similar doc-comment annotations. To match that, the library no longer reads doc-comment annotations either:
+
+* `EDT\DqlQuerying\ClassGeneration\EntityBasedGeneratorTrait` no longer parses doc-comment annotations. The trait now considers PHP 8 attributes (`#[ORM\Column]`, `#[ORM\OneToMany]`, etc.) only. The internal `parseAnnotations()` method, the annotation/attribute deduplication code path, and the `isEqualColumn`/`isEqualOneToOne`/`isEqualOneToMany`/`isEqualManyToOne`/`isEqualManyToMany` helpers were removed.
+* `EDT\JsonApi\ApiDocumentation\AttributeTypeResolver` no longer reads mapping data via `Doctrine\Common\Annotations\AnnotationReader`. It now resolves `Id`, `Column`, and relationship mapping attributes (`OneToMany`, `ManyToOne`, `ManyToMany`, `OneToOne`) directly from `ReflectionProperty::getAttributes()`. The constructor remains argument-less, so existing instantiations are unaffected.
+* `EDT\DqlQuerying\PropertyAccessors\Iso8601PropertyAccessor` no longer takes an `AnnotationReader` instance. Its `datetime`-detection now goes through `ClassMetadata::hasField()` and `ClassMetadata::getTypeOfField()` using the inherited `ObjectManager`.
+
+To migrate, ensure your entities use PHP 8 attributes for mapping. Doctrine ORM v3 enforces this anyway.
+
+### BC BREAK: `Iso8601PropertyAccessor` constructor signature
+
+The second constructor parameter (`AnnotationReader $annotationReader`) was removed.
+
+Instead of
+
+```php
+$accessor = new \EDT\DqlQuerying\PropertyAccessors\Iso8601PropertyAccessor(
+    $objectManager,
+    $annotationReader
+);
+```
+
+simply use
+
+```php
+$accessor = new \EDT\DqlQuerying\PropertyAccessors\Iso8601PropertyAccessor(
+    $objectManager
+);
+```
+
+Most callers will not be affected — the class is typically wired through DI without a custom `AnnotationReader`.
+
+### Internal changes (no migration required)
+
+These changes are visible only to consumers who type-hint or inherit from internals:
+
+* `EDT\DqlQuerying\PropertyAccessors\ProxyPropertyAccessor`, `EDT\DqlQuerying\Utilities\JoinFinder`, `EDT\DqlQuerying\Utilities\QueryBuilderPreparer`: type hints, docblocks, and `instanceof` checks switched from `Doctrine\ORM\Mapping\ClassMetadataInfo` to `Doctrine\ORM\Mapping\ClassMetadata`. This is source-compatible on ORM v2 because `ClassMetadata extends ClassMetadataInfo` there; on v3, `ClassMetadataInfo` no longer exists.
+* `JoinFinder::isToManyRelationship` and `ProxyPropertyAccessor::setValue` now use `ClassMetadata::isCollectionValuedAssociation()` instead of the bitmask check on `$mapping['type']` (which would not work on v3, where `getAssociationMapping()` returns an object).
+* `QueryBuilderPreparer::doPrepareQueryBuilder` now sets parameters via a `setParameter()` loop instead of `QueryBuilder::setParameters($array)` (the array form was deprecated/removed in v3) and only calls `addSelect()` when there are actual select expressions (in v3, `addSelect([])` is no longer a no-op).
+* `EDT\DqlQuerying\Functions\StringContains` casts `Expr::like()` arguments to `string` to satisfy v3's stricter signature; v2 still accepts this.
+
+### Fix: support `nikic/php-parser ^5` (PHP 8.4 compatibility)
+
+`EDT\Parsing\Utilities\TypeResolver` previously called the removed `ParserFactory::create(ParserFactory::PREFER_PHP7)` API. On PHP 8.4 (where composer resolves `nikic/php-parser` to `^5`) every code path through `TypeResolver` failed at runtime with `Call to undefined method PhpParser\ParserFactory::create()`. This affected any path through `PropertyAutoPathTrait`, `DocblockTagParser`, `DocblockPropertyByTraitEvaluator`, `ResourceConfigBuilderFromEntityGenerator`, and `TypeConfig`. The call now uses `ParserFactory::createForNewestSupportedVersion()`, which is available in both `^4.14` and `^5`.
+
+### Tooling
+
+* `vimeo/psalm` constraint bumped from `^5.6` to `^6.0` so static analysis can run on PHP 8.4 (psalm 5 does not support PHP 8.4).
+
 ## 0.27.0 - 2026-04-17
 
 ### Rollback to the state of 0.25.1
