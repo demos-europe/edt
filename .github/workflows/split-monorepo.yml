@@ -3,9 +3,9 @@ name: Split Monorepo
 on:
   push:
     branches:
-      - main
+      - "*"
     tags:
-      - '*'
+      - "*"
 
 jobs:
   split_monorepo:
@@ -13,32 +13,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [
-          'access-definitions',
-          'dql',
-          'extra',
-          'paths',
-          'queries',
-          'jsonapi'
-        ]
+        package:
+          ["access-definitions", "dql", "extra", "paths", "queries", "jsonapi"]
 
     steps:
-      -   uses: actions/checkout@v6
-      -
-        if: "!startsWith(github.ref, 'refs/tags/')"
+      - uses: actions/checkout@v6
+      - if: "!startsWith(github.ref, 'refs/tags/')"
         name: Monorepo Split of ${{ matrix.package }}
         uses: symplify/github-action-monorepo-split@v2.4.2
         env:
           GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}
         with:
-          package_directory: 'packages/${{ matrix.package }}'
-          repository_organization: 'demos-europe'
-          repository_name: 'edt-${{ matrix.package }}'
+          package_directory: "packages/${{ matrix.package }}"
+          repository_organization: "demos-europe"
+          repository_name: "edt-${{ matrix.package }}"
           user_name: "GitHub Action"
           user_email: "action@github.com"
           branch: "main"
-      -
-        if: "startsWith(github.ref, 'refs/tags/')"
+      - if: "startsWith(github.ref, 'refs/tags/')"
         name: Monorepo Tagged Split of ${{ matrix.package }}
         uses: symplify/github-action-monorepo-split@v2.4.2
         env:
@@ -46,9 +38,9 @@ jobs:
         with:
           tag: ${GITHUB_REF#refs/tags/}
 
-          package_directory: 'packages/${{ matrix.package }}'
-          repository_organization: 'demos-europe'
-          repository_name: 'edt-${{ matrix.package }}'
+          package_directory: "packages/${{ matrix.package }}"
+          repository_organization: "demos-europe"
+          repository_name: "edt-${{ matrix.package }}"
           user_name: "GitHub Action"
           user_email: "action@github.com"
           branch: "main"
