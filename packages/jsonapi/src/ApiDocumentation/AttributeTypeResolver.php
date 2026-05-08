@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EDT\JsonApi\ApiDocumentation;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -15,6 +14,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use EDT\Parsing\Utilities\DocblockTagResolver;
 use EDT\Wrapping\Utilities\AttributeTypeResolverInterface;
 use InvalidArgumentException;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -40,21 +40,13 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
      */
     private array $classReflectionCache = [];
 
-    private AnnotationReader $annotationReader;
-
-    public function __construct()
-    {
-        $this->annotationReader = new AnnotationReader();
-    }
-
     public function resolveTypeFromEntityClass(
         string $rootEntityClass,
         array $propertyPath
     ): array {
         $propertyReflection = $this->getPropertyReflection($rootEntityClass, $propertyPath);
 
-        $id = $this->annotationReader->getPropertyAnnotation($propertyReflection, Id::class);
-        if ($id instanceof Id) {
+        if ([] !== $propertyReflection->getAttributes(Id::class)) {
             return [
                 'type'        => 'string',
                 'format'      => 'uuid',
@@ -62,8 +54,9 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
             ];
         }
 
-        $column = $this->annotationReader->getPropertyAnnotation($propertyReflection, Column::class);
-        if ($column instanceof Column) {
+        $columnAttributes = $propertyReflection->getAttributes(Column::class);
+        if ([] !== $columnAttributes) {
+            $column = $columnAttributes[0]->newInstance();
             $dqlTypeMapping = $this->mapDqlType($column);
             $dqlTypeMapping['description'] = $this->formatDescriptionFromDocblock($propertyReflection);
 
@@ -98,13 +91,25 @@ class AttributeTypeResolver implements AttributeTypeResolverInterface
             return $propertyReflection;
         }
 
-        $mapping = $this->annotationReader->getPropertyAnnotation($propertyReflection, MappingAttribute::class);
-        if (!$mapping instanceof OneToMany
-            && !$mapping instanceof ManyToOne
-            && !$mapping instanceof ManyToMany
-            && !$mapping instanceof OneToOne
-        ) {
-            throw new InvalidArgumentException("No mapping annotation found for property '$propertyName' in entity class '$entityClass'.");
+        $mappingAttributes = $propertyReflection->getAttributes(
+            MappingAttribute::class,
+            ReflectionAttribute::IS_INSTANCEOF
+        );
+        $mapping = null;
+        foreach ($mappingAttributes as $reflectionAttribute) {
+            $instance = $reflectionAttribute->newInstance();
+            if ($instance instanceof OneToMany
+                || $instance instanceof ManyToOne
+                || $instance instanceof ManyToMany
+                || $instance instanceof OneToOne
+            ) {
+                $mapping = $instance;
+                break;
+            }
+        }
+
+        if (null === $mapping) {
+            throw new InvalidArgumentException("No mapping attribute found for property '$propertyName' in entity class '$entityClass'.");
         }
 
         Assert::classExists($mapping->targetEntity);
