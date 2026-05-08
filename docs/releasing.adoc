@@ -40,6 +40,10 @@ Until the first stable release has been published (i.e. as long as the version s
 Shortly (less than an hour) after the last step the link:https://packagist.org/?query=demos-europe%2Fedt[EDT packages on Packagist] should all be available with the new version number, **which you must manually verify**.
 All packages must be on the same version. When they reference each other, they must reference that version as well.
 
+In case the process hangs you may use following command, adjust the version:
+
+    GIT_EDITOR="sh -c 'echo 0.28.0 > \"\$1\"' --" bin/monorepo-builder release 0.28.0
+
 == Stable release
 
 No stable release has been published yet.
