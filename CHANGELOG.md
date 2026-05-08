@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.28.0 - 2026-04-27
+## UNRELEASED
+
+_The changes below will be released as `0.28.0`._
 
 ### Add support for `doctrine/orm ^3.0`
 
